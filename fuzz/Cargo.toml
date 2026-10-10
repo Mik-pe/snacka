@@ -1,0 +1,33 @@
+[package]
+name = "snacka-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+license = "MIT"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+snacka = { path = ".." }
+
+[[bin]]
+name = "packet"
+path = "fuzz_targets/packet.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "entropy"
+path = "fuzz_targets/entropy.rs"
+test = false
+doc = false
+bench = false
+
+[profile.release]
+overflow-checks = true
+
+[workspace]
+members = ["."]

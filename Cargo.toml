@@ -1,0 +1,29 @@
+[package]
+name = "snacka"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+description = "Independent Rust audio codec development"
+license = "MIT"
+repository = "https://github.com/Mik-pe/snacka"
+keywords = ["audio", "speech", "realtime", "codec", "voip"]
+categories = ["multimedia::audio", "multimedia::encoding"]
+exclude = ["/target-mobile/**"]
+
+[features]
+default = []
+reference-tests = []
+
+[lints.rust]
+unused_must_use = "deny"
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+undocumented_unsafe_blocks = "deny"
+
+[profile.release]
+overflow-checks = true
+
+[[bench]]
+name = "kernels"
+harness = false

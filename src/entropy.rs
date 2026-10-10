@@ -1,0 +1,469 @@
+// SPDX-License-Identifier: MIT
+//! Range coding and reverse raw-bit packing from RFC 6716 sections 4.1 and 5.1.
+//!
+//! Coding uses a 31-bit interval with byte normalization. The frame's arithmetic
+//! prefix and raw-bit suffix may overlap; zero extension of the prefix is required
+//! by the format, while raw-bit reads remain bounded to the actual frame.
+
+use std::fmt;
+
+/// Invalid model, symbol or bitstream input.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Error {
+    /// Cumulative probabilities are invalid or an argument is outside its domain.
+    Argument,
+    /// A requested raw-bit read exceeds the encoded frame.
+    Truncated,
+    /// A decoded value lies outside the encoded alphabet.
+    Corrupt,
+    /// The caller's output buffer is too small.
+    Output,
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(match self {
+            Self::Argument => "invalid entropy coding argument",
+            Self::Truncated => "raw bits exceed the encoded frame",
+            Self::Corrupt => "invalid entropy coded symbol",
+            Self::Output => "entropy output buffer is too small",
+        })
+    }
+}
+impl std::error::Error for Error {}
+
+/// A validated cumulative probability distribution.
+///
+/// Boundaries start at zero and strictly increase to a total no larger than
+/// 65,535. A model borrows its immutable table and can be reused across streams.
+#[derive(Debug, Clone, Copy)]
+pub struct Model<'a> {
+    boundaries: &'a [u16],
+    total: u32,
+}
+impl<'a> Model<'a> {
+    /// Validate cumulative boundaries once, before using the model in a stream.
+    pub fn new(boundaries: &'a [u16]) -> Result<Self, Error> {
+        if boundaries.len() < 2
+            || boundaries[0] != 0
+            || boundaries.windows(2).any(|pair| pair[0] >= pair[1])
+        {
+            return Err(Error::Argument);
+        }
+        Ok(Self {
+            boundaries,
+            total: u32::from(*boundaries.last().unwrap()),
+        })
+    }
+
+    /// Number of symbols in this model.
+    pub fn symbols(&self) -> usize {
+        self.boundaries.len() - 1
+    }
+}
+
+const NORMALIZE_BELOW: u32 = 1 << 23;
+const INTERVAL_MASK: u32 = (1 << 31) - 1;
+
+fn tell_fractional(total_bits: u64, range: u32) -> u64 {
+    let integer = 32 - range.leading_zeros();
+    let mut fraction = 0;
+    let mut normalized = range >> (integer - 16);
+    // Three binary logarithm steps produce eighth-bit precision without floats.
+    for _ in 0..3 {
+        normalized = (normalized * normalized) >> 15;
+        let bit = normalized >> 16;
+        normalized >>= bit;
+        fraction = (fraction << 1) | bit;
+    }
+    total_bits * 8 - u64::from(integer * 8 + fraction)
+}
+
+/// A borrowed, allocation-free range decoder for one encoded entropy frame.
+pub struct Decoder<'a> {
+    frame: &'a [u8],
+    front: usize,
+    carry: u8,
+    range: u32,
+    value: u32,
+    total_bits: u64,
+    tail: usize,
+    raw_buffer: u64,
+    raw_available: u32,
+    raw_consumed: usize,
+}
+
+impl<'a> Decoder<'a> {
+    /// Initialize a frame, including the format's required zero extension.
+    pub fn new(frame: &'a [u8]) -> Self {
+        let first = frame.first().copied().unwrap_or(0);
+        let mut decoder = Self {
+            frame,
+            front: usize::from(!frame.is_empty()),
+            carry: first & 1,
+            range: 128,
+            value: u32::from(127 - (first >> 1)),
+            total_bits: 9,
+            tail: frame.len(),
+            raw_buffer: 0,
+            raw_available: 0,
+            raw_consumed: 0,
+        };
+        decoder.normalize();
+        decoder
+    }
+
+    fn normalize(&mut self) {
+        while self.range <= NORMALIZE_BELOW {
+            let next = if self.front < self.frame.len() {
+                let byte = self.frame[self.front];
+                self.front += 1;
+                byte
+            } else {
+                0
+            };
+            let symbol = (self.carry << 7) | (next >> 1);
+            self.carry = next & 1;
+            self.range <<= 8;
+            self.value = ((self.value << 8) | u32::from(255 - symbol)) & INTERVAL_MASK;
+            self.total_bits += 8;
+        }
+    }
+
+    fn frequency(&self, total: u32) -> u32 {
+        total - (self.value / (self.range / total) + 1).min(total)
+    }
+
+    fn consume(&mut self, low: u32, high: u32, total: u32) {
+        let unit = self.range / total;
+        let upper = unit * (total - high);
+        self.value -= upper;
+        self.range = if low == 0 {
+            self.range - upper
+        } else {
+            unit * (high - low)
+        };
+        self.normalize();
+    }
+
+    /// Decode a symbol using a previously validated cumulative model.
+    pub fn symbol(&mut self, model: Model<'_>) -> usize {
+        let frequency = self.frequency(model.total);
+        let index = model
+            .boundaries
+            .partition_point(|&boundary| u32::from(boundary) <= frequency)
+            - 1;
+        self.consume(
+            u32::from(model.boundaries[index]),
+            u32::from(model.boundaries[index + 1]),
+            model.total,
+        );
+        index
+    }
+
+    /// Decode a bit whose probability of being one is `2^-log_probability`.
+    ///
+    /// Supported logarithms are 1 through 16. Invalid arguments leave state intact.
+    pub fn bit(&mut self, log_probability: u32) -> Result<bool, Error> {
+        if !(1..=16).contains(&log_probability) {
+            return Err(Error::Argument);
+        }
+        let unit = self.range >> log_probability;
+        let one = self.value < unit;
+        if one {
+            self.range = unit;
+        } else {
+            self.value -= unit;
+            self.range -= unit;
+        }
+        self.normalize();
+        Ok(one)
+    }
+
+    /// Decode up to 32 raw bits from the frame's suffix, least significant bit first.
+    ///
+    /// Invalid arguments and truncated reads leave state intact.
+    pub fn raw(&mut self, count: u32) -> Result<u32, Error> {
+        if count > 32 {
+            return Err(Error::Argument);
+        }
+        if count as usize
+            > self
+                .frame
+                .len()
+                .saturating_mul(8)
+                .saturating_sub(self.raw_consumed)
+        {
+            return Err(Error::Truncated);
+        }
+        while self.raw_available < count {
+            self.tail -= 1;
+            self.raw_buffer |= u64::from(self.frame[self.tail]) << self.raw_available;
+            self.raw_available += 8;
+        }
+        let value = (self.raw_buffer & ((1u64 << count) - 1)) as u32;
+        self.raw_buffer >>= count;
+        self.raw_available -= count;
+        self.raw_consumed += count as usize;
+        self.total_bits += u64::from(count);
+        Ok(value)
+    }
+
+    /// Decode an equiprobable integer from zero up to `total - 1`.
+    pub fn uniform(&mut self, total: u32) -> Result<u32, Error> {
+        if total == 0 {
+            return Err(Error::Argument);
+        }
+        if total == 1 {
+            return Ok(0);
+        }
+        let low_bits = (32 - (total - 1).leading_zeros()).saturating_sub(8);
+        let high_total = ((total - 1) >> low_bits) + 1;
+        let high = self.frequency(high_total);
+        self.consume(high, high + 1, high_total);
+        let value = (high << low_bits) | self.raw(low_bits)?;
+        if value >= total {
+            Err(Error::Corrupt)
+        } else {
+            Ok(value)
+        }
+    }
+
+    /// Current interval size, suitable for comparison with an independent decoder.
+    pub fn range(&self) -> u32 {
+        self.range
+    }
+
+    /// Conservative bit usage rounded up to a whole bit, including the initial bit.
+    pub fn tell(&self) -> u64 {
+        self.total_bits - u64::from(32 - self.range.leading_zeros())
+    }
+
+    /// Conservative bit usage in units of one eighth of a bit.
+    pub fn tell_eighths(&self) -> u64 {
+        tell_fractional(self.total_bits, self.range)
+    }
+}
+
+/// An allocation-free range encoder into a caller-owned packet buffer.
+///
+/// Buffer exhaustion is terminal for this encoder. Use a new encoder and buffer
+/// for a retry; an incomplete frame must never be sent to a decoder.
+pub struct Encoder<'a> {
+    output: &'a mut [u8],
+    front: usize,
+    tail: usize,
+    pending: Option<u8>,
+    deferred: usize,
+    low: u32,
+    range: u32,
+    total_bits: u64,
+    raw_buffer: u64,
+    raw_available: u32,
+    failure: Option<Error>,
+}
+
+impl<'a> Encoder<'a> {
+    /// Begin a new frame with a caller-owned output buffer.
+    pub fn new(output: &'a mut [u8]) -> Self {
+        let tail = output.len();
+        Self {
+            output,
+            front: 0,
+            tail,
+            pending: None,
+            deferred: 0,
+            low: 0,
+            range: 1 << 31,
+            total_bits: 33,
+            raw_buffer: 0,
+            raw_available: 0,
+            failure: None,
+        }
+    }
+
+    fn write_front(&mut self, byte: u8) -> Result<(), Error> {
+        if self.front >= self.tail {
+            self.failure = Some(Error::Output);
+            return Err(Error::Output);
+        }
+        self.output[self.front] = byte;
+        self.front += 1;
+        Ok(())
+    }
+
+    fn emit(&mut self, digit: u32) -> Result<(), Error> {
+        if digit == 255 {
+            self.deferred += 1;
+            return Ok(());
+        }
+        let carry = (digit >> 8) as u8;
+        if let Some(pending) = self.pending {
+            self.write_front(pending.wrapping_add(carry))?;
+        }
+        let fill = if carry == 0 { 255 } else { 0 };
+        while self.deferred > 0 {
+            self.write_front(fill)?;
+            self.deferred -= 1;
+        }
+        self.pending = Some(digit as u8);
+        Ok(())
+    }
+
+    fn interval(&mut self, low: u32, high: u32, total: u32) -> Result<(), Error> {
+        if let Some(error) = self.failure {
+            return Err(error);
+        }
+        let unit = self.range / total;
+        if low == 0 {
+            self.range -= unit * (total - high);
+        } else {
+            self.low += self.range - unit * (total - low);
+            self.range = unit * (high - low);
+        }
+        while self.range <= NORMALIZE_BELOW {
+            self.emit(self.low >> 23)?;
+            self.low = (self.low << 8) & INTERVAL_MASK;
+            self.range <<= 8;
+            self.total_bits += 8;
+        }
+        Ok(())
+    }
+
+    /// Encode a symbol using a previously validated cumulative model.
+    pub fn symbol(&mut self, symbol: usize, model: Model<'_>) -> Result<(), Error> {
+        let bounds = model
+            .boundaries
+            .get(symbol..)
+            .and_then(|tail| tail.get(..2))
+            .ok_or(Error::Argument)?;
+        self.interval(u32::from(bounds[0]), u32::from(bounds[1]), model.total)
+    }
+
+    /// Encode a bit whose probability of being one is `2^-log_probability`.
+    pub fn bit(&mut self, one: bool, log_probability: u32) -> Result<(), Error> {
+        if !(1..=16).contains(&log_probability) {
+            return Err(Error::Argument);
+        }
+        let total = 1 << log_probability;
+        if one {
+            self.interval(total - 1, total, total)
+        } else {
+            self.interval(0, total - 1, total)
+        }
+    }
+
+    /// Encode up to 32 raw bits into the frame's suffix.
+    pub fn raw(&mut self, value: u32, count: u32) -> Result<(), Error> {
+        if count > 32 || u64::from(value) >= (1u64 << count) {
+            return Err(Error::Argument);
+        }
+        if let Some(error) = self.failure {
+            return Err(error);
+        }
+        self.raw_buffer |= u64::from(value) << self.raw_available;
+        self.raw_available += count;
+        self.total_bits += u64::from(count);
+        while self.raw_available >= 8 {
+            if self.tail == self.front {
+                self.failure = Some(Error::Output);
+                return Err(Error::Output);
+            }
+            self.tail -= 1;
+            self.output[self.tail] = self.raw_buffer as u8;
+            self.raw_buffer >>= 8;
+            self.raw_available -= 8;
+        }
+        Ok(())
+    }
+
+    /// Encode an equiprobable integer from zero up to `total - 1`.
+    pub fn uniform(&mut self, value: u32, total: u32) -> Result<(), Error> {
+        if total == 0 || value >= total {
+            return Err(Error::Argument);
+        }
+        if total == 1 {
+            return self.failure.map_or(Ok(()), Err);
+        }
+        let low_bits = (32 - (total - 1).leading_zeros()).saturating_sub(8);
+        let high_total = ((total - 1) >> low_bits) + 1;
+        let high = value >> low_bits;
+        self.interval(high, high + 1, high_total)?;
+        self.raw(value & ((1u32 << low_bits) - 1), low_bits)
+    }
+
+    /// Current interval size, suitable for comparison with an independent encoder.
+    pub fn range(&self) -> u32 {
+        self.range
+    }
+
+    /// Conservative bit usage rounded up to a whole bit, including the initial bit.
+    pub fn tell(&self) -> u64 {
+        self.total_bits - u64::from(32 - self.range.leading_zeros())
+    }
+
+    /// Conservative bit usage in units of one eighth of a bit.
+    pub fn tell_eighths(&self) -> u64 {
+        tell_fractional(self.total_bits, self.range)
+    }
+
+    /// Terminate and compact the frame; return its encoded length in bytes.
+    ///
+    /// The returned prefix of the caller's buffer is the entire encoded frame.
+    pub fn finish(self) -> Result<usize, Error> {
+        self.terminate(false)
+    }
+
+    /// Terminate a frame using the entire caller-provided buffer.
+    ///
+    /// Zero padding separates the arithmetic prefix from the raw suffix, which
+    /// remains at the end of the buffer. The result is suitable for fixed budgets.
+    pub fn finish_padded(self) -> Result<usize, Error> {
+        self.terminate(true)
+    }
+
+    fn terminate(mut self, padded: bool) -> Result<usize, Error> {
+        if let Some(error) = self.failure {
+            return Err(error);
+        }
+        let mut bits = self.range.leading_zeros();
+        let mut mask = INTERVAL_MASK >> bits;
+        let mut end = (self.low + mask) & !mask;
+        if (end | mask) >= self.low + self.range {
+            bits += 1;
+            mask >>= 1;
+            end = (self.low + mask) & !mask;
+        }
+        let mut remaining = bits as i32;
+        while remaining > 0 {
+            self.emit(end >> 23)?;
+            end = (end << 8) & INTERVAL_MASK;
+            remaining -= 8;
+        }
+        if self.pending.is_some() || self.deferred > 0 {
+            self.emit(0)?;
+        }
+        let free = (-remaining) as u32;
+        let extra = usize::from(self.raw_available > free);
+        if self.front + extra > self.tail {
+            return Err(Error::Output);
+        }
+        if padded {
+            self.output[self.front..self.tail].fill(0);
+            if self.raw_available != 0 {
+                self.output[self.tail - 1] |= self.raw_buffer as u8;
+            }
+            return Ok(self.output.len());
+        }
+        let raw_bytes = self.output.len() - self.tail;
+        let length = self.front + extra + raw_bytes;
+        if extra != 0 {
+            self.output[self.front] = 0;
+        }
+        self.output.copy_within(self.tail.., self.front + extra);
+        if self.raw_available != 0 {
+            self.output[self.front + extra - 1] |= self.raw_buffer as u8;
+        }
+        Ok(length)
+    }
+}

@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  rust:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.99.0
+          components: rustfmt, clippy
+      - run: cargo fmt --check
+      - run: cargo clippy --locked --all-targets -- -D warnings
+      - run: cargo test --locked
+      - run: cargo test --locked --release
+
+  mobile:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.99.0
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim,aarch64-linux-android
+      - run: cargo check --locked --lib --target aarch64-apple-ios
+      - run: cargo check --locked --lib --target aarch64-apple-ios-sim
+      - run: cargo check --locked --lib --target aarch64-linux-android
+
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: cargo install cargo-fuzz --locked --version 0.13.2
+      - run: cargo fuzz run packet -- -max_total_time=30 -max_len=1024
+      - run: cargo fuzz run entropy -- -max_total_time=30 -max_len=4096
