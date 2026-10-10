@@ -449,14 +449,16 @@ pub(crate) fn allocate(samples: usize, bins: usize, gains: &[u8; 4], bytes: usiz
     let mut priorities: [(usize, u64); 4] = std::array::from_fn(|band| next(band, pulses[band]));
     loop {
         let mut chosen = None;
-        let mut best = (0u128, 1u128);
+        let mut best = (0u64, 1u64);
         for band in 0..4 {
             if priorities[band].0 > bytes * 8 - used {
                 continue;
             }
             // Compare energy*N / ((K+ceil(sqrt(N)))^3 * added_bits) without division.
-            let priority = (u128::from(numerators[band]), u128::from(priorities[band].1));
-            if priority.0 * best.1 > best.0 * priority.1 {
+            let priority = (numerators[band], priorities[band].1);
+            if u128::from(priority.0) * u128::from(best.1)
+                > u128::from(best.0) * u128::from(priority.1)
+            {
                 chosen = Some(band);
                 best = priority;
             }
@@ -1068,6 +1070,82 @@ mod tests {
                                         > bytes * 8
                                 );
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    #[test]
+    fn allocation_matches_exact_rational_priorities() {
+        fn exact(samples: usize, bins: usize, gains: &[u8; 4], bytes: usize) -> [usize; 4] {
+            let boundaries = [0, samples / 24, samples / 12, samples / 6, bins];
+            let dimensions: [usize; 4] = std::array::from_fn(|i| boundaries[i + 1] - boundaries[i]);
+            let offsets = dimensions.map(|dimension| {
+                let mut offset = 1usize;
+                while offset * offset < dimension {
+                    offset += 1;
+                }
+                offset
+            });
+            let mut result = gains.map(|gain| usize::from(gain != 0));
+            let mut bits = 4 * gain_bits(samples, bytes) as usize
+                + 4
+                + (0..4)
+                    .map(|i| cost(dimensions[i], result[i]))
+                    .sum::<usize>();
+            loop {
+                let mut selected = None;
+                let mut maximum = (0u128, 1u128);
+                for band in 0..4 {
+                    if gains[band] == 0 || result[band] == MAX_PULSES {
+                        continue;
+                    }
+                    let increment = cost(dimensions[band], result[band] + 1)
+                        - cost(dimensions[band], result[band]);
+                    if bits + increment > bytes * 8 {
+                        continue;
+                    }
+                    let numerator = u128::from(ENERGY_WEIGHT[usize::from(gains[band])])
+                        * dimensions[band] as u128;
+                    let denominator =
+                        ((result[band] + offsets[band]) as u128).pow(3) * increment as u128;
+                    if numerator * maximum.1 > maximum.0 * denominator {
+                        selected = Some(band);
+                        maximum = (numerator, denominator);
+                    }
+                }
+                let Some(band) = selected else { return result };
+                bits +=
+                    cost(dimensions[band], result[band] + 1) - cost(dimensions[band], result[band]);
+                result[band] += 1;
+            }
+        }
+
+        for samples in [480, 960] {
+            for bins in [samples, samples / 2, samples / 3] {
+                for bytes in (samples / 32 - 4)..=(samples / 12 - 4) {
+                    for a in [0, 1, 2, 128, 208] {
+                        for b in [0, 1, 2, 128, 208] {
+                            for c in [0, 1, 2, 128, 208] {
+                                for d in [0, 1, 2, 128, 208] {
+                                    let gains = [a, b, c, d];
+                                    assert_eq!(
+                                        allocate(samples, bins, &gains, bytes),
+                                        exact(samples, bins, &gains, bytes),
+                                        "samples={samples} bins={bins} bytes={bytes} gains={gains:?}"
+                                    );
+                                }
+                            }
+                        }
+                    }
+                    for gain in 0..=208 {
+                        for gains in [[gain; 4], [gain, 208 - gain, gain / 2, 0]] {
+                            assert_eq!(
+                                allocate(samples, bins, &gains, bytes),
+                                exact(samples, bins, &gains, bytes),
+                                "samples={samples} bins={bins} bytes={bytes} gains={gains:?}"
+                            );
                         }
                     }
                 }
