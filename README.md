@@ -89,6 +89,10 @@ This benchmark alone contains reference FFI. Supply a nonstandard search path
 with `RUSTFLAGS="-L /path/to/lib"`. Neither the feature nor normal builds add
 reference code or linkage to the library.
 
+The optional [matched speech-quality reference](docs/reference-quality.md) uses
+a separately installed external library only in an offline Python tool. It
+records quality gaps alongside wins at equal bitrate, frame duration and delay.
+
 See [the bitstream](docs/bitstream.md), [development and acceptance](docs/implementation.md),
 [measurements](docs/measurements.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [packet-loss evaluation](docs/loss.md), [fixture provenance](tests/fixtures/README.md)
 and [fuzzing](fuzz/README.md). The implementation license is [MIT](LICENSE).

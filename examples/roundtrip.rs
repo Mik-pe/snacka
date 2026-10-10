@@ -107,7 +107,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|(&x, &y)| f64::from(x - y).powi(2))
         .sum();
     println!(
-        "samples={},frame_ms={},packet_bytes={},drain_bytes={},aligned_snr_db={:.3},lost_frames={},band_24000_frames={},band_12000_frames={},band_8000_frames={},band_gain_frames={}",
+        "codec=snacka,algorithmic_delay_samples={},samples={},frame_ms={},packet_bytes={},drain_bytes={},aligned_snr_db={:.3},lost_frames={},band_24000_frames={},band_12000_frames={},band_8000_frames={},band_gain_frames={}",
+        ALGORITHMIC_DELAY,
         input.len(),
         duration.milliseconds(),
         encoded_bytes,

@@ -35,7 +35,9 @@ frame switching or production quality claim.
 
 ## Next experiments
 
-1. Improve spectral coding: perceptual allocation, prediction, transient handling
+1. Prioritize the 12 kb/s intelligibility gap identified by the
+   [matched reference](reference-quality.md), especially at 10 ms. Improve
+   spectral coding: perceptual allocation, prediction, transient handling
    and improved vector searches. Compare matched-rate outputs on diverse speech,
    background noise, overlap between talkers and transient signals. Delete
    superseded implementations after a measured replacement wins.

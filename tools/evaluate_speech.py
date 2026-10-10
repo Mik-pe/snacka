@@ -40,8 +40,9 @@ def noisy(values, clip, snr):
 
 
 def score(executable, source, output, original, bitrate, duration):
+    command = [sys.executable, str(executable)] if executable.suffix == ".py" else [str(executable)]
     result = subprocess.run(
-        [str(executable), str(source), str(output), str(bitrate), str(duration)],
+        command + [str(source), str(output), str(bitrate), str(duration)],
         check=True, capture_output=True, text=True,
     )
     decoded = floats(output.read_bytes())
