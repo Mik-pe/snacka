@@ -113,7 +113,9 @@ reconstruction of missing words or superiority over another codec.
 
 Python is 3.14.8, NumPy 2.5.3, SciPy 1.18.1 and pystoi 0.4.1. Both examples use
 Rust 1.99.0, opt-level 3, 16 codegen units and overflow checks; libraries use the
-same release profile. Source hashes are in the
+same release profile. The manifest records the measurement checkout, including
+its Cargo files before the optional listening lab was added; the library source
+is identical. Source hashes are in the
 [manifest](measurements/2026-10-10-loss-evaluation-source.sha256).
 
 ```sh
@@ -147,7 +149,6 @@ python3 tools/measure_cpu.py corpus cpu.csv \
 
 The preflight traces remain uninterrupted traces. They prove ordinary packet/PCM
 identity, and do not replace quality evaluation of concealed output.
-
 
 The [raw CPU table](measurements/2026-10-10-apple-m5-loss-mix.csv) uses one clip
 from each of development speakers 1320, 260, 5639 and 6930. Both independently

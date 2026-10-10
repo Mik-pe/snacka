@@ -168,7 +168,8 @@ The [loss comparison](measurements/2026-10-10-loss.csv) uses the same eight
 LibriSpeech inputs and seeded clean/noisy conditions as the quantizer experiment,
 with unchanged 24 kb/s packets and both frame durations. The baseline is
 commit `1d85ecd180ea4f2ba56e070da2ac36aaf327c909`. Build its library unchanged with
-the offline `examples/roundtrip.rs` from revision `64744bf9d967bcb281a9b56ca85a3f0022997f0b`, which adds optional loss-pattern
+the offline `examples/roundtrip.rs` from revision
+`64744bf9d967bcb281a9b56ca85a3f0022997f0b`, which adds optional loss-pattern
 arguments. The revision and baseline produce identical uninterrupted PCM in
 all measured conditions.
 
