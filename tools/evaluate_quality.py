@@ -16,6 +16,18 @@ from pystoi import stoi
 from evaluate_speech import floats, noisy, score
 
 
+def intelligibility(reference, decoded, key):
+    # pystoi 0.4.1 dithers zero-energy rows through NumPy's global RNG.
+    digest = hashlib.sha256(f"snacka-quality-6716:{key}".encode()).digest()
+    np.random.seed(int.from_bytes(digest[:4], "little"))
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", UserWarning)
+        return {
+            "stoi": float(stoi(reference, decoded, 48000)),
+            "estoi": float(stoi(reference, decoded, 48000, extended=True)),
+        }
+
+
 def spectrum(values):
     frames = np.lib.stride_tricks.sliding_window_view(values, 1024)[::480]
     amplitudes = np.abs(np.fft.rfft(frames * np.hanning(1024), axis=1))
@@ -85,10 +97,9 @@ def main():
                             )
                             values = np.asarray(floats(output.read_bytes()), dtype=np.float64)
                             row[f"{label}_snr_db"] = waveform_snr
-                            with warnings.catch_warnings():
-                                warnings.simplefilter("error", UserWarning)
-                                row[f"{label}_stoi"] = float(stoi(clean_array, values, 48000))
-                                row[f"{label}_estoi"] = float(stoi(clean_array, values, 48000, extended=True))
+                            key = f"{flac.stem}:{condition}:{duration}:{bitrate}"
+                            for metric, value in intelligibility(clean_array, values, key).items():
+                                row[f"{label}_{metric}"] = value
                             row[f"{label}_lsd_db"] = spectral_distance(reference, values)
                             row[f"{label}_packet_bytes"] = int(fields["packet_bytes"])
                             row[f"{label}_drain_bytes"] = int(fields["drain_bytes"])

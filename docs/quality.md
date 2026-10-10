@@ -5,6 +5,20 @@ not establish subjective quality, conversational acceptance or superiority over
 other libraries. Listening tests and realistic noisy conversations remain
 necessary.
 
+## Metric reproducibility
+
+The optional scorer now seeds NumPy for every paired comparison, independently
+of encoder/decoder label, to control pystoi 0.4.1's random dither of zero-energy
+normalization rows. Identical PCM must receive identical scores. The seed and
+repeat controls are documented in [packet-loss evaluation](loss.md).
+
+The historical ESTOI tables below were produced without this control. Small
+ESTOI differences and counts of tiny regressions can therefore include scoring
+variation. Their raw tables and historical source hashes are retained; they
+should not be read as deterministic results. Waveform SNR, STOI and spectral
+distance calculations are unaffected by this RNG issue. Listening acceptance
+remains necessary.
+
 ## Version 5 bounded pulse exchanges
 
 The encoder refines each pulse shape with at most two exchanges after projection

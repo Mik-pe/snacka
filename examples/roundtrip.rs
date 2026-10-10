@@ -3,13 +3,27 @@
 use snacka::{
     ALGORITHMIC_DELAY, Config, Decoder, Encoder, FrameDuration, MAX_PACKET_BYTES, Packet,
 };
-use std::{error::Error, fs, io};
+use std::{collections::BTreeSet, error::Error, fs, io};
+
+enum Loss {
+    Periodic(usize, usize),
+    Frames(BTreeSet<usize>),
+}
+
+impl Loss {
+    fn contains(&self, frame: usize) -> bool {
+        match self {
+            Self::Periodic(period, burst) => frame % period >= period - burst,
+            Self::Frames(frames) => frames.contains(&frame),
+        }
+    }
+}
 
 fn main() -> Result<(), Box<dyn Error>> {
     let arguments: Vec<_> = std::env::args().collect();
     if arguments.len() != 5 && arguments.len() != 7 {
         return Err(io::Error::other(
-            "usage: roundtrip input.f32 output.f32 bitrate frame_ms [loss_period loss_burst]",
+            "usage: roundtrip input.f32 output.f32 bitrate frame_ms [loss_period loss_burst | --loss-frames file]",
         )
         .into());
     }
@@ -20,12 +34,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
     let config = Config::new(arguments[3].parse()?)?.with_frame_duration(duration);
     let loss = if arguments.len() == 7 {
-        let period: usize = arguments[5].parse()?;
-        let burst: usize = arguments[6].parse()?;
-        if period == 0 || burst == 0 || burst >= period {
-            return Err(io::Error::other("loss pattern requires 0 < burst < period").into());
+        if arguments[5] == "--loss-frames" {
+            let mut frames = BTreeSet::new();
+            for value in fs::read_to_string(&arguments[6])?.split_whitespace() {
+                if !frames.insert(value.parse::<usize>()?) {
+                    return Err(io::Error::other("loss frame indices must be unique").into());
+                }
+            }
+            Some(Loss::Frames(frames))
+        } else {
+            let period: usize = arguments[5].parse()?;
+            let burst: usize = arguments[6].parse()?;
+            if period == 0 || burst == 0 || burst >= period {
+                return Err(io::Error::other("loss pattern requires 0 < burst < period").into());
+            }
+            Some(Loss::Periodic(period, burst))
         }
-        Some((period, burst))
     } else {
         None
     };
@@ -36,6 +60,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let input: Vec<_> = chunks.iter().map(|&x| f32::from_le_bytes(x)).collect();
     let samples = config.frame_samples();
+    if let Some(Loss::Frames(frames)) = &loss
+        && frames
+            .last()
+            .is_some_and(|&index| index >= input.len().div_ceil(samples))
+    {
+        return Err(io::Error::other("loss frame index is outside the input").into());
+    }
     let mut encoder = Encoder::new(config);
     let mut decoder = Decoder::with_frame_duration(duration);
     let mut packet = [0; MAX_PACKET_BYTES];
@@ -55,7 +86,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let bandwidth = parsed.bandwidth_hz();
         band_gain_frames += usize::from(parsed.gain_bands() == 4);
         bands[(24_000 / bandwidth - 1) as usize] += 1;
-        let info = if loss.is_some_and(|(period, burst)| index % period >= period - burst) {
+        let info = if loss.as_ref().is_some_and(|loss| loss.contains(index)) {
             lost_frames += 1;
             decoder.conceal(&mut decoded)?
         } else {

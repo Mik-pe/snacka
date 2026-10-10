@@ -7,7 +7,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let arguments: Vec<_> = std::env::args().collect();
     if arguments.len() != 6 {
         return Err(io::Error::other(
-            "usage: cpu_probe encode|decode|trace input.f32 frames|output.trace bitrate frame_ms",
+            "usage: cpu_probe encode|decode|loss|burst|trace input.f32 frames|output.trace bitrate frame_ms",
         )
         .into());
     }
@@ -75,7 +75,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                     black_box(&packet[..length]);
                 }
             }
-            "decode" => {
+            "decode" | "loss" | "burst" => {
+                let loss = match arguments[1].as_str() {
+                    "loss" => Some((10, 1)),
+                    "burst" => Some((30, 3)),
+                    _ => None,
+                };
                 let packets: Vec<_> = inputs
                     .iter()
                     .map(|input| {
@@ -84,11 +89,20 @@ fn main() -> Result<(), Box<dyn Error>> {
                     })
                     .collect::<Result<_, snacka::Error>>()?;
                 for index in 0..count {
-                    decoder.decode(black_box(&packets[index % 256]), &mut output)?;
+                    let lost = loss.is_some_and(|(period, burst)| index % period >= period - burst);
+                    if lost {
+                        decoder.conceal(&mut output)?;
+                    } else {
+                        decoder.decode(black_box(&packets[index % 256]), &mut output)?;
+                    }
                     black_box(&output);
                 }
             }
-            _ => return Err(io::Error::other("mode must be encode, decode or trace").into()),
+            _ => {
+                return Err(
+                    io::Error::other("mode must be encode, decode, loss, burst or trace").into(),
+                );
+            }
         }
         println!("frames={count}");
     }
