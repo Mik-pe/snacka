@@ -168,7 +168,8 @@ The [loss comparison](measurements/2026-10-10-loss.csv) uses the same eight
 LibriSpeech inputs and seeded clean/noisy conditions as the quantizer experiment,
 with unchanged 24 kb/s packets and both frame durations. The baseline is
 commit `1d85ecd180ea4f2ba56e070da2ac36aaf327c909`. Build its library unchanged with
-the current offline `examples/roundtrip.rs`, which adds optional loss-pattern
+the offline `examples/roundtrip.rs` from revision
+`64744bf9d967bcb281a9b56ca85a3f0022997f0b`, which adds optional loss-pattern
 arguments. The revision and baseline produce identical uninterrupted PCM in
 all measured conditions.
 
@@ -216,6 +217,10 @@ run, seed 6716 and requested 30-second limit, completes 7,070 inputs without
 reported failures. It exercises four received frames to fill pitch history,
 valid-checksum payload corruption and twelve-frame loss bursts. Its greater
 work per input makes the count incomparable with the earlier shorter harness.
+
+Use the evaluator from that same revision to reproduce this historical table.
+The current [packet-loss evaluator](loss.md) adds seeded traces, intelligibility
+scores, deterministic metric dither and byte checks after recovery.
 
 The [CPU table](measurements/2026-10-10-apple-m5-plc.csv) uses the same environment
 and throughput methodology described above. New individual-callback timings

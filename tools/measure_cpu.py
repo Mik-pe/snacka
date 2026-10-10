@@ -37,6 +37,8 @@ def main():
     parser.add_argument("--repetitions", type=int, default=3)
     parser.add_argument("--encode-frames", type=int, default=50000)
     parser.add_argument("--decode-frames", type=int, default=200000)
+    parser.add_argument("--operations", nargs="+", choices=("encode", "decode", "loss", "burst"),
+                        default=["encode", "decode"])
     parser.add_argument("--allow-trace-changes", action="store_true",
                         help="measure a separately evaluated codec change without requiring identical traces")
     args = parser.parse_args()
@@ -71,7 +73,8 @@ def main():
                     if bitrate == 24000:
                         hashes[duration] = (hashlib.sha256(before).hexdigest(), hashlib.sha256(after).hexdigest(), before == after)
             for duration in (10, 20):
-                for mode, frames in (("encode", args.encode_frames), ("decode", args.decode_frames)):
+                for mode in args.operations:
+                    frames = args.encode_frames if mode == "encode" else args.decode_frames
                     for repetition in range(args.repetitions):
                         order = [("baseline", args.baseline), ("current", args.current)]
                         if repetition % 2:

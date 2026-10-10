@@ -65,6 +65,10 @@ The corpus directory must contain original FLAC files. The script uses FFmpeg
 for conversion and otherwise only the Python standard library. `resource`
 requires a Unix host; the Rust library and probe remain portable.
 
+`--operations decode loss burst` selects complete receive workloads with
+concealment and recovery. Their fixed loss patterns, speech scores and current
+CPU observations are documented in [packet-loss evaluation](loss.md).
+
 ## Bounded pulse exchanges, version 5
 
 The baseline is commit `c450d0424d4795076ab5d154f92523b736e17ec8`. After the
