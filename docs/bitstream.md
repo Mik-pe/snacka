@@ -166,7 +166,15 @@ squared correlation divided by squared vector norm. Ties choose the lower
 frequency index. Only the greatest min(K,D) absolute input coefficients need
 be candidates; an unused larger coefficient always outranks an unused smaller
 one. Seeding saturates at the remaining pulse count to tolerate floating-point
-rounding. This is a bounded heuristic, not a globally optimal vector search.
+rounding. For K>1, perform at most two pulse exchanges per band. Choose an
+occupied coefficient whose removal leaves the greatest normalized correlation,
+then choose another coefficient to receive that pulse. Commit only if the
+completed exchange strictly improves squared correlation divided by squared
+norm; equal improving candidates prefer the lower frequency index. Correlation
+comparisons use double precision and integer squared norms. Exchanges preserve
+the sum of absolute pulse magnitudes and input-aligned signs. No exchange search
+is needed for K=0 or K=1. This remains a bounded heuristic, not a globally optimal
+vector search, and does not change decoder rules or packet capacity.
 
 ## Encoder model selection
 

@@ -525,7 +525,63 @@ pub(crate) fn quantize(
         dot += input[selected].abs();
         assigned += 1;
     }
+    if pulses > 1 {
+        norm = refine(input, output, &indices[..active], norm);
+    }
     (norm as f32).sqrt()
+}
+
+fn refine(input: &[f32], output: &mut [i16], indices: &[usize], mut norm: u32) -> u32 {
+    let mut dot: f64 = indices
+        .iter()
+        .map(|&i| f64::from(input[i].abs()) * f64::from(output[i].unsigned_abs()))
+        .sum();
+    // Each exchange preserves the pulse budget and must improve normalized correlation.
+    for _ in 0..2 {
+        let mut removed = usize::MAX;
+        let mut best = (0.0f64, 1u32);
+        for &index in indices {
+            let magnitude = u32::from(output[index].unsigned_abs());
+            if magnitude == 0 {
+                continue;
+            }
+            let candidate = (
+                dot - f64::from(input[index].abs()),
+                norm - 2 * magnitude + 1,
+            );
+            let left = candidate.0.powi(2) * f64::from(best.1);
+            let right = best.0.powi(2) * f64::from(candidate.1);
+            if left > right || (left == right && index < removed) {
+                removed = index;
+                best = candidate;
+            }
+        }
+        let mut added = usize::MAX;
+        let mut improvement = (dot, norm);
+        for &index in indices {
+            if index == removed {
+                continue;
+            }
+            let magnitude = u32::from(output[index].unsigned_abs());
+            let candidate = (
+                best.0 + f64::from(input[index].abs()),
+                best.1 + 2 * magnitude + 1,
+            );
+            let left = candidate.0.powi(2) * f64::from(improvement.1);
+            let right = improvement.0.powi(2) * f64::from(candidate.1);
+            if left > right || (left == right && index < added && added != usize::MAX) {
+                added = index;
+                improvement = candidate;
+            }
+        }
+        if added == usize::MAX {
+            break;
+        }
+        output[removed] -= if input[removed] < 0.0 { -1 } else { 1 };
+        output[added] += if input[added] < 0.0 { -1 } else { 1 };
+        (dot, norm) = improvement;
+    }
+    norm
 }
 
 pub(crate) fn encode(
@@ -654,6 +710,84 @@ mod tests {
                 assert!((f64::from(norm) - expected).abs() < 1e-4);
                 assert!(reader.tell() <= (bytes * 8) as u64);
             }
+        }
+    }
+
+    #[test]
+    fn pulse_exchange_repairs_an_overfilled_frequency() {
+        let input = [1.0, -0.6, 0.45];
+        let mut values = [2, -2, 0];
+        let norm = refine(&input, &mut values, &[0, 1, 2], 8);
+        assert_eq!(values, [2, -1, 1]);
+        assert_eq!(norm, 6);
+        let dot: f64 = input
+            .iter()
+            .zip(values)
+            .map(|(&x, q)| f64::from(x) * f64::from(q))
+            .sum();
+        assert!(dot * dot / f64::from(norm) > 3.2f64.powi(2) / 8.0);
+    }
+
+    #[test]
+    fn pulse_exchange_preserves_budget_signs_and_normalized_correlation() {
+        for dimensions in DIMENSIONS {
+            let input: Vec<_> = (0..dimensions).map(|i| (i as f32 * 0.379).sin()).collect();
+            let indices: Vec<_> = (0..dimensions).rev().collect();
+            for pulses in [2, 7, 31, 166, MAX_PULSES] {
+                for seed in 0..8 {
+                    let mut values = vec![0i16; dimensions];
+                    for i in 0..pulses {
+                        let index = (i * (seed + 1) * 17 + seed) % dimensions;
+                        values[index] += if input[index] < 0.0 { -1 } else { 1 };
+                    }
+                    let correlation = |values: &[i16]| {
+                        let dot: f64 = input
+                            .iter()
+                            .zip(values)
+                            .map(|(&x, &q)| f64::from(x) * f64::from(q))
+                            .sum();
+                        dot * dot / values.iter().map(|&q| f64::from(q).powi(2)).sum::<f64>()
+                    };
+                    let before = correlation(&values);
+                    let original_norm: u32 = values
+                        .iter()
+                        .map(|&q| u32::from(q.unsigned_abs()).pow(2))
+                        .sum();
+                    let norm = refine(&input, &mut values, &indices, original_norm);
+                    assert!(correlation(&values) + 1e-12 >= before);
+                    assert_eq!(
+                        values
+                            .iter()
+                            .map(|q| usize::from(q.unsigned_abs()))
+                            .sum::<usize>(),
+                        pulses
+                    );
+                    assert_eq!(
+                        norm,
+                        values
+                            .iter()
+                            .map(|&q| u32::from(q.unsigned_abs()).pow(2))
+                            .sum::<u32>()
+                    );
+                    assert!(
+                        input
+                            .iter()
+                            .zip(values)
+                            .all(|(&x, q)| q == 0 || (x < 0.0) == (q < 0))
+                    );
+                }
+            }
+        }
+        let mut values = [0, 2, 0];
+        assert_eq!(refine(&[0.0; 3], &mut values, &[2, 1, 0], 4), 4);
+        assert_eq!(values, [0, 2, 0]);
+        let mut values = [-2];
+        assert_eq!(refine(&[-1.0], &mut values, &[0], 4), 4);
+        assert_eq!(values, [-2]);
+        for indices in [[0, 1, 2, 3], [3, 2, 1, 0], [1, 3, 0, 2]] {
+            let mut values = [2, 0, 0, 0];
+            assert_eq!(refine(&[1.0; 4], &mut values, &indices, 4), 2);
+            assert_eq!(values, [1, 1, 0, 0]);
         }
     }
 
