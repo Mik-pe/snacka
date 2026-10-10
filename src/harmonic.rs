@@ -35,22 +35,22 @@ pub(crate) fn analyze(input: &[f32], f0: usize, positions: &[usize; 960], values
     values.fill(0.0);
     let harmonics = 8000 / f0;
     let mut amplitudes = [0.0f32; 214];
-    for first in (1..=harmonics).step_by(4) {
-        let active = (harmonics - first + 1).min(4);
-        let mut angles = [0.0f64; 4];
-        let mut rotations_s = [0.0f64; 4];
-        let mut rotations_c = [0.0f64; 4];
-        let mut twice_c = [0.0f64; 4];
+    for first in (1..=harmonics).step_by(8) {
+        let active = (harmonics - first + 1).min(8);
+        let mut angles = [0.0f64; 8];
+        let mut rotations_s = [0.0f64; 8];
+        let mut rotations_c = [0.0f64; 8];
+        let mut twice_c = [0.0f64; 8];
         for lane in 0..active {
             angles[lane] = std::f64::consts::TAU * ((first + lane) * f0) as f64 / 48000.0;
             (rotations_s[lane], rotations_c[lane]) = angles[lane].sin_cos();
             twice_c[lane] = 2.0 * rotations_c[lane];
         }
-        let mut previous = [0.0f64; 4];
-        let mut prior = [0.0f64; 4];
+        let mut previous = [0.0f64; 8];
+        let mut prior = [0.0f64; 8];
         for &sample in input {
             let sample = f64::from(sample);
-            for lane in 0..4 {
+            for lane in 0..8 {
                 let current = sample + twice_c[lane] * previous[lane] - prior[lane];
                 prior[lane] = previous[lane];
                 previous[lane] = current;

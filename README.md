@@ -100,6 +100,6 @@ a separately installed external library only in an offline Python tool. It
 records quality gaps alongside wins at equal bitrate, frame duration and delay.
 
 See [the bitstream](docs/bitstream.md), [development and acceptance](docs/implementation.md),
-[measurements](docs/measurements.md), [signed pulse classes](docs/pulse-classes.md), [harmonic speech experiment](docs/harmonic-speech.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [packet-loss evaluation](docs/loss.md), [fixture provenance](tests/fixtures/README.md)
+[measurements](docs/measurements.md), [signed pulse classes](docs/pulse-classes.md), [harmonic speech experiment](docs/harmonic-speech.md), [harmonic analysis performance](docs/harmonic-analysis.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [packet-loss evaluation](docs/loss.md), [fixture provenance](tests/fixtures/README.md)
 and [fuzzing](fuzz/README.md). The implementation license is [MIT](LICENSE).
 External reference source and trained weights are not vendored.

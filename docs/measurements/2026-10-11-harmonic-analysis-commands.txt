@@ -1,0 +1,45 @@
+Eight-lane analysis audit, 2026-10-11
+Baseline: b1e55b22c2882d80bafc4f84ad9f850792c369a1, immutable integrated four-lane probe
+Current: that main plus the source content in harmonic-analysis-source.sha256
+Compiler: rustc 1.99.0, b940084d7eb6a299eb4bfeb8e34901bc051e7ac4, LLVM 23.1.1
+Target: aarch64-apple-darwin, Apple M5, macOS 27.0 build 26A428
+Python: 3.14.8; FFmpeg: 9.0.2
+No LTO, native-CPU, fast-math, or profiling compiler options.
+Use the pinned toolchain and separate target directories for both source trees.
+
+cargo test --locked --release
+cargo test --locked harmonic
+cargo clippy --locked --all-targets --features live-audio -- -D warnings
+cargo fmt --all -- --check
+cargo build --locked --release --lib
+rustc --edition=2024 -C opt-level=3 -C codegen-units=16 -C overflow-checks=yes examples/cpu_probe.rs --extern snacka=target/release/libsnacka.rlib -L dependency=target/release/deps -o current-probe
+
+# Full quality-reference identity: 72 inputs, three conditions, two durations, three rates.
+python3 tools/check_frozen_traces.py corpus-all72 docs/measurements/2026-10-11-harmonic-speech-frozen-traces.csv results-on.csv --current ./current-probe --harmonic
+
+# Default behavior: eight original development inputs, clean, both durations, all three rates.
+# The published reference was captured with the immutable baseline, without --harmonic.
+python3 tools/check_frozen_traces.py corpus-dev8 docs/measurements/2026-10-11-harmonic-analysis-default-reference.csv results-off.csv --current ./current-probe
+
+# Earlier exploratory screen, separate from the final matrix (first four dev clips only).
+python3 tools/measure_cpu.py corpus-dev4 screen-cpu.csv --baseline ./baseline-probe --current ./screen-probe --harmonic --baseline-harmonic --bitrates 12000 --repetitions 3 --encode-frames 2000 --operations encode
+
+# Final preregistered CPU comparison, both executables explicitly enable harmonic speech.
+# Four repetitions give two baseline-first and two current-first orders per clip/duration.
+# All other agent builds, tests, scoring and timings are paused for this comparison.
+python3 tools/measure_cpu.py corpus-dev8 results-cpu.csv --baseline ./baseline-probe --current ./current-probe --harmonic --baseline-harmonic --bitrates 12000 --repetitions 4 --encode-frames 10000 --operations encode
+
+# Linked storage and stack prologues, both executables.
+otool -l baseline-probe
+otool -l current-probe
+otool -tvV baseline-probe
+otool -tvV current-probe
+nm -nm current-probe
+# Find the harmonic::analyze symbol via nm and disassemble it with LLVM objdump.
+llvm-objdump --disassemble-symbols=SYMBOL current-probe
+
+CPU is child process user plus system time, divided by requested frames.
+The probe repeatedly encodes the first 256 prepared frames; process totals also
+include startup, input loading and encoder/transform-plan construction.
+Complete trace checks cover whole utterances and do not time the repeated cycle.
+No rows are removed and there is one final run; timing noise is retained.

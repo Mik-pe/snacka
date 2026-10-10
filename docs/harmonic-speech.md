@@ -96,7 +96,7 @@ products are `Re(X)` and `-Im(X)`. Set
 `Z=sin(L*w)/sin(w)*exp(i*(L-1)*w)`; the Gram entries are
 `cc=(L+Re(Z))/2`, `ss=(L-Re(Z))/2` and `cs=Im(Z)/2`. Solve this same 2x2
 system for the two amplitudes. Supported w lies in (0,pi/3], so the denominator
-is nonzero. Four independent harmonics run together without changing each
+is nonzero. Eight independent harmonics run together without changing each
 recurrence or its final arithmetic order. Direct double-precision trigonometric
 fixtures check the defining fit for every supported pitch and duration.
 
@@ -187,7 +187,8 @@ At most 106 harmonics and eight fully fitted candidates are evaluated per frame.
 The decoder adds sinusoidal rendering and one forward transform before the
 ordinary inverse. Paired process CPU must account for the probe's 256-frame
 packet preparation; a decode count slope can separate fixed preparation from
-additional decoding. The [resource audit](harmonic-resources.md) reports separate encoder costs,
+additional decoding. The [eight-lane analysis audit](harmonic-analysis.md) measures
+the current analysis implementation. The historical [resource audit](harmonic-resources.md) reports separate encoder costs,
 decoder count slopes and disabled-mode comparisons. These desktop measurements
 do not establish mobile callback deadlines or battery use.
 
