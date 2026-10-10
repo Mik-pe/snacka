@@ -1,0 +1,3 @@
+label,function,instructions,fused_multiply_add_instructions,vector_f64_add_instructions,probe_sha256
+baseline,harmonic::candidates,706,0,0,b28af61ea09ec3beef8b59582b6959046e34e5c53578b9cc117d1e3bf5633103
+current,harmonic::candidates,2288,0,0,8f5733c1df5fd7be9fcfe1854c931e66a27923e2e850f516ae46ca434e6cb230

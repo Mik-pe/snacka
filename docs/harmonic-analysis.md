@@ -1,5 +1,10 @@
 # Eight-lane harmonic analysis
 
+This audit records the implementation integrated in main
+`765b7e10a0a40c8c1a7c8bc9d64e796c7d730c63`. Its raw evidence and source hashes
+remain pinned. See the [pitch scoring audit](harmonic-pitch.md) for the subsequent
+correlation-loop optimization; eight-lane harmonic fitting remains unchanged.
+
 The opt-in speech encoder fits eight independent harmonics in each analysis
 batch. Each harmonic keeps its original f64 recurrence order, terminal phase,
 Gram solve and f32 conversion. Candidate ranking, synthesis, pulse coding,

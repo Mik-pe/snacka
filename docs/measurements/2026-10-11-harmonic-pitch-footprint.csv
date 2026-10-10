@@ -1,0 +1,3 @@
+label,probe_sha256,file_bytes,text_bytes,text_const_bytes,data_const_bytes,encoder_frame_bytes,decoder_frame_bytes,analyze_frame_bytes,candidates_frame_bytes,encoder_internal_bound_bytes,decoder_internal_bound_bytes
+baseline,b28af61ea09ec3beef8b59582b6959046e34e5c53578b9cc117d1e3bf5633103,664496,308092,74704,15400,41952,25360,1520,192,43584,26576
+current,8f5733c1df5fd7be9fcfe1854c931e66a27923e2e850f516ae46ca434e6cb230,680992,314364,74704,15688,41952,25360,1520,416,43584,26576
