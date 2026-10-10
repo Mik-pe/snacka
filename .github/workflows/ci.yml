@@ -23,6 +23,10 @@ jobs:
       - run: cargo clippy --locked --all-targets -- -D warnings
       - run: cargo test --locked
       - run: cargo test --locked --release
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev pkg-config
+      - run: cargo clippy --locked --all-targets --features live-audio -- -D warnings
+      - run: cargo test --locked --features live-audio --example monitor
 
   mobile:
     runs-on: macos-latest

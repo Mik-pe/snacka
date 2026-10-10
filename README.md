@@ -18,7 +18,7 @@ production calls. No superiority over established codecs is claimed.
 - 120 samples (2.5 ms) of transform delay beyond frame buffering.
 - Caller-owned buffers; no allocation during encoding, decoding, concealment,
   bitrate updates or reset. Each track owns its independent history.
-- No library dependencies, build script, C, FFI, CMake or unsafe Rust.
+- Default library builds have no dependencies, build script, C, FFI, CMake or unsafe Rust.
 
 The encoder uses a short-overlap MDCT, sparse spectral selection, adaptive
 four- or six-bit quantization, adaptive coded bandwidth
@@ -51,6 +51,20 @@ and partial input frames:
 ```sh
 cargo run --release --example roundtrip -- input.f32 output.f32 24000 20
 ```
+
+To hear your microphone through Snacka in real time, put on headphones and run
+the optional Ratatui listening lab:
+
+```sh
+cargo run --release --features live-audio --example monitor
+```
+
+Press **Space** to compare codec and raw audio, **Left/Right** to change bitrate,
+**Up/Down** for volume, **F** for 10/20 ms frames, **B** for buffering, and **Q** to
+quit. The dashboard shows microphone activity, device routing and stream health.
+It starts at 24 kb/s and 50% playback gain; no audio is saved. See
+[the listening guide](docs/monitor.md) for devices, Linux build prerequisites and
+latency details. Audio/TUI dependencies are enabled only by `live-audio`.
 
 Rust 1.99 or newer is required. Plans allocate during construction, before the
 audio callback. Snacka operates on PCM and packet bytes; capture, playback,

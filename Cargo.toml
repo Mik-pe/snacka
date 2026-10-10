@@ -13,6 +13,17 @@ exclude = ["/target-mobile/**"]
 [features]
 default = []
 reference-tests = []
+live-audio = ["dep:cpal", "dep:crossterm", "dep:ratatui", "dep:rtrb"]
+
+[dependencies]
+cpal = { version = "0.18.2", optional = true }
+crossterm = { version = "0.29", optional = true }
+ratatui = { version = "0.30.2", default-features = false, features = ["crossterm"], optional = true }
+rtrb = { version = "0.3.2", optional = true }
+
+[[example]]
+name = "monitor"
+required-features = ["live-audio"]
 
 [lints.rust]
 unused_must_use = "deny"
