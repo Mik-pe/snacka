@@ -298,6 +298,8 @@ fn run(mut options: Options) -> Result<(), Box<dyn Error>> {
                 playback_drops: audio.stats.playback_drops.load(Ordering::Relaxed),
                 clipped: audio.stats.clipped_input.load(Ordering::Relaxed),
                 elapsed: start.elapsed().as_secs_f64(),
+                encoded_bytes: processor.bytes,
+                samples: processor.samples,
             };
             terminal.0.draw(|frame| ui.render(frame, &view))?;
             ui.tick();

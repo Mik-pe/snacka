@@ -25,6 +25,8 @@ pub struct View<'a> {
     pub playback_drops: usize,
     pub clipped: usize,
     pub elapsed: f64,
+    pub encoded_bytes: usize,
+    pub samples: usize,
 }
 
 pub struct Ui {
@@ -46,6 +48,14 @@ impl Default for Ui {
                     .into(),
             history: [0; 96],
         }
+    }
+}
+
+fn encoded_kilobytes_per_second(view: &View<'_>) -> f64 {
+    if view.samples == 0 {
+        0.0
+    } else {
+        view.encoded_bytes as f64 * f64::from(snacka::SAMPLE_RATE) / view.samples as f64 / 1000.0
     }
 }
 
@@ -150,6 +160,7 @@ impl Ui {
         let rate_rows = Layout::vertical([
             Constraint::Length(1),
             Constraint::Length(1),
+            Constraint::Length(1),
             Constraint::Min(1),
         ])
         .split(inner);
@@ -160,15 +171,22 @@ impl Ui {
             rate_rows[0],
         );
         frame.render_widget(
+            Paragraph::new(format!(
+                " {:.2} kB/s avg",
+                encoded_kilobytes_per_second(view)
+            )),
+            rate_rows[1],
+        );
+        frame.render_widget(
             Gauge::default()
                 .ratio(f64::from(view.config.bitrate() - 12_000) / 20_000.0)
                 .gauge_style(Style::new().fg(ACCENT))
                 .label("12 - 32 kb/s"),
-            rate_rows[1],
+            rate_rows[2],
         );
         frame.render_widget(
             Paragraph::new(" Left / Right or - / +").dark_gray(),
-            rate_rows[2],
+            rate_rows[3],
         );
 
         frame.render_widget(
@@ -274,6 +292,10 @@ impl Ui {
                     view.gain * 100.0
                 )),
                 Line::from(format!(
+                    "48 kHz mono | {:.2} kB/s avg",
+                    encoded_kilobytes_per_second(view)
+                )),
+                Line::from(format!(
                     "Mic {:.0}%  |  buffer {} ms",
                     self.peak * 100.0,
                     view.buffer_ms
@@ -300,9 +322,17 @@ impl Ui {
             area.height * 8 / 10,
         );
         frame.render_widget(Clear, popup);
-        frame.render_widget(Paragraph::new(
-            "Speak into your mic; listen through headphones.\n\nSpace     Compare Snacka and raw audio\nLeft/Right or -/+   Change bitrate by 1 kb/s\nUp/Down   Change playback volume by 5%\nF         Switch 10 / 20 ms frames (restarts codec)\nB         Cycle 20 / 40 / 80 / 120 / 200 ms buffer\nM         Mute playback (capture continues)\nQ / Ctrl-C   Quit and restore terminal\n? / Esc      Close this help\n\nRaw bypasses Snacka; device/OS processing may remain.\nRaw audio has the same 2.5 ms transform delay.\nHigher buffering can help gaps, at the cost of delay.\nActual latency also includes capture and device buffers.\nFor devices: --list-devices, --input N, --output N.\nNo audio is saved to disk.")
-            .block(panel(" Listening guide / [?] close ")).wrap(Wrap { trim: true }), popup);
+        let guide = if popup.height < 23 || popup.width < 68 {
+            "48 kHz = 48,000 samples each second.\nkb/s = compressed bits each second.\n12 kb/s = 1.5 kB/s (90 kB/min).\nAvg: packet data; excludes network.\nSpace: raw/codec (same capture).\nLeft/Right: bitrate Up/Down: volume\nF: frame B: buffer M: mute Q: quit\n?: close 12 kb/s can sound rough."
+        } else {
+            "48 kHz = 48,000 mono samples each second.\nkb/s = compressed bits each second; 12 kb/s = 1.5 kB/s.\nAvg is packet bytes per second of processed audio since startup.\nPacket headers count; network and encryption do not.\n12 kb/s is experimental: listen for distortion; compare 24 and 32.\n\nSpace     Compare Snacka and raw audio\nLeft/Right or -/+   Change bitrate by 1 kb/s\nUp/Down   Change playback volume by 5%\nF         Switch 10 / 20 ms frames (restarts codec)\nB         Cycle 20 / 40 / 80 / 120 / 200 ms buffer\nM         Mute playback (capture continues)\nQ / Ctrl-C   Quit and restore terminal\n? / Esc      Close this help\n\nBoth modes share device/OS processing and sample-rate conversion.\nRaw bypasses Snacka with the same 2.5 ms transform delay.\nHigher buffering can help gaps, at the cost of delay.\nActual latency also includes capture and device buffers.\nFor devices: --list-devices, --input N, --output N.\nNo audio is saved to disk."
+        };
+        frame.render_widget(
+            Paragraph::new(guide)
+                .block(panel(" Listening guide / [?] close "))
+                .wrap(Wrap { trim: true }),
+            popup,
+        );
     }
 }
 
@@ -312,8 +342,65 @@ mod tests {
     use ratatui::{Terminal, backend::TestBackend};
 
     #[test]
-    fn dashboard_and_compact_layout_keep_controls_visible() {
+    fn displayed_data_tracks_generated_packets_including_rate_changes() {
+        let mut processor =
+            super::super::processor::Processor::new(Config::new(12_000).unwrap(), true);
+        let input = [0.0; snacka::FRAME_SAMPLES];
+        let mut output = input;
+        processor.process(&input, &mut output).unwrap();
+        let mut view = View {
+            config: processor.config,
+            raw: true,
+            gain: 0.5,
+            buffer_ms: 40,
+            input: "Microphone",
+            output: "Headphones",
+            queued_ms: 0.0,
+            capture_drops: 0,
+            playback_gaps: 0,
+            playback_drops: 0,
+            clipped: 0,
+            elapsed: 100.0,
+            encoded_bytes: processor.bytes,
+            samples: processor.samples,
+        };
+        assert_eq!(encoded_kilobytes_per_second(&view), 1.5);
+        processor.set_bitrate(32_000).unwrap();
+        processor.process(&input, &mut output).unwrap();
+        view.config = processor.config;
+        view.encoded_bytes = processor.bytes;
+        view.samples = processor.samples;
+        assert_eq!(encoded_kilobytes_per_second(&view), 2.75);
+        view.samples = 0;
+        assert_eq!(encoded_kilobytes_per_second(&view), 0.0);
+    }
+
+    #[test]
+    fn listening_help_explains_units_and_preserves_exit_controls() {
         for (width, height) in [(100, 30), (60, 24), (48, 16)] {
+            let mut terminal = Terminal::new(TestBackend::new(width, height)).unwrap();
+            let ui = Ui {
+                help: true,
+                ..Ui::default()
+            };
+            terminal.draw(|frame| ui.render_help(frame)).unwrap();
+            let text: String = terminal
+                .backend()
+                .buffer()
+                .content()
+                .iter()
+                .map(|cell| cell.symbol())
+                .collect();
+            assert!(text.contains("samples each second"));
+            assert!(text.contains("1.5 kB/s"));
+            assert!(text.contains("network"));
+            assert!(text.contains("Q:") || text.contains("Q / Ctrl-C"));
+        }
+    }
+
+    #[test]
+    fn dashboard_and_compact_layout_keep_controls_visible() {
+        for (width, height) in [(100, 30), (60, 24), (54, 23), (48, 16)] {
             let mut terminal = Terminal::new(TestBackend::new(width, height)).unwrap();
             let ui = Ui::default();
             let view = View {
@@ -329,6 +416,8 @@ mod tests {
                 playback_drops: 0,
                 clipped: 0,
                 elapsed: 2.0,
+                encoded_bytes: 6000,
+                samples: 96_000,
             };
             terminal.draw(|f| ui.render(f, &view)).unwrap();
             let text: String = terminal
@@ -342,6 +431,7 @@ mod tests {
             assert!(text.contains("SNACKA"));
             assert!(text.contains("volume") || text.contains("Volume"));
             assert!(text.contains("quit"));
+            assert!(text.contains("3.00 kB/s avg"));
         }
     }
 }

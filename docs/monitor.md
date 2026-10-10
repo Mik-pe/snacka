@@ -34,6 +34,40 @@ Audio stays in memory and is never written to disk or sent over the network.
 The layout adapts to terminal size; smaller terminals use a compact view. Quit,
 startup errors, runtime errors and Rust panics restore the terminal.
 
+## Reading the numbers
+
+**48 kHz** describes the audio entering the codec: 48,000 mono samples each
+second. **kb/s** describes the compressed data budget, in thousands of bits per
+second. A lower bitrate saves data but gives the codec less room to describe your
+voice. They are different units; 48 kHz does not mean 48 kb/s.
+
+| Audio | Data per second | Data per minute |
+| --- | --- | --- |
+| Uncompressed 48 kHz mono, internal 32-bit float | 192 kB | 11.52 MB |
+| Snacka at 12 kb/s | 1.5 kB | 90 kB |
+| Snacka at 24 kb/s | 3 kB | 180 kB |
+| Snacka at 32 kb/s | 4 kB | 240 kB |
+
+These are decimal units: 1 kB is 1,000 bytes and a byte contains eight bits.
+The uncompressed row describes the monitor's internal audio representation;
+a selected device can use a different sample rate and sample format.
+
+The dashboard also shows **kB/s avg**: actual generated packet bytes divided by
+the duration of processed audio since startup. It includes Snacka's packet
+headers and excludes network and encryption overhead. After a bitrate change it
+averages both old and new packets, so it can differ from the current kb/s target.
+Capture stalls do not dilute this average. The monitor keeps encoding in raw
+mode too, so the number remains comparable during A/B switches.
+
+12 kb/s is an experimental low-data setting. Listen for electronic tones, rough
+s-sounds and changes to your voice, then compare the same phrase at 24 and
+32 kb/s. Clear words alone do not establish natural speech quality. If raw audio
+is also distorted, inspect the input device, microphone clipping and stream
+health counters. Both A/B modes share capture processing and device sample-rate
+conversion. Different codecs can produce different quality at the same bitrate;
+see the [measured reference comparisons](reference-quality.md) for this codec's
+current limitations.
+
 ## Devices and startup options
 
 List device indices, then select an input and output explicitly:
