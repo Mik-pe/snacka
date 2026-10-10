@@ -249,3 +249,101 @@ independent inverse-cosine reconstruction, malformed packet/history handling
 and zero processing allocations at both durations and all gain precisions.
 Live-audio clippy passes. The [source manifest](measurements/2026-10-10-candidate-reuse-source.sha256)
 identifies the codec and evaluation sources.
+
+
+## Narrow priority operands, version 7
+
+The baseline is commit `fb78710741c174e6903d0aae0f169b7ff6293c54`.
+Allocation retains its numerator, denominator and best priority as u64, widening
+only the operands of the exact u128 cross products. Their values, eligibility
+and strict tie ordering are unchanged, including zero-cost increments. Any two
+u64 values multiply within u128. This adds no cache, persistent state or heap
+allocation and preserves the version 7 format and reconstructed audio.
+
+The [paired CPU table](measurements/2026-10-11-u64-priorities-cpu.csv) contains
+288 pairs on the same eight development clips from four speakers, two durations,
+three bitrates and three alternating-order repetitions. Each process encodes
+10,000 or decodes 20,000 frames. The host is Apple M5, aarch64, macOS 27.0
+build 26A428. Both probes use Rust 1.99.0 (`b940084d7eb6a299eb4bfeb8e34901bc051e7ac4`,
+LLVM 23.1.1), opt-level 3, 16 codegen units, overflow checks and no LTO,
+native-CPU or profiling flags. Python 3.14.8 and FFmpeg 9.0.2 prepare the inputs.
+Other codec builds, tests and scoring jobs were paused during measurement;
+desktop load and power remain uncontrolled. Process CPU includes setup and,
+for decoding, preparation of 256 encoded frames, as described above.
+
+| Operation | Duration | Bitrate | Median paired CPU change | Slower repetitions | Slower clip medians |
+| --- | --- | --- | --- | --- | --- |
+| Encode | 10 ms | 12 kb/s | -1.046% | 9/24 | 4/8 |
+| Decode | 10 ms | 12 kb/s | -0.135% | 11/24 | 3/8 |
+| Encode | 20 ms | 12 kb/s | -0.915% | 7/24 | 2/8 |
+| Decode | 20 ms | 12 kb/s | +0.204% | 14/24 | 5/8 |
+| Encode | 10 ms | 24 kb/s | -1.172% | 7/24 | 2/8 |
+| Decode | 10 ms | 24 kb/s | -1.631% | 4/24 | 0/8 |
+| Encode | 20 ms | 24 kb/s | -0.495% | 7/24 | 1/8 |
+| Decode | 20 ms | 24 kb/s | -0.424% | 9/24 | 2/8 |
+| Encode | 10 ms | 32 kb/s | -1.264% | 6/24 | 1/8 |
+| Decode | 10 ms | 32 kb/s | -0.987% | 8/24 | 2/8 |
+| Encode | 20 ms | 32 kb/s | -0.845% | 5/24 | 0/8 |
+| Decode | 20 ms | 32 kb/s | -1.189% | 5/24 | 0/8 |
+
+Eleven of twelve cell medians decrease by 0.135–1.631%; 12 kb/s, 20 ms decoding
+increases by 0.204%. Multiple cells contain slower repetitions and clip medians.
+Individual paired changes span −22.052% to +44.567%. The small differences and
+outliers limit precision: this supports modest observed savings on this host,
+not a universal speed or battery claim. Medians weight each pair equally and
+need not equal the ratio of independently aggregated CPU medians. The
+[summary](measurements/2026-10-11-u64-priorities-summary.csv) retains every cell's
+CPU medians, repeat ranges, clip-median ranges and regression counts.
+Reproduce with the `tools/measure_cpu.py` command above and these two sources.
+
+ARM64 disassembly reduces the allocator from 280 to 274 instructions: two
+redundant high-word `madd` operations and four zero-high-word moves disappear.
+Exact products still use `umulh` and `mul`. The allocator's 368-byte stack
+frame, executable text (293,308 bytes) and measured read-only constants
+(72,304 bytes) are unchanged. The executable file increases by eight bytes
+because its longer output name changes the ad-hoc signing identifier, not
+runtime code or data. The [footprint table](measurements/2026-10-11-u64-priorities-footprint.csv)
+records both executable hashes and sizes; hashes identify the exact measured
+probes, whose names are not required to reproduce the build.
+
+All 2,688 [speech trace pairs](measurements/2026-10-11-u64-priorities-speech-traces.csv)
+are byte-identical: the 64 previously evaluated clips from
+[pulse-class evaluation](pulse-classes.md), clean and deterministic 20/10 dB
+noise from `tools/evaluate_speech.py`, both durations and bitrates 12000, 12345,
+12800, 14400, 16000, 24000 and 32000. Full traces include headers, CRC, priming,
+zero-padded final frames, PCM and drain. Input/trace hashes are retained per pair.
+These are existing evaluation inputs, not new held-out quality evidence.
+
+Another 160 [synthetic trace pairs](measurements/2026-10-11-u64-priorities-synthetic-traces.csv)
+are identical at both durations and bitrates 12000, 12001, 12345, 12800, 14400,
+16000, 24000 and 32000. Each fixture contains 24,013 mono samples at 48 kHz,
+with index `i = 0..24012`. Evaluate the following Python expressions in order,
+then round each sample to little-endian f32 without normalization. `sin` and
+`pi` come from `math`; the four-tone sum follows the listed frequency order.
+
+| Fixture | Sample expression |
+| --- | --- |
+| Silence | `0.0` |
+| DC | `0.7` |
+| Alternating | `0.75 if i % 2 else -0.75` |
+| Sine 440 | `0.7 * sin(2*pi*440*i/48000)` |
+| Chirp | `0.65 * sin(2*pi*(200*i/48000 + 21000*(i/48000)**2))` |
+| White noise | Consecutive `random.Random(730193).uniform(-0.8, 0.8)` draws from one generator |
+| Impulses | `0.95 if i % 1007 == 0 else 0.0` |
+| Tiny | `2**-22 * sin(i*0.069)` |
+| Four tones | `0.17 * sum(sin(2*pi*f*i/48000) for f in [150,1200,3500,16000])` |
+| Interrupted | `0.8 * sin(i*0.039) if i % 7301 < 1900 else 0.0` |
+
+All 48 debug/release tests pass, including packet budget, malformed input,
+history refusal and zero processing allocations. An independent uncached
+exact-rational allocator oracle matches 240,933 gain/budget/profile cases,
+covering every supported packet length and six duration/bandwidth profiles.
+It covers the Cartesian gain grid `[0,1,2,128,208]^4` plus every gain code in
+balanced and contrasting band combinations. This samples ties and zero-cost
+plateaus; it is not exhaustive proof over all gain combinations or audio inputs.
+Live-audio clippy and the canonical table generator check pass. The
+[source manifest](measurements/2026-10-11-u64-priorities-source.sha256) identifies
+codec, probe and evaluator sources; the
+[artifact manifest](measurements/2026-10-11-u64-priorities-artifacts.sha256)
+identifies the published evidence. Audio licensing and attribution are in
+[quality evaluation](quality.md). This change provides no new quality gain.
