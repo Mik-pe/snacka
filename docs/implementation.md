@@ -17,7 +17,9 @@ bytes leave the rest of each packet available for spectral coding.
 
 Per-packet selection compares two spectral models: sparse four-/six-bit scalar
 amplitudes with one gain, and four independent band gains with normalized signed
-pulse vectors. The second model spends amplitude precision collectively on a
+pulse vectors. Five-to-eight-bit pulse gains derive from the frame size and
+packet budget, retaining more shape bits at low bitrate. The second model spends
+amplitude precision collectively on a
 band shape. A bounded pulse exchange search improves normalized correlation
 after the initial projection and greedy assignment. Pulse allocation is inferred
 deterministically from gain codes and packet length, requiring no allocation side information. Both models use native

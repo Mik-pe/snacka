@@ -103,7 +103,7 @@ def main():
                             row[f"{label}_lsd_db"] = spectral_distance(reference, values)
                             row[f"{label}_packet_bytes"] = int(fields["packet_bytes"])
                             row[f"{label}_drain_bytes"] = int(fields["drain_bytes"])
-                            for field in ("codec", "algorithmic_delay_samples", "reference_version",
+                            for field in ("decoded_pcm_sha256", "codec", "algorithmic_delay_samples", "reference_version",
                                           "reference_library_sha256", "reference_application",
                                           "reference_complexity", "reference_vbr", "reference_dtx"):
                                 row[f"{label}_{field}"] = fields.get(field, "")

@@ -16,7 +16,7 @@ pub const ALGORITHMIC_DELAY: usize = 120;
 
 const HEADER: usize = 2;
 const CHECKSUM: usize = 2;
-const VERSION: u8 = 5;
+const VERSION: u8 = 6;
 const END: u8 = 16;
 const MIN_PACKET_BYTES: usize = 15;
 const GAIN_STEPS: [f32; 17] = [
@@ -554,6 +554,8 @@ impl Encoder {
                 }
             }
         }
+        let gain_bits = crate::pulse::gain_bits(samples, payload_bytes);
+        let gain_step = 1u8 << (8 - gain_bits);
         let mut candidate_pulses = [0i16; FRAME_SAMPLES];
         for candidate_band in 0..3 {
             let coded_bins = samples / (1 + candidate_band);
@@ -565,8 +567,10 @@ impl Encoder {
                     .map(|value| value * value)
                     .sum();
                 let amplitude = energy.sqrt().min(2.0);
-                let ceiling = gain_code(amplitude);
-                let lower = ceiling.saturating_sub(1).max(u8::from(ceiling != 0));
+                let ceiling = gain_code(amplitude).div_ceil(gain_step) * gain_step;
+                let lower = ceiling
+                    .saturating_sub(gain_step)
+                    .max(u8::from(ceiling != 0) * gain_step);
                 codes[group] =
                     if (amplitude - gain(lower)).abs() <= (amplitude - gain(ceiling)).abs() {
                         lower
@@ -614,7 +618,7 @@ impl Encoder {
         let mut writer = entropy::Encoder::new(&mut packet[HEADER..length - CHECKSUM]);
         if pulse_mode {
             for code in pulse_codes {
-                writer.raw(u32::from(code), 8)?;
+                writer.raw(u32::from(code / gain_step), gain_bits)?;
             }
             let edges = crate::pulse::edges(samples, coded_bins);
             for group in 0..4 {
@@ -746,8 +750,10 @@ impl Decoder {
         let coded_bins = packet.coded_bins();
         if packet.gain_bands() == 4 {
             let mut codes = [0u8; 4];
+            let gain_bits = crate::pulse::gain_bits(self.duration.samples(), payload.len());
+            let gain_step = 1u8 << (8 - gain_bits);
             for code in &mut codes {
-                *code = reader.raw(8)? as u8;
+                *code = reader.raw(gain_bits)? as u8 * gain_step;
                 if *code > 208 {
                     return Err(Error::Packet);
                 }
