@@ -14,3 +14,5 @@ pub use codec::{
     MAX_PACKET_BYTES, Packet, SAMPLE_RATE,
 };
 pub mod transform;
+
+mod harmonic;

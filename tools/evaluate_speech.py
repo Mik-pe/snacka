@@ -39,10 +39,10 @@ def noisy(values, clip, snr):
     return pcm(max(-1.0, min(1.0, x)) for x in mixed), clipped
 
 
-def score(executable, source, output, original, bitrate, duration):
+def score(executable, source, output, original, bitrate, duration, extra_arguments=()):
     command = [sys.executable, str(executable)] if executable.suffix == ".py" else [str(executable)]
     result = subprocess.run(
-        command + [str(source), str(output), str(bitrate), str(duration)],
+        command + [str(source), str(output), str(bitrate), str(duration)] + list(extra_arguments),
         check=True, capture_output=True, text=True,
     )
     data = output.read_bytes()
@@ -63,7 +63,11 @@ def main():
     parser.add_argument("--roundtrip", type=Path, required=True)
     parser.add_argument("--baseline", type=Path)
     parser.add_argument("--ffmpeg", default="ffmpeg")
+    parser.add_argument("--harmonic", action="store_true", help="enable harmonic speech in the current executable")
+    parser.add_argument("--baseline-harmonic", action="store_true", help="enable harmonic speech in the baseline executable")
     args = parser.parse_args()
+    if args.baseline_harmonic and not args.baseline:
+        parser.error("--baseline-harmonic requires --baseline")
     executable = args.roundtrip.resolve(strict=True)
     baseline = args.baseline.resolve(strict=True) if args.baseline else None
     sources = sorted(args.input.glob("*.flac"))
@@ -94,15 +98,18 @@ def main():
                 for duration in (10, 20):
                     for bitrate in (12000, 24000, 32000):
                         current, fields = score(
-                            executable, source, decoded, original, bitrate, duration
+                            executable, source, decoded, original, bitrate, duration,
+                            ["--harmonic"] if args.harmonic else [],
                         )
                         previous = score(
-                            baseline, source, decoded, original, bitrate, duration
+                            baseline, source, decoded, original, bitrate, duration,
+                            ["--harmonic"] if args.baseline_harmonic else [],
                         )[0] if baseline else None
                         rows.append(dict(
                             clip=flac.stem, flac_sha256=digest, condition=condition,
                             pcm_sha256=pcm_digest, clipped_samples=clipped,
                             samples=len(original), frame_ms=duration, bitrate=bitrate,
+                            current_harmonic=args.harmonic, baseline_harmonic=args.baseline_harmonic,
                             packet_bytes=fields["packet_bytes"], drain_bytes=fields["drain_bytes"],
                             aligned_snr_db=f"{current:.6f}",
                             baseline_snr_db=f"{previous:.6f}" if previous is not None else "",

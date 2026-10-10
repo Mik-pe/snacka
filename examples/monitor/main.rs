@@ -23,6 +23,7 @@ cargo run --release --features live-audio --example monitor -- [OPTIONS]
   --frame-ms MS       10 or 20 (default 20)
   --buffer-ms MS      Playback prebuffer, 20..200 (default 40)
   --gain GAIN         Playback gain, 0..2 (default 0.5)
+  --harmonic          Enable experimental speech model (higher CPU at 12..16 kb/s)
   --raw               Start with delayed unencoded audio for comparison
   --list-devices      Print input/output device indices and exit
   --input INDEX       Capture device (default: system default)
@@ -31,9 +32,9 @@ cargo run --release --features live-audio --example monitor -- [OPTIONS]
   --no-tui           Run without interactive terminal controls
   --help             Print this help
 
-Keys: Left/Right or -/+ bitrate; Up/Down volume; Space A/B; F frame size;
+Keys: Left/Right or -/+ bitrate; Up/Down volume; Space A/B; F frame size; H harmonic speech;
       B buffer; M mute; ? help; Q, Esc or Ctrl-C quit. Changes apply to subsequent frames.
-The frame-size key restarts the codec stream. No audio is saved to disk.";
+The F and H keys restart the codec stream. No audio is saved to disk.";
 
 struct Options {
     config: Config,
@@ -47,8 +48,14 @@ struct Options {
 }
 
 fn options() -> Result<Option<Options>, Box<dyn Error>> {
+    parse_options(std::env::args().skip(1))
+}
+
+fn parse_options(
+    arguments: impl IntoIterator<Item = String>,
+) -> Result<Option<Options>, Box<dyn Error>> {
     let mut options = Options {
-        config: Config::new(24_000)?,
+        config: Config::default(),
         buffer_ms: 40,
         gain: 0.5,
         raw: false,
@@ -57,7 +64,7 @@ fn options() -> Result<Option<Options>, Box<dyn Error>> {
         seconds: None,
         tui: true,
     };
-    let mut arguments = std::env::args().skip(1);
+    let mut arguments = arguments.into_iter();
     while let Some(argument) = arguments.next() {
         match argument.as_str() {
             "--help" | "-h" => {
@@ -69,6 +76,7 @@ fn options() -> Result<Option<Options>, Box<dyn Error>> {
                 return Ok(None);
             }
             "--raw" => options.raw = true,
+            "--harmonic" => options.config = options.config.with_harmonic_speech(true),
             "--no-tui" => options.tui = false,
             "--bitrate" | "--frame-ms" | "--buffer-ms" | "--gain" | "--input" | "--output"
             | "--seconds" => {
@@ -79,6 +87,7 @@ fn options() -> Result<Option<Options>, Box<dyn Error>> {
                     "--bitrate" => {
                         options.config = Config::new(value.parse()?)?
                             .with_frame_duration(options.config.frame_duration())
+                            .with_harmonic_speech(options.config.harmonic_speech())
                     }
                     "--frame-ms" => {
                         options.config = options.config.with_frame_duration(match value.as_str() {
@@ -151,10 +160,15 @@ fn run(mut options: Options) -> Result<(), Box<dyn Error>> {
     let mut audio = audio::start(options.input, options.output, target)?;
     if !options.tui {
         println!(
-            "{} -> Snacka {} b/s, {} ms -> {}. Use headphones. Ctrl-C to stop.",
+            "{} -> Snacka {} b/s, {} ms, harmonic {} -> {}. Use headphones. Ctrl-C to stop.",
             audio.input_name,
             options.config.bitrate(),
             options.config.frame_duration().milliseconds(),
+            if options.config.harmonic_speech() {
+                "on (higher CPU at 12–16 kb/s)"
+            } else {
+                "off"
+            },
             audio.output_name
         );
     }
@@ -209,6 +223,15 @@ fn run(mut options: Options) -> Result<(), Box<dyn Error>> {
                         processor.toggle_duration();
                         ui.notice =
                             "Frame profile changed; encoder and decoder restarted together.".into();
+                    }
+                    KeyCode::Char('h' | 'H') => {
+                        processor.toggle_harmonic();
+                        ui.notice = if processor.config.harmonic_speech() {
+                            "Harmonic speech enabled at 12–16 kb/s; higher CPU. Stream restarted."
+                        } else {
+                            "Harmonic speech disabled; stream restarted."
+                        }
+                        .into();
                     }
                     KeyCode::Char('b' | 'B') => {
                         options.buffer_ms = match options.buffer_ms {
@@ -328,4 +351,30 @@ fn main() -> Result<(), Box<dyn Error>> {
         run(options)?;
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn harmonic_option_survives_bitrate_and_frame_argument_order() {
+        for arguments in [
+            ["--harmonic", "--bitrate", "12000", "--frame-ms", "10"],
+            ["--bitrate", "12000", "--harmonic", "--frame-ms", "10"],
+            ["--frame-ms", "10", "--bitrate", "12000", "--harmonic"],
+        ] {
+            let options = parse_options(arguments.map(String::from)).unwrap().unwrap();
+            assert!(options.config.harmonic_speech());
+            assert_eq!(options.config.bitrate(), 12_000);
+            assert_eq!(options.config.frame_duration(), FrameDuration::Ms10);
+        }
+        assert!(
+            !parse_options(Vec::new())
+                .unwrap()
+                .unwrap()
+                .config
+                .harmonic_speech()
+        );
+    }
 }

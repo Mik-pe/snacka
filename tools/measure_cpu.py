@@ -11,11 +11,12 @@ import time
 from pathlib import Path
 
 
-def measured(executable, mode, pcm, frames, bitrate, duration):
+def measured(executable, mode, pcm, frames, bitrate, duration, harmonic=False):
     before = resource.getrusage(resource.RUSAGE_CHILDREN)
     start = time.perf_counter()
     result = subprocess.run(
-        [str(executable), mode, str(pcm), str(frames), str(bitrate), str(duration)],
+        [str(executable), mode, str(pcm), str(frames), str(bitrate), str(duration)]
+        + (["--harmonic"] if harmonic else []),
         capture_output=True, text=True, check=True,
     )
     wall = time.perf_counter() - start
@@ -42,6 +43,8 @@ def main():
                         default=["encode", "decode"])
     parser.add_argument("--allow-trace-changes", action="store_true",
                         help="measure a separately evaluated codec change without requiring identical traces")
+    parser.add_argument("--harmonic", action="store_true", help="enable harmonic speech in the current executable")
+    parser.add_argument("--baseline-harmonic", action="store_true", help="enable harmonic speech in the baseline executable")
     args = parser.parse_args()
     if min(args.repetitions, args.encode_frames, args.decode_frames) <= 0:
         parser.error("repetitions and frame counts must be positive")
@@ -68,7 +71,7 @@ def main():
                         subprocess.run([
                             str(executable), "trace", str(pcm), str(root / f"{label}.trace"),
                             str(bitrate), str(duration),
-                        ], check=True)
+                        ] + (["--harmonic"] if (args.harmonic if label == "current" else args.baseline_harmonic) else []), check=True)
                     before = (root / "baseline.trace").read_bytes()
                     after = (root / "current.trace").read_bytes()
                     if before != after and not args.allow_trace_changes:
@@ -83,7 +86,8 @@ def main():
                             order = [("baseline", args.baseline), ("current", args.current)]
                             if repetition % 2:
                                 order.reverse()
-                            values = {label: measured(executable, mode, pcm, frames, bitrate, duration)
+                            values = {label: measured(executable, mode, pcm, frames, bitrate, duration,
+                                                      args.harmonic if label == "current" else args.baseline_harmonic)
                                       for label, executable in order}
                             row = {
                                 "clip": clip.stem,
@@ -93,6 +97,7 @@ def main():
                                 "current_trace_sha256": hashes[duration, bitrate][1],
                                 "traces_identical": hashes[duration, bitrate][2],
                                 "frame_ms": duration, "bitrate": bitrate, "operation": mode,
+                                "current_harmonic": args.harmonic, "baseline_harmonic": args.baseline_harmonic,
                                 "frames": frames, "repetition": repetition,
                             }
                             for label in ("baseline", "current"):

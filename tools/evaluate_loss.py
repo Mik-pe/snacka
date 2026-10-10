@@ -54,6 +54,8 @@ def main():
                         help="require exact concealed PCM bytes for an output-preserving optimization")
     parser.add_argument("--quality", action="store_true", help="add optional STOI, ESTOI and spectral-distance scores")
     parser.add_argument("--bitrates", type=int, nargs="+", default=[24000])
+    parser.add_argument("--harmonic", action="store_true", help="enable harmonic speech in the current executable")
+    parser.add_argument("--baseline-harmonic", action="store_true", help="enable harmonic speech in the baseline executable")
     args = parser.parse_args()
     if any(not 12000 <= value <= 32000 for value in args.bitrates):
         parser.error("bitrates must be within 12000..32000")
@@ -72,10 +74,12 @@ def main():
         output = directory / "decoded.f32"
         loss_file = directory / "loss.txt"
 
-        def run(executable, bitrate, duration, losses=False):
+        def run(executable, bitrate, duration, losses=False, harmonic=False):
             command = [str(executable), str(source), str(output), str(bitrate), str(duration)]
             if losses:
                 command.extend(["--loss-frames", str(loss_file)])
+            if harmonic:
+                command.append("--harmonic")
             result = subprocess.run(command, check=True, capture_output=True, text=True)
             values = floats(output.read_bytes())
             if len(values) != len(original) or not all(math.isfinite(x) and abs(x) <= 1 for x in values):
@@ -108,9 +112,9 @@ def main():
                         "independent5", "burst40", "burst80"
                     )
                     for bitrate in args.bitrates:
-                        reference, expected_fields = run(baseline, bitrate, duration)
+                        reference, expected_fields = run(baseline, bitrate, duration, harmonic=args.baseline_harmonic)
                         reference_pcm = output.read_bytes()
-                        if run(current, bitrate, duration) != (reference, expected_fields):
+                        if run(current, bitrate, duration, harmonic=args.harmonic) != (reference, expected_fields):
                             raise ValueError("uninterrupted output or packet metadata differs from baseline")
                         if output.read_bytes() != reference_pcm:
                             raise ValueError("uninterrupted PCM bytes differ from baseline")
@@ -149,14 +153,16 @@ def main():
                                 pcm_sha256=hashlib.sha256(data).hexdigest(), reference_pcm_sha256=reference_hash,
                                 loss_frames_sha256=hashlib.sha256(mask_text.encode()).hexdigest(),
                                 clipped_samples=clipped, samples=len(original), bitrate=bitrate,
-                                frame_ms=duration, pattern=pattern, period=10 * burst, burst=burst,
+                                frame_ms=duration, current_harmonic=args.harmonic, baseline_harmonic=args.baseline_harmonic,
+                                pattern=pattern, period=10 * burst, burst=burst,
                                 total_frames=frames, lost_frames=len(dropped),
                                 lost_samples=len(lost), onset_samples=len(onset), recovery_samples=len(recovery),
                                 verified_received_samples=sum(end - start for start, end in received),
                             )
                             row.update({f"uninterrupted_{key}": value for key, value in uninterrupted.items()})
                             for label, executable in (("baseline", baseline), ("current", current)):
-                                values, fields = run(executable, bitrate, duration, True)
+                                values, fields = run(executable, bitrate, duration, True,
+                                                    args.harmonic if label == "current" else args.baseline_harmonic)
                                 decoded_pcm = output.read_bytes()
                                 row[f"{label}_decoded_pcm_sha256"] = hashlib.sha256(decoded_pcm).hexdigest()
                                 if label == "baseline":

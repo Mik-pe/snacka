@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Generate or check pulse bounds, occupied-bin priors and gain weights."""
+"""Generate or check pulse bounds, harmonic bounds, class priors and gain weights."""
 import argparse
 import ast
 import math
@@ -9,6 +9,7 @@ import re
 
 
 DIMENSIONS = (20, 40, 80, 160, 320, 400, 800)
+HARMONIC_DIMENSIONS = (4, 8, 16)
 MAX_PULSES = 387
 CLASS_LIMIT = 80
 TOTAL = 65535
@@ -51,8 +52,11 @@ def tables():
         masks.append(mask)
     weights = [0] + [round(2 ** (c / 4 if c <= 64 else 16 + (c - 64) / 8))
                      for c in range(1, 209)]
+    small_costs = [[0] + [(math.comb(n + k - 1, k) - 1).bit_length() + min(n, k)
+                         for k in range(1, MAX_PULSES + 1)]
+                   for n in HARMONIC_DIMENSIONS]
     return dict(PULSE_COST=costs, ENERGY_WEIGHT=weights, OFFSETS=offsets,
-                BOUNDARIES=boundaries, MASKS=masks)
+                BOUNDARIES=boundaries, MASKS=masks, SMALL_COST=small_costs)
 
 
 def main():
@@ -62,18 +66,20 @@ def main():
     expected = tables()
     root = Path(__file__).resolve().parents[1]
     sources = {'pulse': (root / 'src/pulse.rs').read_text(),
-               'classes': (root / 'src/pulse_classes.rs').read_text()}
+               'classes': (root / 'src/pulse_classes.rs').read_text(),
+               'harmonic': (root / 'src/harmonic.rs').read_text()}
     if args.check:
         for name, value in expected.items():
-            source = sources['pulse' if name in ('PULSE_COST', 'ENERGY_WEIGHT') else 'classes']
+            source = sources['harmonic' if name == 'SMALL_COST' else
+                             'pulse' if name in ('PULSE_COST', 'ENERGY_WEIGHT') else 'classes']
             match = re.search(r'(?:const|static) ' + name + r':.*?=\s*(\[.*?\]);', source, re.S)
             if match is None or ast.literal_eval(match.group(1)) != value:
                 raise ValueError(f'{name} does not match its mathematical definition')
-        print('Exact pulse bounds, class priors and gain weights match')
+        print('Exact pulse and harmonic bounds, class priors and gain weights match')
     else:
         declarations = {'PULSE_COST': '[[u16; 388]; 7]', 'ENERGY_WEIGHT': '[u64; 209]',
                         'OFFSETS': '[[u32; 81]; 7]', 'BOUNDARIES': f'[u16; {len(expected["BOUNDARIES"])}]',
-                        'MASKS': '[[u64; 2]; 7]'}
+                        'MASKS': '[[u64; 2]; 7]', 'SMALL_COST': '[[u16; 388]; 3]'}
         for name, value in expected.items():
             qualifier = 'pub(super) static' if name == 'BOUNDARIES' else 'pub(super) const' if name in ('OFFSETS', 'MASKS') else 'const'
             print(f'{qualifier} {name}: {declarations[name]} = {value};')

@@ -28,7 +28,9 @@ impl Processor {
     }
 
     pub fn set_bitrate(&mut self, bitrate: u32) -> Result<(), snacka::Error> {
-        let config = Config::new(bitrate)?.with_frame_duration(self.config.frame_duration());
+        let config = Config::new(bitrate)?
+            .with_frame_duration(self.config.frame_duration())
+            .with_harmonic_speech(self.config.harmonic_speech());
         self.encoder.set_bitrate(bitrate)?;
         self.config = config;
         Ok(())
@@ -42,6 +44,17 @@ impl Processor {
         // Frame duration is a stream profile; both sides must restart together.
         let (bytes, samples) = (self.bytes, self.samples);
         *self = Self::new(self.config.with_frame_duration(duration), self.raw);
+        self.bytes = bytes;
+        self.samples = samples;
+    }
+
+    pub fn toggle_harmonic(&mut self) {
+        let (bytes, samples) = (self.bytes, self.samples);
+        *self = Self::new(
+            self.config
+                .with_harmonic_speech(!self.config.harmonic_speech()),
+            self.raw,
+        );
         self.bytes = bytes;
         self.samples = samples;
     }
@@ -119,5 +132,33 @@ mod tests {
         processor
             .process(&[0.0; FRAME_SAMPLES], &mut [0.0; FRAME_SAMPLES])
             .unwrap();
+    }
+
+    #[test]
+    fn harmonic_switch_retains_controls_counters_and_restarts_both_sides() {
+        let config = Config::new(12_000).unwrap().with_harmonic_speech(true);
+        let mut processor = Processor::new(config, true);
+        let mut output = [0.0; FRAME_SAMPLES];
+        processor
+            .process(&[0.25; FRAME_SAMPLES], &mut output)
+            .unwrap();
+        let (bytes, samples) = (processor.bytes, processor.samples);
+        processor.set_bitrate(16_000).unwrap();
+        assert!(processor.config.harmonic_speech());
+        processor.toggle_duration();
+        assert!(processor.config.harmonic_speech());
+        assert_eq!(processor.config.bitrate(), 16_000);
+        processor.toggle_harmonic();
+        assert!(!processor.config.harmonic_speech());
+        assert_eq!(processor.config.frame_duration(), FrameDuration::Ms10);
+        assert_eq!((processor.bytes, processor.samples), (bytes, samples));
+        assert!(processor.raw);
+        processor.process(&[0.25; 480], &mut output[..480]).unwrap();
+        assert_eq!(&output[..ALGORITHMIC_DELAY], &[0.0; ALGORITHMIC_DELAY]);
+        assert_eq!(&output[ALGORITHMIC_DELAY..480], &[0.25; 360]);
+        processor.toggle_harmonic();
+        assert!(processor.config.harmonic_speech());
+        processor.raw = false;
+        processor.process(&[0.0; 480], &mut output[..480]).unwrap();
     }
 }

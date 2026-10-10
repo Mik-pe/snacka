@@ -30,7 +30,10 @@ packets. CRC detects corruption; authentication belongs to the transport.
 Pulse gain precision adapts to the packet budget, retaining more shape bits at
 low bitrate. Signed pulse classes recover additional shape bits without increasing
 packet size. The experimental format is version 7. Encoder and decoder must use the same
-version; older native packets are rejected.
+version and support every negotiated profile; older native packets are rejected.
+The opt-in harmonic speech model can emit profiles 14/15, which earlier version-7
+decoders reject. `Config::with_harmonic_speech(true)` requires peer support for
+these profiles and increases encoder CPU at 12–16 kb/s. It is disabled by default.
 
 ```rust
 use snacka::{Config, Decoder, Encoder, FRAME_SAMPLES, MAX_PACKET_BYTES};
@@ -62,7 +65,8 @@ cargo run --release --features live-audio --example monitor
 ```
 
 Press **Space** to compare codec and raw audio, **Left/Right** to change bitrate,
-**Up/Down** for volume, **F** for 10/20 ms frames, **B** for buffering, and **Q** to
+**Up/Down** for volume, **F** for 10/20 ms frames, **H** for experimental harmonic
+speech, **B** for buffering, and **Q** to
 quit. The dashboard shows microphone activity, device routing and stream health.
 It starts at 24 kb/s and 50% playback gain; no audio is saved. See
 [the listening guide](docs/monitor.md) for devices, Linux build prerequisites and
@@ -96,6 +100,6 @@ a separately installed external library only in an offline Python tool. It
 records quality gaps alongside wins at equal bitrate, frame duration and delay.
 
 See [the bitstream](docs/bitstream.md), [development and acceptance](docs/implementation.md),
-[measurements](docs/measurements.md), [signed pulse classes](docs/pulse-classes.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [packet-loss evaluation](docs/loss.md), [fixture provenance](tests/fixtures/README.md)
+[measurements](docs/measurements.md), [signed pulse classes](docs/pulse-classes.md), [harmonic speech experiment](docs/harmonic-speech.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [packet-loss evaluation](docs/loss.md), [fixture provenance](tests/fixtures/README.md)
 and [fuzzing](fuzz/README.md). The implementation license is [MIT](LICENSE).
 External reference source and trained weights are not vendored.

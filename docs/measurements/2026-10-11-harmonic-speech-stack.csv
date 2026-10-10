@@ -1,0 +1,24 @@
+source,function,own_frame_bytes,max_nested_invocations
+baseline,Encoder::encode_frame,18720,1
+baseline,Decoder::decode,6080,1
+current,Encoder::encode_frame,41952,1
+current,Decoder::decode,25360,1
+current,harmonic::candidates,192,1
+current,harmonic::analyze,1200,1
+current,harmonic::synthesize,1184,1
+current,MdctPlan::forward,176,1
+current,MdctPlan::inverse,144,1
+current,FftPlan::split,144,7
+current,Decoder::synthesize,64,1
+current,pulse::allocate_dimensions,352,1
+current,pulse::encode,768,1
+current,pulse::decode,832,1
+current,pulse::quantize,160,1
+current,std::sort::quicksort (gain comparator),96,13
+current,std::sort::small_sort_network (gain comparator),336,1
+current,std::sort::insertion_sort (gain comparator),32,1
+current,std::sort::ipnsort (gain comparator),16,1
+current,std::select::median_of_medians,224,3
+current,std::select::partition_at_index,160,1
+current,std::select::partition,48,1
+current,std::pivot::median3_rec,80,3

@@ -59,6 +59,16 @@ fn encoded_kilobytes_per_second(view: &View<'_>) -> f64 {
     }
 }
 
+fn harmonic_status(config: Config) -> &'static str {
+    if !config.harmonic_speech() {
+        "off"
+    } else if config.bitrate() <= 16_000 {
+        "on / higher CPU"
+    } else {
+        "on / inactive"
+    }
+}
+
 fn panel(title: &str) -> Block<'_> {
     Block::default()
         .borders(Borders::ALL)
@@ -199,6 +209,7 @@ impl Ui {
                 .cyan(),
                 Line::from(format!(" {} ms prebuffer", view.buffer_ms)),
                 Line::from(" [F] frame  [B] buffer").dark_gray(),
+                Line::from(format!(" H harmonic {}", harmonic_status(view.config))).dark_gray(),
             ])
             .block(panel(" Timing ")),
             controls[1],
@@ -302,6 +313,7 @@ impl Ui {
                 )),
                 Line::from("Left/Right: bitrate  Up/Down: volume"),
                 Line::from("F: frame  B: buffer  M: mute  Q: quit"),
+                Line::from(format!("H: harmonic {}", harmonic_status(view.config))),
                 Line::from("?: help   Use headphones at low volume."),
                 Line::from(self.notice.as_str()).dark_gray(),
             ])
@@ -323,9 +335,9 @@ impl Ui {
         );
         frame.render_widget(Clear, popup);
         let guide = if popup.height < 23 || popup.width < 68 {
-            "48 kHz = 48,000 samples each second.\n1 kb/s = 1,000 bits each second.\n12 kb/s = 1.5 kB/s (90 kB/min).\nAvg: packet data; excludes network.\nSpace: raw/codec (same capture).\nLeft/Right: bitrate Up/Down: volume\nF: frame B: buffer M: mute Q: quit\n?: close 12 kb/s can sound rough."
+            "48 kHz = 48,000 samples each second.\n1 kb/s = 1,000 bits each second.\n12 kb/s = 1.5 kB/s (90 kB/min).\nAvg: packet data; excludes network.\nSpace: raw/codec (same capture).\nLeft/Right: bitrate Up/Down: volume\nF: frame B: buffer M: mute Q: quit\nH: harmonic (higher CPU) ?: close"
         } else {
-            "48 kHz = 48,000 mono samples each second.\n1 kb/s = 1,000 compressed bits per second; 12 kb/s = 1.5 kB/s.\nAvg is packet bytes per second of processed audio since startup.\nPacket headers count; network and encryption do not.\n12 kb/s is experimental: listen for distortion; compare 24 and 32.\n\nSpace     Compare Snacka and raw audio\nLeft/Right or -/+   Change bitrate by 1 kb/s\nUp/Down   Change playback volume by 5%\nF         Switch 10 / 20 ms frames (restarts codec)\nB         Cycle 20 / 40 / 80 / 120 / 200 ms buffer\nM         Mute playback (capture continues)\nQ / Ctrl-C   Quit and restore terminal\n? / Esc      Close this help\n\nBoth modes share device/OS processing and sample-rate conversion.\nRaw bypasses Snacka with the same 2.5 ms transform delay.\nHigher buffering can help gaps, at the cost of delay.\nActual latency also includes capture and device buffers.\nFor devices: --list-devices, --input N, --output N.\nNo audio is saved to disk."
+            "48 kHz = 48,000 mono samples each second.\n1 kb/s = 1,000 compressed bits per second; 12 kb/s = 1.5 kB/s.\nAvg is packet bytes per second of processed audio since startup.\nPacket headers count; network and encryption do not.\n12 kb/s is experimental: listen for distortion; compare 24 and 32.\n\nSpace     Compare Snacka and raw audio\nLeft/Right or -/+   Change bitrate by 1 kb/s\nUp/Down   Change playback volume by 5%\nF         Switch 10 / 20 ms frames (restarts codec)\nH         Harmonic speech on/off (restarts codec)\n          Experimental at 12–16 kb/s; higher CPU\nB         Cycle 20 / 40 / 80 / 120 / 200 ms buffer\nM         Mute playback (capture continues)\nQ / Ctrl-C   Quit and restore terminal\n? / Esc      Close this help\n\nBoth modes share device/OS processing and sample-rate conversion.\nRaw bypasses Snacka with the same 2.5 ms transform delay.\nHigher buffering can help gaps, at the cost of delay.\nActual latency also includes capture and device buffers.\nFor devices: --list-devices, --input N, --output N.\nNo audio is saved to disk."
         };
         frame.render_widget(
             Paragraph::new(guide)
@@ -406,6 +418,8 @@ mod tests {
             assert!(text.contains("1,000"));
             assert!(text.contains("network"));
             assert!(text.contains("Q:") || text.contains("Q / Ctrl-C"));
+            assert!(text.to_lowercase().contains("harmonic"));
+            assert!(text.contains("higher CPU"));
         }
     }
 
@@ -414,7 +428,7 @@ mod tests {
         for (width, height) in [(100, 30), (60, 24), (54, 23), (48, 16)] {
             let mut terminal = Terminal::new(TestBackend::new(width, height)).unwrap();
             let ui = Ui::default();
-            let view = View {
+            let mut view = View {
                 config: Config::default(),
                 raw: true,
                 gain: 0.5,
@@ -443,6 +457,19 @@ mod tests {
             assert!(text.contains("volume") || text.contains("Volume"));
             assert!(text.contains("quit"));
             assert!(text.contains("3.00 kB/s avg"));
+            assert!(text.contains("harmonic off"));
+            for bitrate in [12_000, 24_000] {
+                view.config = Config::new(bitrate).unwrap().with_harmonic_speech(true);
+                terminal.draw(|f| ui.render(f, &view)).unwrap();
+                let text: String = terminal
+                    .backend()
+                    .buffer()
+                    .content()
+                    .iter()
+                    .map(|cell| cell.symbol())
+                    .collect();
+                assert!(text.contains("harmonic on"));
+            }
         }
     }
 }

@@ -398,7 +398,7 @@ fn table(dimensions: usize) -> &'static [u16; 388] {
         320 => 4,
         400 => 5,
         800 => 6,
-        _ => unreachable!("fixed band dimensions"),
+        _ => return crate::harmonic::cost_table(dimensions),
     };
     &PULSE_COST[index]
 }
@@ -418,11 +418,24 @@ pub(crate) fn gain_bits(samples: usize, bytes: usize) -> u32 {
 }
 
 pub(crate) fn allocate(samples: usize, bins: usize, gains: &[u8; 4], bytes: usize) -> [usize; 4] {
+    let edges = edges(samples, bins);
+    let dimensions: [usize; 4] = std::array::from_fn(|i| edges[i + 1] - edges[i]);
+    allocate_dimensions(
+        dimensions,
+        gains,
+        bytes * 8,
+        4 * gain_bits(samples, bytes) as usize,
+    )
+}
+pub(crate) fn allocate_dimensions(
+    dimensions: [usize; 4],
+    gains: &[u8; 4],
+    budget_bits: usize,
+    gain_overhead: usize,
+) -> [usize; 4] {
     if *gains == [0; 4] {
         return [0; 4];
     }
-    let edges = edges(samples, bins);
-    let dimensions: [usize; 4] = std::array::from_fn(|i| edges[i + 1] - edges[i]);
     let tables = dimensions.map(table);
     let offsets = dimensions.map(|dimension| {
         let root = dimension.isqrt();
@@ -431,7 +444,7 @@ pub(crate) fn allocate(samples: usize, bins: usize, gains: &[u8; 4], bytes: usiz
     let numerators: [u64; 4] =
         std::array::from_fn(|i| ENERGY_WEIGHT[usize::from(gains[i])] * dimensions[i] as u64);
     let mut pulses = gains.map(|code| usize::from(code != 0));
-    let mut used = 4 * gain_bits(samples, bytes) as usize
+    let mut used = gain_overhead
         + 4
         + (0..4)
             .map(|i| usize::from(tables[i][pulses[i]]))
@@ -451,7 +464,7 @@ pub(crate) fn allocate(samples: usize, bins: usize, gains: &[u8; 4], bytes: usiz
         let mut chosen = None;
         let mut best = (0u64, 1u64);
         for band in 0..4 {
-            if priorities[band].0 > bytes * 8 - used {
+            if priorities[band].0 > budget_bits - used {
                 continue;
             }
             // Compare energy*N / ((K+ceil(sqrt(N)))^3 * added_bits) without division.

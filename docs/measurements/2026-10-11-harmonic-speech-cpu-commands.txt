@@ -1,0 +1,26 @@
+Date: 2026-10-11 Europe/Stockholm
+Host: Apple M5 aarch64, macOS27.0 build26A428
+Compiler: Rust1.99.0 b940084d7eb6a299eb4bfeb8e34901bc051e7ac4, LLVM23.1.1
+Tool flags: no LTO/native-CPU/profiling flags; release overflow-checks=true
+Build each source separately: cargo build --release --lib
+Compile probe for each library:
+rustc --edition=2024 -C opt-level=3 -C codegen-units=16 -C overflow-checks=yes examples/cpu_probe.rs --extern snacka=target/release/libsnacka.rlib -L dependency=target/release/deps -o probe
+
+Executable aliases in the commands below:
+main-probe SHA2563ec7206a3834bfbd2763ebf826bd93b83df08f79db0de8e1f57869112666ef3f
+harmonic-probe SHA256ad7c885ff589174cefe4b5ce340951ff3931fba12c8e94d63e161e8b1e0e6904
+These are measured binaries, not expected hashes of all rebuilds (signing/output names may differ).
+measure_cpu.py SHA2563900bb42c87e1d073dba99a12decd33ae3968dad241c6c08cd3c891104a7f514
+measure_decoder_slopes.py SHA256baed91d730988245ac9d33442afcec90ef22bab09166b88944b59df3f2f3ad20
+
+Exact workload settings with portable aliases; corpus is the eight-clip speech-v2 input manifest:
+python3 tools/measure_cpu.py corpus enabled-encoder-cpu.csv --current ./harmonic-probe --baseline ./harmonic-probe --harmonic --allow-trace-changes --bitrates 12000 --repetitions 3 --operations encode --encode-frames 2000
+python3 tools/measure_decoder_slopes.py corpus decoder --baseline ./main-probe --current ./harmonic-probe --harmonic --bitrate 12000 --repetitions 3 --short-frames 20000 --long-frames 40000
+python3 tools/measure_cpu.py corpus default-cpu.csv --current ./harmonic-probe --baseline ./main-probe --bitrates 12000 24000 32000 --repetitions 3 --encode-frames 10000 --decode-frames 20000
+
+Runs are sequential, with all other codec builds/tests/scoring/timing held.
+Raw paired CPU comes from measured() in measure_cpu.py: child user+system getrusage totals.
+Encoder/default raw process costs include setup; decoder slopes retain both raw totals and subtract fixed preparation algebraically.
+Summaries group bitrate/frame_ms/operation and weight each clip/repetition equally; sample medians/means of absolute microseconds and paired percentage changes are computed independently.
+Regressed clip medians count clips whose three paired-change median values are positive.
+Full original precision and noisy/outlier repetitions are retained in CSV, without trimming.

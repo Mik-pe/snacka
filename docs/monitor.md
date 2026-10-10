@@ -25,6 +25,7 @@ Audio stays in memory and is never written to disk or sent over the network.
 | Left / Right, or - / + | Change bitrate by 1 kb/s, within 12–32 kb/s |
 | Up / Down | Change playback gain by 5%, within 0–200% |
 | F | Switch 10 / 20 ms frames |
+| H | Enable / disable experimental harmonic speech |
 | B | Cycle 20 / 40 / 80 / 120 / 200 ms playback prebuffer |
 | M | Mute playback; microphone capture continues |
 | ? | Open / close the listening guide |
@@ -67,6 +68,34 @@ health counters. Both A/B modes share capture processing and device sample-rate
 conversion. Different codecs can produce different quality at the same bitrate;
 see the [measured reference comparisons](reference-quality.md) for this codec's
 current limitations.
+
+## Experimental harmonic speech
+
+Start the optional harmonic speech model at 12 kb/s:
+
+```sh
+cargo run --locked --release --features live-audio --example monitor -- --bitrate 12000 --harmonic
+```
+
+H toggles it while listening. It considers voiced speech candidates at
+12–16 kb/s and consumes more CPU; it is disabled by default. Above 16 kb/s the
+setting remains enabled but no harmonic search runs. The display shows the
+setting, not whether a particular packet selected the harmonic model. Listen to
+the same phrase with it enabled and disabled, then use Space for the raw
+reference. Neither option guarantees better sound for every speaker or frame.
+Bitrate and frame-size changes retain the setting. H restarts both codec sides,
+which can cause a brief discontinuity; cumulative data counters are retained.
+
+Offline `roundtrip` and `cpu_probe` examples also accept a trailing
+`--harmonic` after their existing arguments, including any loss pattern.
+Quality, speech, packet-loss and CPU evaluation tools accept `--harmonic` for
+the current executable and `--baseline-harmonic` independently for the baseline.
+They record both settings in their CSV rows. These switches require an
+executable that supports the new option; leave the baseline switch unset when
+comparing against an earlier executable. Packet-loss evaluation requires
+identical uninterrupted output from both sides, so an enabled model needs an
+equivalent enabled reference. CPU comparisons that change traces additionally
+require `--allow-trace-changes` and a separate quality evaluation.
 
 ## Devices and startup options
 
@@ -127,7 +156,7 @@ The encoder and decoder stay active in reference mode, retaining stream history
 through A/B switches. The raw reference is delayed by the same 120 samples
 (2.5 ms) as Snacka's transform. Both paths share frame buffering, output gain and
 the playback queue. Changing bitrate retains codec history. Changing frame
-duration restarts both encoder and decoder because it changes the stream profile;
+duration or harmonic speech mode restarts both encoder and decoder;
 this can produce a brief discontinuity. Queued audio plays before changes become
 audible.
 
