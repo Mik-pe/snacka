@@ -35,8 +35,11 @@ durations. A trace contains, for each ordinary frame and final drain, a
 little-endian u16 packet length, the complete packet including CRC, and valid
 PCM samples as little-endian f32. Frames are zero-padded at the clip end.
 The trace retains priming and drain samples. It is an offline verification
-artifact; it is not a transport/container format. A mismatch aborts evaluation.
-Only trace and input hashes are published, without audio or transcripts.
+artifact; it is not a transport/container format. By default, a mismatch aborts
+evaluation. An encoder change evaluated separately for quality can use
+`--allow-trace-changes`; this records both trace hashes and their identity at
+24 kb/s instead of requiring equal bytes. It does not establish equivalent
+quality. Only trace and input hashes are published, without audio or transcripts.
 
 ## Reproduction
 
@@ -61,6 +64,47 @@ python3 tools/measure_cpu.py corpus results.csv \
 The corpus directory must contain original FLAC files. The script uses FFmpeg
 for conversion and otherwise only the Python standard library. `resource`
 requires a Unix host; the Rust library and probe remain portable.
+
+## Bounded pulse exchanges, version 5
+
+The baseline is commit `c450d0424d4795076ab5d154f92523b736e17ec8`. After the
+initial pulse projection and greedy assignment, the encoder performs at most two
+improving exchanges per band. Each exchange moves one pulse, preserving the
+packet's budget and input-aligned signs. The decoder and version 5 format are
+unchanged. This deliberately spends additional encoder CPU on reducing vector
+error; it is not a throughput optimization. Speech scores and regressions are
+reported in [quality evaluation](quality.md).
+
+The [raw paired table](measurements/2026-10-10-apple-m5-refinement.csv) uses one
+previously evaluated clip from each of four additional speakers: 1221, 2830,
+4077 and 4446. Input hashes are in the
+[additional-input manifest](measurements/2026-10-10-refinement-additional-input.sha256).
+The method above is unchanged, with `--allow-trace-changes`, three paired
+repetitions, 50,000 encoded and 200,000 decoded frames per process, and 24 kb/s.
+Each repetition alternates execution order. Encoded packets and decoded PCM
+change; byte identity is not expected. Decoding uses each encoder's own packets,
+so entropy and selected-model workload can differ even though the decoder source
+is unchanged.
+
+Both probes use the same example source, Rust 1.99.0, opt-level 3, 16 codegen
+units, overflow checks enabled and no LTO, explicit SIMD or native-CPU flags.
+Libraries use the same release profile. Host: Apple M5, aarch64, macOS 27.0 build
+26A428; Python 3.14.8 and FFmpeg 9.0.2. Desktop load and power are uncontrolled.
+
+| Operation | Frame duration | Mean baseline CPU per frame | Mean current CPU per frame | Mean paired CPU change |
+| --- | --- | --- | --- | --- |
+| Encode | 10 ms | 12.274 µs | 12.810 µs | +4.521% |
+| Encode | 20 ms | 29.147 µs | 30.054 µs | +3.274% |
+| Decode | 10 ms | 4.395 µs | 4.431 µs | +0.851% |
+| Decode | 20 ms | 10.554 µs | 10.567 µs | +0.206% |
+
+Means weight each clip/repetition equally; the change column averages individual
+paired percentage changes. Individual runs vary, and these small decoder
+changes do not establish a speed difference. This measures process CPU on
+repeated read speech, not installed mobile battery use or individual callback
+deadlines under load. The quality improvement is small and needs listening
+validation. Codec and evaluation sources are recorded in the
+[source manifest](measurements/2026-10-10-refinement-source.sha256).
 
 ## Cached pulse priorities, version 5
 

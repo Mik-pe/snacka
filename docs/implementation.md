@@ -18,8 +18,9 @@ bytes leave the rest of each packet available for spectral coding.
 Per-packet selection compares two spectral models: sparse four-/six-bit scalar
 amplitudes with one gain, and four independent band gains with normalized signed
 pulse vectors. The second model spends amplitude precision collectively on a
-band shape. Pulse allocation is inferred deterministically from gain codes and
-packet length, requiring no allocation side information. Both models use native
+band shape. A bounded pulse exchange search improves normalized correlation
+after the initial projection and greedy assignment. Pulse allocation is inferred
+deterministically from gain codes and packet length, requiring no allocation side information. Both models use native
 arithmetic coding and bounded stack workspaces.
 The encoder compares 8/12/24 kHz coded bandwidths and both models over the full
 transform, counting omitted high frequencies as error. Full-band coding remains

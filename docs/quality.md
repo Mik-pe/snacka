@@ -5,6 +5,74 @@ not establish subjective quality, conversational acceptance or superiority over
 other libraries. Listening tests and realistic noisy conversations remain
 necessary.
 
+## Version 5 bounded pulse exchanges
+
+The encoder refines each pulse shape with at most two exchanges after projection
+and greedy assignment. Each move preserves the pulse count and input-aligned
+signs, and must strictly increase normalized correlation. Gain precision,
+allocation, packet capacity, transform, delay and decoder are unchanged. The
+version 5 bitstream needs no extension. The search is a bounded heuristic,
+not a globally optimal solution. Its additional encoder CPU is reported in
+[paired speech measurements](cpu.md).
+
+The baseline is commit `c450d0424d4795076ab5d154f92523b736e17ec8`. Both release
+executables use the same toolchain and frame/bitrate settings. All 864 paired
+cases have equal normal-frame and drain byte counts. Four tables cover 48
+LibriSpeech test-clean clips from 24 distinct speakers:
+
+- [Development](measurements/2026-10-10-quality-refinement-development.csv):
+  eight previously evaluated clips from four speakers; input hashes remain in
+  the [original manifest](measurements/2026-10-10-speech-v2-input.sha256).
+- [Previously evaluated speakers](measurements/2026-10-10-quality-refinement-holdout.csv):
+  sixteen clips from eight speakers, with the
+  [existing input manifest](measurements/2026-10-10-quality-holdout-input.sha256).
+- [Additional previously evaluated speakers](measurements/2026-10-10-quality-refinement-additional.csv):
+  sixteen clips from eight speakers used in earlier encoder experiments;
+  [input hashes](measurements/2026-10-10-refinement-additional-input.sha256).
+- [New unseen speakers](measurements/2026-10-10-quality-refinement-unseen.csv):
+  eight clips from four speakers, selected before scoring the final algorithm;
+  [input hashes](measurements/2026-10-10-refinement-unseen-input.sha256).
+  Select the first two FLAC members of each of the first four additional
+  speakers in official archive order, excluding the twenty previously evaluated
+  speakers. Their IDs are 908, 7021, 8224 and 4507. The algorithm is unchanged
+  after observing their scores.
+
+Attribution, CC BY 4.0 licensing, archive paths and the official LibriSpeech
+mirror are as specified below. No audio or transcripts are redistributed.
+The method below is unchanged: clean speech, seeded Gaussian noise at 20/10 dB,
+10/20 ms frames and 12/24/32 kb/s. No added-noise samples clip. STOI and ESTOI
+compare with clean speech; waveform SNR and spectral distance compare with the
+encoder input. Each table retains all input hashes, byte counts and scores.
+Reproduce with `tools/evaluate_quality.py` and a separately built baseline.
+There is no packet loss in this comparison.
+
+| New unseen condition | Mean SNR change | Mean STOI change | Mean ESTOI change | Mean spectral distance change |
+| --- | --- | --- | --- | --- |
+| Clean | +0.014011 dB | +0.000278 | +0.000260 | −0.006760 dB |
+| Noise at 20 dB | +0.007523 dB | +0.000191 | +0.000162 | −0.014140 dB |
+| Noise at 10 dB | +0.001806 dB | +0.000381 | −0.000003 | −0.019806 dB |
+
+The reconstruction-error improvement is small. No waveform-SNR comparison
+regresses at the table's six-decimal precision. Other metrics are mixed:
+262 STOI, 285 ESTOI and 180 spectral-distance comparisons regress across the
+864 cases. Worst changes are −0.003023 STOI, −0.005715 ESTOI and +0.058671 dB
+spectral distance. Means weight each clip/duration/bitrate equally. Positive
+mean correlation or SNR does not establish audible or intelligibility benefit.
+This remains read English with synthetic noise, not multilingual conversation,
+double-talk or realistic microphone/background conditions. Listening and
+competitor-quality acceptance remain open.
+
+All 43 local debug/release tests pass. The new direct vector tests independently
+sum correlation, integer norm and pulse magnitudes, cover signs, zero input,
+maximum pulse count and deterministic equal-score choices. Existing independent
+packet/cosine checks and the counting allocator remain active; both durations
+and both spectral models allocate zero times during processing. A requested
+30-second AddressSanitizer packet fuzz run with seed 6716 completes 2,674
+inputs without a reported failure. Source checks pass for iOS, iOS Simulator
+and Android; installed-device behavior is unverified. Codec, tests and evaluator
+sources are recorded in the
+[source manifest](measurements/2026-10-10-refinement-source.sha256).
+
 ## Version 5 pulse-priority optimization
 
 Caching a band's marginal pulse cost reduces repeated allocation calculations

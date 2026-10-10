@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Compare fixed-frame process CPU on speech, after exact packet/PCM checks."""
+"""Compare fixed-frame process CPU on speech, recording packet/PCM trace identity."""
 import argparse
 import csv
 import hashlib
@@ -37,6 +37,8 @@ def main():
     parser.add_argument("--repetitions", type=int, default=3)
     parser.add_argument("--encode-frames", type=int, default=50000)
     parser.add_argument("--decode-frames", type=int, default=200000)
+    parser.add_argument("--allow-trace-changes", action="store_true",
+                        help="measure a separately evaluated codec change without requiring identical traces")
     args = parser.parse_args()
     if min(args.repetitions, args.encode_frames, args.decode_frames) <= 0:
         parser.error("repetitions and frame counts must be positive")
@@ -64,10 +66,10 @@ def main():
                         ], check=True)
                     before = (root / "baseline.trace").read_bytes()
                     after = (root / "current.trace").read_bytes()
-                    if before != after:
+                    if before != after and not args.allow_trace_changes:
                         raise RuntimeError(f"packet/PCM mismatch: {clip.stem}, {duration} ms, {bitrate}")
                     if bitrate == 24000:
-                        hashes[duration] = hashlib.sha256(after).hexdigest()
+                        hashes[duration] = (hashlib.sha256(before).hexdigest(), hashlib.sha256(after).hexdigest(), before == after)
             for duration in (10, 20):
                 for mode, frames in (("encode", args.encode_frames), ("decode", args.decode_frames)):
                     for repetition in range(args.repetitions):
@@ -80,7 +82,9 @@ def main():
                             "clip": clip.stem,
                             "flac_sha256": hashlib.sha256(clip.read_bytes()).hexdigest(),
                             "pcm_sha256": hashlib.sha256(pcm.read_bytes()).hexdigest(),
-                            "trace_sha256": hashes[duration],
+                            "baseline_trace_sha256": hashes[duration][0],
+                            "current_trace_sha256": hashes[duration][1],
+                            "traces_identical": hashes[duration][2],
                             "frame_ms": duration, "bitrate": 24000, "operation": mode,
                             "frames": frames, "repetition": repetition,
                         }
@@ -89,7 +93,8 @@ def main():
                             row[f"{label}_wall_ns_per_frame"] = f"{values[label][1] * 1e9 / frames:.3f}"
                         row["cpu_change_percent"] = f"{100 * (values['current'][0] / values['baseline'][0] - 1):.4f}"
                         rows.append(row)
-            print(f"{clip.stem}: exact traces match; CPU measurements complete", flush=True)
+            trace_status = "trace hashes recorded" if args.allow_trace_changes else "exact traces match"
+            print(f"{clip.stem}: {trace_status}; CPU measurements complete", flush=True)
     with args.output.open("w", newline="") as output:
         writer = csv.DictWriter(output, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
