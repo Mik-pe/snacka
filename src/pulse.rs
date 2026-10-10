@@ -414,6 +414,9 @@ pub(crate) fn edges(samples: usize, bins: usize) -> [usize; 5] {
 }
 
 pub(crate) fn allocate(samples: usize, bins: usize, gains: &[u8; 4], bytes: usize) -> [usize; 4] {
+    if *gains == [0; 4] {
+        return [0; 4];
+    }
     let edges = edges(samples, bins);
     let dimensions: [usize; 4] = std::array::from_fn(|i| edges[i + 1] - edges[i]);
     let tables = dimensions.map(table);
@@ -428,33 +431,37 @@ pub(crate) fn allocate(samples: usize, bins: usize, gains: &[u8; 4], bytes: usiz
         + (0..4)
             .map(|i| usize::from(tables[i][pulses[i]]))
             .sum::<usize>();
+    // Only the selected band's marginal cost and priority can change.
+    let next = |band: usize, pulses: usize| {
+        if gains[band] == 0 || pulses == MAX_PULSES {
+            (usize::MAX, 1u64)
+        } else {
+            let extra = usize::from(tables[band][pulses + 1] - tables[band][pulses]);
+            let resolution = pulses + offsets[band];
+            (extra, (resolution as u64).pow(3) * extra as u64)
+        }
+    };
+    let mut priorities: [(usize, u64); 4] = std::array::from_fn(|band| next(band, pulses[band]));
     loop {
         let mut chosen = None;
         let mut best = (0u128, 1u128);
         for band in 0..4 {
-            if gains[band] == 0 || pulses[band] == MAX_PULSES {
+            if priorities[band].0 > bytes * 8 - used {
                 continue;
             }
-            let extra = usize::from(tables[band][pulses[band] + 1] - tables[band][pulses[band]]);
-            if used + extra > bytes * 8 {
-                continue;
-            }
-            let resolution = pulses[band] + offsets[band];
             // Compare energy*N / ((K+ceil(sqrt(N)))^3 * added_bits) without division.
-            let priority = (
-                u128::from(numerators[band]),
-                u128::from((resolution as u64).pow(3) * extra as u64),
-            );
+            let priority = (u128::from(numerators[band]), u128::from(priorities[band].1));
             if priority.0 * best.1 > best.0 * priority.1 {
-                chosen = Some((band, extra));
+                chosen = Some(band);
                 best = priority;
             }
         }
-        let Some((band, extra)) = chosen else {
+        let Some(band) = chosen else {
             break;
         };
         pulses[band] += 1;
-        used += extra;
+        used += priorities[band].0;
+        priorities[band] = next(band, pulses[band]);
     }
     pulses
 }

@@ -5,6 +5,16 @@ not establish subjective quality, conversational acceptance or superiority over
 other libraries. Listening tests and realistic noisy conversations remain
 necessary.
 
+## Version 5 pulse-priority optimization
+
+Caching a band's marginal pulse cost reduces repeated allocation calculations
+without changing the mathematical allocation or format. The
+[paired speech CPU evaluation](cpu.md) compares against version 5 at commit
+`8089bc873d5d6122ee49a37cdbaea5e8bc13ac19`. All 48 full-clip traces at both durations
+and 12/24/32 kb/s match packet and PCM bytes exactly. This optimization makes
+no new speech-quality claim; the improvements and regressions below remain
+relevant to version 5.
+
 ## Version 5 normalized pulse bands
 
 A packet can now select four band gains and normalized signed-pulse vectors in
