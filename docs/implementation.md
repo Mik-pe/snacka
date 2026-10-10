@@ -15,7 +15,10 @@ its transform workspace, spectral history and short overlap. Byte budgets can
 change per frame without a new decoding configuration.
 
 Sparse coefficient selection and one shared gain are deliberately simple
-baselines. Their main weakness is speech fidelity, especially unvoiced speech
+baselines. Per-frame selection between squared four-bit and linear six-bit
+amplitudes balances retained coefficients against amplitude precision. Gain
+selection minimizes coefficient reconstruction error. The main weakness remains
+speech fidelity, especially unvoiced speech
 and dense spectra. Concealment repeats decaying spectral history and is not a
 speech predictor. There is no trained neural component, FEC, stereo, adaptive
 frame switching or production quality claim.

@@ -1,6 +1,6 @@
 # Measurements
 
-## CPU method and initial run
+## CPU method and version 2 run
 
 Run `cargo bench --locked --bench kernels --features reference-tests` in a release
 build with an independently installed libopus. Omit the feature to measure only
@@ -14,7 +14,7 @@ Each operation receives 1,000 warmups. A batch is calibrated once to at least
 **batch-average throughput**, not individual callback tail latency. Timer, loop,
 validation and reference FFI overhead remain included.
 
-The [raw table](measurements/2026-10-10-apple-m5.csv) was captured on Apple M5,
+The [version 2 raw table](measurements/2026-10-10-apple-m5-v2.csv) was captured on Apple M5,
 macOS 27.0 build 26A428, aarch64, Rust 1.99.0 (`b940084d7`, 2026-09-28), and
 libopus 1.6.1. Release overflow checks were enabled, with no LTO,
 `target-cpu=native` or explicit SIMD. This shared desktop had neither CPU affinity
@@ -28,10 +28,13 @@ have. Quality is not matched and no competitor quality score was measured.
 This is a CPU workload comparison, not proof of codec superiority.
 
 At 20 ms / 24 kb/s, median batch-average native encode/decode took about
-6.46/5.23 microseconds; the reference took about 36.24/6.69 microseconds. These
+6.49/4.93 microseconds; the reference took about 36.48/6.55 microseconds. These
 measurements do not establish mobile battery use, perceptual quality or
-real-time behavior under application load. The source hash manifest records the
-processing and benchmark sources used for this measurement.
+real-time behavior under application load. The
+[source hash manifest](measurements/2026-10-10-v2-source.sha256) records the
+processing, benchmark and evaluation sources used for this measurement.
+The earlier [version 1 table](measurements/2026-10-10-apple-m5.csv) and its
+[source manifest](measurements/2026-10-10-source.sha256) remain historical results.
 
 ## Public speech smoke test
 
@@ -58,12 +61,56 @@ removes padding of the last partial frame. It measures ordinary waveform SNR,
 This is **not a perceptual or intelligibility score** and must not be compared
 with another codec without matching alignment and evaluation settings.
 
-The [result table](measurements/2026-10-10-speech-smoke.csv) spans both durations
-and 12/24/32 kb/s. At 20 ms / 24 kb/s it measures 8.30–9.19 dB. This exposes the
-baseline's considerable reconstruction error. Three clips from one clean,
+The historical [version 1 result table](measurements/2026-10-10-speech-smoke.csv)
+spans both durations and 12/24/32 kb/s. At 20 ms / 24 kb/s it measures
+8.30–9.19 dB. This exposes the baseline's considerable reconstruction error. Three clips from one clean,
 read-English speaker are a smoke test, not a representative quality evaluation.
 Unvoiced speech, noisy inputs, diverse speakers, multiple languages, double-talk
 and burst packet loss remain necessary before a quality acceptance decision.
+
+## Version 2 quantization comparison
+
+The [paired results](measurements/2026-10-10-speech-v2.csv) compare version 2
+against commit `ccc1dc9800003cb20a4f79b44acb44e2f2a1f4a0` using eight utterances
+from four LibriSpeech test-clean speakers. Attribution and licensing are as
+above. Original FLAC hashes are in the
+[input manifest](measurements/2026-10-10-speech-v2-input.sha256). For clip
+`speaker-chapter-utterance`, the archive member is
+`LibriSpeech/test-clean/speaker/chapter/speaker-chapter-utterance.flac`.
+The archive was downloaded from the official corpus mirror
+`https://openslr.trmal.net/resources/12/test-clean.tar.gz`.
+
+The offline [evaluation script](../tools/evaluate_speech.py) converts FLAC with
+FFmpeg 9.0.2 and Python 3.14.8. It tests clean PCM and Gaussian white noise added at
+20 and 10 dB input SNR. A separate Python `random.Random` is seeded with
+`snacka-speech-6716:<clip>:<snr>` for each noisy condition; noise energy is scaled
+over the whole utterance before f32 conversion. Clipping counts and hashes of
+the exact test PCM are recorded. No samples clipped in this run. The reference
+waveform is the noisy input itself: this measures codec distortion, not
+denoising or intelligibility. Neither codec receives noise-specific settings.
+
+Both durations and all three bitrates yield 144 paired cases. Version 2 improves
+aligned waveform SNR in every measured case, by 0.094–1.423 dB. Clean speech
+improves by 0.232–1.423 dB. At 20 ms / 24 kb/s, clean scores range from
+9.15 to 19.43 dB, with mean paired improvement 0.458 dB. These are equal-rate
+comparisons against our previous implementation, not evidence of superiority
+over another library or of better perceived quality. Four read-English voices
+and synthetic noise still leave conversational speech, other languages and
+real background noise untested.
+
+Build the current and baseline `roundtrip` executables separately with the same
+release toolchain, place the eight original FLACs in `corpus`, then run:
+
+```sh
+cargo build --release --locked --example roundtrip
+python3 tools/evaluate_speech.py corpus results.csv \
+  --roundtrip target/release/examples/roundtrip \
+  --baseline /path/to/version-1/roundtrip
+```
+
+Omit `--baseline` to evaluate current output alone. No corpus audio, transcripts
+or decoded output are committed. The baseline executable is an external
+historical measurement artifact, not an alternate library implementation.
 
 ## Correctness and robustness evidence
 
@@ -74,6 +121,10 @@ and burst packet loss remain necessary before a quality acceptance decision.
 - Framing bit flips, truncated packets, invalid gain/amplitudes with valid CRC,
   wrong profiles, invalid PCM and insufficient buffers are refused without
   changing documented output or persistent history.
+- Both amplitude quantizers and gain boundaries are decoded from independently
+  constructed packets and checked against double-precision inverse cosine sums.
+  Incompatible versions are refused before changing history. The debug and
+  release suites contain 25 tests, plus the documented example test.
 - Independent entropy fixtures cover 128 frames and 16,384 events, checking
   values, interval and whole/eighth-bit usage. The live libopus oracle also
   decoded all native full-budget entropy frames, independently checking padded
@@ -86,8 +137,9 @@ and burst packet loss remain necessary before a quality acceptance decision.
   repetitions after construction, including concealment, bitrate update and
   reset. Steady-state allocations observed: zero.
 - Coverage-guided libFuzzer with AddressSanitizer, seed 6716 and a requested
-  30-second limit completed 37,033 native packet inputs and 3,800,240 entropy
-  inputs without a reported failure. Packet payload mutations have their CRC
+  30-second limit completed 37,125 version 2 packet inputs without a reported
+  failure. The unchanged entropy primitive previously completed 3,800,240
+  inputs. Packet payload mutations have their CRC
   repaired to reach the audio decoder. Mutation length limits were 1,024 and 4,096 bytes; the packet seed corpus
   also contained earlier inputs up to 4,083 bytes.
   These counts describe short development runs, not security certification.

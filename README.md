@@ -17,7 +17,8 @@ production calls. No superiority over established codecs is claimed.
   bitrate updates or reset. Each track owns its independent history.
 - No library dependencies, build script, C, FFI, CMake or unsafe Rust.
 
-The encoder uses a short-overlap MDCT, sparse spectral selection, quantization
+The encoder uses a short-overlap MDCT, sparse spectral selection, adaptive
+four- or six-bit quantization
 and arithmetic coding of coefficient subsets. The decoder validates framing,
 CRC, stream sequence and spectral bounds, with explicit concealment for missing
 packets. CRC detects corruption; authentication belongs to the transport.

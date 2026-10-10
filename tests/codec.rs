@@ -213,24 +213,45 @@ fn silence_is_exact_and_a_finished_stream_can_be_reset_without_allocating() {
     );
 }
 
-fn spectral_packet(gain: u32, amplitude: u32) -> Vec<u8> {
-    let mut source = Encoder::new(Config::default());
+fn spectral_packet(gain: u32, bits: u32, amplitudes: &[u32]) -> Vec<u8> {
     let mut packet = vec![0; 60];
-    source.encode(&[0.0; FRAME_SAMPLES], &mut packet).unwrap();
-    // Raw suffix: gain is first, followed by six-bit amplitudes, LSB first.
-    for bit in 0..8 {
-        let byte = 57 - bit / 8;
-        packet[byte] =
-            (packet[byte] & !(1 << (bit % 8))) | ((((gain >> bit) & 1) as u8) << (bit % 8));
+    packet[..4].copy_from_slice(&[b'S', b'N', 64, 0]);
+    let mut count = 0;
+    let mut log_combinations = 0.0f64;
+    for candidate in 1..100 {
+        log_combinations += ((961 - candidate) as f64 / candidate as f64).log2();
+        if log_combinations.ceil() as u32 + bits * candidate + 12 > 54 * 8 {
+            break;
+        }
+        count = candidate;
     }
-    for bit in 0..6 {
-        let position = 8 + bit;
-        let byte = 57 - position / 8;
-        packet[byte] = (packet[byte] & !(1 << (position % 8)))
-            | ((((amplitude >> bit) & 1) as u8) << (position % 8));
+    let mut writer = snacka::entropy::Encoder::new(&mut packet[4..58]);
+    writer.raw(gain, 8).unwrap();
+    writer.raw(u32::from(bits == 6), 1).unwrap();
+    for index in 0..count {
+        let available = 960 - index;
+        let remaining = count - index;
+        let probabilities = [0, (available - remaining) as u16, available as u16];
+        writer
+            .symbol(1, snacka::entropy::Model::new(&probabilities).unwrap())
+            .unwrap();
+        let zero = (1 << (bits - 1)) - 1;
+        writer
+            .raw(
+                amplitudes.get(index as usize).copied().unwrap_or(zero),
+                bits,
+            )
+            .unwrap();
     }
+    writer.finish_padded().unwrap();
+    repair_crc(&mut packet);
+    packet
+}
+
+fn repair_crc(packet: &mut [u8]) {
+    let end = packet.len() - 2;
     let mut crc = 0xffffu16;
-    for &byte in &packet[..58] {
+    for &byte in &packet[..end] {
         crc ^= u16::from(byte) << 8;
         for _ in 0..8 {
             crc = if crc & 0x8000 != 0 {
@@ -240,17 +261,18 @@ fn spectral_packet(gain: u32, amplitude: u32) -> Vec<u8> {
             };
         }
     }
-    packet[58..].copy_from_slice(&crc.to_le_bytes());
-    packet
+    packet[end..].copy_from_slice(&crc.to_le_bytes());
 }
 
 #[test]
 fn invalid_spectral_parameters_with_valid_checksums_preserve_state() {
     let mut decoder = Decoder::new();
     for packet in [
-        spectral_packet(137, 31),
-        spectral_packet(128, 63),
-        spectral_packet(0, 32),
+        spectral_packet(209, 4, &[]),
+        spectral_packet(128, 4, &[15]),
+        spectral_packet(128, 6, &[63]),
+        spectral_packet(0, 4, &[8]),
+        spectral_packet(0, 6, &[32]),
     ] {
         assert!(Packet::parse(&packet).is_ok());
         let mut output = [9.0; FRAME_SAMPLES];
@@ -258,7 +280,7 @@ fn invalid_spectral_parameters_with_valid_checksums_preserve_state() {
         assert_eq!(output, [9.0; FRAME_SAMPLES]);
     }
     decoder
-        .decode(&spectral_packet(0, 31), &mut [0.0; FRAME_SAMPLES])
+        .decode(&spectral_packet(0, 4, &[]), &mut [0.0; FRAME_SAMPLES])
         .unwrap();
 }
 
@@ -364,4 +386,77 @@ fn bitrate_changes_keep_sequence_overlap_and_fractional_budget() {
         assert_eq!(info.sequence, frame as u8);
         assert_eq!(bytes, (bits / 400) as usize);
     }
+}
+
+#[test]
+fn both_quantizers_and_gain_boundaries_match_independent_inverse_cosines() {
+    let samples = FRAME_SAMPLES;
+    let overlap = ALGORITHMIC_DELAY;
+    let start = (samples - overlap) / 2;
+    for bits in [4, 6] {
+        let radius = (1i32 << (bits - 1)) - 1;
+        let quantized = [radius, 1 - radius, radius / 3, -(radius / 5)];
+        let amplitudes: Vec<_> = quantized.iter().map(|x| (x + radius) as u32).collect();
+        for code in [1, 63, 64, 65, 128, 192, 208] {
+            let exponent = if code <= 64 {
+                -16.0 + f64::from(code) / 8.0
+            } else {
+                -8.0 + f64::from(code - 64) / 16.0
+            };
+            let gain = 2.0f64.powf(exponent);
+            let mut decoder = Decoder::new();
+            let mut output = [0.0; FRAME_SAMPLES];
+            decoder
+                .decode(&spectral_packet(code, bits, &amplitudes), &mut output)
+                .unwrap();
+            for (index, &actual) in output.iter().enumerate() {
+                let position = start + index;
+                let reflected = position.min(2 * samples - 1 - position);
+                let window = if reflected >= start + overlap {
+                    1.0
+                } else {
+                    let angle = std::f64::consts::FRAC_PI_2 * ((reflected - start) as f64 + 0.5)
+                        / overlap as f64;
+                    (std::f64::consts::FRAC_PI_2 * angle.sin().powi(2)).sin()
+                };
+                let expected: f64 = quantized
+                    .iter()
+                    .enumerate()
+                    .map(|(frequency, &q)| {
+                        let coefficient = if bits == 4 {
+                            f64::from(q * q.abs()) * gain / 49.0
+                        } else {
+                            f64::from(q) * gain / 31.0
+                        };
+                        let phase = std::f64::consts::PI / samples as f64
+                            * (position as f64 + 0.5 + samples as f64 / 2.0)
+                            * (frequency as f64 + 0.5);
+                        coefficient * phase.cos()
+                    })
+                    .sum::<f64>()
+                    * window;
+                assert!(
+                    (f64::from(actual) - expected.clamp(-1.0, 1.0)).abs() < 2e-5,
+                    "bits={bits}, gain={code}, position={index}: {actual} versus {expected}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn incompatible_versions_are_rejected_before_consuming_history() {
+    let mut packet = spectral_packet(0, 4, &[]);
+    let mut decoder = Decoder::new();
+    let mut output = [9.0; FRAME_SAMPLES];
+    for version in [0, 1, 3, 7] {
+        packet[2] = version << 5;
+        repair_crc(&mut packet);
+        assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Version));
+        assert_eq!(output, [9.0; FRAME_SAMPLES]);
+    }
+    packet[2] = 2 << 5;
+    repair_crc(&mut packet);
+    decoder.decode(&packet, &mut output).unwrap();
+    assert_eq!(output, [0.0; FRAME_SAMPLES]);
 }

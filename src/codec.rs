@@ -16,19 +16,36 @@ pub const ALGORITHMIC_DELAY: usize = 120;
 
 const HEADER: usize = 4;
 const CHECKSUM: usize = 2;
-const VERSION: u8 = 1;
+const VERSION: u8 = 2;
 const END: u8 = 16;
 const MIN_PACKET_BYTES: usize = 15;
-const GAIN_STEPS: [f32; 9] = [
-    1.0,
-    1.090_507_7,
-    1.189_207_1,
-    1.296_839_6,
+const GAIN_STEPS: [f32; 17] = [
+    1f32,
+    1.044_273_7_f32,
+    1.090_507_7_f32,
+    1.138_788_6_f32,
+    1.189_207_1_f32,
+    1.241_857_8_f32,
+    1.296_839_6_f32,
+    1.354_255_6_f32,
     std::f32::consts::SQRT_2,
-    1.542_210_8,
-    1.681_792_9,
-    1.834_008_1,
-    2.0,
+    1.476_826_2_f32,
+    1.542_210_8_f32,
+    1.610_490_3_f32,
+    1.681_792_9_f32,
+    1.756_252_2_f32,
+    1.834_008_1_f32,
+    1.915_206_6_f32,
+    2f32,
+];
+const SHAPE_BOUNDARIES: [f32; 7] = [
+    1.0 / 98.0,
+    5.0 / 98.0,
+    13.0 / 98.0,
+    25.0 / 98.0,
+    41.0 / 98.0,
+    61.0 / 98.0,
+    85.0 / 98.0,
 ];
 
 /// Invalid configuration, audio input, packet or stream state.
@@ -210,18 +227,18 @@ const SUBSET_BITS_960: [usize; 81] = [
     320, 324, 328, 332, 335, 339, 343, 347, 350, 354, 358, 361, 365, 369, 372, 376, 379, 383, 386,
     390, 393,
 ];
-fn coefficient_count(payload_bytes: usize, samples: usize) -> usize {
+fn coefficient_count(payload_bytes: usize, samples: usize, amplitude_bits: usize) -> usize {
     let subset_bits = if samples == 480 {
         &SUBSET_BITS_480
     } else {
         &SUBSET_BITS_960
     };
     let budget = payload_bytes * 8;
-    // Gain uses eight raw bits; three bits cover interval rounding and termination.
+    // Gain and quantizer use nine raw bits; three bits cover interval rounding and termination.
     subset_bits
         .iter()
         .enumerate()
-        .take_while(|&(count, &bits)| bits + 6 * count + 11 <= budget)
+        .take_while(|&(count, &bits)| bits + amplitude_bits * count + 12 <= budget)
         .last()
         .map_or(0, |(count, _)| count)
 }
@@ -284,9 +301,13 @@ fn gain(code: u8) -> f32 {
     if code == 0 {
         return 0.0;
     }
-    let exponent = i32::from(code) - 128;
-    let scale = f32::from_bits(((exponent.div_euclid(8) + 127) as u32) << 23);
-    scale * GAIN_STEPS[exponent.rem_euclid(8) as usize]
+    let exponent = if code <= 64 {
+        2 * (i32::from(code) - 128)
+    } else {
+        i32::from(code) - 192
+    };
+    let scale = f32::from_bits(((exponent.div_euclid(16) + 127) as u32) << 23);
+    scale * GAIN_STEPS[exponent.rem_euclid(16) as usize]
 }
 fn gain_code(peak: f32) -> u8 {
     if peak <= 1.0 / 65_536.0 {
@@ -294,8 +315,37 @@ fn gain_code(peak: f32) -> u8 {
     }
     let exponent = ((peak.to_bits() >> 23) & 255) as i32 - 127;
     let mantissa = f32::from_bits((peak.to_bits() & 0x7f_ffff) | (127 << 23));
-    let step = GAIN_STEPS.partition_point(|&threshold| threshold < mantissa);
-    (128 + 8 * exponent + step as i32) as u8
+    if exponent < -8 {
+        let step = GAIN_STEPS
+            .iter()
+            .step_by(2)
+            .take_while(|&&threshold| threshold < mantissa)
+            .count();
+        (128 + 8 * exponent + step as i32) as u8
+    } else {
+        let step = GAIN_STEPS.partition_point(|&threshold| threshold < mantissa);
+        (192 + 16 * exponent + step as i32) as u8
+    }
+}
+
+fn quantize(value: f32, scale: f32, bits: usize) -> i32 {
+    if scale == 0.0 {
+        return 0;
+    }
+    let normalized = value.abs() / scale;
+    let magnitude = if bits == 4 {
+        SHAPE_BOUNDARIES.partition_point(|&boundary| normalized >= boundary) as i32
+    } else {
+        (normalized * 31.0).round().min(31.0) as i32
+    };
+    if value < 0.0 { -magnitude } else { magnitude }
+}
+fn reconstruct(value: i32, scale: f32, bits: usize) -> f32 {
+    if bits == 4 {
+        (value * value.abs()) as f32 * (scale / 49.0)
+    } else {
+        value as f32 * (scale / 31.0)
+    }
 }
 
 /// Stateful native audio encoder. Construction allocates transform storage.
@@ -399,27 +449,59 @@ impl Encoder {
             )
             .map_err(|_| Error::Input)?;
         let payload_bytes = length - HEADER - CHECKSUM;
-        let count = coefficient_count(payload_bytes, samples);
+        let counts = [
+            coefficient_count(payload_bytes, samples, 4),
+            coefficient_count(payload_bytes, samples, 6),
+        ];
+        let maximum_count = counts[0].max(counts[1]);
         let mut indices: [usize; FRAME_SAMPLES] = std::array::from_fn(|index| index);
-        indices[..samples].select_nth_unstable_by(count, |&left, &right| {
+        let order = |&left: &usize, &right: &usize| {
             self.coefficients[right]
                 .abs()
                 .total_cmp(&self.coefficients[left].abs())
                 .then(left.cmp(&right))
-        });
-        indices[..count].sort_unstable();
-        let peak = self.coefficients[..samples]
-            .iter()
-            .map(|value| value.abs())
-            .fold(0.0f32, f32::max);
-        let code = gain_code(peak);
+        };
+        indices[..samples].select_nth_unstable_by(maximum_count, order);
+        indices[..maximum_count].sort_unstable_by(order);
+        let ceiling = gain_code(self.coefficients[indices[0]].abs());
+        let mut best_error = f32::INFINITY;
+        let mut code = ceiling;
+        let mut bits = 4;
+        let mut count = counts[0];
+        for candidate_gain in ceiling.saturating_sub(1).max(u8::from(ceiling != 0))..=ceiling {
+            let scale = gain(candidate_gain);
+            for (candidate_bits, candidate_count) in [(4, counts[0]), (6, counts[1])] {
+                let mut error = 0.0;
+                for (position, &index) in indices[..maximum_count].iter().enumerate() {
+                    let value = self.coefficients[index];
+                    let decoded = if position < candidate_count {
+                        reconstruct(
+                            quantize(value, scale, candidate_bits),
+                            scale,
+                            candidate_bits,
+                        )
+                    } else {
+                        0.0
+                    };
+                    error += (value - decoded).powi(2);
+                }
+                if error < best_error {
+                    best_error = error;
+                    code = candidate_gain;
+                    bits = candidate_bits;
+                    count = candidate_count;
+                }
+            }
+        }
         let scale = gain(code);
+        indices[..count].sort_unstable();
         let mut packet = [0; MAX_PACKET_BYTES];
         packet[..2].copy_from_slice(b"SN");
         packet[2] = (VERSION << 5) | self.config.duration.profile() | if ending { END } else { 0 };
         packet[3] = self.sequence;
         let mut writer = entropy::Encoder::new(&mut packet[HEADER..length - CHECKSUM]);
         writer.raw(u32::from(code), 8)?;
+        writer.raw(u32::from(bits == 6), 1)?;
         let mut selected = 0;
         for index in 0..samples {
             let remaining = count - selected;
@@ -433,14 +515,11 @@ impl Encoder {
                 writer.symbol(usize::from(present), entropy::Model::new(&probabilities)?)?;
             }
             if present {
-                let quantized = if code == 0 {
-                    0
-                } else {
-                    (self.coefficients[index] / scale * 31.0)
-                        .round()
-                        .clamp(-31.0, 31.0) as i32
-                };
-                writer.raw((quantized + 31) as u32, 6)?;
+                let radius = (1 << (bits - 1)) - 1;
+                writer.raw(
+                    (quantize(self.coefficients[index], scale, bits) + radius) as u32,
+                    bits as u32,
+                )?;
                 selected += 1;
             }
         }
@@ -540,12 +619,13 @@ impl Decoder {
         let payload = packet.payload();
         let mut reader = entropy::Decoder::new(payload);
         let code = reader.raw(8)? as u8;
-        if code > 136 {
+        if code > 208 {
             return Err(Error::Packet);
         }
+        let bits = 4 + 2 * reader.raw(1)? as usize;
         let scale = gain(code);
         let mut coefficients = [0.0; FRAME_SAMPLES];
-        let mut remaining = coefficient_count(payload.len(), self.duration.samples());
+        let mut remaining = coefficient_count(payload.len(), self.duration.samples(), bits);
         for (index, coefficient) in coefficients[..self.duration.samples()]
             .iter_mut()
             .enumerate()
@@ -561,11 +641,13 @@ impl Decoder {
                 reader.symbol(entropy::Model::new(&probabilities)?) != 0
             };
             if present {
-                let value = reader.raw(6)?;
-                if value == 63 || (code == 0 && value != 31) {
+                let value = reader.raw(bits as u32)?;
+                let radius = (1 << (bits - 1)) - 1;
+                if value == (1 << bits) - 1 || (code == 0 && value != radius as u32) {
                     return Err(Error::Packet);
                 }
-                *coefficient = (value as i32 - 31) as f32 * (scale / 31.0);
+                let quantized = value as i32 - radius;
+                *coefficient = reconstruct(quantized, scale, bits);
                 remaining -= 1;
             }
         }
