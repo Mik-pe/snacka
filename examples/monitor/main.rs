@@ -2,6 +2,7 @@
 //! Microphone -> Snacka packets -> decoded headphone audio, with live A/B controls.
 mod audio;
 mod processor;
+mod resample;
 mod ui;
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};

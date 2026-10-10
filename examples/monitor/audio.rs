@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
+use super::resample::Converter;
 use cpal::{
     Device, FromSample, Sample, SampleFormat, SizedSample, Stream, SupportedStreamConfig,
+    SupportedStreamConfigRange,
     traits::{DeviceTrait, HostTrait, StreamTrait},
 };
 use rtrb::{Consumer, Producer, RingBuffer};
@@ -47,30 +49,78 @@ pub fn list_devices() -> Result<(), Box<dyn Error>> {
     let host = cpal::default_host();
     println!("Input devices (--input INDEX):");
     for (index, device) in host.input_devices()?.enumerate() {
-        println!("  {index}: {}", name(&device));
+        print_device(index, &device, true);
     }
     println!("Output devices (--output INDEX):");
     for (index, device) in host.output_devices()?.enumerate() {
-        println!("  {index}: {}", name(&device));
+        print_device(index, &device, false);
     }
     Ok(())
 }
 
+fn print_device(index: usize, device: &Device, input: bool) {
+    match select_config(device, input) {
+        Ok(config) => println!(
+            "  {index}: {} ({} Hz, {} channels, {})",
+            name(device),
+            config.sample_rate(),
+            config.channels(),
+            config.sample_format()
+        ),
+        Err(error) => println!("  {index}: {} ({error})", name(device)),
+    }
+}
+
+fn best_config(
+    ranges: impl IntoIterator<Item = SupportedStreamConfigRange>,
+) -> Option<SupportedStreamConfig> {
+    ranges
+        .into_iter()
+        .filter(|r| {
+            r.channels() > 0 && r.min_sample_rate() > 0 && supported_format(r.sample_format())
+        })
+        .map(|r| {
+            let rate = SAMPLE_RATE.clamp(r.min_sample_rate(), r.max_sample_rate());
+            r.with_sample_rate(rate)
+        })
+        .min_by_key(|c| {
+            (
+                c.sample_rate().abs_diff(SAMPLE_RATE),
+                c.sample_format() != SampleFormat::F32,
+                c.channels(),
+            )
+        })
+}
+
 fn select_config(device: &Device, input: bool) -> Result<SupportedStreamConfig, Box<dyn Error>> {
+    // Keep the device's current/default format, especially for Bluetooth devices
+    // whose capture and playback profiles share a hardware clock.
+    let default = if input {
+        device.default_input_config()
+    } else {
+        device.default_output_config()
+    };
+    if let Ok(config) = default
+        && config.channels() > 0
+        && config.sample_rate() > 0
+        && supported_format(config.sample_format())
+    {
+        return Ok(config);
+    }
     let ranges: Vec<_> = if input {
         device.supported_input_configs()?.collect()
     } else {
         device.supported_output_configs()?.collect()
     };
-    // Prefer float and few channels; input and output need not share a format.
-    ranges.into_iter()
-        .filter(|r| r.channels() > 0 && supported_format(r.sample_format()))
-        .filter_map(|r| r.try_with_sample_rate(SAMPLE_RATE))
-        .min_by_key(|c| (c.sample_format() != SampleFormat::F32, c.channels()))
-        .ok_or_else(|| io::Error::other(format!(
-            "{} has no supported 48 kHz PCM {} configuration. Select another device with --list-devices; this example does not resample.",
-            name(device), if input { "input" } else { "output" }
-        )).into())
+    // Prefer 48 kHz; otherwise convert from/to the nearest supported rate.
+    best_config(ranges).ok_or_else(|| {
+        io::Error::other(format!(
+            "{} has no supported PCM {} configuration. Select another device with --list-devices.",
+            name(device),
+            if input { "input" } else { "output" }
+        ))
+        .into()
+    })
 }
 
 fn supported_format(format: SampleFormat) -> bool {
@@ -95,6 +145,7 @@ fn capture<T: SizedSample>(
     mut producer: Producer<f32>,
     stats: Arc<Stats>,
     errors: mpsc::Sender<cpal::Error>,
+    mut converter: Converter,
 ) -> Result<Stream, cpal::Error>
 where
     f32: FromSample<T>,
@@ -114,7 +165,9 @@ where
                     0.0
                 };
                 clipped += usize::from(!mono.is_finite() || mono.abs() >= 1.0);
-                dropped += usize::from(producer.push(sample).is_err());
+                for &sample in converter.push(sample) {
+                    dropped += usize::from(producer.push(sample.clamp(-1.0, 1.0)).is_err());
+                }
             }
             stats.capture_drops.fetch_add(dropped, Ordering::Relaxed);
             stats.clipped_input.fetch_add(clipped, Ordering::Relaxed);
@@ -133,6 +186,7 @@ fn play<T: SizedSample + FromSample<f32>>(
     stats: Arc<Stats>,
     errors: mpsc::Sender<cpal::Error>,
     target: Arc<AtomicUsize>,
+    mut converter: Converter,
 ) -> Result<Stream, cpal::Error> {
     let channels = usize::from(config.channels());
     let mut primed = false;
@@ -144,6 +198,7 @@ fn play<T: SizedSample + FromSample<f32>>(
             if target != previous_target {
                 // Re-prime on increases; discard stale queued audio on decreases.
                 primed = false;
+                converter.reset();
                 previous_target = target;
                 let discard = consumer.slots().saturating_sub(target);
                 for _ in 0..discard {
@@ -160,12 +215,18 @@ fn play<T: SizedSample + FromSample<f32>>(
             }
             let mut gaps = 0;
             for frame in data.chunks_exact_mut(channels) {
-                let sample = consumer.pop().unwrap_or_else(|_| {
-                    primed = false;
-                    gaps += 1;
-                    0.0
+                let sample = converter.next(|| {
+                    consumer.pop().unwrap_or_else(|_| {
+                        primed = false;
+                        gaps += 1;
+                        0.0
+                    })
                 });
                 frame.fill(T::from_sample(sample));
+            }
+            if !primed {
+                // Re-priming must not retain a partially played conversion block.
+                converter.reset();
             }
             stats.playback_gaps.fetch_add(gaps, Ordering::Relaxed);
         },
@@ -213,6 +274,10 @@ pub fn start(
     .ok_or_else(|| io::Error::other("Output device not found; use --list-devices"))?;
     let input_config = select_config(&input, true)?;
     let output_config = select_config(&output, false)?;
+    let input_name = format!("{} ({} Hz)", name(&input), input_config.sample_rate());
+    let output_name = format!("{} ({} Hz)", name(&output), output_config.sample_rate());
+    let capture_converter = Converter::new(input_config.sample_rate(), SAMPLE_RATE)?;
+    let playback_converter = Converter::new(SAMPLE_RATE, output_config.sample_rate())?;
     let (capture_producer, captured) = RingBuffer::new(FRAME_SAMPLES * 4);
     // Allocate once for the largest live buffer choice (200 ms, with headroom).
     let (playback, playback_consumer) = RingBuffer::new(SAMPLE_RATE as usize * 400 / 1000);
@@ -225,8 +290,10 @@ pub fn start(
         input_config,
         capture_producer,
         stats.clone(),
-        error_tx.clone()
-    )?;
+        error_tx.clone(),
+        capture_converter
+    )
+    .map_err(|error| io::Error::other(format!("Could not open input {input_name}: {error}")))?;
     let output_stream = stream!(
         play,
         &output,
@@ -234,8 +301,10 @@ pub fn start(
         playback_consumer,
         stats.clone(),
         error_tx,
-        target.clone()
-    )?;
+        target.clone(),
+        playback_converter
+    )
+    .map_err(|error| io::Error::other(format!("Could not open output {output_name}: {error}")))?;
     output_stream.play()?;
     input_stream.play()?;
     Ok(Audio {
@@ -243,10 +312,48 @@ pub fn start(
         playback,
         stats,
         errors,
-        input_name: name(&input),
-        output_name: name(&output),
+        input_name,
+        output_name,
         target,
         _input: input_stream,
         _output: output_stream,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use cpal::SupportedBufferSize;
+
+    fn range(rate: u32, channels: u16, format: SampleFormat) -> SupportedStreamConfigRange {
+        SupportedStreamConfigRange::new(channels, rate, rate, SupportedBufferSize::Unknown, format)
+    }
+
+    #[test]
+    fn native_48khz_takes_precedence_over_float_and_mono() {
+        let config = best_config([
+            range(16_000, 1, SampleFormat::F32),
+            range(48_000, 2, SampleFormat::I16),
+        ])
+        .unwrap();
+        assert_eq!(config.sample_rate(), 48_000);
+        assert_eq!(config.sample_format(), SampleFormat::I16);
+    }
+
+    #[test]
+    fn headset_pcm_and_continuous_rate_ranges_are_supported() {
+        let config = best_config([range(16_000, 1, SampleFormat::I16)]).unwrap();
+        assert_eq!(config.sample_rate(), 16_000);
+        let config = best_config([SupportedStreamConfigRange::new(
+            1,
+            8_000,
+            96_000,
+            SupportedBufferSize::Unknown,
+            SampleFormat::F32,
+        )])
+        .unwrap();
+        assert_eq!(config.sample_rate(), 48_000);
+        assert!(best_config([range(48_000, 0, SampleFormat::F32)]).is_none());
+        assert!(best_config([]).is_none());
+    }
 }
