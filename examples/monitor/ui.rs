@@ -371,6 +371,16 @@ mod tests {
         view.encoded_bytes = processor.bytes;
         view.samples = processor.samples;
         assert_eq!(encoded_kilobytes_per_second(&view), 2.75);
+        processor.toggle_duration();
+        assert_eq!(processor.bytes, view.encoded_bytes);
+        assert_eq!(processor.samples, view.samples);
+        let frame_samples = processor.config.frame_samples();
+        processor
+            .process(&input[..frame_samples], &mut output[..frame_samples])
+            .unwrap();
+        view.encoded_bytes = processor.bytes;
+        view.samples = processor.samples;
+        assert_eq!(encoded_kilobytes_per_second(&view), 3.0);
         view.samples = 0;
         assert_eq!(encoded_kilobytes_per_second(&view), 0.0);
     }
