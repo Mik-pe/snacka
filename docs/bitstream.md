@@ -7,9 +7,14 @@ required neural weights in the current profiles.
 ## Packet framing
 
 Packets are supplied as complete slices. There is no stream container or
-transport framing in the library. The transport negotiates the codec identity;
-packets are not scanned for a magic marker. Version, sequence and checksum occupy
-four fixed bytes. All remaining bytes are available to spectral coding.
+transport framing in the library. The transport negotiates the codec identity
+and supported profiles; version 7 alone does not establish support for harmonic
+profiles 14/15. Earlier version-7 implementations reject these profiles. The
+encoder enables them only with `Config::with_harmonic_speech(true)`. The decoder
+accepts all defined profiles; applications must negotiate capabilities before
+enabling an encoder profile. The normal encoder configuration never emits
+harmonic profiles. Packets are not scanned for a magic marker. Version, sequence
+and checksum occupy four fixed bytes. All remaining bytes are available to model coding.
 
 | Bytes | Meaning |
 | --- | --- |
@@ -20,9 +25,9 @@ four fixed bytes. All remaining bytes are available to spectral coding.
 
 CRC uses polynomial `0x1021`, initial state `0xffff`, no reflection, no final
 XOR. It is not authentication. All profiles produce 48 kHz mono PCM. The profile
-combines frame duration and coded bandwidth:
+combines frame duration and nominal coded bandwidth:
 
-| Scalar profile | Pulse profile | Duration | Coded bandwidth | Transform size N | Coded coefficients M |
+| Scalar profile | Pulse profile | Duration | Nominal coded bandwidth | Transform size N | Coded coefficients M |
 | --- | --- | --- | --- | --- | --- |
 | 0 | 8 | 20 ms | 24 kHz | 960 | 960 |
 | 1 | 9 | 10 ms | 24 kHz | 480 | 480 |
@@ -31,12 +36,22 @@ combines frame duration and coded bandwidth:
 | 4 | 12 | 20 ms | 8 kHz | 960 | 320 |
 | 5 | 13 | 10 ms | 8 kHz | 480 | 160 |
 
-Bit 0 identifies duration. Bits 2–1 identify bandwidth, with 0/1/2 for
-24/12/8 kHz. Bit 3 selects one shared scalar gain (zero) or four normalized
-pulse bands (one). Bandwidth and spectral model may change per packet; duration
-is negotiated before constructing the decoder. Profiles 6, 7, 14 and 15 are
-rejected. Any future profile must specify all required decoding behavior,
-including necessary model weights and their identity.
+For these profiles, bit 0 identifies duration. Bits 2–1 identify bandwidth,
+with 0/1/2 for 24/12/8 kHz. Bit 3 selects one shared scalar gain (zero) or four
+normalized pulse bands (one). Bandwidth and spectral model may change per packet;
+duration is negotiated before constructing the decoder. Profiles 6 and 7 are
+rejected.
+
+Profiles 14 and 15 define the harmonic extension: 20 and 10 ms respectively,
+48 kHz mono, at most 8 kHz harmonic frequency, with transform N=960 and 480.
+Earlier version 7 decoders reject these profiles. Transport negotiation must
+establish harmonic-extension support before an encoder can emit them; version
+7 alone does not establish this support. Their complete decoding fields and
+equations are defined in [Harmonic speech](harmonic-speech.md#model-and-packet-budget).
+For harmonic profiles the bandwidth describes the highest harmonic frequency;
+the finite-window transform can carry energy above this frequency and reconstructs
+all N coefficients. They need no model weights. Any future profile must specify all required decoding
+behavior, including necessary model weights and their identity.
 
 20 ms packets occupy 30–80 bytes; 10 ms packets occupy 15–40 bytes. These sizes
 include framing and checksum. For target bitrate B, accumulate B into a byte
@@ -58,7 +73,7 @@ The inverse uses the same cosine without the `2/N` scale, then the window.
 Output is inverse[p..p+N] plus the preceding inverse block's O-sample tail on
 its first O samples. Save inverse[p+N..p+N+O] for the next output.
 
-Both spectral models use the same decoded gain mapping. Scalar gains use eight
+All models use the same decoded gain mapping. Scalar gains use eight
 raw bits; pulse gain precision is specified below. Code zero means all selected
 amplitudes are zero.
 Codes 1–64 represent `2^(-16+code/8)`; codes 65–208 represent
@@ -189,6 +204,9 @@ The additional bit in H covers this entire class-band excess.
 Fallback multiset bands have at most D+K−1 symbols with a≤D+K−1.
 At K≤387, summing the conservative excess for the largest four 20 ms band
 dimensions 40/40/80/800 is less than 0.342 bits; the 10 ms bound is smaller.
+For harmonic profiles, the largest group dimensions are 40/40/80/160. The same
+fallback calculation is less than 0.151044 bits. Their pitch adds nine raw bits,
+which allocation subtracts explicitly; it does not add an arithmetic symbol.
 With m normalized byte shifts, arithmetic information is
 `31+8*m−log2(R)`; integer tell is `32+8*m−floor(log2(R))` plus raw bits,
 less than information plus two. Termination requires at most ceil(tell/8)

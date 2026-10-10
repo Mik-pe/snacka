@@ -54,6 +54,8 @@ def main():
     parser.add_argument("--roundtrip", type=Path, required=True)
     parser.add_argument("--baseline", type=Path, required=True)
     parser.add_argument("--ffmpeg", default="ffmpeg")
+    parser.add_argument("--harmonic", action="store_true", help="enable harmonic speech in the current executable")
+    parser.add_argument("--baseline-harmonic", action="store_true", help="enable harmonic speech in the baseline executable")
     args = parser.parse_args()
     current = args.roundtrip.resolve(strict=True)
     baseline = args.baseline.resolve(strict=True)
@@ -90,10 +92,12 @@ def main():
                             pcm_sha256=hashlib.sha256(data).hexdigest(),
                             clipped_samples=clipped, samples=len(original),
                             frame_ms=duration, bitrate=bitrate,
+                            current_harmonic=args.harmonic, baseline_harmonic=args.baseline_harmonic,
                         )
                         for label, executable in (("baseline", baseline), ("current", current)):
                             waveform_snr, fields = score(
-                                executable, source, output, original, bitrate, duration
+                                executable, source, output, original, bitrate, duration,
+                                ["--harmonic"] if (args.harmonic if label == "current" else args.baseline_harmonic) else [],
                             )
                             values = np.asarray(floats(output.read_bytes()), dtype=np.float64)
                             row[f"{label}_snr_db"] = waveform_snr

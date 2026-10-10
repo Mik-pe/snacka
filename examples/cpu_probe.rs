@@ -4,10 +4,16 @@ use snacka::{Config, Decoder, Encoder, FrameDuration, MAX_PACKET_BYTES};
 use std::{error::Error, fs, hint::black_box, io};
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let arguments: Vec<_> = std::env::args().collect();
+    let mut arguments: Vec<_> = std::env::args().collect();
+    let harmonic = arguments
+        .last()
+        .is_some_and(|argument| argument == "--harmonic");
+    if harmonic {
+        arguments.pop();
+    }
     if arguments.len() != 6 {
         return Err(io::Error::other(
-            "usage: cpu_probe encode|decode|loss|burst|trace input.f32 frames|output.trace bitrate frame_ms",
+            "usage: cpu_probe encode|decode|loss|burst|trace input.f32 frames|output.trace bitrate frame_ms [--harmonic]",
         )
         .into());
     }
@@ -16,7 +22,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         "20" => FrameDuration::Ms20,
         _ => return Err(io::Error::other("frame_ms must be 10 or 20").into()),
     };
-    let config = Config::new(arguments[4].parse()?)?.with_frame_duration(duration);
+    let config = Config::new(arguments[4].parse()?)?
+        .with_frame_duration(duration)
+        .with_harmonic_speech(harmonic);
     let bytes = fs::read(&arguments[2])?;
     let (chunks, trailing) = bytes.as_chunks::<4>();
     if !trailing.is_empty() || chunks.is_empty() {

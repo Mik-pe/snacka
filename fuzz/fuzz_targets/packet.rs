@@ -20,7 +20,8 @@ fuzz_target!(|bytes: &[u8]| {
     for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
         let samples = duration.samples();
         let bitrate = 12_000 + u32::from(bytes.first().copied().unwrap_or(0)) * 20_000 / 255;
-        let config = Config::new(bitrate).unwrap().with_frame_duration(duration);
+        let config = Config::new(bitrate).unwrap().with_frame_duration(duration)
+            .with_harmonic_speech(bytes.get(3).copied().unwrap_or(0) & 1 != 0);
         let mut encoder = Encoder::new(config);
         let mut decoder = Decoder::with_frame_duration(duration);
         let input: Vec<_> = (0..samples).map(|i| {
@@ -34,9 +35,7 @@ fuzz_target!(|bytes: &[u8]| {
         }
         assert!(output.iter().all(|x| x.is_finite() && x.abs() <= 1.0));
         let length = encoder.encode(&input, &mut packet).unwrap();
-        packet[0] = (packet[0] & !14)
-            | (2 * (bytes.get(1).copied().unwrap_or(0) % 3))
-            | ((bytes.get(2).copied().unwrap_or(0) & 1) << 3);
+        packet[0] = (packet[0] & !14) | ((bytes.get(1).copied().unwrap_or(0) % 8) << 1);
         for (destination, &source) in packet[2..length - 2].iter_mut().zip(bytes) {
             *destination ^= source;
         }

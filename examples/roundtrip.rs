@@ -20,10 +20,16 @@ impl Loss {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let arguments: Vec<_> = std::env::args().collect();
+    let mut arguments: Vec<_> = std::env::args().collect();
+    let harmonic = arguments
+        .last()
+        .is_some_and(|argument| argument == "--harmonic");
+    if harmonic {
+        arguments.pop();
+    }
     if arguments.len() != 5 && arguments.len() != 7 {
         return Err(io::Error::other(
-            "usage: roundtrip input.f32 output.f32 bitrate frame_ms [loss_period loss_burst | --loss-frames file]",
+            "usage: roundtrip input.f32 output.f32 bitrate frame_ms [loss_period loss_burst | --loss-frames file] [--harmonic]",
         )
         .into());
     }
@@ -32,7 +38,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         "20" => FrameDuration::Ms20,
         _ => return Err(io::Error::other("frame_ms must be 10 or 20").into()),
     };
-    let config = Config::new(arguments[3].parse()?)?.with_frame_duration(duration);
+    let config = Config::new(arguments[3].parse()?)?
+        .with_frame_duration(duration)
+        .with_harmonic_speech(harmonic);
     let loss = if arguments.len() == 7 {
         if arguments[5] == "--loss-frames" {
             let mut frames = BTreeSet::new();
