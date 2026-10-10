@@ -170,3 +170,82 @@ spectral models. A requested 30-second AddressSanitizer packet fuzz run with
 seed 6716 completes 3,737 inputs without a reported failure. Source portability is checked for iOS, iOS Simulator and
 Android; installed-device evidence remains open. Sources are recorded in the
 [manifest](measurements/2026-10-10-priorities-source.sha256).
+
+## Reusing pulse candidates, version 6
+
+The baseline is commit `241dcd08350d75be37e11d797346e91a52707f15`.
+The encoder evaluates three bandwidths. Their first three frequency bands have
+identical coefficient ranges and gain codes. Compute those gains once per frame,
+and retain each band's quantized shape and norm while its allocated pulse count
+is unchanged. The fourth band's range changes, so it is always recomputed.
+The cache is local to the frame; it adds no persistent stream state or heap
+allocation. The error sum retains its original coefficient order and tie rules.
+Power-of-two gain rounding uses a mask; the capped amplitude bounds its sum to
+215, within u8. The version 6 format, decoder and transform delay are unchanged.
+
+The [paired CPU table](measurements/2026-10-10-candidate-reuse-cpu.csv) contains
+288 pairs: eight previously evaluated LibriSpeech clips from four speakers,
+two durations, three bitrates, encoding/decoding and three alternating-order
+repetitions. Each process encodes 10,000 or decodes 20,000 frames. Both probes
+use the current `examples/cpu_probe.rs`, Rust 1.99.0, opt-level 3, 16 codegen
+units, overflow checks and no LTO or native-CPU flags. Host: Apple M5, aarch64,
+macOS 27.0 build 26A428; Python 3.14.8 and FFmpeg 9.0.2. Desktop load and power
+are uncontrolled. Process CPU includes the amortized preparation described above.
+
+| Operation | Duration | Bitrate | Median baseline CPU/frame | Median current CPU/frame | Median paired change |
+| --- | --- | --- | --- | --- | --- |
+| Encode | 10 ms | 12 kb/s | 9.148 µs | 8.320 µs | -8.785% |
+| Decode | 10 ms | 12 kb/s | 3.351 µs | 3.326 µs | -0.219% |
+| Encode | 10 ms | 24 kb/s | 13.293 µs | 11.974 µs | -8.498% |
+| Decode | 10 ms | 24 kb/s | 4.521 µs | 4.520 µs | -0.437% |
+| Encode | 10 ms | 32 kb/s | 16.774 µs | 15.073 µs | -9.301% |
+| Decode | 10 ms | 32 kb/s | 5.499 µs | 5.397 µs | -1.581% |
+| Encode | 20 ms | 12 kb/s | 20.858 µs | 18.807 µs | -8.954% |
+| Decode | 20 ms | 12 kb/s | 7.944 µs | 7.906 µs | -0.534% |
+| Encode | 20 ms | 24 kb/s | 32.332 µs | 29.848 µs | -9.485% |
+| Decode | 20 ms | 24 kb/s | 10.788 µs | 10.563 µs | +0.023% |
+| Encode | 20 ms | 32 kb/s | 40.444 µs | 38.666 µs | -7.531% |
+| Decode | 20 ms | 32 kb/s | 12.379 µs | 12.387 µs | -1.368% |
+
+Medians weight each clip/repetition equally. The paired-change median is taken
+from individual pairs; it need not equal the ratio of the two CPU medians.
+Eight of 144 encoder pairs cost more CPU; their changes range from −26.722% to
++20.875%. Decoder changes range from −27.711% to +22.229%, with 56 of 144
+pairs increasing. The small decoder differences do not establish an improvement.
+The encoder result supports reduced compute cost on this host and workload;
+mobile power, callback tails under load and performance against other libraries
+remain unmeasured here.
+
+Reproduce the paired runs after separately building the two libraries and probes
+as above:
+
+```sh
+python3 tools/measure_cpu.py corpus results.csv \
+  --baseline ./baseline-probe --current ./current-probe \
+  --bitrates 12000 24000 32000 --repetitions 3 \
+  --encode-frames 10000 --decode-frames 20000
+```
+
+The [full trace table](measurements/2026-10-10-candidate-reuse-traces.csv)
+compares complete packets and reconstructed PCM, including priming, zero-padded
+final frames and drain. All 2,352 speech pairs are byte-identical: the 56 clips
+from 28 speakers already evaluated for [adaptive gains](adaptive-gains.md),
+clean and the same deterministic 20/10 dB noise from `tools/evaluate_speech.py`,
+both durations and rates 12000, 12345, 12800, 14400, 16000, 24000 and 32000.
+Input and trace hashes are retained per pair. These are existing evaluation
+inputs, not new held-out quality results. Their licensing and attribution are
+in [quality evaluation](quality.md).
+
+Another 56 identical trace pairs cover four 4,801-sample synthetic signals at
+the same durations and rates: silence; constant `1e-40`; impulses of +1 at
+indices divisible by 137, otherwise −1 at indices divisible by 211, otherwise
+zero; and `min(1, i/4800) * sin(0.271*i)`. Each is rounded to f32 before encoding.
+This samples transitions and extreme levels; it is not exhaustive proof over
+all inputs. Unchanged packets and PCM preserve the existing version 6 quality
+results for these speech cases; there is no new quality gain claim.
+
+All 46 debug and release tests pass, including every legal packet byte budget,
+independent inverse-cosine reconstruction, malformed packet/history handling
+and zero processing allocations at both durations and all gain precisions.
+Live-audio clippy passes. The [source manifest](measurements/2026-10-10-candidate-reuse-source.sha256)
+identifies the codec and evaluation sources.

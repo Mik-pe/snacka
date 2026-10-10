@@ -556,36 +556,60 @@ impl Encoder {
         }
         let gain_bits = crate::pulse::gain_bits(samples, payload_bytes);
         let gain_step = 1u8 << (8 - gain_bits);
+        let quantize_gain = |start: usize, end: usize| {
+            let energy: f32 = self.coefficients[start..end]
+                .iter()
+                .map(|value| value * value)
+                .sum();
+            let amplitude = energy.sqrt().min(2.0);
+            let mask = gain_step - 1;
+            let ceiling = (gain_code(amplitude) + mask) & !mask;
+            let lower = ceiling
+                .saturating_sub(gain_step)
+                .max(u8::from(ceiling != 0) * gain_step);
+            if (amplitude - gain(lower)).abs() <= (amplitude - gain(ceiling)).abs() {
+                lower
+            } else {
+                ceiling
+            }
+        };
+        // The first three bands share inputs and gains across bandwidths; only their pulse counts can change.
+        let fixed_edges = crate::pulse::edges(samples, samples);
+        let fixed_codes: [u8; 3] =
+            std::array::from_fn(|group| quantize_gain(fixed_edges[group], fixed_edges[group + 1]));
+        let mut last_pulses = [usize::MAX; 3];
+        let mut cached_norms = [0.0; 3];
         let mut candidate_pulses = [0i16; FRAME_SAMPLES];
         for candidate_band in 0..3 {
             let coded_bins = samples / (1 + candidate_band);
             let edges = crate::pulse::edges(samples, coded_bins);
-            let mut codes = [0u8; 4];
-            for group in 0..4 {
-                let energy: f32 = self.coefficients[edges[group]..edges[group + 1]]
-                    .iter()
-                    .map(|value| value * value)
-                    .sum();
-                let amplitude = energy.sqrt().min(2.0);
-                let ceiling = gain_code(amplitude).div_ceil(gain_step) * gain_step;
-                let lower = ceiling
-                    .saturating_sub(gain_step)
-                    .max(u8::from(ceiling != 0) * gain_step);
-                codes[group] =
-                    if (amplitude - gain(lower)).abs() <= (amplitude - gain(ceiling)).abs() {
-                        lower
-                    } else {
-                        ceiling
-                    };
-            }
+            let codes = [
+                fixed_codes[0],
+                fixed_codes[1],
+                fixed_codes[2],
+                quantize_gain(edges[3], edges[4]),
+            ];
             let allocation = crate::pulse::allocate(samples, coded_bins, &codes, payload_bytes);
             let mut improvement = 0.0;
             for group in 0..4 {
                 let range = edges[group]..edges[group + 1];
                 let values = &self.coefficients[range.clone()];
                 let shape = &mut candidate_pulses[range.clone()];
-                let norm =
-                    crate::pulse::quantize(values, allocation[group], shape, &mut indices[range]);
+                let norm = if group < 3 && last_pulses[group] == allocation[group] {
+                    cached_norms[group]
+                } else {
+                    let norm = crate::pulse::quantize(
+                        values,
+                        allocation[group],
+                        shape,
+                        &mut indices[range],
+                    );
+                    if group < 3 {
+                        last_pulses[group] = allocation[group];
+                        cached_norms[group] = norm;
+                    }
+                    norm
+                };
                 let scale = if norm == 0.0 {
                     0.0
                 } else {
