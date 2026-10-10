@@ -126,7 +126,9 @@ historical measurement artifact, not an alternate library implementation.
   Incompatible versions are refused before changing history. The debug and
   release suites previously contained 25 tests. The concealment revision adds
   phase/long-loss, refusal/history and bounded-recovery tests, bringing the
-  current total to 28. README examples are not automatically run as doctests.
+  version 2 total to 28. Version 3 adds profile rejection, bandwidth adaptation
+  and all-budget independent cosine checks, bringing the current total to 31.
+  README examples are not automatically run as doctests.
 - Independent entropy fixtures cover 128 frames and 16,384 events, checking
   values, interval and whole/eighth-bit usage. The live libopus oracle also
   decoded all native full-budget entropy frames, independently checking padded
@@ -152,6 +154,9 @@ Perceptual metrics and blind listening, a matched-quality competitor comparison,
 long-running fuzzing, realistic loss traces, callback tails under load, installed
 ARM64/x86-64 device measurements and battery evidence are still required.
 Cross-compilation alone does not establish mobile runtime acceptance.
+Adaptive-bandwidth speech scores and current CPU measurements are described in
+[the quality evaluation](quality.md). Earlier measurements below remain
+historical evidence for their recorded versions.
 
 ## Causal concealment revision
 

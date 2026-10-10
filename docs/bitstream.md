@@ -1,4 +1,4 @@
-# Experimental native bitstream, version 2
+# Experimental native bitstream, version 3
 
 The format is intentionally independent of legacy audio packet formats.
 Incompatible changes require another version or defined profile. There are no
@@ -12,14 +12,27 @@ transport framing in the library.
 | Bytes | Meaning |
 | --- | --- |
 | 0–1 | ASCII `SN` |
-| 2 | Bits 7–5: version 2. Bit 4: final drain. Bits 3–0: required profile |
+| 2 | Bits 7–5: version 3. Bit 4: final drain. Bits 3–0: required profile |
 | 3 | Frame sequence modulo 256, initially zero |
 | 4 through length−3 | Entropy payload, padded to the allocated byte budget |
 | Last two | Little-endian CRC-16/CCITT-FALSE over all preceding bytes |
 
 CRC uses polynomial `0x1021`, initial state `0xffff`, no reflection, no final
-XOR. It is not authentication. Profile 0 is 48 kHz mono / 20 ms, profile 1 is
-48 kHz mono / 10 ms. Other profile identities are rejected. Any future profile
+XOR. It is not authentication. All profiles produce 48 kHz mono PCM. The profile
+combines frame duration and coded bandwidth:
+
+| Profile | Duration | Coded bandwidth | Transform size N | Coded coefficients M |
+| --- | --- | --- | --- | --- |
+| 0 | 20 ms | 24 kHz | 960 | 960 |
+| 1 | 10 ms | 24 kHz | 480 | 480 |
+| 2 | 20 ms | 12 kHz | 960 | 480 |
+| 3 | 10 ms | 12 kHz | 480 | 240 |
+| 4 | 20 ms | 8 kHz | 960 | 320 |
+| 5 | 10 ms | 8 kHz | 480 | 160 |
+
+Bit 0 identifies duration. Bits 2–1 identify bandwidth, with 0/1/2 for
+24/12/8 kHz. Bit 3 must be zero. Bandwidth may change per packet; duration is
+negotiated before constructing the decoder. Profiles 6–15 are rejected. Any future profile
 must specify all required decoding behavior, including necessary model weights
 and their identity.
 
@@ -53,27 +66,37 @@ follows gain: zero selects four-bit amplitudes, one selects six-bit amplitudes.
 | 4 bits | −7 through 7 | q+7 | 15 | q*abs(q)*gain/49 |
 | 6 bits | −31 through 31 | q+31 | 63 | q*gain/31 |
 
-The encoder compares both quantizers at the smallest gain covering the greatest
-absolute coefficient and the adjacent lower nonzero gain. Peaks at or below
+Within each coded band, the encoder compares both quantizers at the smallest
+gain covering the greatest absolute coefficient and the adjacent lower nonzero gain. Peaks at or below
 `2^-16` use code zero. Choose the candidate with least squared coefficient error,
 including coefficients omitted by its budget. Quantize to the nearest
 reconstructed level, saturating at the greatest magnitude. Four-bit squared
 levels spend more precision near zero and retain more coefficients at a given
 packet size; six-bit linear levels suit sparse spectra. Final PCM is clipped to
-[−1,1]. Versions other than 2 are rejected; version 1 is not a compatibility path.
+[−1,1]. Versions other than 3 are rejected; there is no older-format compatibility path.
 
 ## Subset and entropy coding
 
-Choose the greatest K absolute coefficients, with ascending index as the tie
+Choose the greatest K absolute coefficients within M positions, with ascending index as the tie
 break. K is the greatest integer satisfying
-`ceil(log2(binomial(N,K))) + amplitude_width*K + 12 <= 8*payload_bytes`.
+`ceil(log2(binomial(M,K))) + amplitude_width*K + 12 <= 8*payload_bytes`.
 The budget includes eight gain bits, one quantizer bit and three bits for
 interval rounding and termination. Both profiles use exact integer cardinality
-tables for K; the quantizer flag determines which budget the decoder uses.
+tables for K for M=160/240/320/480/960; the profile and quantizer flag determine
+which budget the decoder uses. Coefficients M through N−1 are zero.
+
+The current encoder evaluates all three bandwidths. For each candidate, compare
+the squared-error reduction `sum(x^2−(x−reconstruction)^2)` over its selected
+coefficients, relative to an all-zero spectrum. This counts both coefficients
+omitted within a band and all coefficients outside it. Choose the greatest
+reduction; ties prefer the earlier candidate. Candidate order is 24/12/8 kHz,
+lower gain before ceiling gain, then four-bit before six-bit amplitudes.
+Band identity is already in the header and consumes no extra payload bits.
 
 After writing gain and the quantizer flag, visit indices in order. If R selections
 remain among A positions, code absence/presence with cumulative frequencies
 `[0, A−R, A]`.
+The first visit starts with A=M and R=K.
 If R=A, presence is implicit. If R=0, stop. On each presence, write its four- or
 six-bit amplitude and decrement R. The decoder reconstructs this same subset;
 duplicate or out-of-order indices cannot be represented.
