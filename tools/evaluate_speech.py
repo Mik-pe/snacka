@@ -45,12 +45,14 @@ def score(executable, source, output, original, bitrate, duration):
         command + [str(source), str(output), str(bitrate), str(duration)],
         check=True, capture_output=True, text=True,
     )
-    decoded = floats(output.read_bytes())
+    data = output.read_bytes()
+    decoded = floats(data)
     if len(decoded) != len(original) or not all(math.isfinite(x) for x in decoded):
         raise ValueError("roundtrip returned invalid PCM or a different length")
     energy = sum(float(x) ** 2 for x in original)
     error = sum((float(x) - float(y)) ** 2 for x, y in zip(original, decoded))
     fields = dict(field.split("=", 1) for field in result.stdout.strip().split(","))
+    fields["decoded_pcm_sha256"] = hashlib.sha256(data).hexdigest()
     return 10 * math.log10(energy / max(error, 1e-30)), fields
 
 

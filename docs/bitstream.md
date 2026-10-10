@@ -1,4 +1,4 @@
-# Experimental native bitstream, version 5
+# Experimental native bitstream, version 6
 
 The format is intentionally independent of legacy audio packet formats.
 Incompatible changes require another version or defined profile. There are no
@@ -13,7 +13,7 @@ four fixed bytes. All remaining bytes are available to spectral coding.
 
 | Bytes | Meaning |
 | --- | --- |
-| 0 | Bits 7–5: version 5. Bit 4: final drain. Bits 3–0: required profile |
+| 0 | Bits 7–5: version 6. Bit 4: final drain. Bits 3–0: required profile |
 | 1 | Frame sequence modulo 256, initially zero |
 | 2 through length−3 | Entropy payload, padded to the allocated byte budget |
 | Last two | Little-endian CRC-16/CCITT-FALSE over all preceding bytes |
@@ -58,10 +58,12 @@ The inverse uses the same cosine without the `2/N` scale, then the window.
 Output is inverse[p..p+N] plus the preceding inverse block's O-sample tail on
 its first O samples. Save inverse[p+N..p+N+O] for the next output.
 
-Both spectral models use the same gain mapping. Gain is an eight-bit raw code. Code zero means all selected amplitudes are zero.
+Both spectral models use the same decoded gain mapping. Scalar gains use eight
+raw bits; pulse gain precision is specified below. Code zero means all selected
+amplitudes are zero.
 Codes 1–64 represent `2^(-16+code/8)`; codes 65–208 represent
 `2^(-8+(code−64)/16)`. Higher codes are invalid. Final PCM is clipped to [−1,1]. Versions other than
-5 are rejected; there is no older-format compatibility path.
+6 are rejected; there is no older-format compatibility path.
 
 ## Scalar spectral model
 
@@ -101,13 +103,22 @@ duplicate or out-of-order indices cannot be represented.
 
 ## Normalized pulse spectral model
 
-Write four eight-bit raw gain codes in increasing band order, with no scalar
-quantizer flag. Band edges in coefficient positions are
+Let P be payload bytes excluding framing, and N be transform size. Gain width
+is `G = clamp(floor(240*P/N), 5, 8)` bits. Write four G-bit raw values in
+increasing band order, with no scalar quantizer flag. The gain step is
+`S = 2^(8-G)`; a raw value r reconstructs decoded gain code `r*S`. Reject codes
+above 208 before consuming stream history. At 12 kb/s, G is five bits for 10 ms
+and six for 20 ms. At 24/32 kb/s both durations use eight bits. Fractional byte
+budgets can cross a precision boundary; the packet length fully determines G.
+There is no additional precision flag or dependence on preceding packets.
+
+Band edges in coefficient positions are
 `[0, N/24, N/12, N/6, M]`: approximately 0–1, 1–2, 2–4 kHz and the remainder
 of the coded spectrum. Let D be a band's number of coefficients. The gain is
 the L2 norm of its coefficient vector. The encoder caps the measured norm at
-2.0, compares the covering gain code with its adjacent lower nonzero code,
-and chooses the closer gain; ties choose the lower code.
+2.0, rounds the covering gain code upward to a multiple of S and compares it
+with the adjacent lower nonzero multiple. Choose the closer gain; ties choose
+the lower code. Peaks at or below `2^-16` use zero as in the scalar model.
 
 Each band has a signed integer vector q with `sum(abs(q))=K`. Its decoded
 coefficients are `gain * q / sqrt(sum(q^2))`. A zero gain receives zero pulses
@@ -125,7 +136,7 @@ The first term covers the multiset of pulse positions; the second reserves the
 worst case of one sign per pulse. Exact tables cover dimensions
 20/40/80/160/320/400/800 and all K from 0 through 387. Four gains and four bits
 for arithmetic rounding/termination leave the constraint
-`36 + sum(C(D,K)) <= 8*payload_bytes`.
+`4*G + 4 + sum(C(D,K)) <= 8*payload_bytes`.
 
 Allocation uses integer arithmetic in both encoder and decoder. Start with
 one pulse per nonzero gain, zero otherwise. For every eligible band, compute

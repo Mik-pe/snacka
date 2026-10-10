@@ -233,7 +233,7 @@ fn profile_packet_with_length(
     let bins = samples / (1 + usize::from(profile >> 1));
     let mut packet = vec![0; length];
     let end = packet.len() - 2;
-    packet[..2].copy_from_slice(&[160 | profile, 0]);
+    packet[..2].copy_from_slice(&[192 | profile, 0]);
     let mut count = 0;
     let mut log_combinations = 0.0f64;
     for candidate in 1..=bins {
@@ -475,13 +475,13 @@ fn incompatible_versions_are_rejected_before_consuming_history() {
     let mut packet = spectral_packet(0, 4, &[]);
     let mut decoder = Decoder::new();
     let mut output = [9.0; FRAME_SAMPLES];
-    for version in [0, 1, 2, 3, 4, 6, 7] {
+    for version in [0, 1, 2, 3, 4, 5, 7] {
         packet[0] = version << 5;
         repair_crc(&mut packet);
         assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Version));
         assert_eq!(output, [9.0; FRAME_SAMPLES]);
     }
-    packet[0] = 5 << 5;
+    packet[0] = 6 << 5;
     repair_crc(&mut packet);
     decoder.decode(&packet, &mut output).unwrap();
     assert_eq!(output, [0.0; FRAME_SAMPLES]);
@@ -604,7 +604,7 @@ fn unknown_bandwidth_profiles_are_refused_without_consuming_history() {
     let mut decoder = Decoder::new();
     let mut output = [7.0; FRAME_SAMPLES];
     for profile in [6, 7, 14, 15] {
-        packet[0] = 160 | profile;
+        packet[0] = 192 | profile;
         repair_crc(&mut packet);
         assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Profile));
         assert_eq!(output, [7.0; FRAME_SAMPLES]);
@@ -824,6 +824,9 @@ fn pulse_packet(
     concentrated: bool,
 ) -> (Vec<u8>, Vec<f64>) {
     let samples = if profile & 1 == 0 { 960 } else { 480 };
+    let gain_bits = ((length - 4) * 240 / samples).clamp(5, 8) as u32;
+    let gain_step = 1 << (8 - gain_bits);
+    assert!(gains.iter().all(|&gain| gain % gain_step == 0));
     let bins = samples / (1 + usize::from((profile & 6) >> 1));
     let edges = [0, samples / 24, samples / 12, samples / 6, bins];
     let dimensions: Vec<_> = edges.windows(2).map(|e| e[1] - e[0]).collect();
@@ -857,7 +860,8 @@ fn pulse_packet(
         })
         .collect();
     let mut allocation = gains.map(|g| usize::from(g != 0));
-    let mut used = 36 + (0..4).map(|i| costs[i][allocation[i]]).sum::<usize>();
+    let mut used =
+        4 * gain_bits as usize + 4 + (0..4).map(|i| costs[i][allocation[i]]).sum::<usize>();
     loop {
         let mut best = None;
         let mut priority = (0u128, 1u128);
@@ -886,11 +890,11 @@ fn pulse_packet(
         used += extra;
     }
     let mut packet = vec![0; length];
-    packet[..2].copy_from_slice(&[160 | profile, 0]);
+    packet[..2].copy_from_slice(&[192 | profile, 0]);
     let end = length - 2;
     let mut writer = snacka::entropy::Encoder::new(&mut packet[2..end]);
     for gain in gains {
-        writer.raw(gain, 8).unwrap();
+        writer.raw(gain / gain_step, gain_bits).unwrap();
     }
     let mut coefficients = vec![0.0; samples];
     for group in 0..4 {
@@ -978,7 +982,8 @@ fn pulse_profiles_at_every_byte_budget_match_independent_inverse_cosines() {
         let divisor = 8000 / duration.milliseconds() as usize;
         let start = (samples - ALGORITHMIC_DELAY) / 2;
         for length in 12_000 / divisor..=32_000 / divisor {
-            for gains in [[1, 64, 128, 208], [0, 96, 0, 192]] {
+            let gain_step = 1 << (8 - ((length - 4) * 240 / samples).clamp(5, 8));
+            for gains in [[gain_step, 64, 128, 208], [0, 96, 0, 192]] {
                 let (packet, coefficients) = pulse_packet(gains, profile, length, false);
                 assert_eq!(Packet::parse(&packet).unwrap().gain_bands(), 4);
                 let mut output = vec![0.0; samples];
@@ -1036,6 +1041,58 @@ fn invalid_pulse_gains_preserve_output_and_stream_history() {
     Decoder::new().decode(&valid, &mut reference).unwrap();
     decoder.decode(&valid, &mut output).unwrap();
     assert_eq!(output, reference);
+}
+
+#[test]
+fn invalid_pulse_gains_at_each_precision_preserve_stream_history() {
+    for (duration, profile, samples, lengths) in [
+        (FrameDuration::Ms10, 9, 480, 15..=40),
+        (FrameDuration::Ms20, 8, 960, 30..=80),
+    ] {
+        for length in lengths {
+            let bits = ((length - 4) * 240 / samples).clamp(5, 8) as u32;
+            let step = 1 << (8 - bits);
+            let (mut valid, _) = pulse_packet([64, 96, 128, 192], profile, length, false);
+            let mut decoder = Decoder::with_frame_duration(duration);
+            let mut reference = Decoder::with_frame_duration(duration);
+            let mut output = vec![0.0; samples];
+            let mut expected = vec![0.0; samples];
+            decoder.decode(&valid, &mut output).unwrap();
+            reference.decode(&valid, &mut expected).unwrap();
+            output.fill(9.0);
+            for invalid in 0..4 {
+                let mut packet = vec![0; length];
+                packet[..2].copy_from_slice(&[192 | profile, 1]);
+                let end = length - 2;
+                let mut writer = snacka::entropy::Encoder::new(&mut packet[2..end]);
+                for field in 0..4 {
+                    writer
+                        .raw(
+                            if field == invalid {
+                                208 / step + 1
+                            } else {
+                                64 / step
+                            },
+                            bits,
+                        )
+                        .unwrap();
+                }
+                writer.finish_padded().unwrap();
+                repair_crc(&mut packet);
+                assert!(Packet::parse(&packet).is_ok());
+                assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Packet));
+                assert!(output.iter().all(|&value| value == 9.0));
+            }
+            decoder.conceal(&mut output).unwrap();
+            reference.conceal(&mut expected).unwrap();
+            assert_eq!(output, expected);
+            valid[1] = 2;
+            repair_crc(&mut valid);
+            reference.decode(&valid, &mut expected).unwrap();
+            decoder.decode(&valid, &mut output).unwrap();
+            assert_eq!(output, expected);
+        }
+    }
 }
 
 #[test]

@@ -27,7 +27,8 @@ gains and normalized signed-pulse vectors. Each packet chooses the model and
 bandwidth with greatest full-spectrum error reduction. The decoder validates framing,
 CRC, stream sequence and spectral bounds, with explicit concealment for missing
 packets. CRC detects corruption; authentication belongs to the transport.
-The experimental format is version 5. Encoder and decoder must use the same
+Pulse gain precision adapts to the packet budget, retaining more shape bits at
+low bitrate. The experimental format is version 6. Encoder and decoder must use the same
 version; older native packets are rejected.
 
 ```rust

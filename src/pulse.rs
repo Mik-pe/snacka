@@ -413,6 +413,11 @@ pub(crate) fn edges(samples: usize, bins: usize) -> [usize; 5] {
     [0, samples / 24, samples / 12, samples / 6, bins]
 }
 
+// Limit four gain fields to a quarter of the payload normalized to 10 ms.
+pub(crate) fn gain_bits(samples: usize, bytes: usize) -> u32 {
+    (bytes * 240 / samples).clamp(5, 8) as u32
+}
+
 pub(crate) fn allocate(samples: usize, bins: usize, gains: &[u8; 4], bytes: usize) -> [usize; 4] {
     if *gains == [0; 4] {
         return [0; 4];
@@ -427,7 +432,8 @@ pub(crate) fn allocate(samples: usize, bins: usize, gains: &[u8; 4], bytes: usiz
     let numerators: [u64; 4] =
         std::array::from_fn(|i| ENERGY_WEIGHT[usize::from(gains[i])] * dimensions[i] as u64);
     let mut pulses = gains.map(|code| usize::from(code != 0));
-    let mut used = 36
+    let mut used = 4 * gain_bits(samples, bytes) as usize
+        + 4
         + (0..4)
             .map(|i| usize::from(tables[i][pulses[i]]))
             .sum::<usize>();
@@ -822,7 +828,8 @@ mod tests {
                 for bytes in (samples / 32 - 4)..=(samples / 12 - 4) {
                     for gains in [[0; 4], [1; 4], [208; 4], [64, 96, 128, 192], [0, 208, 0, 1]] {
                         let pulses = allocate(samples, bins, &gains, bytes);
-                        let used = 36
+                        let used = 4 * gain_bits(samples, bytes) as usize
+                            + 4
                             + (0..4)
                                 .map(|i| cost(edges[i + 1] - edges[i], pulses[i]))
                                 .sum::<usize>();

@@ -7,6 +7,9 @@ separately installed libopus 1.6.1, with matched frame duration, packet bytes an
 The external library is an optional offline measurement oracle, never a runtime
 codec, fallback or dependency of the Rust library.
 
+The newer [version 6 evaluation](adaptive-gains.md) reports native changes
+and the remaining gap using these same reference scores.
+
 ## Profiles and controls
 
 The [original adapter](../tools/opus_roundtrip.py) calls the documented float

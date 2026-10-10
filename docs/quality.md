@@ -5,10 +5,11 @@ not establish subjective quality, conversational acceptance or superiority over
 other libraries. Listening tests and realistic noisy conversations remain
 necessary.
 
-The current [matched external reference](reference-quality.md) compares 864
-pairs with equal packet bytes and delay. It identifies a substantial low-bitrate
-intelligibility gap; the historical native-to-native improvements below do not
-establish competitiveness.
+The current [version 6 adaptive-gain evaluation](adaptive-gains.md) improves
+low-rate reconstruction and records CPU costs and regressions. The
+[matched external reference](reference-quality.md) still identifies a
+substantial low-bitrate intelligibility gap; native-to-native improvements do
+not establish competitiveness.
 
 ## Metric reproducibility
 

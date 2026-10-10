@@ -5,6 +5,9 @@ bounded processing. `tools/measure_cpu.py` compares two independently built
 `cpu_probe` executables, using the same probe source and compiler flags.
 The probe is an offline example, not part of the library runtime.
 
+The [version 6 gain-precision comparison](adaptive-gains.md#cpu-cost) records
+low-rate quality gains and their additional CPU cost.
+
 ## Method
 
 On Unix, the Python standard library's `resource.getrusage(RUSAGE_CHILDREN)`
@@ -38,7 +41,7 @@ The trace retains priming and drain samples. It is an offline verification
 artifact; it is not a transport/container format. By default, a mismatch aborts
 evaluation. An encoder change evaluated separately for quality can use
 `--allow-trace-changes`; this records both trace hashes and their identity at
-24 kb/s instead of requiring equal bytes. It does not establish equivalent
+each requested measurement bitrate instead of requiring equal bytes. It does not establish equivalent
 quality. Only trace and input hashes are published, without audio or transcripts.
 
 ## Reproduction
