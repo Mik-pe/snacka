@@ -57,7 +57,7 @@ def main():
                     ffmpeg_float_pcm_identical=True,
                 ))
     with args.output.open('w', newline='') as output:
-        writer = csv.DictWriter(output, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(output, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
     print(f'verified {len(rows)} profiles against FFmpeg')
