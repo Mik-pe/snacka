@@ -28,10 +28,12 @@ fuzz_target!(|bytes: &[u8]| {
         }).collect();
         let mut packet = [0; MAX_PACKET_BYTES];
         let mut output = vec![7.0; samples];
-        let length = encoder.encode(&input, &mut packet).unwrap();
-        decoder.decode(&packet[..length], &mut output).unwrap();
+        for _ in 0..4 {
+            let length = encoder.encode(&input, &mut packet).unwrap();
+            decoder.decode(&packet[..length], &mut output).unwrap();
+        }
         assert!(output.iter().all(|x| x.is_finite() && x.abs() <= 1.0));
-        decoder.reset();
+        let length = encoder.encode(&input, &mut packet).unwrap();
         for (destination, &source) in packet[4..length - 2].iter_mut().zip(bytes) {
             *destination ^= source;
         }
@@ -42,9 +44,10 @@ fuzz_target!(|bytes: &[u8]| {
         } else {
             assert!(output.iter().all(|&x| x == 7.0));
         }
-        for _ in 0..3 {
+        for _ in 0..12 {
             decoder.conceal(&mut output).unwrap();
             assert!(output.iter().all(|x| x.is_finite() && x.abs() <= 1.0));
         }
+        assert!(output.iter().all(|&x| x == 0.0));
     }
 });

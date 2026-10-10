@@ -197,6 +197,39 @@ fn main() {
                     black_box(Packet::parse(black_box(&packets[0])).unwrap());
                 },
             );
+            let mut callbacks = [[0u64; 1_000]; 3];
+            for iteration in 0..1_100 {
+                decoder.reset();
+                for packet in &packets[..4] {
+                    decoder.decode(packet, &mut output).unwrap();
+                }
+                for (stage, timings) in callbacks.iter_mut().enumerate() {
+                    let started = Instant::now();
+                    if stage < 2 {
+                        decoder.conceal(black_box(&mut output)).unwrap();
+                    } else {
+                        decoder.decode(black_box(&packets[6]), &mut output).unwrap();
+                    }
+                    let elapsed = started.elapsed().as_nanos() as u64;
+                    black_box(&output);
+                    if iteration >= 100 {
+                        timings[iteration - 100] = elapsed;
+                    }
+                }
+            }
+            for (label, timings) in ["first_loss", "continued_loss", "recovery"]
+                .into_iter()
+                .zip(&mut callbacks)
+            {
+                timings.sort_unstable();
+                println!(
+                    "snacka_{label}_{}ms_{bitrate},median_callback_ns={},p95_callback_ns={},p99_callback_ns={}",
+                    duration.milliseconds(),
+                    timings[500],
+                    timings[950],
+                    timings[990]
+                );
+            }
             #[cfg(feature = "reference-tests")]
             reference_audio(&input, bitrate as i32, duration.milliseconds());
         }

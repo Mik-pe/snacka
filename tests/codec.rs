@@ -460,3 +460,114 @@ fn incompatible_versions_are_rejected_before_consuming_history() {
     decoder.decode(&packet, &mut output).unwrap();
     assert_eq!(output, [0.0; FRAME_SAMPLES]);
 }
+
+#[test]
+fn concealed_periodic_audio_preserves_phase_and_long_losses_reach_exact_silence() {
+    for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+        let samples = duration.samples();
+        for frequency in [50.0, 80.0, 117.3, 220.0, 497.0] {
+            let mut encoder = Encoder::new(Config::default().with_frame_duration(duration));
+            let mut decoder = Decoder::with_frame_duration(duration);
+            let mut packet = [0; MAX_PACKET_BYTES];
+            let mut output = vec![0.0; samples];
+            for frame in 0..9 {
+                let input: Vec<_> = (0..samples)
+                    .map(|index| {
+                        let time = (frame * samples + index) as f64 / 48_000.0;
+                        (0.6 * (std::f64::consts::TAU * frequency * time).sin()) as f32
+                    })
+                    .collect();
+                let length = encoder.encode(&input, &mut packet).unwrap();
+                decoder.decode(&packet[..length], &mut output).unwrap();
+            }
+            decoder.conceal(&mut output).unwrap();
+            let mut energy = 0.0;
+            let mut error = 0.0;
+            for (index, &actual) in output.iter().enumerate() {
+                let time = (9 * samples + index - ALGORITHMIC_DELAY) as f64 / 48_000.0;
+                let expected = 0.6 * (std::f64::consts::TAU * frequency * time).sin();
+                energy += expected * expected;
+                error += (expected - f64::from(actual)).powi(2);
+            }
+            let snr = 10.0 * (energy / error).log10();
+            assert!(snr > 14.0, "{duration:?} {frequency} Hz: {snr} dB");
+            for _ in 0..12 {
+                decoder.conceal(&mut output).unwrap();
+                assert!(output.iter().all(|x| x.is_finite() && x.abs() <= 1.0));
+            }
+            assert!(output.iter().all(|&x| x == 0.0));
+            decoder.reset();
+            decoder.conceal(&mut output).unwrap();
+            assert!(output.iter().all(|&x| x == 0.0));
+        }
+    }
+}
+
+#[test]
+fn concealment_refusal_preserves_pitch_history_and_recovery() {
+    for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+        let samples = duration.samples();
+        let mut encoder = Encoder::new(Config::default().with_frame_duration(duration));
+        let mut decoder = Decoder::with_frame_duration(duration);
+        let mut control = Decoder::with_frame_duration(duration);
+        let mut packet = [0; MAX_PACKET_BYTES];
+        let mut output = vec![0.0; samples];
+        let mut expected = vec![0.0; samples];
+        for frame in 0..7 {
+            let input: Vec<_> = (0..samples)
+                .map(|index| (0.5 * (0.027 * (frame * samples + index) as f64).sin()) as f32)
+                .collect();
+            let length = encoder.encode(&input, &mut packet).unwrap();
+            if frame == 4 || frame == 5 {
+                let mut short = [7.0; 12];
+                assert_eq!(decoder.conceal(&mut short), Err(Error::Output));
+                assert_eq!(short, [7.0; 12]);
+                decoder.conceal(&mut output).unwrap();
+                control.conceal(&mut expected).unwrap();
+                assert_eq!(
+                    decoder.decode(&packet[..length], &mut output),
+                    Err(Error::Sequence {
+                        expected: (frame + 1) as u8,
+                        actual: frame as u8,
+                    })
+                );
+            } else {
+                decoder.decode(&packet[..length], &mut output).unwrap();
+                control.decode(&packet[..length], &mut expected).unwrap();
+            }
+            assert_eq!(output, expected);
+        }
+    }
+}
+
+#[test]
+fn loss_recovery_error_cannot_propagate_beyond_the_short_overlap() {
+    for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+        let samples = duration.samples();
+        let mut encoder = Encoder::new(Config::default().with_frame_duration(duration));
+        let mut decoder = Decoder::with_frame_duration(duration);
+        let mut uninterrupted = Decoder::with_frame_duration(duration);
+        let mut packet = [0; MAX_PACKET_BYTES];
+        let mut output = vec![0.0; samples];
+        let mut expected = vec![0.0; samples];
+        for frame in 0..8 {
+            let input: Vec<_> = (0..samples)
+                .map(|index| {
+                    let position = (frame * samples + index) as f64;
+                    (0.3 * (position * 0.023).sin() + 0.2 * (position * 0.071).sin()) as f32
+                })
+                .collect();
+            let length = encoder.encode(&input, &mut packet).unwrap();
+            uninterrupted
+                .decode(&packet[..length], &mut expected)
+                .unwrap();
+            if frame == 4 || frame == 5 {
+                decoder.conceal(&mut output).unwrap();
+            } else {
+                decoder.decode(&packet[..length], &mut output).unwrap();
+                let uncertain = if frame == 6 { ALGORITHMIC_DELAY } else { 0 };
+                assert_eq!(&output[uncertain..], &expected[uncertain..]);
+            }
+        }
+    }
+}

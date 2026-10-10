@@ -551,7 +551,7 @@ pub struct FrameInfo {
     pub valid_samples: usize,
 }
 
-/// Stateful native audio decoder with bounded spectral concealment.
+/// Stateful native audio decoder with causal waveform concealment.
 ///
 /// Discard the first `ALGORITHMIC_DELAY` samples once per stream. Decode the
 /// final drain packet and retain only its valid prefix to recover the input
@@ -561,10 +561,9 @@ pub struct Decoder {
     plan: MdctPlan,
     workspace: MdctWorkspace,
     overlap: [f32; ALGORITHMIC_DELAY],
-    coefficients: [f32; FRAME_SAMPLES],
+    concealment: crate::concealment::Concealment,
     block: [f32; 2 * FRAME_SAMPLES],
     sequence: u8,
-    losses: u8,
     finished: bool,
 }
 impl Default for Decoder {
@@ -587,10 +586,9 @@ impl Decoder {
             plan,
             workspace,
             overlap: [0.0; ALGORITHMIC_DELAY],
-            coefficients: [0.0; FRAME_SAMPLES],
+            concealment: crate::concealment::Concealment::new(),
             block: [0.0; 2 * FRAME_SAMPLES],
             sequence: 0,
-            losses: 0,
             finished: false,
         }
     }
@@ -655,9 +653,8 @@ impl Decoder {
             return Err(Error::Packet);
         }
         self.synthesize(&coefficients, output)?;
-        self.coefficients = coefficients;
+        self.concealment.observe(output);
         self.sequence = self.sequence.wrapping_add(1);
-        self.losses = 0;
         self.finished = packet.is_final();
         Ok(FrameInfo {
             sequence: packet.sequence(),
@@ -673,8 +670,7 @@ impl Decoder {
     }
     /// Synthesize exactly one missing frame and advance the sequence.
     ///
-    /// Repeated losses decay spectral history; after 32 losses it becomes zero.
-    /// This is an initial concealment baseline, not a trained speech predictor.
+    /// Repeated losses extrapolate recent PCM with a bounded fade to silence.
     pub fn conceal(&mut self, output: &mut [f32]) -> Result<FrameInfo, Error> {
         if self.finished {
             return Err(Error::Finished);
@@ -682,14 +678,27 @@ impl Decoder {
         if output.len() != self.duration.samples() {
             return Err(Error::Output);
         }
-        let losses = self.losses.saturating_add(1);
-        let mut coefficients = self.coefficients;
-        for value in &mut coefficients {
-            *value *= if losses >= 32 { 0.0 } else { 0.8 };
+        self.concealment.begin();
+        let samples = self.duration.samples();
+        let start = (samples - ALGORITHMIC_DELAY) / 2;
+        self.block.fill(0.0);
+        // Predict the overlap tail too, without waiting for another input frame.
+        for (ahead, value) in self.block[start..start + samples + ALGORITHMIC_DELAY]
+            .iter_mut()
+            .enumerate()
+        {
+            *value = self.concealment.sample(ahead);
         }
+        let mut coefficients = [0.0; FRAME_SAMPLES];
+        self.plan
+            .forward(
+                &self.block[..2 * samples],
+                &mut coefficients[..samples],
+                &mut self.workspace,
+            )
+            .map_err(|_| Error::Packet)?;
         self.synthesize(&coefficients, output)?;
-        self.coefficients = coefficients;
-        self.losses = losses;
+        self.concealment.advance(samples);
         let sequence = self.sequence;
         self.sequence = self.sequence.wrapping_add(1);
         Ok(FrameInfo {
@@ -700,12 +709,11 @@ impl Decoder {
             valid_samples: self.duration.samples(),
         })
     }
-    /// Reset overlap, spectral history and sequence without allocating.
+    /// Reset overlap, waveform history and sequence without allocating.
     pub fn reset(&mut self) {
         self.overlap.fill(0.0);
-        self.coefficients.fill(0.0);
+        self.concealment.reset();
         self.sequence = 0;
-        self.losses = 0;
         self.finished = false;
     }
     fn synthesize(

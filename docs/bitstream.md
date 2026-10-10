@@ -94,8 +94,17 @@ O initial priming samples discarded once. Encode an all-zero input frame with
 the final-drain flag to recover the last O real samples. That output has only O
 valid samples. Reset after finish. Packet loss is handled by an explicit
 concealment call advancing one sequence and synthesizing one N-sample frame.
-Current concealment decays coefficients by 0.8 per loss and clears them after
-32 losses; the short overlap remains continuous.
+Concealment is decoder behavior, independent of the packet format. The current
+decoder retains 40 ms of decoded PCM. On the first loss it estimates a period
+from normalized autocorrelation at 8 kHz, refines it at 48 kHz and interpolates
+the last cycle. Low-confidence or short history repeats the last 10 ms instead.
+The continuation fades linearly over 80 ms for periodic signals and 40 ms
+otherwise. Transform analysis/synthesis of the continuation preserves the same
+short overlap, including a predicted 120-sample tail. No future packet is needed;
+prediction does not add buffering delay. Silence is exact after the fade and
+overlap drain. A received packet replaces the transform tail; any loss-induced
+reconstruction error is confined to its first 120 samples. Waveform history is
+discarded across the missing interval before collecting newly received PCM.
 
 Frame buffering is 20 or 10 ms. Additional transform delay is 2.5 ms. Thus the
 codec accumulation plus transform delay is 22.5 or 12.5 ms, excluding processing,

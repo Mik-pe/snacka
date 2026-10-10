@@ -5,10 +5,11 @@ use std::{error::Error, fs, io};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let arguments: Vec<_> = std::env::args().collect();
-    if arguments.len() != 5 {
-        return Err(
-            io::Error::other("usage: roundtrip input.f32 output.f32 bitrate frame_ms").into(),
-        );
+    if arguments.len() != 5 && arguments.len() != 7 {
+        return Err(io::Error::other(
+            "usage: roundtrip input.f32 output.f32 bitrate frame_ms [loss_period loss_burst]",
+        )
+        .into());
     }
     let duration = match arguments[4].as_str() {
         "10" => FrameDuration::Ms10,
@@ -16,6 +17,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         _ => return Err(io::Error::other("frame_ms must be 10 or 20").into()),
     };
     let config = Config::new(arguments[3].parse()?)?.with_frame_duration(duration);
+    let loss = if arguments.len() == 7 {
+        let period: usize = arguments[5].parse()?;
+        let burst: usize = arguments[6].parse()?;
+        if period == 0 || burst == 0 || burst >= period {
+            return Err(io::Error::other("loss pattern requires 0 < burst < period").into());
+        }
+        Some((period, burst))
+    } else {
+        None
+    };
     let bytes = fs::read(&arguments[1])?;
     let (chunks, trailing) = bytes.as_chunks::<4>();
     if !trailing.is_empty() {
@@ -30,12 +41,18 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut decoded = vec![0.0; samples];
     let mut output = Vec::new();
     let mut encoded_bytes = 0;
-    for chunk in input.chunks(samples) {
+    let mut lost_frames = 0;
+    for (index, chunk) in input.chunks(samples).enumerate() {
         frame.fill(0.0);
         frame[..chunk.len()].copy_from_slice(chunk);
         let length = encoder.encode(&frame, &mut packet)?;
         encoded_bytes += length;
-        let info = decoder.decode(&packet[..length], &mut decoded)?;
+        let info = if loss.is_some_and(|(period, burst)| index % period >= period - burst) {
+            lost_frames += 1;
+            decoder.conceal(&mut decoded)?
+        } else {
+            decoder.decode(&packet[..length], &mut decoded)?
+        };
         output.extend_from_slice(&decoded[..info.valid_samples]);
     }
     let length = encoder.finish(&mut packet)?;
@@ -51,12 +68,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|(&x, &y)| f64::from(x - y).powi(2))
         .sum();
     println!(
-        "samples={},frame_ms={},packet_bytes={},drain_bytes={},aligned_snr_db={:.3}",
+        "samples={},frame_ms={},packet_bytes={},drain_bytes={},aligned_snr_db={:.3},lost_frames={}",
         input.len(),
         duration.milliseconds(),
         encoded_bytes,
         length,
-        10.0 * (signal / error.max(1e-30)).log10()
+        10.0 * (signal / error.max(1e-30)).log10(),
+        lost_frames
     );
     Ok(())
 }
