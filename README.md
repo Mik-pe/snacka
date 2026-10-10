@@ -76,6 +76,6 @@ with `RUSTFLAGS="-L /path/to/lib"`. Neither the feature nor normal builds add
 reference code or linkage to the library.
 
 See [the bitstream](docs/bitstream.md), [development and acceptance](docs/implementation.md),
-[measurements](docs/measurements.md), [quality evaluation](docs/quality.md), [fixture provenance](tests/fixtures/README.md)
+[measurements](docs/measurements.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [fixture provenance](tests/fixtures/README.md)
 and [fuzzing](fuzz/README.md). The implementation license is [MIT](LICENSE).
 External reference source and trained weights are not vendored.
