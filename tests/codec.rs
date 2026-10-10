@@ -621,7 +621,7 @@ fn unknown_bandwidth_profiles_are_refused_without_consuming_history() {
     let mut packet = spectral_packet(0, 4, &[]);
     let mut decoder = Decoder::new();
     let mut output = [7.0; FRAME_SAMPLES];
-    for profile in [6, 7, 14, 15] {
+    for profile in [6, 7] {
         packet[0] = 224 | profile;
         repair_crc(&mut packet);
         assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Profile));

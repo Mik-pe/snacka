@@ -77,8 +77,16 @@ fn steady_state_processing_never_allocates() {
                 .sum::<f32>()
                 / 20.0
         });
+        let voiced: [f32;FRAME_SAMPLES] = std::array::from_fn(|i| {
+            (1..=20).map(|h| {
+                let f0=200.0f64;
+                let amplitude=(-((h as f64*f0-1300.0)/600.0).powi(2)).exp()*0.07;
+                amplitude*(std::f64::consts::TAU*h as f64*f0*i as f64/48000.0+h as f64*0.21).cos()
+            }).sum::<f64>() as f32
+        });
         let silence = [0.0; FRAME_SAMPLES];
         let mut models = 0u8;
+        let mut harmonic_frames=0usize;
         let mut gain_widths = 0u16;
         let mut scaled = [0.0; FRAME_SAMPLES];
         let mut decoded_storage = [0.0; FRAME_SAMPLES];
@@ -88,7 +96,7 @@ fn steady_state_processing_never_allocates() {
             audio_encoder.set_bitrate(bitrate).unwrap();
             for frame in 0..1_000 {
                 let input = &match frame / 250 {
-                    0 => &input,
+                    0 => if (100..200).contains(&frame) { &voiced } else { &input },
                     1 | 2 => &dense,
                     _ => &silence,
                 }[..duration.samples()];
@@ -102,6 +110,7 @@ fn steady_state_processing_never_allocates() {
                     .unwrap();
                 let parsed = Packet::parse(black_box(&encoded[..length])).unwrap();
                 black_box(parsed.payload());
+                harmonic_frames+=usize::from(encoded[0]&14==14);
                 models |= if parsed.gain_bands() == 4 { 2 } else { 1 };
                 if parsed.gain_bands() == 4 {
                     let bits = (parsed.payload().len() * 240 / duration.samples()).clamp(5, 8);
@@ -143,6 +152,7 @@ fn steady_state_processing_never_allocates() {
         audio_decoder.reset();
         let allocations = ALLOCATIONS.with(|counter| counter.replace(None).unwrap());
         assert_eq!(allocations, 0);
+        assert!(harmonic_frames>0,"harmonic decoding must reach allocation tracking");
         assert_eq!(
             gain_widths,
             if duration == FrameDuration::Ms10 {

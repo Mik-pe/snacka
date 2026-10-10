@@ -293,7 +293,7 @@ impl<'a> Packet<'a> {
         if bytes[0] >> 5 != VERSION {
             return Err(Error::Version);
         }
-        if bytes[0] & 6 == 6 {
+        if bytes[0] & 6 == 6 && bytes[0] & 8 == 0 {
             return Err(Error::Profile);
         }
         let duration = if bytes[0] & 1 == 0 {
@@ -323,7 +323,7 @@ impl<'a> Packet<'a> {
     ///
     /// PCM always uses 48 kHz. Bandwidth can change between packets without reset.
     pub fn bandwidth_hz(&self) -> u32 {
-        24_000 / (1 + u32::from((self.bytes[0] & 6) >> 1))
+        if self.is_harmonic() { 8000 } else { 24_000 / (1 + u32::from((self.bytes[0] & 6) >> 1)) }
     }
     /// Number of spectral gains: one scalar gain or four normalized pulse bands.
     ///
@@ -331,8 +331,9 @@ impl<'a> Packet<'a> {
     pub fn gain_bands(&self) -> usize {
         if self.bytes[0] & 8 == 0 { 1 } else { 4 }
     }
+    fn is_harmonic(&self) -> bool { self.bytes[0] & 14 == 14 }
     fn coded_bins(&self) -> usize {
-        self.frame_duration().samples() / (1 + usize::from((self.bytes[0] & 6) >> 1))
+        if self.is_harmonic() { self.frame_duration().samples() / 3 } else { self.frame_duration().samples() / (1 + usize::from((self.bytes[0] & 6) >> 1)) }
     }
     /// Frame sequence number modulo 256.
     pub fn sequence(&self) -> u8 {
@@ -629,18 +630,79 @@ impl Encoder {
                 best_pulses = candidate_pulses;
             }
         }
+        let mut harmonic_mode = false;
+        let mut harmonic_f0 = 0usize;
+        let mut harmonic_dimensions = [0usize;4];
+        let mut harmonic_edges = [0usize;5];
+        let mut positions = [usize::MAX;FRAME_SAMPLES];
+        let mut compact_values = [0.0f32;FRAME_SAMPLES];
+        let mut compact_shape = [0i16;FRAME_SAMPLES];
+        // Restrict this research model to low-rate speech; normal profiles remain candidates.
+        if self.config.bitrate <= 16000 {
+            let mut finalists = [(f32::NEG_INFINITY,0usize);8];
+            for f0 in crate::harmonic::MIN_F0..=crate::harmonic::MAX_F0 {
+                let score = crate::harmonic::periodicity(&self.input[start..start+samples+ALGORITHMIC_DELAY], f0);
+                if score < 0.55 {continue;}
+                if score > finalists[7].0 {
+                    finalists[7]=(score,f0);
+                    finalists.sort_unstable_by(|a,b|b.0.total_cmp(&a.0).then(a.1.cmp(&b.1)));
+                }
+            }
+            for (_,f0) in finalists {
+                if f0 == 0 {continue;}
+                let (dimensions,edges) = crate::harmonic::layout(samples,f0,&mut positions);
+                crate::harmonic::analyze(&self.input[start..start+samples+ALGORITHMIC_DELAY],f0,&positions,&mut compact_values);
+                let codes: [u8;4] = std::array::from_fn(|group| {
+                    let amplitude = compact_values[edges[group]..edges[group+1]].iter().map(|x|x*x).sum::<f32>().sqrt().min(2.0);
+                    let mask = gain_step-1;
+                    let ceiling = (gain_code(amplitude)+mask)&!mask;
+                    let lower = ceiling.saturating_sub(gain_step).max(u8::from(ceiling!=0)*gain_step);
+                    if (amplitude-gain(lower)).abs() <= (amplitude-gain(ceiling)).abs() { lower } else { ceiling }
+                });
+                let allocation = crate::pulse::allocate_dimensions(dimensions,&codes,payload_bytes*8-9,4*gain_bits as usize);
+                let mut decoded_values=[0.0f32;FRAME_SAMPLES];
+                for group in 0..4 {
+                    let range = edges[group]..edges[group+1];
+                    let norm = crate::pulse::quantize(&compact_values[range.clone()], allocation[group], &mut compact_shape[range.clone()],&mut indices[range.clone()]);
+                    let scale = if norm == 0.0 {0.0} else { gain(codes[group])/norm };
+                    for index in range {decoded_values[index]=f32::from(compact_shape[index])*scale;}
+                }
+                let mut waveform=[0.0f32;2*FRAME_SAMPLES];
+                let mut decoded_coefficients=[0.0f32;FRAME_SAMPLES];
+                crate::harmonic::synthesize(&mut waveform,samples,f0,&positions,&decoded_values);
+                self.plan.forward(&waveform[..2*samples],&mut decoded_coefficients[..samples],&mut self.workspace).map_err(|_|Error::Input)?;
+                let improvement: f32 = self.coefficients[..samples].iter().zip(&decoded_coefficients[..samples]).map(|(&x,&y)|x*x-(x-y).powi(2)).sum();
+                if improvement > best_improvement {
+                    best_improvement = improvement;
+                    harmonic_mode = true;
+                    harmonic_f0 = f0;
+                    harmonic_dimensions = dimensions;
+                    harmonic_edges = edges;
+                    pulse_codes = codes;
+                    pulse_allocation = allocation;
+                    best_pulses = compact_shape;
+                }
+            }
+        }
         let coded_bins = samples / (1 + band);
         let scale = gain(code);
         selected_indices[..count].sort_unstable();
         let mut packet = [0; MAX_PACKET_BYTES];
         packet[0] = (VERSION << 5)
-            | ((band as u8) << 1)
+            | if harmonic_mode { 14 } else { (band as u8) << 1 }
             | self.config.duration.profile()
             | if pulse_mode { 8 } else { 0 }
             | if ending { END } else { 0 };
         packet[1] = self.sequence;
         let mut writer = entropy::Encoder::new(&mut packet[HEADER..length - CHECKSUM]);
-        if pulse_mode {
+        if harmonic_mode {
+            writer.raw((harmonic_f0-crate::harmonic::MIN_F0) as u32,9)?;
+            for code in pulse_codes { writer.raw(u32::from(code/gain_step),gain_bits)?; }
+            for group in 0..4 {
+                let range = harmonic_edges[group]..harmonic_edges[group]+harmonic_dimensions[group];
+                crate::pulse::encode(&mut writer,&best_pulses[range],pulse_allocation[group])?;
+            }
+        } else if pulse_mode {
             for code in pulse_codes {
                 writer.raw(u32::from(code / gain_step), gain_bits)?;
             }
@@ -772,7 +834,32 @@ impl Decoder {
         let mut reader = entropy::Decoder::new(payload);
         let mut coefficients = [0.0; FRAME_SAMPLES];
         let coded_bins = packet.coded_bins();
-        if packet.gain_bands() == 4 {
+        if packet.is_harmonic() {
+            let f0 = reader.raw(9)? as usize + crate::harmonic::MIN_F0;
+            if f0 > crate::harmonic::MAX_F0 { return Err(Error::Packet); }
+            let samples = self.duration.samples();
+            let gain_bits = crate::pulse::gain_bits(samples,payload.len());
+            let gain_step = 1u8 << (8-gain_bits);
+            let mut codes = [0u8;4];
+            for code in &mut codes { *code = reader.raw(gain_bits)? as u8 * gain_step; if *code > 208 { return Err(Error::Packet); } }
+            let mut positions = [usize::MAX;FRAME_SAMPLES];
+            let (dimensions,edges) = crate::harmonic::layout(samples,f0,&mut positions);
+            let allocation = crate::pulse::allocate_dimensions(dimensions,&codes,payload.len()*8-9,4*gain_bits as usize);
+            let mut shape = [0i16;FRAME_SAMPLES];
+            let mut decoded_values=[0.0f32;FRAME_SAMPLES];
+            for group in 0..4 {
+                let range = edges[group]..edges[group+1];
+                let norm = crate::pulse::decode(&mut reader,&mut shape[range.clone()],allocation[group])?;
+                let scale = if norm == 0.0 {0.0} else {gain(codes[group])/norm};
+                for index in range {
+                    if positions[index] == usize::MAX { if shape[index] != 0 {return Err(Error::Packet);} }
+                    else {decoded_values[index]=f32::from(shape[index])*scale;}
+                }
+            }
+            let mut waveform=[0.0f32;2*FRAME_SAMPLES];
+            crate::harmonic::synthesize(&mut waveform,samples,f0,&positions,&decoded_values);
+            self.plan.forward(&waveform[..2*samples],&mut coefficients[..samples],&mut self.workspace).map_err(|_|Error::Packet)?;
+        } else if packet.gain_bands() == 4 {
             let mut codes = [0u8; 4];
             let gain_bits = crate::pulse::gain_bits(self.duration.samples(), payload.len());
             let gain_step = 1u8 << (8 - gain_bits);
@@ -925,5 +1012,166 @@ impl Decoder {
         self.overlap
             .copy_from_slice(&self.block[start + samples..start + samples + ALGORITHMIC_DELAY]);
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod harmonic_protocol_tests {
+    use super::*;
+
+    fn fixture(duration: FrameDuration, length: usize, f0: usize, codes: [u8;4], bad_padding: bool, sequence: u8) -> (Vec<u8>, Vec<(usize,f64,f64)>) {
+        let samples=duration.samples();
+        let frequency_edges=[0,1000,2000,4000,8001];
+        let mut dimensions=[0usize;4];
+        let mut harmonic_bands=[Vec::new(),Vec::new(),Vec::new(),Vec::new()];
+        for group in 0..4 {
+            harmonic_bands[group]=(1..=8000/f0).filter(|&h|h*f0>=frequency_edges[group] && h*f0<frequency_edges[group+1]).collect();
+            dimensions[group]=[2,4,8,16,20,40,80,160].into_iter().find(|&d|d>=2*harmonic_bands[group].len()).unwrap();
+        }
+        let gain_bits=crate::pulse::gain_bits(samples,length-4);
+        let gain_step=1u8<<(8-gain_bits);
+        let allocation=crate::pulse::allocate_dimensions(dimensions,&codes,(length-4)*8-9,4*gain_bits as usize);
+        let mut packet=vec![0u8;length];
+        packet[0]=(VERSION<<5)|14|duration.profile();
+        packet[1]=sequence;
+        let mut writer=entropy::Encoder::new(&mut packet[2..length-2]);
+        writer.raw((f0-75) as u32,9).unwrap();
+        for code in codes {writer.raw(u32::from(code/gain_step),gain_bits).unwrap();}
+        let mut tones=Vec::new();
+        let mut padding_inserted=false;
+        for group in 0..4 {
+            let k=allocation[group];
+            let mut shape=vec![0i16;dimensions[group]];
+            if k!=0 {
+                shape[0]=(k.saturating_sub(1)) as i16;
+                shape[1]=-1;
+                if bad_padding && !padding_inserted && 2*harmonic_bands[group].len()<dimensions[group] {
+                    shape[0]=0;
+                    shape[dimensions[group]-1]=k.saturating_sub(1) as i16;
+                    padding_inserted=true;
+                }
+            }
+            let norm=shape.iter().map(|&q|f64::from(q).powi(2)).sum::<f64>().sqrt();
+            let code=codes[group];
+            let exponent=if code<=64 {-16.0+f64::from(code)/8.0} else {-8.0+f64::from(code-64)/16.0};
+            let scale=if norm==0.0 {0.0} else {2.0f64.powf(exponent)/norm};
+            for (index,&harmonic) in harmonic_bands[group].iter().enumerate() {
+                tones.push((harmonic,f64::from(shape[2*index])*scale,f64::from(shape[2*index+1])*scale));
+            }
+            crate::pulse::encode(&mut writer,&shape,k).unwrap();
+        }
+        if bad_padding {assert!(padding_inserted);}
+        writer.finish_padded().unwrap();
+        let crc=checksum(&packet[..length-2]);
+        packet[length-2..].copy_from_slice(&crc.to_le_bytes());
+        (packet,tones)
+    }
+
+    fn independent_window(position: usize, samples: usize) -> f64 {
+        let start=(samples-120)/2;
+        let reflected=position.min(2*samples-1-position);
+        if reflected<start {0.0}
+        else if reflected>=start+120 {1.0}
+        else {
+            let angle=std::f64::consts::FRAC_PI_2*((reflected-start) as f64+0.5)/120.0;
+            (std::f64::consts::FRAC_PI_2*angle.sin().powi(2)).sin()
+        }
+    }
+
+    #[test]
+    fn harmonic_packets_match_independent_sinusoidal_and_cosine_equations() {
+        for duration in [FrameDuration::Ms10,FrameDuration::Ms20] {
+            let samples=duration.samples();
+            let start=(samples-120)/2;
+            for f0 in [75,137,200,400] {
+                for length in [12_000/duration.divisor() as usize,32_000/duration.divisor() as usize] {
+                    let (packet,tones)=fixture(duration,length,f0,[128,128,160,160],false,0);
+                    let wave:Vec<_>=(0..2*samples).map(|position| {
+                        if position<start || position>=start+samples+120 {return 0.0;}
+                        tones.iter().map(|&(h,cosine,sine)| {
+                            let angle=std::f64::consts::TAU*(h*f0) as f64*(position-start) as f64/48000.0;
+                            cosine*angle.cos()+sine*angle.sin()
+                        }).sum::<f64>()*independent_window(position,samples)
+                    }).collect();
+                    let coefficients:Vec<_>=(0..samples).map(|frequency| {
+                        wave.iter().enumerate().map(|(position,&value)| {
+                            let angle=std::f64::consts::PI/samples as f64*(position as f64+0.5+samples as f64/2.0)*(frequency as f64+0.5);
+                            value*angle.cos()
+                        }).sum::<f64>()*2.0/samples as f64
+                    }).collect();
+                    let mut output=vec![0.0f32;samples];
+                    Decoder::with_frame_duration(duration).decode(&packet,&mut output).unwrap();
+                    for (index,&actual) in output.iter().enumerate() {
+                        let position=start+index;
+                        let expected=coefficients.iter().enumerate().map(|(frequency,&value)| {
+                            let angle=std::f64::consts::PI/samples as f64*(position as f64+0.5+samples as f64/2.0)*(frequency as f64+0.5);
+                            value*angle.cos()
+                        }).sum::<f64>()*independent_window(position,samples);
+                        assert!((f64::from(actual)-expected.clamp(-1.0,1.0)).abs()<2e-5,"{duration:?} f0={f0} length={length} sample={index}");
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn invalid_harmonic_pitch_gains_and_padding_preserve_nonzero_history() {
+        for duration in [FrameDuration::Ms10,FrameDuration::Ms20] {
+            let length=32_000/duration.divisor() as usize;
+            let samples=duration.samples();
+            let (valid,_)=fixture(duration,length,137,[128,128,160,160],false,0);
+            let (next,_)=fixture(duration,length,137,[128,128,160,160],false,1);
+            let (bad_padding,_)=fixture(duration,length,137,[128,128,160,160],true,1);
+            let bad_pitch=bad_header_fields(duration,length,511,0,1);
+            let bad_gain=bad_header_fields(duration,length,62,255,1);
+            for invalid in [&bad_padding,&bad_pitch,&bad_gain] {
+                let mut reference=Decoder::with_frame_duration(duration);
+                let mut tested=Decoder::with_frame_duration(duration);
+                let mut expected=vec![0.0;samples];
+                let mut actual=vec![0.0;samples];
+                reference.decode(&valid,&mut expected).unwrap();
+                tested.decode(&valid,&mut actual).unwrap();
+                assert!(actual.iter().any(|&x|x!=0.0));
+                actual.fill(0.31415);
+                assert_eq!(tested.decode(invalid,&mut actual),Err(Error::Packet));
+                assert!(actual.iter().all(|&x|x==0.31415));
+                reference.decode(&next,&mut expected).unwrap();
+                tested.decode(&next,&mut actual).unwrap();
+                assert_eq!(actual,expected);
+                reference.conceal(&mut expected).unwrap();
+                tested.conceal(&mut actual).unwrap();
+                assert_eq!(actual,expected);
+            }
+        }
+    }
+
+    #[test]
+    fn harmonic_entropy_fits_every_supported_pitch_and_packet_budget() {
+        for duration in [FrameDuration::Ms10,FrameDuration::Ms20] {
+            let mut decoder=Decoder::with_frame_duration(duration);
+            let mut output=vec![0.0f32;duration.samples()];
+            for length in 12_000/duration.divisor() as usize..=32_000/duration.divisor() as usize {
+                for f0 in 75..=400 {
+                    for codes in [[0;4],[208;4]] {
+                        let (packet,_)=fixture(duration,length,f0,codes,false,0);
+                        decoder.reset();
+                        decoder.decode(&packet,&mut output).unwrap();
+                        assert!(output.iter().all(|&x|x.is_finite() && x.abs()<=1.0));
+                        if codes==[0;4] {assert!(output.iter().all(|&x|x==0.0));}
+                    }
+                }
+            }
+        }
+    }
+
+    fn bad_header_fields(duration: FrameDuration,length:usize,pitch:u32,gain:u32,sequence:u8)->Vec<u8> {
+        let mut packet=vec![0u8;length];
+        packet[0]=(VERSION<<5)|14|duration.profile();packet[1]=sequence;
+        let mut writer=entropy::Encoder::new(&mut packet[2..length-2]);
+        writer.raw(pitch,9).unwrap();
+        let bits=crate::pulse::gain_bits(duration.samples(),length-4);
+        for _ in 0..4 {writer.raw(gain>>(8-bits),bits).unwrap();}
+        writer.finish_padded().unwrap();
+        let crc=checksum(&packet[..length-2]);packet[length-2..].copy_from_slice(&crc.to_le_bytes());packet
     }
 }
