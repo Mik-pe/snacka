@@ -16,7 +16,7 @@ pub const ALGORITHMIC_DELAY: usize = 120;
 
 const HEADER: usize = 2;
 const CHECKSUM: usize = 2;
-const VERSION: u8 = 6;
+const VERSION: u8 = 7;
 const END: u8 = 16;
 const MIN_PACKET_BYTES: usize = 15;
 const GAIN_STEPS: [f32; 17] = [

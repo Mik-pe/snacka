@@ -8,6 +8,7 @@ mod codec;
 mod concealment;
 pub mod entropy;
 mod pulse;
+mod pulse_classes;
 pub use codec::{
     ALGORITHMIC_DELAY, Config, Decoder, Encoder, Error, FRAME_SAMPLES, FrameDuration, FrameInfo,
     MAX_PACKET_BYTES, Packet, SAMPLE_RATE,

@@ -233,7 +233,7 @@ fn profile_packet_with_length(
     let bins = samples / (1 + usize::from(profile >> 1));
     let mut packet = vec![0; length];
     let end = packet.len() - 2;
-    packet[..2].copy_from_slice(&[192 | profile, 0]);
+    packet[..2].copy_from_slice(&[224 | profile, 0]);
     let mut count = 0;
     let mut log_combinations = 0.0f64;
     for candidate in 1..=bins {
@@ -472,19 +472,37 @@ fn both_quantizers_and_gain_boundaries_match_independent_inverse_cosines() {
 
 #[test]
 fn incompatible_versions_are_rejected_before_consuming_history() {
-    let mut packet = spectral_packet(0, 4, &[]);
-    let mut decoder = Decoder::new();
-    let mut output = [9.0; FRAME_SAMPLES];
-    for version in [0, 1, 2, 3, 4, 5, 7] {
-        packet[0] = version << 5;
-        repair_crc(&mut packet);
-        assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Version));
-        assert_eq!(output, [9.0; FRAME_SAMPLES]);
+    for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+        let samples = duration.samples();
+        let mut encoder = Encoder::new(Config::new(12000).unwrap().with_frame_duration(duration));
+        let mut decoder = Decoder::with_frame_duration(duration);
+        let mut reference = Decoder::with_frame_duration(duration);
+        let mut output = vec![0.0; samples];
+        let mut expected = vec![0.0; samples];
+        let mut packet = [0u8; MAX_PACKET_BYTES];
+        let input: Vec<_> = (0..samples)
+            .map(|i| 0.4 * (i as f32 * 0.071).sin())
+            .collect();
+        let length = encoder.encode(&input, &mut packet).unwrap();
+        decoder.decode(&packet[..length], &mut output).unwrap();
+        reference.decode(&packet[..length], &mut expected).unwrap();
+        assert!(expected.iter().any(|value| value.abs() > 0.01));
+        let length = encoder.encode(&input, &mut packet).unwrap();
+        output.fill(9.0);
+        for version in 0..7 {
+            let mut invalid = packet[..length].to_vec();
+            invalid[0] = (invalid[0] & 31) | (version << 5);
+            repair_crc(&mut invalid);
+            assert_eq!(decoder.decode(&invalid, &mut output), Err(Error::Version));
+            assert!(output.iter().all(|&value| value == 9.0));
+        }
+        reference.decode(&packet[..length], &mut expected).unwrap();
+        decoder.decode(&packet[..length], &mut output).unwrap();
+        assert_eq!(output, expected);
+        decoder.conceal(&mut output).unwrap();
+        reference.conceal(&mut expected).unwrap();
+        assert_eq!(output, expected);
     }
-    packet[0] = 6 << 5;
-    repair_crc(&mut packet);
-    decoder.decode(&packet, &mut output).unwrap();
-    assert_eq!(output, [0.0; FRAME_SAMPLES]);
 }
 
 #[test]
@@ -604,7 +622,7 @@ fn unknown_bandwidth_profiles_are_refused_without_consuming_history() {
     let mut decoder = Decoder::new();
     let mut output = [7.0; FRAME_SAMPLES];
     for profile in [6, 7, 14, 15] {
-        packet[0] = 192 | profile;
+        packet[0] = 224 | profile;
         repair_crc(&mut packet);
         assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Profile));
         assert_eq!(output, [7.0; FRAME_SAMPLES]);
@@ -817,6 +835,79 @@ fn checksum_rejects_contiguous_bit_flips_through_sixteen_bits_for_every_profile(
     }
 }
 
+fn signed_class_model(dimensions: usize, pulses: usize) -> Option<(usize, Vec<u16>)> {
+    if !(1..=80).contains(&pulses) {
+        return None;
+    }
+    let choose = |n: usize, k: usize| {
+        (0..k.min(n - k)).fold(1.0f64, |value, i| value * (n - i) as f64 / (i + 1) as f64)
+    };
+    let classes: Vec<_> = (1..=dimensions.min(pulses))
+        .map(|occupied| {
+            choose(dimensions, occupied)
+                * choose(pulses - 1, occupied - 1)
+                * 2.0f64.powi(occupied as i32)
+        })
+        .collect();
+    let count: f64 = classes.iter().sum();
+    let quotas: Vec<_> = classes
+        .iter()
+        .map(|&count_in_class| count_in_class * (65535 - classes.len()) as f64 / count)
+        .collect();
+    let mut widths: Vec<_> = quotas
+        .iter()
+        .map(|quota| 1 + quota.floor() as usize)
+        .collect();
+    let mut order: Vec<_> = (0..classes.len()).collect();
+    order.sort_by(|&a, &b| {
+        quotas[b]
+            .fract()
+            .total_cmp(&quotas[a].fract())
+            .then(a.cmp(&b))
+    });
+    let remaining = 65535 - widths.iter().sum::<usize>();
+    for &i in &order[..remaining] {
+        widths[i] += 1;
+    }
+    let bound = classes
+        .iter()
+        .zip(&widths)
+        .map(|(&count, &width)| count * 65535.0 / width as f64)
+        .fold(0.0f64, f64::max);
+    let bits = (bound.log2() - 1e-12).ceil() as usize + 1;
+    let mut boundaries = vec![0u16];
+    for width in widths {
+        boundaries.push((usize::from(*boundaries.last().unwrap()) + width) as u16);
+    }
+    Some((bits, boundaries))
+}
+
+fn encode_subset(writer: &mut snacka::entropy::Encoder<'_>, slots: usize, positions: &[usize]) {
+    let mut selected = 0;
+    for position in 0..slots {
+        let remaining = positions.len() - selected;
+        if remaining == 0 {
+            break;
+        }
+        let available = slots - position;
+        let present = positions[selected] == position;
+        if remaining != available {
+            writer
+                .symbol(
+                    usize::from(present),
+                    snacka::entropy::Model::new(&[
+                        0,
+                        (available - remaining) as u16,
+                        available as u16,
+                    ])
+                    .unwrap(),
+                )
+                .unwrap();
+        }
+        selected += usize::from(present);
+    }
+}
+
 fn pulse_packet(
     gains: [u32; 4],
     profile: u8,
@@ -830,16 +921,27 @@ fn pulse_packet(
     let bins = samples / (1 + usize::from((profile & 6) >> 1));
     let edges = [0, samples / 24, samples / 12, samples / 6, bins];
     let dimensions: Vec<_> = edges.windows(2).map(|e| e[1] - e[0]).collect();
+    let classes: Vec<Vec<_>> = dimensions
+        .iter()
+        .map(|&n| (0..388).map(|k| signed_class_model(n, k)).collect())
+        .collect();
     let costs: Vec<Vec<_>> = dimensions
         .iter()
-        .map(|&dimension| {
+        .enumerate()
+        .map(|(group, &dimension)| {
             let mut logarithm = 0.0f64;
+            let mut previous = 0;
             (0..388)
                 .map(|pulses| {
                     if pulses != 0 {
                         logarithm += ((dimension + pulses - 1) as f64 / pulses as f64).log2();
                     }
-                    logarithm.ceil() as usize + pulses
+                    let multiset = logarithm.ceil() as usize + pulses.min(dimension);
+                    let budget = classes[group][pulses]
+                        .as_ref()
+                        .map_or(multiset, |(cost, _)| multiset.min(*cost));
+                    previous = previous.max(budget);
+                    previous
                 })
                 .collect()
         })
@@ -890,7 +992,7 @@ fn pulse_packet(
         used += extra;
     }
     let mut packet = vec![0; length];
-    packet[..2].copy_from_slice(&[192 | profile, 0]);
+    packet[..2].copy_from_slice(&[224 | profile, 0]);
     let end = length - 2;
     let mut writer = snacka::entropy::Encoder::new(&mut packet[2..end]);
     for gain in gains {
@@ -917,36 +1019,73 @@ fn pulse_packet(
             .map(|(ordinal, frequency)| frequency + ordinal)
             .collect();
         if allocation[group] != 0 {
-            let slots = dimensions[group] + allocation[group] - 1;
-            let mut selected = 0;
-            let mut previous = None;
-            for position in 0..slots {
-                let remaining = positions.len() - selected;
-                if remaining == 0 {
-                    break;
+            let raw_multiset_cost = {
+                let logarithm = (1..=allocation[group])
+                    .map(|k| ((dimensions[group] + k - 1) as f64 / k as f64).log2())
+                    .sum::<f64>();
+                logarithm.ceil() as usize + allocation[group].min(dimensions[group])
+            };
+            if let Some((_, boundaries)) = classes[group][allocation[group]]
+                .as_ref()
+                .filter(|(cost, _)| *cost < raw_multiset_cost)
+            {
+                let occupied: Vec<_> = values
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, &v)| (v != 0).then_some(i))
+                    .collect();
+                writer
+                    .symbol(
+                        occupied.len() - 1,
+                        snacka::entropy::Model::new(boundaries).unwrap(),
+                    )
+                    .unwrap();
+                encode_subset(&mut writer, dimensions[group], &occupied);
+                for &i in &occupied {
+                    writer.raw(u32::from(values[i] < 0), 1).unwrap();
                 }
-                let available = slots - position;
-                let present = positions[selected] == position;
-                if remaining != available {
-                    writer
-                        .symbol(
-                            usize::from(present),
-                            snacka::entropy::Model::new(&[
-                                0,
-                                (available - remaining) as u16,
-                                available as u16,
-                            ])
-                            .unwrap(),
-                        )
-                        .unwrap();
-                }
-                if present {
-                    let frequency = position - selected;
-                    if previous != Some(frequency) {
-                        writer.raw(u32::from(values[frequency] < 0), 1).unwrap();
+                let extra_positions: Vec<_> = occupied
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(bin, &i)| {
+                        std::iter::repeat_n(bin, values[i].unsigned_abs() as usize - 1)
+                    })
+                    .enumerate()
+                    .map(|(ordinal, bin)| ordinal + bin)
+                    .collect();
+                encode_subset(&mut writer, allocation[group] - 1, &extra_positions);
+            } else {
+                let slots = dimensions[group] + allocation[group] - 1;
+                let mut selected = 0;
+                let mut previous = None;
+                for position in 0..slots {
+                    let remaining = positions.len() - selected;
+                    if remaining == 0 {
+                        break;
                     }
-                    previous = Some(frequency);
-                    selected += 1;
+                    let available = slots - position;
+                    let present = positions[selected] == position;
+                    if remaining != available {
+                        writer
+                            .symbol(
+                                usize::from(present),
+                                snacka::entropy::Model::new(&[
+                                    0,
+                                    (available - remaining) as u16,
+                                    available as u16,
+                                ])
+                                .unwrap(),
+                            )
+                            .unwrap();
+                    }
+                    if present {
+                        let frequency = position - selected;
+                        if previous != Some(frequency) {
+                            writer.raw(u32::from(values[frequency] < 0), 1).unwrap();
+                        }
+                        previous = Some(frequency);
+                        selected += 1;
+                    }
                 }
             }
             let norm = values
@@ -1062,7 +1201,7 @@ fn invalid_pulse_gains_at_each_precision_preserve_stream_history() {
             output.fill(9.0);
             for invalid in 0..4 {
                 let mut packet = vec![0; length];
-                packet[..2].copy_from_slice(&[192 | profile, 1]);
+                packet[..2].copy_from_slice(&[224 | profile, 1]);
                 let end = length - 2;
                 let mut writer = snacka::entropy::Encoder::new(&mut packet[2..end]);
                 for field in 0..4 {
