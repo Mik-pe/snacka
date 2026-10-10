@@ -97,7 +97,8 @@ def main():
                                     row[f"band_{band}_frames"] = int(fields[f"band_{band}_frames"])
                         for metric in ("snr_db", "stoi", "estoi", "lsd_db"):
                             row[f"delta_{metric}"] = row[f"current_{metric}"] - row[f"baseline_{metric}"]
-                        if row["current_packet_bytes"] != row["baseline_packet_bytes"]:
+                        if (row["current_packet_bytes"] != row["baseline_packet_bytes"]
+                                or row["current_drain_bytes"] != row["baseline_drain_bytes"]):
                             raise ValueError("paired packet byte budgets differ")
                         for key, value in row.items():
                             if isinstance(value, float):

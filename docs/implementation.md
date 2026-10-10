@@ -12,7 +12,8 @@ A working DSP baseline encodes 48 kHz mono audio into native packets at
 12–32 kb/s and decodes it again. Frame duration is negotiated before stream
 construction: 20 ms by default, 10 ms optionally. Each encoder and decoder owns
 its transform workspace, spectral history and short overlap. Byte budgets can
-change per frame without a new decoding configuration.
+change per frame without a new decoding configuration. Four framing/checksum
+bytes leave the rest of each packet available for spectral coding.
 
 Sparse coefficient selection and one shared gain are deliberately simple
 baselines. Per-frame selection between squared four-bit and linear six-bit

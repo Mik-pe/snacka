@@ -10,7 +10,7 @@ production calls. No superiority over established codecs is claimed.
 
 - Mono normalized f32 PCM at 48 kHz.
 - 20 ms frames by default; optional 10 ms frames.
-- 12–32 kb/s including six bytes of framing and checksum per packet.
+- 12–32 kb/s including four bytes of framing and checksum per packet.
 - Bitrate changes retain stream history; fractional byte budgets remain exact.
 - Per-packet coded bandwidth of 8/12/24 kHz; PCM stays at 48 kHz.
 - 120 samples (2.5 ms) of transform delay beyond frame buffering.
@@ -23,7 +23,7 @@ four- or six-bit quantization, adaptive coded bandwidth
 and arithmetic coding of coefficient subsets. The decoder validates framing,
 CRC, stream sequence and spectral bounds, with explicit concealment for missing
 packets. CRC detects corruption; authentication belongs to the transport.
-The experimental format is version 3. Encoder and decoder must use the same
+The experimental format is version 4. Encoder and decoder must use the same
 version; older native packets are rejected.
 
 ```rust

@@ -1,4 +1,4 @@
-# Experimental native bitstream, version 3
+# Experimental native bitstream, version 4
 
 The format is intentionally independent of legacy audio packet formats.
 Incompatible changes require another version or defined profile. There are no
@@ -7,14 +7,15 @@ required neural weights in the current profiles.
 ## Packet framing
 
 Packets are supplied as complete slices. There is no stream container or
-transport framing in the library.
+transport framing in the library. The transport negotiates the codec identity;
+packets are not scanned for a magic marker. Version, sequence and checksum occupy
+four fixed bytes. All remaining bytes are available to spectral coding.
 
 | Bytes | Meaning |
 | --- | --- |
-| 0–1 | ASCII `SN` |
-| 2 | Bits 7–5: version 3. Bit 4: final drain. Bits 3–0: required profile |
-| 3 | Frame sequence modulo 256, initially zero |
-| 4 through length−3 | Entropy payload, padded to the allocated byte budget |
+| 0 | Bits 7–5: version 4. Bit 4: final drain. Bits 3–0: required profile |
+| 1 | Frame sequence modulo 256, initially zero |
+| 2 through length−3 | Entropy payload, padded to the allocated byte budget |
 | Last two | Little-endian CRC-16/CCITT-FALSE over all preceding bytes |
 
 CRC uses polynomial `0x1021`, initial state `0xffff`, no reflection, no final
@@ -73,7 +74,7 @@ including coefficients omitted by its budget. Quantize to the nearest
 reconstructed level, saturating at the greatest magnitude. Four-bit squared
 levels spend more precision near zero and retain more coefficients at a given
 packet size; six-bit linear levels suit sparse spectra. Final PCM is clipped to
-[−1,1]. Versions other than 3 are rejected; there is no older-format compatibility path.
+[−1,1]. Versions other than 4 are rejected; there is no older-format compatibility path.
 
 ## Subset and entropy coding
 
@@ -81,7 +82,7 @@ Choose the greatest K absolute coefficients within M positions, with ascending i
 break. K is the greatest integer satisfying
 `ceil(log2(binomial(M,K))) + amplitude_width*K + 12 <= 8*payload_bytes`.
 The budget includes eight gain bits, one quantizer bit and three bits for
-interval rounding and termination. Both profiles use exact integer cardinality
+interval rounding and termination. Profiles use exact integer cardinality
 tables for K for M=160/240/320/480/960; the profile and quantizer flag determine
 which budget the decoder uses. Coefficients M through N−1 are zero.
 

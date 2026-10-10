@@ -43,3 +43,12 @@ used by native audio packets.
 
 The example encodes the same event sequences using snacka. The tool independently
 decodes its output using libopus and checks every value and state record.
+
+## Native version 3 framing
+
+The inline short/long packet literals in `tests/codec.rs` are complete silence
+packets emitted by the native encoder at commit
+`f66d2c8825e8ccc828f2be1bb6933d12b116adcd`, using 12,000 bits/s and 10/20 ms
+respectively. Their original checksum bytes are retained. They test rejection
+of the previous experimental packet layout without consuming stream history.
+They contain no external implementation or recorded audio.

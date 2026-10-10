@@ -233,17 +233,17 @@ fn profile_packet_with_length(
     let bins = samples / (1 + usize::from(profile >> 1));
     let mut packet = vec![0; length];
     let end = packet.len() - 2;
-    packet[..4].copy_from_slice(&[b'S', b'N', 96 | profile, 0]);
+    packet[..2].copy_from_slice(&[128 | profile, 0]);
     let mut count = 0;
     let mut log_combinations = 0.0f64;
     for candidate in 1..=bins {
         log_combinations += ((bins + 1 - candidate) as f64 / candidate as f64).log2();
-        if log_combinations.ceil() as usize + bits as usize * candidate + 12 > (end - 4) * 8 {
+        if log_combinations.ceil() as usize + bits as usize * candidate + 12 > (end - 2) * 8 {
             break;
         }
         count = candidate;
     }
-    let mut writer = snacka::entropy::Encoder::new(&mut packet[4..end]);
+    let mut writer = snacka::entropy::Encoder::new(&mut packet[2..end]);
     writer.raw(gain, 8).unwrap();
     writer.raw(u32::from(bits == 6), 1).unwrap();
     for index in 0..count {
@@ -475,13 +475,13 @@ fn incompatible_versions_are_rejected_before_consuming_history() {
     let mut packet = spectral_packet(0, 4, &[]);
     let mut decoder = Decoder::new();
     let mut output = [9.0; FRAME_SAMPLES];
-    for version in [0, 1, 2, 7] {
-        packet[2] = version << 5;
+    for version in [0, 1, 2, 3, 5, 6, 7] {
+        packet[0] = version << 5;
         repair_crc(&mut packet);
         assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Version));
         assert_eq!(output, [9.0; FRAME_SAMPLES]);
     }
-    packet[2] = 3 << 5;
+    packet[0] = 4 << 5;
     repair_crc(&mut packet);
     decoder.decode(&packet, &mut output).unwrap();
     assert_eq!(output, [0.0; FRAME_SAMPLES]);
@@ -604,14 +604,14 @@ fn unknown_bandwidth_profiles_are_refused_without_consuming_history() {
     let mut decoder = Decoder::new();
     let mut output = [7.0; FRAME_SAMPLES];
     for profile in 6..16 {
-        packet[2] = 96 | profile;
+        packet[0] = 128 | profile;
         repair_crc(&mut packet);
         assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Profile));
         assert_eq!(output, [7.0; FRAME_SAMPLES]);
     }
     for profile in [0, 2, 4] {
         let mut packet = profile_packet(0, 4, &[], profile);
-        packet[3] = profile / 2;
+        packet[1] = profile / 2;
         repair_crc(&mut packet);
         let parsed = Packet::parse(&packet).unwrap();
         assert_eq!(parsed.bandwidth_hz(), 24_000 / (1 + u32::from(profile / 2)));
@@ -682,7 +682,7 @@ fn all_bandwidth_budgets_match_independently_constructed_cosine_packets() {
             for length in 12_000 / divisor..=32_000 / divisor {
                 let (packet, count) =
                     profile_packet_with_length(64, bits, &amplitudes, profile, length);
-                assert!(count <= 80);
+                assert!(count <= 83);
                 let mut decoder = Decoder::with_frame_duration(duration);
                 let mut output = vec![0.0; samples];
                 decoder.decode(&packet, &mut output).unwrap();
@@ -710,6 +710,94 @@ fn all_bandwidth_budgets_match_independently_constructed_cosine_packets() {
                     assert!(
                         (f64::from(actual) - expected).abs() < 1e-6,
                         "profile={profile} bits={bits} length={length} sample={index}"
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn complete_version_three_packets_are_rejected_without_consuming_history() {
+    let legacy_short = [
+        83, 78, 97, 0, 255, 255, 255, 255, 252, 14, 238, 238, 0, 235, 39,
+    ];
+    let legacy_long = [
+        83, 78, 96, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 224,
+        238, 238, 238, 238, 238, 238, 238, 238, 0, 130, 8,
+    ];
+    for (duration, bytes) in [
+        (FrameDuration::Ms10, legacy_short.as_slice()),
+        (FrameDuration::Ms20, legacy_long.as_slice()),
+    ] {
+        let mut checksummed = bytes.to_vec();
+        repair_crc(&mut checksummed);
+        assert_eq!(checksummed, bytes);
+        let mut encoder = Encoder::new(Config::default().with_frame_duration(duration));
+        let mut decoder = Decoder::with_frame_duration(duration);
+        let mut output = vec![9.0; duration.samples()];
+        assert_eq!(decoder.decode(bytes, &mut output), Err(Error::Version));
+        assert!(output.iter().all(|&x| x == 9.0));
+        let mut packet = [0; MAX_PACKET_BYTES];
+        let length = encoder
+            .encode(&vec![0.0; duration.samples()], &mut packet)
+            .unwrap();
+        let info = decoder.decode(&packet[..length], &mut output).unwrap();
+        assert_eq!(info.sequence, 0);
+        assert!(output.iter().all(|&x| x == 0.0));
+    }
+}
+
+#[test]
+fn out_of_range_packet_lengths_preserve_decoder_history() {
+    for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+        let config = Config::new(12_000).unwrap().with_frame_duration(duration);
+        let mut encoder = Encoder::new(config);
+        let mut decoder = Decoder::with_frame_duration(duration);
+        let mut packet = [0; MAX_PACKET_BYTES];
+        let length = encoder
+            .encode(&vec![0.0; duration.samples()], &mut packet)
+            .unwrap();
+        let mut output = vec![9.0; duration.samples()];
+        for end in 0..length {
+            assert_eq!(
+                decoder.decode(&packet[..end], &mut output),
+                Err(Error::Packet)
+            );
+            assert!(output.iter().all(|&x| x == 9.0));
+        }
+        let maximum = Config::new(32_000)
+            .unwrap()
+            .with_frame_duration(duration)
+            .maximum_packet_bytes();
+        for excessive in [maximum + 1, MAX_PACKET_BYTES + 1, 1024] {
+            let mut malformed = packet[..length].to_vec();
+            malformed.resize(excessive, 0);
+            repair_crc(&mut malformed);
+            assert_eq!(decoder.decode(&malformed, &mut output), Err(Error::Packet));
+            assert!(output.iter().all(|&x| x == 9.0));
+        }
+        decoder.decode(&packet[..length], &mut output).unwrap();
+        assert!(output.iter().all(|&x| x == 0.0));
+    }
+}
+
+#[test]
+fn checksum_rejects_contiguous_bit_flips_through_sixteen_bits_for_every_profile() {
+    for profile in 0..6 {
+        let divisor = if profile & 1 == 0 { 400 } else { 800 };
+        for length in [12_000 / divisor, 32_000 / divisor] {
+            let (packet, _) = profile_packet_with_length(64, 4, &[], profile, length);
+            assert_eq!(Packet::parse(&packet).unwrap().payload().len(), length - 4);
+            for burst in 1..=16 {
+                for start in 0..=packet.len() * 8 - burst {
+                    let mut damaged = packet.clone();
+                    for bit in start..start + burst {
+                        damaged[bit / 8] ^= 1 << (7 - bit % 8);
+                    }
+                    assert!(
+                        Packet::parse(&damaged).is_err(),
+                        "profile={profile} length={length} start={start} burst={burst}"
                     );
                 }
             }
