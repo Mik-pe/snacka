@@ -71,18 +71,19 @@ The budget includes eight gain bits, one quantizer bit and three bits for
 interval rounding and termination. Both profiles use exact integer cardinality
 tables for K; the quantizer flag determines which budget the decoder uses.
 
-After writing gain and the quantizer flag, visit indices in order. If R selections remain among A
-positions, code absence/presence with cumulative frequencies `[0, A−R, A]`.
+After writing gain and the quantizer flag, visit indices in order. If R selections
+remain among A positions, code absence/presence with cumulative frequencies
+`[0, A−R, A]`.
 If R=A, presence is implicit. If R=0, stop. On each presence, write its four- or
-six-bit amplitude and decrement R. The decoder reconstructs this same subset; duplicate
-or out-of-order indices cannot be represented.
+six-bit amplitude and decrement R. The decoder reconstructs this same subset;
+duplicate or out-of-order indices cannot be represented.
 
 The entropy primitive follows the independently implemented 31-bit interval,
 byte normalization and reverse raw-bit suffix mathematics of
 [RFC 6716 sections 4.1 and 5.1](https://www.rfc-editor.org/rfc/rfc6716.html).
-The arithmetic prefix zero-extends; raw reads remain physically bounded. Gain
-the quantizer flag and amplitudes use raw suffix bits, first bit least significant, from the end
-backwards. Termination pads the unused gap with zero. The decoder additionally
+The arithmetic prefix zero-extends; raw reads remain physically bounded. Gain,
+the quantizer flag and amplitudes use raw suffix bits, first bit least significant,
+from the end backwards. Termination pads the unused gap with zero. The decoder additionally
 rejects logical bit usage beyond the payload budget and invalid spectral values.
 This shared primitive does not make native audio packets Opus-compatible.
 
