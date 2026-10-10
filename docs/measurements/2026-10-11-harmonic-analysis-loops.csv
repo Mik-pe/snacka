@@ -1,0 +1,3 @@
+label,harmonic_lanes,f64_vectors,instructions_per_sample,sample_loop_stack_accesses,fused_multiply_adds,analyze_function_instructions
+baseline,4,2,15,0,0,515
+current,8,4,25,0,0,486

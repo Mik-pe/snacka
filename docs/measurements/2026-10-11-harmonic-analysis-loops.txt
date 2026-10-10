@@ -1,0 +1,43 @@
+baseline sample loop
+mov.16b	v0, v4
+mov.16b	v4, v1
+mov.16b	v1, v7
+mov.16b	v7, v3
+ldr	s2, [x9], #0x4
+fcvt	d2, s2
+fmul.2d	v3, v5, v3
+dup.2d	v2, v2[0]
+fadd.2d	v3, v3, v2
+fsub.2d	v3, v3, v1
+fmul.2d	v1, v6, v4
+fadd.2d	v1, v1, v2
+fsub.2d	v1, v1, v0
+subs	x8, x8, #0x4
+b.ne	0x100010104
+
+current sample loop
+mov.16b	v16, v3
+mov.16b	v3, v7
+mov.16b	v7, v2
+mov.16b	v2, v5
+mov.16b	v5, v4
+mov.16b	v4, v6
+mov.16b	v6, v0
+mov.16b	v0, v1
+ldr	s1, [x9], #0x4
+fcvt	d1, s1
+fmul.2d	v17, v19, v0
+dup.2d	v18, v1[0]
+fadd.2d	v1, v17, v18
+fsub.2d	v1, v1, v6
+fmul.2d	v6, v21, v4
+fadd.2d	v6, v6, v18
+fsub.2d	v6, v6, v5
+fmul.2d	v5, v22, v2
+fadd.2d	v5, v5, v18
+fsub.2d	v5, v5, v7
+fmul.2d	v7, v20, v3
+fadd.2d	v7, v7, v18
+fsub.2d	v7, v7, v16
+subs	x8, x8, #0x4
+b.ne	0x1000102d8

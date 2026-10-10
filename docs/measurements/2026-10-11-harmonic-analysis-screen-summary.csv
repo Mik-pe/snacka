@@ -1,0 +1,5 @@
+frame_ms,metric,pairs,baseline_median_ns,current_median_ns,change_median_percent,change_min_percent,change_max_percent,regressions
+10,cpu,12,196108.750,145493.500,-20.5726,-35.4829,-14.4495,0
+10,wall,12,249937.354,161671.531,-23.7693,-50.9113,12.3802,2
+20,cpu,12,506323.500,402956.500,-17.4770,-26.1716,-12.3309,0
+20,wall,12,646005.698,526469.167,-18.0965,-31.3276,17.5177,1
