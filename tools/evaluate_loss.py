@@ -50,6 +50,8 @@ def main():
     parser.add_argument("--baseline", type=Path, required=True)
     parser.add_argument("--ffmpeg", default="ffmpeg")
     parser.add_argument("--patterns", choices=("periodic", "seeded"), default="periodic")
+    parser.add_argument("--require-identical", action="store_true",
+                        help="require exact concealed PCM bytes for an output-preserving optimization")
     parser.add_argument("--quality", action="store_true", help="add optional STOI, ESTOI and spectral-distance scores")
     parser.add_argument("--bitrates", type=int, nargs="+", default=[24000])
     args = parser.parse_args()
@@ -156,6 +158,13 @@ def main():
                             for label, executable in (("baseline", baseline), ("current", current)):
                                 values, fields = run(executable, bitrate, duration, True)
                                 decoded_pcm = output.read_bytes()
+                                row[f"{label}_decoded_pcm_sha256"] = hashlib.sha256(decoded_pcm).hexdigest()
+                                if label == "baseline":
+                                    baseline_pcm = decoded_pcm
+                                else:
+                                    row["pcm_identical"] = decoded_pcm == baseline_pcm
+                                    if args.require_identical and not row["pcm_identical"]:
+                                        raise ValueError("concealed PCM differs from baseline")
                                 if any(decoded_pcm[4 * start:4 * end] != reference_pcm[4 * start:4 * end]
                                        for start, end in received):
                                     raise ValueError("loss error propagated beyond the short recovery overlap")

@@ -68,6 +68,8 @@ requires a Unix host; the Rust library and probe remain portable.
 `--operations decode loss burst` selects complete receive workloads with
 concealment and recovery. Their fixed loss patterns, speech scores and current
 CPU observations are documented in [packet-loss evaluation](loss.md).
+The [pitch-search comparison](loss.md#pitch-search-work-and-exact-output)
+records complete PCM identity and paired CPU/callback observations.
 
 ## Bounded pulse exchanges, version 5
 
