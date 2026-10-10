@@ -1,29 +1,54 @@
 # snacka
 
-An independently implemented, MIT-licensed Rust audio codec project.
+An independently implemented, MIT-licensed Rust codec for interactive speech,
+with its own versioned bitstream. Snacka is the codec under development;
+external codecs are measurement competitors and test oracles only.
 
-The goal is an Opus-compatible encoder and decoder for interactive speech, with
-measured improvements in speed, latency, memory use and robustness. Implementation
-code is written here from the standard's mathematics. External codec libraries
-serve only as independent test oracles and benchmark competitors.
+**Experimental DSP prototype.** It encodes and decodes audio today, but its
+speech quality and loss concealment need substantial improvement before use in
+production calls. No superiority over established codecs is claimed.
 
-**A complete Opus audio encoder and decoder are not available yet.** Current
-components are:
+- Mono normalized f32 PCM at 48 kHz.
+- 20 ms frames by default; optional 10 ms frames.
+- 12–32 kb/s including six bytes of framing and checksum per packet.
+- Bitrate changes retain stream history; fractional byte budgets remain exact.
+- 120 samples (2.5 ms) of transform delay beyond frame buffering.
+- Caller-owned buffers; no allocation during encoding, decoding, concealment,
+  bitrate updates or reset. Each track owns its independent history.
+- No library dependencies, build script, C, FFI, CMake or unsafe Rust.
 
-| Component | Current evidence |
-| --- | --- |
-| G.711 A-law and mu-law | Every decoded byte checked against independent FFmpeg fixtures; exhaustive PCM bounds and canonical round trips |
-| Opus single-stream packet framing | All four framing codes, padding and duration limits; optional libopus differential tests |
-| Opus range coding and raw bits | Symbol, bit and uniform-integer coding; 16,384 reference operations checked for values, interval and bit usage |
-| FFT and low-overlap MDCT | Mixed radix 2/3/5, half-length FFT MDCT; independent cosine/DFT comparisons and overlapping reconstruction |
+The encoder uses a short-overlap MDCT, sparse spectral selection, quantization
+and arithmetic coding of coefficient subsets. The decoder validates framing,
+CRC, stream sequence and spectral bounds, with explicit concealment for missing
+packets. CRC detects corruption; authentication belongs to the transport.
 
-The library has no dependencies, build script, C, FFI, CMake or unsafe Rust.
-Plans allocate during construction; processing uses caller-owned buffers. A
-counting allocator test checks zero steady-state allocations across packet,
-entropy, G.711, FFT and MDCT operations. Input dimensions and numeric bounds are
-validated before transform output is changed.
+```rust
+use snacka::{Config, Decoder, Encoder, FRAME_SAMPLES, MAX_PACKET_BYTES};
 
-Rust 1.99 or newer is required.
+let mut encoder = Encoder::new(Config::default());
+let mut decoder = Decoder::new();
+let input = [0.0; FRAME_SAMPLES];
+let mut packet = [0; MAX_PACKET_BYTES];
+let mut output = [0.0; FRAME_SAMPLES];
+let length = encoder.encode(&input, &mut packet).unwrap();
+let frame = decoder.decode(&packet[..length], &mut output).unwrap();
+assert_eq!(frame.valid_samples, FRAME_SAMPLES);
+```
+
+Discard the first `ALGORITHMIC_DELAY` output samples once per stream. At its
+end, encode and decode `Encoder::finish` and retain the drain's
+`FrameInfo::valid_samples` prefix. The offline example handles this alignment
+and partial input frames:
+
+```sh
+cargo run --release --example roundtrip -- input.f32 output.f32 24000 20
+```
+
+Rust 1.99 or newer is required. Plans allocate during construction, before the
+audio callback. Snacka operates on PCM and packet bytes; capture, playback,
+echo cancellation, resampling, encryption, jitter buffering and relaying remain
+application responsibilities. A relay can forward bytes and send separate copies
+to an analysis pipeline without delaying participant audio.
 
 ```sh
 cargo test --locked
@@ -32,23 +57,17 @@ cargo clippy --locked --all-targets -- -D warnings
 cargo bench --locked --bench kernels
 ```
 
-Optional interoperability tests link to an independently installed libopus:
+For an optional CPU comparison against a separately installed libopus:
 
 ```sh
-cargo test --locked --features reference-tests
 cargo bench --locked --bench kernels --features reference-tests
 ```
 
-On platforms with a nonstandard library search path, supply it through
-`RUSTFLAGS="-L /path/to/lib"`. This feature adds linkage only to test and benchmark
-programs; it never adds FFI to the library.
+This benchmark alone contains reference FFI. Supply a nonstandard search path
+with `RUSTFLAGS="-L /path/to/lib"`. Neither the feature nor normal builds add
+reference code or linkage to the library.
 
-See [the implementation plan](docs/implementation.md),
-[measurement methodology](docs/measurements.md), [fixture provenance](tests/fixtures/README.md)
-and [fuzzing instructions](fuzz/README.md).
-
-The format specification is [RFC 6716](https://www.rfc-editor.org/rfc/rfc6716.html),
-with decoder corrections in [RFC 8251](https://www.rfc-editor.org/rfc/rfc8251.html).
-The implementation license is [MIT](LICENSE). External reference programs retain
-their own licenses; their source is not vendored here. Opus also has separate
-[patent licensing terms](https://opus-codec.org/license/).
+See [the bitstream](docs/bitstream.md), [development and acceptance](docs/implementation.md),
+[measurements](docs/measurements.md), [fixture provenance](tests/fixtures/README.md)
+and [fuzzing](fuzz/README.md). The implementation license is [MIT](LICENSE).
+External reference source and trained weights are not vendored.

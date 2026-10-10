@@ -6,7 +6,7 @@ rust-version = "1.99"
 description = "Independent Rust audio codec development"
 license = "MIT"
 repository = "https://github.com/Mik-pe/snacka"
-keywords = ["audio", "opus", "g711", "codec", "voip"]
+keywords = ["audio", "speech", "realtime", "codec", "voip"]
 categories = ["multimedia::audio", "multimedia::encoding"]
 exclude = ["/target-mobile/**"]
 

@@ -1,7 +1,10 @@
 # Fuzzing
 
-The standalone fuzz package exercises packet framing, malformed entropy frames,
+The standalone fuzz package exercises native packet framing and audio decoding, malformed entropy frames,
 argument bounds, small output buffers and mixed-operation entropy round trips.
+The packet target generates valid frames at both durations and mutates their
+payloads while repairing CRC to reach spectral validation. It verifies rejected
+packets leave output untouched and accepted audio stays finite and normalized.
 Both targets cap work per input. The main library remains dependency-free.
 
 Install `cargo-fuzz`, a nightly Rust toolchain and the C++ compiler required by
@@ -9,7 +12,7 @@ libFuzzer, following the [Rust Fuzz setup guide](https://rust-fuzz.github.io/boo
 This compiler is for the external fuzz engine, not a library build dependency.
 
 ```sh
-cargo +nightly fuzz run packet -- -max_total_time=60 -max_len=65536
+cargo +nightly fuzz run packet -- -max_total_time=60 -max_len=1024
 cargo +nightly fuzz run entropy -- -max_total_time=60 -max_len=4096
 ```
 

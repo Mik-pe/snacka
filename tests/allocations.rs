@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: MIT
+use snacka::FrameDuration;
 use snacka::entropy::{Decoder, Encoder, Model};
-use snacka::g711::Law;
-use snacka::opus_packet::Packet;
 use snacka::transform::{Complex, FftPlan, MdctPlan, MdctWorkspace};
+use snacka::{
+    Config, Decoder as AudioDecoder, Encoder as AudioEncoder, FRAME_SAMPLES, MAX_PACKET_BYTES,
+    Packet,
+};
 use std::alloc::{GlobalAlloc, Layout, System};
 use std::cell::Cell;
 use std::hint::black_box;
@@ -59,37 +62,51 @@ fn steady_state_processing_never_allocates() {
     let mut coefficients = [0.0; 960];
     let mut mdct_output = [0.0; 1_920];
     let mut entropy = [0; 128];
-    let mut encoded = [0; 160];
-    let mut decoded = [0; 160];
-    let packet = [0xf8, 0x12, 0x34];
-    ALLOCATIONS.with(|counter| counter.set(Some(0)));
-    for _ in 0..1_000 {
-        for law in [Law::A, Law::Mu] {
-            law.encode_into(black_box(&decoded), &mut encoded).unwrap();
-            law.decode_into(black_box(&encoded), &mut decoded).unwrap();
+    for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+        let mut audio_encoder = AudioEncoder::new(Config::default().with_frame_duration(duration));
+        let mut audio_decoder = AudioDecoder::with_frame_duration(duration);
+        let mut encoded = [0; MAX_PACKET_BYTES];
+        let input: [f32; FRAME_SAMPLES] = std::array::from_fn(|i| (i as f32 * 0.15).sin());
+        let input = &input[..duration.samples()];
+        let mut decoded_storage = [0.0; FRAME_SAMPLES];
+        let decoded = &mut decoded_storage[..duration.samples()];
+        ALLOCATIONS.with(|counter| counter.set(Some(0)));
+        for _ in 0..1_000 {
+            let length = audio_encoder
+                .encode(black_box(input), &mut encoded)
+                .unwrap();
+            let parsed = Packet::parse(black_box(&encoded[..length])).unwrap();
+            black_box(parsed.payload());
+            audio_decoder.decode(&encoded[..length], decoded).unwrap();
+            black_box(&*decoded);
+            audio_decoder.conceal(decoded).unwrap();
+            audio_encoder.encode(input, &mut encoded).unwrap();
+            black_box(&*decoded);
+            let mut encoder = Encoder::new(&mut entropy);
+            encoder.symbol(1, model).unwrap();
+            encoder.uniform(935, 1_000).unwrap();
+            encoder.raw(0xa5, 8).unwrap();
+            let length = encoder.finish().unwrap();
+            let mut decoder = Decoder::new(&entropy[..length]);
+            black_box(decoder.symbol(model));
+            black_box(decoder.uniform(1_000).unwrap());
+            black_box(decoder.raw(8).unwrap());
+            fft.forward(black_box(&transform_input), &mut transform_output)
+                .unwrap();
+            fft.inverse(black_box(&transform_output), &mut transform_recovered)
+                .unwrap();
+            black_box(&transform_recovered);
+            mdct.forward(black_box(&mdct_input), &mut coefficients, &mut workspace)
+                .unwrap();
+            mdct.inverse(black_box(&coefficients), &mut mdct_output, &mut workspace)
+                .unwrap();
+            black_box(&mdct_output);
         }
-        let parsed = Packet::parse(black_box(&packet)).unwrap();
-        black_box(parsed.frames().map(|frame| frame.len()).sum::<usize>());
-        let mut encoder = Encoder::new(&mut entropy);
-        encoder.symbol(1, model).unwrap();
-        encoder.uniform(935, 1_000).unwrap();
-        encoder.raw(0xa5, 8).unwrap();
-        let length = encoder.finish().unwrap();
-        let mut decoder = Decoder::new(&entropy[..length]);
-        black_box(decoder.symbol(model));
-        black_box(decoder.uniform(1_000).unwrap());
-        black_box(decoder.raw(8).unwrap());
-        fft.forward(black_box(&transform_input), &mut transform_output)
-            .unwrap();
-        fft.inverse(black_box(&transform_output), &mut transform_recovered)
-            .unwrap();
-        black_box(&transform_recovered);
-        mdct.forward(black_box(&mdct_input), &mut coefficients, &mut workspace)
-            .unwrap();
-        mdct.inverse(black_box(&coefficients), &mut mdct_output, &mut workspace)
-            .unwrap();
-        black_box(&mdct_output);
+        audio_encoder.set_bitrate(12_345).unwrap();
+        audio_encoder.finish(&mut encoded).unwrap();
+        audio_encoder.reset();
+        audio_decoder.reset();
+        let allocations = ALLOCATIONS.with(|counter| counter.replace(None).unwrap());
+        assert_eq!(allocations, 0);
     }
-    let allocations = ALLOCATIONS.with(|counter| counter.replace(None).unwrap());
-    assert_eq!(allocations, 0);
 }

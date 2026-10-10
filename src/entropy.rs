@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-//! Range coding and reverse raw-bit packing for Opus (RFC 6716 sections 4.1 and 5.1).
+//! Range coding and reverse raw-bit packing from RFC 6716 sections 4.1 and 5.1.
 //!
 //! Coding uses a 31-bit interval with byte normalization. The frame's arithmetic
 //! prefix and raw-bit suffix may overlap; zero extension of the prefix is required
@@ -79,7 +79,7 @@ fn tell_fractional(total_bits: u64, range: u32) -> u64 {
     total_bits * 8 - u64::from(integer * 8 + fraction)
 }
 
-/// A borrowed, allocation-free range decoder for one encoded Opus frame.
+/// A borrowed, allocation-free range decoder for one encoded entropy frame.
 pub struct Decoder<'a> {
     frame: &'a [u8],
     front: usize,
@@ -410,7 +410,19 @@ impl<'a> Encoder<'a> {
     /// Terminate and compact the frame; return its encoded length in bytes.
     ///
     /// The returned prefix of the caller's buffer is the entire encoded frame.
-    pub fn finish(mut self) -> Result<usize, Error> {
+    pub fn finish(self) -> Result<usize, Error> {
+        self.terminate(false)
+    }
+
+    /// Terminate a frame using the entire caller-provided buffer.
+    ///
+    /// Zero padding separates the arithmetic prefix from the raw suffix, which
+    /// remains at the end of the buffer. The result is suitable for fixed budgets.
+    pub fn finish_padded(self) -> Result<usize, Error> {
+        self.terminate(true)
+    }
+
+    fn terminate(mut self, padded: bool) -> Result<usize, Error> {
         if let Some(error) = self.failure {
             return Err(error);
         }
@@ -435,6 +447,13 @@ impl<'a> Encoder<'a> {
         let extra = usize::from(self.raw_available > free);
         if self.front + extra > self.tail {
             return Err(Error::Output);
+        }
+        if padded {
+            self.output[self.front..self.tail].fill(0);
+            if self.raw_available != 0 {
+                self.output[self.tail - 1] |= self.raw_buffer as u8;
+            }
+            return Ok(self.output.len());
         }
         let raw_bytes = self.output.len() - self.tail;
         let length = self.front + extra + raw_bytes;

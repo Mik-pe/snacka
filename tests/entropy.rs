@@ -192,3 +192,22 @@ fn boundary_uniform_values_and_32_raw_bits_round_trip() {
         }
     }
 }
+
+#[test]
+fn fixed_budget_frames_keep_raw_suffix_at_the_end_and_zero_the_gap() {
+    for capacity in 6..=64 {
+        let mut packet = [0xa5; 64];
+        let mut encoder = Encoder::new(&mut packet[..capacity]);
+        encoder.uniform(417, 480).unwrap();
+        encoder.raw(0xabbc, 16).unwrap();
+        encoder.uniform(6, 13).unwrap();
+        encoder.raw(17, 5).unwrap();
+        assert_eq!(encoder.finish_padded(), Ok(capacity));
+        let mut decoder = Decoder::new(&packet[..capacity]);
+        assert_eq!(decoder.uniform(480), Ok(417));
+        assert_eq!(decoder.raw(16), Ok(0xabbc));
+        assert_eq!(decoder.uniform(13), Ok(6));
+        assert_eq!(decoder.raw(5), Ok(17));
+        assert_eq!(&packet[capacity..], &[0xa5; 64][capacity..]);
+    }
+}

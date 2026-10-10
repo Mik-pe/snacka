@@ -1,75 +1,100 @@
 # Measurements
 
-## Method
+## CPU method and initial run
 
 Run `cargo bench --locked --bench kernels --features reference-tests` in a release
 build with an independently installed libopus. Omit the feature to measure only
-the native kernels. Inputs, plans, workspaces and output buffers are prepared
-outside the measured operation. Outputs are observed through `black_box`.
+Snacka. Inputs, plans, workspaces and buffers are prepared before timing. Outputs
+are observed through `black_box`. Audio input is a repeated two-tone synthetic
+frame, not a representative speech corpus. Native decoding cycles 256 prepared
+packets in sequence without resetting history.
 
-Each kernel receives 1,000 warmups. A batch size is calibrated once to a duration
-of at least 200 microseconds, then 1,000 batches are timed and sorted. The report
-divides each batch duration by its operation count. The p95 and p99 columns
-describe **batch-average throughput**, not individual audio callback tail latency.
-Batching avoids the timer resolution floor seen when timing tiny G.711 and packet
-operations individually. Timer, loop and API call overhead remain included.
+Each operation receives 1,000 warmups. A batch is calibrated once to at least
+200 microseconds, then 1,000 batches are timed and sorted. p95/p99 describe
+**batch-average throughput**, not individual callback tail latency. Timer, loop,
+validation and reference FFI overhead remain included.
 
-The packet comparison uses identical one-frame, 80-byte payloads and observes
-frame lengths, configuration and channels in both implementations. The C call's
-FFI overhead is included. The native API returns a validated owned descriptor;
-the C API writes caller-provided arrays. This is one API-level framing workload,
-not an audio encoding or decoding comparison.
+The [raw table](measurements/2026-10-10-apple-m5.csv) was captured on Apple M5,
+macOS 27.0 build 26A428, aarch64, Rust 1.99.0 (`b940084d7`, 2026-09-28), and
+libopus 1.6.1. Release overflow checks were enabled, with no LTO,
+`target-cpu=native` or explicit SIMD. This shared desktop had neither CPU affinity
+nor fixed power settings. The high percentiles show substantial scheduling
+variation; they must not be presented as stable device deadlines.
 
-## Initial local run
+Both codecs use 48 kHz mono, 10/20 ms frames and 12/24/32 kb/s. The competitor uses
+restricted-lowdelay, CBR, complexity 10; queried lookahead is 120 samples. Native
+packets include six framing/checksum bytes that the competing codec does not
+have. Quality is not matched and no competitor quality score was measured.
+This is a CPU workload comparison, not proof of codec superiority.
 
-The checked-in [raw result table](measurements/2026-10-10-apple-m5.csv) was captured
-on Apple M5, macOS 27.0 build 26A428, aarch64, Rust 1.99.0
-(`b940084d7`, 2026-09-28), and libopus 1.6.1. Cargo's release profile uses overflow
-checks; no `target-cpu=native`, LTO or explicit SIMD was enabled. This was a shared
-desktop run without CPU affinity or fixed power settings. Repeated runs vary,
-especially the high percentiles.
+At 20 ms / 24 kb/s, median batch-average native encode/decode took about
+6.46/5.23 microseconds; the reference took about 36.24/6.69 microseconds. These
+measurements do not establish mobile battery use, perceptual quality or
+real-time behavior under application load. The source hash manifest records the
+processing and benchmark sources used for this measurement.
 
-The single-frame parser is slower than libopus in this initial workload. No
-speed advantage over a complete competing codec has been established. The FFT
-avoids recursive calls for single-sample leaves and skips identity twiddle
-multiplications, while retaining independent accuracy tests. These are internal
-kernel optimizations, not evidence of full-codec superiority.
+## Public speech smoke test
+
+Three test-clean utterances from the same speaker in the
+[LibriSpeech corpus](https://www.openslr.org/12), licensed CC BY 4.0, were evaluated:
+`6930-75918-0000`, `6930-75918-0006`, `6930-75918-0007`. Attribution: Vassil Panayotov,
+Daniel Povey, Guoguo Chen and Sanjeev Khudanpur, *LibriSpeech: an ASR corpus based
+on public domain audio books*, ICASSP 2015. Files came from
+`LibriSpeech/test-clean/6930/75918/` in `test-clean.tar.gz`; their original FLAC
+hashes are [recorded here](measurements/2026-10-10-speech-input.sha256).
+No audio or transcripts are redistributed in this repository.
+
+Reproduce with FFmpeg 9.0.2 to convert each original mono 16 kHz FLAC into
+little-endian mono f32 at 48 kHz:
+
+```sh
+ffmpeg -i input.flac -ar 48000 -ac 1 -f f32le input.f32
+cargo run --release --example roundtrip -- input.f32 output.f32 24000 20
+```
+
+The example trims the initial 120-sample delay, keeps the final drain prefix and
+removes padding of the last partial frame. It measures ordinary waveform SNR,
+`10*log10(sum(input^2)/sum((input-output)^2))`, over the entire utterance.
+This is **not a perceptual or intelligibility score** and must not be compared
+with another codec without matching alignment and evaluation settings.
+
+The [result table](measurements/2026-10-10-speech-smoke.csv) spans both durations
+and 12/24/32 kb/s. At 20 ms / 24 kb/s it measures 8.30–9.19 dB. This exposes the
+baseline's considerable reconstruction error. Three clips from one clean,
+read-English speaker are a smoke test, not a representative quality evaluation.
+Unvoiced speech, noisy inputs, diverse speakers, multiple languages, double-talk
+and burst packet loss remain necessary before a quality acceptance decision.
 
 ## Correctness and robustness evidence
 
-- All 256 G.711 codewords for each law match independent decoded fixtures.
-  Every PCM16 input is checked for monotonic reconstruction and bounded error.
-- Packet differential tests cover all 256 one-byte headers, all 65,536 two-byte
-  headers, and 100,000 pseudorandom packets of lengths up to 4,096 bytes. They
-  compare acceptance, frame boundaries, channel count and sample duration.
-- Independent libopus entropy vectors cover 128 frames and 16,384 events.
-  Each value, interval and whole/fractional bit count matches. An optional live
-  oracle also decoded all 128 packets emitted by our encoder, checking
-  termination and suffix compaction in the other direction.
-- FFT output agrees with an independent double-precision DFT at over 115 dB
-  for tested lengths up to 480. MDCT agrees with its defining cosine sum at over
-  110 dB for 120/240/480/960 coefficients. Overlapping inverse blocks reconstruct
-  the tested signal with absolute error below `3e-6`. These figures measure
-  numerical agreement, **not perceptual codec audio quality**.
-- The allocator test observed zero allocations over 1,000 repetitions of the
-  processing sequence after plans and workspaces had been constructed.
-- Initial coverage-guided libFuzzer runs with AddressSanitizer, seed 6716 and
-  a 30-second requested limit completed 30,710,988 packet inputs and 3,862,907
-  entropy inputs without a reported failure. Maximum input lengths were 65,536
-  and 4,096 bytes respectively. Corpus, coverage and memory figures belong to
-  the fuzz engine and must not be treated as library performance measurements.
-- Local debug/release tests and Clippy passed. Library checks passed for
-  `aarch64-apple-ios`, `aarch64-apple-ios-sim` and `aarch64-linux-android`.
-  Cross-compilation is not installed-device acceptance.
+- Both frame durations roundtrip 300-frame streams at six target bitrates,
+  including fractional byte quotas and sequence wrap. Every supported integer
+  packet budget also handles dense noise, transients, DC, alternating-sign input
+  and a chirp. Bitrate changes preserve history and exact cumulative quotas.
+- Framing bit flips, truncated packets, invalid gain/amplitudes with valid CRC,
+  wrong profiles, invalid PCM and insufficient buffers are refused without
+  changing documented output or persistent history.
+- Independent entropy fixtures cover 128 frames and 16,384 events, checking
+  values, interval and whole/eighth-bit usage. The live libopus oracle also
+  decoded all native full-budget entropy frames, independently checking padded
+  termination. This validates the primitive, not native audio interoperability.
+- FFT agrees with an independent double-precision DFT above 115 dB for tested
+  lengths up to 480. MDCT agrees with its defining cosine sum above 110 dB for
+  120/240/480/960 coefficients. Unquantized streaming reconstruction has maximum
+  error below `3e-6` and exactly 120 priming/drain samples at both frame durations.
+- A thread-local counting allocator checks both profiles over 1,000 processing
+  repetitions after construction, including concealment, bitrate update and
+  reset. Steady-state allocations observed: zero.
+- Coverage-guided libFuzzer with AddressSanitizer, seed 6716 and a requested
+  30-second limit completed 37,033 native packet inputs and 3,800,240 entropy
+  inputs without a reported failure. Packet payload mutations have their CRC
+  repaired to reach the audio decoder. Mutation length limits were 1,024 and 4,096 bytes; the packet seed corpus
+  also contained earlier inputs up to 4,083 bytes.
+  These counts describe short development runs, not security certification.
 
-## Full-codec comparison still required
+## Remaining acceptance
 
-The Opus audio encoder/decoder, SILK/CELT state transitions, PLC, FEC and
-multistream behavior remain incomplete. There is no full-codec bitrate,
-algorithmic-delay, quality, memory or tail-latency comparison yet.
-
-Those comparisons need matched settings, explicit competitor versions, public
-corpora with reproducible licenses, noisy speech and music, packet loss traces,
-quality metrics and listening evidence. Measure cold initialization and maximum
-stream storage separately from allocation-free steady-state processing. Include
-per-callback latency under load, and report regressions alongside improvements.
+Perceptual metrics and blind listening, a matched-quality competitor comparison,
+long-running fuzzing, realistic loss traces, callback tails under load, installed
+ARM64/x86-64 device measurements and battery evidence are still required.
+Cross-compilation alone does not establish mobile runtime acceptance.

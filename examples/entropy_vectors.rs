@@ -10,6 +10,7 @@ fn main() -> io::Result<()> {
     let mut output = io::BufWriter::new(io::stdout().lock());
     output.write_all(&fixture[..12])?;
     let model = Model::new(&[0, 27, 200, 256]).unwrap();
+    let padded = std::env::args().any(|argument| argument == "--padded");
     for _ in 0..cases {
         let old_length =
             u16::from_le_bytes(fixture[cursor..cursor + 2].try_into().unwrap()) as usize;
@@ -31,7 +32,11 @@ fn main() -> io::Result<()> {
             }
             cursor += 21;
         }
-        let length = encoder.finish().unwrap();
+        let length = if padded {
+            encoder.finish_padded().unwrap()
+        } else {
+            encoder.finish().unwrap()
+        };
         output.write_all(&(length as u16).to_le_bytes())?;
         output.write_all(&events.to_le_bytes())?;
         output.write_all(&packet[..length])?;

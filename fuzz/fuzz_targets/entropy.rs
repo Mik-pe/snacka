@@ -39,7 +39,7 @@ fuzz_target!(|bytes: &[u8]| {
             _ => encoder.uniform(value % u32::MAX, u32::MAX).unwrap(),
         }
     }
-    let length = encoder.finish().unwrap();
+    let length = if bytes.first().copied().unwrap_or(0) & 1 == 0 { encoder.finish().unwrap() } else { encoder.finish_padded().unwrap() };
     let mut decoder = Decoder::new(&packet[..length]);
     for event in bytes.chunks(5).take(128) {
         let mut value_bytes = [0; 4];

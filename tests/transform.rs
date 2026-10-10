@@ -180,3 +180,50 @@ fn invalid_dimensions_and_samples_leave_output_unchanged() {
     );
     assert_eq!(output, [9.0; 120]);
 }
+
+#[test]
+fn streaming_short_overlap_has_exactly_120_samples_of_delay() {
+    for n in [480, 960] {
+        let overlap = 120;
+        let start = (n - overlap) / 2;
+        let mut source = noise(5 * n);
+        source[0] = 0.8;
+        source[n - 1] = -0.8;
+        source[5 * n - 1] = 0.8;
+        let plan = MdctPlan::new(n, overlap).unwrap();
+        let mut workspace = MdctWorkspace::new(&plan);
+        let mut previous = vec![0.0; overlap];
+        let mut tail = vec![0.0; overlap];
+        let mut block = vec![0.0; 2 * n];
+        let mut inverse = vec![0.0; 2 * n];
+        let mut coefficients = vec![0.0; n];
+        let mut recovered = Vec::new();
+        for frame in 0..=5 {
+            let input = if frame < 5 {
+                &source[frame * n..(frame + 1) * n]
+            } else {
+                &vec![0.0; n]
+            };
+            block[start..start + overlap].copy_from_slice(&previous);
+            block[start + overlap..start + overlap + n].copy_from_slice(input);
+            plan.forward(&block, &mut coefficients, &mut workspace)
+                .unwrap();
+            plan.inverse(&coefficients, &mut inverse, &mut workspace)
+                .unwrap();
+            let valid = if frame == 5 { overlap } else { n };
+            for i in 0..valid {
+                recovered.push(inverse[start + i] + if i < overlap { tail[i] } else { 0.0 });
+            }
+            previous.copy_from_slice(&input[n - overlap..]);
+            tail.copy_from_slice(&inverse[start + n..start + n + overlap]);
+        }
+        assert!(recovered[..overlap].iter().all(|x| x.abs() < 3e-6));
+        assert_eq!(recovered.len() - overlap, source.len());
+        for (&expected, &actual) in source.iter().zip(&recovered[overlap..]) {
+            assert!(
+                (expected - actual).abs() < 3e-6,
+                "{n}: {expected} vs {actual}"
+            );
+        }
+    }
+}

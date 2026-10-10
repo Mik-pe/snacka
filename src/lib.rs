@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-//! Independently written Rust audio codec components.
-//!
-//! G.711 sample coding is complete. Opus packet framing and entropy coding are
-//! building blocks, not a complete Opus audio encoder or decoder.
+//! Independent Rust speech codec with an experimental native bitstream.
 
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
 
+mod codec;
 pub mod entropy;
-pub mod g711;
-pub mod opus_packet;
+pub use codec::{
+    ALGORITHMIC_DELAY, Config, Decoder, Encoder, Error, FRAME_SAMPLES, FrameDuration, FrameInfo,
+    MAX_PACKET_BYTES, Packet, SAMPLE_RATE,
+};
 pub mod transform;

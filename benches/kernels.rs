@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 use snacka::entropy::{Decoder, Encoder, Model};
-use snacka::g711::Law;
-use snacka::opus_packet::Packet;
 use snacka::transform::{Complex, FftPlan, MdctPlan, MdctWorkspace};
+use snacka::{
+    Config, Decoder as AudioDecoder, Encoder as AudioEncoder, FrameDuration, MAX_PACKET_BYTES,
+    Packet,
+};
 use std::hint::black_box;
 use std::time::Instant;
 
@@ -39,82 +41,166 @@ fn measure(name: &str, mut operation: impl FnMut()) {
 }
 
 #[cfg(feature = "reference-tests")]
-unsafe extern "C" {
-    fn opus_packet_parse(
-        data: *const u8,
-        length: i32,
-        toc: *mut u8,
-        frames: *mut *const u8,
-        sizes: *mut i16,
-        payload_offset: *mut i32,
-    ) -> i32;
-}
-#[cfg(feature = "reference-tests")]
 #[link(name = "opus")]
-unsafe extern "C" {}
+unsafe extern "C" {
+    fn opus_encoder_create(
+        rate: i32,
+        channels: i32,
+        application: i32,
+        error: *mut i32,
+    ) -> *mut std::ffi::c_void;
+    fn opus_encoder_ctl(encoder: *mut std::ffi::c_void, request: i32, ...) -> i32;
+    fn opus_encoder_destroy(encoder: *mut std::ffi::c_void);
+    fn opus_decoder_create(rate: i32, channels: i32, error: *mut i32) -> *mut std::ffi::c_void;
+    fn opus_decoder_destroy(decoder: *mut std::ffi::c_void);
+    fn opus_encode_float(
+        encoder: *mut std::ffi::c_void,
+        pcm: *const f32,
+        samples: i32,
+        bytes: *mut u8,
+        capacity: i32,
+    ) -> i32;
+    fn opus_decode_float(
+        decoder: *mut std::ffi::c_void,
+        bytes: *const u8,
+        length: i32,
+        pcm: *mut f32,
+        samples: i32,
+        fec: i32,
+    ) -> i32;
+    fn opus_get_version_string() -> *const std::ffi::c_char;
+}
 
 #[cfg(feature = "reference-tests")]
-fn reference_packet(bytes: &[u8]) -> usize {
-    use std::mem::MaybeUninit;
-    let mut toc = MaybeUninit::<u8>::uninit();
-    let mut frames = MaybeUninit::<[*const u8; 48]>::uninit();
-    let mut sizes = MaybeUninit::<[i16; 48]>::uninit();
-    let mut offset = MaybeUninit::<i32>::uninit();
-    // SAFETY: Length describes the input and the outputs hold the maximum
-    // frame count. The valid fixture guarantees the reference writes the TOC.
-    let count = unsafe {
-        opus_packet_parse(
-            bytes.as_ptr(),
-            bytes.len() as i32,
-            toc.as_mut_ptr(),
-            frames.as_mut_ptr().cast(),
-            sizes.as_mut_ptr().cast(),
-            offset.as_mut_ptr(),
-        )
-    };
-    assert!((1..=48).contains(&count));
-    // SAFETY: A positive result initializes the TOC and the first count sizes.
-    let toc = unsafe { toc.assume_init() };
-    // SAFETY: The checked frame count is exactly the initialized prefix.
-    let sizes = unsafe { std::slice::from_raw_parts(sizes.as_ptr().cast::<i16>(), count as usize) };
-    sizes.iter().map(|&length| length as usize).sum::<usize>()
-        + usize::from(toc >> 3)
-        + usize::from(1 + ((toc >> 2) & 1))
+fn reference_audio(input: &[f32], bitrate: i32, milliseconds: u32) {
+    let mut error = 0;
+    // SAFETY: Valid mono 48 kHz parameters and writable error storage; returned
+    // objects are checked before use and destroyed after the benchmark.
+    let encoder = unsafe { opus_encoder_create(48_000, 1, 2051, &mut error) };
+    assert_eq!(error, 0);
+    assert!(!encoder.is_null());
+    // SAFETY: Valid decoder parameters and writable error storage.
+    let decoder = unsafe { opus_decoder_create(48_000, 1, &mut error) };
+    assert_eq!(error, 0);
+    assert!(!decoder.is_null());
+    // SAFETY: Control request argument types are integer bitrate, integer VBR
+    // switch, integer complexity and writable lookahead pointer respectively.
+    unsafe {
+        assert_eq!(opus_encoder_ctl(encoder, 4002, bitrate), 0);
+        assert_eq!(opus_encoder_ctl(encoder, 4006, 0i32), 0);
+        assert_eq!(opus_encoder_ctl(encoder, 4010, 10i32), 0);
+        let mut lookahead = 0i32;
+        assert_eq!(
+            opus_encoder_ctl(encoder, 4027, &mut lookahead as *mut i32),
+            0
+        );
+        println!(
+            "libopus_restricted_lowdelay,bitrate={bitrate},frame_ms={milliseconds},lookahead_samples={lookahead},complexity=10,vbr=0"
+        );
+    }
+    let mut packet = [0; MAX_PACKET_BYTES];
+    let mut output = vec![0.0; input.len()];
+    let mut length = 0;
+    measure(
+        &format!("libopus_encode_{milliseconds}ms_{bitrate}"),
+        || {
+            // SAFETY: Input has one complete configured frame, output capacity
+            // matches the array, and the encoder remains alive and exclusively used.
+            length = unsafe {
+                opus_encode_float(
+                    encoder,
+                    black_box(input).as_ptr(),
+                    input.len() as i32,
+                    packet.as_mut_ptr(),
+                    packet.len() as i32,
+                )
+            };
+            assert!(length > 0);
+            black_box(&packet[..length as usize]);
+        },
+    );
+    measure(
+        &format!("libopus_decode_{milliseconds}ms_{bitrate}"),
+        || {
+            // SAFETY: The encoded prefix is initialized and output holds a complete
+            // frame. The decoder remains alive and exclusively used.
+            let samples = unsafe {
+                opus_decode_float(
+                    decoder,
+                    black_box(&packet).as_ptr(),
+                    length,
+                    output.as_mut_ptr(),
+                    output.len() as i32,
+                    0,
+                )
+            };
+            assert_eq!(samples as usize, input.len());
+            black_box(&output);
+        },
+    );
+    // SAFETY: Both opaque objects are live, owned here, and no longer used.
+    unsafe {
+        opus_encoder_destroy(encoder);
+        opus_decoder_destroy(decoder);
+    }
 }
 
 fn main() {
     println!(
         "1000 warmups; 1000 timed batches calibrated to >=200us; percentiles describe batch-average throughput, not individual tail latency"
     );
-    let pcm: Vec<_> = (0..160)
-        .map(|index| ((index * 937) as i16).wrapping_sub(16_000))
-        .collect();
-    let mut bytes = [0; 160];
-    let mut decoded = [0; 160];
-    for law in [Law::A, Law::Mu] {
-        measure(&format!("g711_{law:?}_encode_160"), || {
-            law.encode_into(black_box(&pcm), &mut bytes).unwrap();
-            black_box(&bytes);
-        });
-        measure(&format!("g711_{law:?}_decode_160"), || {
-            law.decode_into(black_box(&bytes), &mut decoded).unwrap();
-            black_box(&decoded);
-        });
-    }
-    let mut packet = [0; 81];
-    packet[0] = 0xf8;
-    measure("packet_parse_1_frame_80_bytes", || {
-        let parsed = Packet::parse(black_box(&packet)).unwrap();
-        black_box(
-            parsed.frames().map(|frame| frame.len()).sum::<usize>()
-                + usize::from(parsed.configuration())
-                + usize::from(parsed.channels()),
-        );
-    });
     #[cfg(feature = "reference-tests")]
-    measure("libopus_packet_parse_1_frame_80_bytes", || {
-        black_box(reference_packet(black_box(&packet)));
-    });
+    {
+        // SAFETY: The reference API returns a static NUL-terminated version string.
+        let version = unsafe { std::ffi::CStr::from_ptr(opus_get_version_string()) };
+        println!("reference_version={}", version.to_str().unwrap());
+    }
+    for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+        let samples = duration.samples();
+        let input: Vec<_> = (0..samples)
+            .map(|i| 0.5 * (i as f32 * 0.0576).sin() + 0.1 * (i as f32 * 0.127).sin())
+            .collect();
+        for bitrate in [12_000, 24_000, 32_000] {
+            let config = Config::new(bitrate).unwrap().with_frame_duration(duration);
+            let mut encoder = AudioEncoder::new(config);
+            let mut packet = [0; MAX_PACKET_BYTES];
+            measure(
+                &format!("snacka_encode_{}ms_{bitrate}", duration.milliseconds()),
+                || {
+                    let length = encoder.encode(black_box(&input), &mut packet).unwrap();
+                    black_box(&packet[..length]);
+                },
+            );
+            let mut source = AudioEncoder::new(config);
+            let packets: Vec<Vec<u8>> = (0..256)
+                .map(|_| {
+                    let length = source.encode(&input, &mut packet).unwrap();
+                    packet[..length].to_vec()
+                })
+                .collect();
+            let mut decoder = AudioDecoder::with_frame_duration(duration);
+            let mut output = vec![0.0; samples];
+            let mut index = 0;
+            measure(
+                &format!("snacka_decode_{}ms_{bitrate}", duration.milliseconds()),
+                || {
+                    decoder
+                        .decode(black_box(&packets[index]), &mut output)
+                        .unwrap();
+                    index = (index + 1) % 256;
+                    black_box(&output);
+                },
+            );
+            measure(
+                &format!("snacka_parse_{}ms_{bitrate}", duration.milliseconds()),
+                || {
+                    black_box(Packet::parse(black_box(&packets[0])).unwrap());
+                },
+            );
+            #[cfg(feature = "reference-tests")]
+            reference_audio(&input, bitrate as i32, duration.milliseconds());
+        }
+    }
     let model = Model::new(&[0, 27, 200, 256]).unwrap();
     let mut entropy_packet = [0; 128];
     measure("entropy_encode_32_symbols", || {
