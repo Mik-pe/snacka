@@ -46,8 +46,17 @@ cargo run --locked --release --features live-audio --example monitor -- --input 
 Input and output indices are separate lists; indices may change when devices are
 connected or disconnected. Indices 1 and 2 above are examples. On Linux, the
 PipeWire/default ALSA device follows the system's routing; a hardware device may
-bypass it. Both selected devices must offer 48 kHz PCM. This example does not
-resample; unsupported devices produce an actionable startup error.
+bypass it. The monitor uses each device's default PCM format to avoid changing
+its hardware clock. If that format is unavailable, it selects a supported PCM
+rate closest to 48 kHz. Capture and playback are resampled independently using a
+band-limited sinc filter when needed. This supports lower-rate Bluetooth headset
+microphones and 44.1 kHz devices. The device list and live routing display include the selected
+sample rates; Snacka always receives and produces 48 kHz mono PCM.
+
+A headset microphone may have limited bandwidth, and enabling Bluetooth capture
+can change the headset's playback mode. Resampling cannot restore missing high
+frequencies. For a wider-band comparison, use the computer's microphone with the
+headset as output, selecting the indices printed by `--list-devices`.
 
 ```sh
 cargo run --locked --release --features live-audio --example monitor -- \
@@ -60,8 +69,9 @@ output. `--help` lists all options without opening audio devices.
 
 ### Build prerequisites
 
-Use Rust 1.99 or newer. The optional feature enables CPAL, Crossterm, Ratatui and
-the lock-free `rtrb` queues. Default builds of the codec have no dependencies.
+Use Rust 1.99 or newer. The optional feature enables CPAL, Crossterm, Ratatui,
+the lock-free `rtrb` queues and Rubato resampling. Default builds of the codec have
+no dependencies.
 Linux needs ALSA development headers and pkg-config, for example:
 
 ```sh
@@ -89,18 +99,22 @@ audible.
 
 The displayed queue duration is application buffering, **not measured end-to-end
 latency**. Frame buffering, transform delay, capture/playback device buffers and
-headphone transport contribute additional delay. Bluetooth can add substantial
-delay. Larger prebuffers can reduce gaps, at the cost of slower monitoring.
+headphone transport contribute additional delay. Non-48 kHz devices also add
+resampling filter delay and up to 10 ms of resampling block buffering on each
+converted path. Both A/B modes share these conversions. Bluetooth can add
+substantial delay. Larger prebuffers can reduce gaps, at the cost of slower monitoring.
 Changing the prebuffer briefly re-primes playback, discarding stale queued samples
 when reducing the target. Deliberate discards are included in the drop counter.
 
-Steady-state audio callbacks only convert samples and access bounded lock-free
-queues; encoding, decoding, terminal rendering and key handling run on the main
-thread. Input channels are averaged to mono; decoded mono is duplicated to each
+Steady-state audio callbacks convert samples, resample when needed using
+preallocated buffers, and access bounded lock-free queues; encoding, decoding,
+terminal rendering and key handling run on the main thread. Input channels are
+averaged to mono; decoded mono is duplicated to each
 output channel. Non-finite input becomes silence, input is constrained to the
 codec's normalized range, and playback is limited to [-1, 1]. Playback gain above
 100% can clip the signal. Capture drops, playback gaps, output drops and clipped
-microphone samples are shown cumulatively, in samples.
+microphone samples are shown cumulatively, in samples. Queue drops and playback
+gaps count 48 kHz codec samples; clipped input counts device-rate input frames.
 
 If the stream stutters, increase buffering with B, use a release build and check
 the device routing. If the microphone level stays at zero, verify microphone
@@ -130,5 +144,7 @@ cargo test --locked --features live-audio --example monitor
 ```
 
 Tests exercise codec/reference alignment, bitrate updates across A/B switches,
-frame-profile restarts, and wide/compact dashboard rendering without opening
-microphone or speaker devices.
+frame-profile restarts, device format selection, resampling duration and pitch,
+downsampling alias suppression, playback re-priming, allocation-free conversion
+and resets, and wide/compact dashboard rendering without opening microphone or
+speaker devices.
