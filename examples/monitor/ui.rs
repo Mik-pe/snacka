@@ -323,9 +323,9 @@ impl Ui {
         );
         frame.render_widget(Clear, popup);
         let guide = if popup.height < 23 || popup.width < 68 {
-            "48 kHz = 48,000 samples each second.\nkb/s = compressed bits each second.\n12 kb/s = 1.5 kB/s (90 kB/min).\nAvg: packet data; excludes network.\nSpace: raw/codec (same capture).\nLeft/Right: bitrate Up/Down: volume\nF: frame B: buffer M: mute Q: quit\n?: close 12 kb/s can sound rough."
+            "48 kHz = 48,000 samples each second.\n1 kb/s = 1,000 bits each second.\n12 kb/s = 1.5 kB/s (90 kB/min).\nAvg: packet data; excludes network.\nSpace: raw/codec (same capture).\nLeft/Right: bitrate Up/Down: volume\nF: frame B: buffer M: mute Q: quit\n?: close 12 kb/s can sound rough."
         } else {
-            "48 kHz = 48,000 mono samples each second.\nkb/s = compressed bits each second; 12 kb/s = 1.5 kB/s.\nAvg is packet bytes per second of processed audio since startup.\nPacket headers count; network and encryption do not.\n12 kb/s is experimental: listen for distortion; compare 24 and 32.\n\nSpace     Compare Snacka and raw audio\nLeft/Right or -/+   Change bitrate by 1 kb/s\nUp/Down   Change playback volume by 5%\nF         Switch 10 / 20 ms frames (restarts codec)\nB         Cycle 20 / 40 / 80 / 120 / 200 ms buffer\nM         Mute playback (capture continues)\nQ / Ctrl-C   Quit and restore terminal\n? / Esc      Close this help\n\nBoth modes share device/OS processing and sample-rate conversion.\nRaw bypasses Snacka with the same 2.5 ms transform delay.\nHigher buffering can help gaps, at the cost of delay.\nActual latency also includes capture and device buffers.\nFor devices: --list-devices, --input N, --output N.\nNo audio is saved to disk."
+            "48 kHz = 48,000 mono samples each second.\n1 kb/s = 1,000 compressed bits per second; 12 kb/s = 1.5 kB/s.\nAvg is packet bytes per second of processed audio since startup.\nPacket headers count; network and encryption do not.\n12 kb/s is experimental: listen for distortion; compare 24 and 32.\n\nSpace     Compare Snacka and raw audio\nLeft/Right or -/+   Change bitrate by 1 kb/s\nUp/Down   Change playback volume by 5%\nF         Switch 10 / 20 ms frames (restarts codec)\nB         Cycle 20 / 40 / 80 / 120 / 200 ms buffer\nM         Mute playback (capture continues)\nQ / Ctrl-C   Quit and restore terminal\n? / Esc      Close this help\n\nBoth modes share device/OS processing and sample-rate conversion.\nRaw bypasses Snacka with the same 2.5 ms transform delay.\nHigher buffering can help gaps, at the cost of delay.\nActual latency also includes capture and device buffers.\nFor devices: --list-devices, --input N, --output N.\nNo audio is saved to disk."
         };
         frame.render_widget(
             Paragraph::new(guide)
@@ -393,6 +393,7 @@ mod tests {
                 .collect();
             assert!(text.contains("samples each second"));
             assert!(text.contains("1.5 kB/s"));
+            assert!(text.contains("1,000"));
             assert!(text.contains("network"));
             assert!(text.contains("Q:") || text.contains("Q / Ctrl-C"));
         }
