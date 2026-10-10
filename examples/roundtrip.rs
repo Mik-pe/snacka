@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 //! Offline validation of little-endian mono f32 PCM at 48 kHz.
-use snacka::{ALGORITHMIC_DELAY, Config, Decoder, Encoder, FrameDuration, MAX_PACKET_BYTES};
+use snacka::{
+    ALGORITHMIC_DELAY, Config, Decoder, Encoder, FrameDuration, MAX_PACKET_BYTES, Packet,
+};
 use std::{error::Error, fs, io};
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -42,11 +44,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut output = Vec::new();
     let mut encoded_bytes = 0;
     let mut lost_frames = 0;
+    let mut bands = [0usize; 3];
     for (index, chunk) in input.chunks(samples).enumerate() {
         frame.fill(0.0);
         frame[..chunk.len()].copy_from_slice(chunk);
         let length = encoder.encode(&frame, &mut packet)?;
         encoded_bytes += length;
+        let bandwidth = Packet::parse(&packet[..length])?.bandwidth_hz();
+        bands[(24_000 / bandwidth - 1) as usize] += 1;
         let info = if loss.is_some_and(|(period, burst)| index % period >= period - burst) {
             lost_frames += 1;
             decoder.conceal(&mut decoded)?
@@ -68,13 +73,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|(&x, &y)| f64::from(x - y).powi(2))
         .sum();
     println!(
-        "samples={},frame_ms={},packet_bytes={},drain_bytes={},aligned_snr_db={:.3},lost_frames={}",
+        "samples={},frame_ms={},packet_bytes={},drain_bytes={},aligned_snr_db={:.3},lost_frames={},band_24000_frames={},band_12000_frames={},band_8000_frames={}",
         input.len(),
         duration.milliseconds(),
         encoded_bytes,
         length,
         10.0 * (signal / error.max(1e-30)).log10(),
-        lost_frames
+        lost_frames,
+        bands[0],
+        bands[1],
+        bands[2]
     );
     Ok(())
 }

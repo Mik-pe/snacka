@@ -16,7 +16,7 @@ pub const ALGORITHMIC_DELAY: usize = 120;
 
 const HEADER: usize = 4;
 const CHECKSUM: usize = 2;
-const VERSION: u8 = 2;
+const VERSION: u8 = 3;
 const END: u8 = 16;
 const MIN_PACKET_BYTES: usize = 15;
 const GAIN_STEPS: [f32; 17] = [
@@ -212,35 +212,68 @@ fn checksum(bytes: &[u8]) -> u16 {
     })
 }
 
-// ceil(log2(binomial(N, K))) for exact integer subset cardinalities.
-const SUBSET_BITS_480: [usize; 81] = [
-    0, 9, 17, 25, 32, 38, 44, 50, 56, 62, 68, 73, 78, 84, 89, 94, 98, 103, 108, 112, 117, 121, 126,
-    130, 134, 139, 143, 147, 151, 155, 159, 163, 166, 170, 174, 177, 181, 185, 188, 192, 195, 199,
-    202, 205, 209, 212, 215, 218, 222, 225, 228, 231, 234, 237, 240, 243, 246, 249, 252, 254, 257,
-    260, 263, 265, 268, 271, 274, 276, 279, 281, 284, 286, 289, 291, 294, 296, 299, 301, 303, 306,
-    308,
+// ceil(log2(binomial(M, K))) for exact integer subset cardinalities.
+const SUBSET_BITS: [[usize; 81]; 5] = [
+    [
+        0, 8, 14, 20, 25, 30, 35, 39, 44, 48, 52, 55, 59, 62, 66, 69, 72, 75, 78, 81, 84, 87, 89,
+        92, 95, 97, 99, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 123, 125, 127, 128,
+        130, 131, 132, 134, 135, 136, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
+        149, 150, 151, 151, 152, 152, 153, 153, 154, 154, 155, 155, 155, 156, 156, 156, 156, 156,
+        156, 156, 157,
+    ],
+    [
+        0, 8, 15, 22, 28, 33, 38, 43, 48, 53, 58, 62, 66, 70, 74, 78, 82, 86, 89, 93, 96, 100, 103,
+        106, 110, 113, 116, 119, 122, 124, 127, 130, 133, 135, 138, 141, 143, 146, 148, 150, 153,
+        155, 157, 159, 162, 164, 166, 168, 170, 172, 174, 176, 177, 179, 181, 183, 185, 186, 188,
+        190, 191, 193, 194, 196, 197, 199, 200, 201, 203, 204, 205, 207, 208, 209, 210, 211, 212,
+        214, 215, 216, 217,
+    ],
+    [
+        0, 9, 16, 23, 29, 35, 41, 46, 52, 57, 62, 67, 71, 76, 80, 85, 89, 93, 97, 101, 105, 109,
+        113, 116, 120, 123, 127, 130, 134, 137, 140, 144, 147, 150, 153, 156, 159, 162, 165, 168,
+        171, 173, 176, 179, 181, 184, 187, 189, 192, 194, 197, 199, 201, 204, 206, 208, 210, 213,
+        215, 217, 219, 221, 223, 225, 227, 229, 231, 233, 235, 237, 239, 241, 242, 244, 246, 248,
+        249, 251, 253, 254, 256,
+    ],
+    [
+        0, 9, 17, 25, 32, 38, 44, 50, 56, 62, 68, 73, 78, 84, 89, 94, 98, 103, 108, 112, 117, 121,
+        126, 130, 134, 139, 143, 147, 151, 155, 159, 163, 166, 170, 174, 177, 181, 185, 188, 192,
+        195, 199, 202, 205, 209, 212, 215, 218, 222, 225, 228, 231, 234, 237, 240, 243, 246, 249,
+        252, 254, 257, 260, 263, 265, 268, 271, 274, 276, 279, 281, 284, 286, 289, 291, 294, 296,
+        299, 301, 303, 306, 308,
+    ],
+    [
+        0, 10, 19, 28, 36, 43, 50, 58, 64, 71, 78, 84, 90, 97, 103, 109, 115, 120, 126, 132, 137,
+        143, 148, 154, 159, 164, 169, 174, 179, 184, 189, 194, 199, 204, 209, 213, 218, 223, 227,
+        232, 236, 241, 245, 250, 254, 259, 263, 267, 271, 276, 280, 284, 288, 292, 296, 300, 304,
+        308, 312, 316, 320, 324, 328, 332, 335, 339, 343, 347, 350, 354, 358, 361, 365, 369, 372,
+        376, 379, 383, 386, 390, 393,
+    ],
 ];
-const SUBSET_BITS_960: [usize; 81] = [
-    0, 10, 19, 28, 36, 43, 50, 58, 64, 71, 78, 84, 90, 97, 103, 109, 115, 120, 126, 132, 137, 143,
-    148, 154, 159, 164, 169, 174, 179, 184, 189, 194, 199, 204, 209, 213, 218, 223, 227, 232, 236,
-    241, 245, 250, 254, 259, 263, 267, 271, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316,
-    320, 324, 328, 332, 335, 339, 343, 347, 350, 354, 358, 361, 365, 369, 372, 376, 379, 383, 386,
-    390, 393,
-];
-fn coefficient_count(payload_bytes: usize, samples: usize, amplitude_bits: usize) -> usize {
-    let subset_bits = if samples == 480 {
-        &SUBSET_BITS_480
-    } else {
-        &SUBSET_BITS_960
+fn coefficient_count(payload_bytes: usize, bins: usize, amplitude_bits: usize) -> usize {
+    let table = match bins {
+        160 => 0,
+        240 => 1,
+        320 => 2,
+        480 => 3,
+        960 => 4,
+        _ => unreachable!("fixed spectral dimensions"),
     };
+    let subset_bits = &SUBSET_BITS[table];
     let budget = payload_bytes * 8;
     // Gain and quantizer use nine raw bits; three bits cover interval rounding and termination.
-    subset_bits
-        .iter()
-        .enumerate()
-        .take_while(|&(count, &bits)| bits + amplitude_bits * count + 12 <= budget)
-        .last()
-        .map_or(0, |(count, _)| count)
+    // All tables stop at K <= M/2, where the subset cost is monotone.
+    let mut start = 0;
+    let mut end = subset_bits.len();
+    while start < end {
+        let middle = (start + end) / 2;
+        if subset_bits[middle] + amplitude_bits * middle + 12 <= budget {
+            start = middle + 1;
+        } else {
+            end = middle;
+        }
+    }
+    start.saturating_sub(1)
 }
 
 /// Borrowed framing of one native codec packet, with checksum validation.
@@ -260,10 +293,13 @@ impl<'a> Packet<'a> {
         if bytes[2] >> 5 != VERSION {
             return Err(Error::Version);
         }
-        let duration = match bytes[2] & 15 {
-            0 => FrameDuration::Ms20,
-            1 => FrameDuration::Ms10,
-            _ => return Err(Error::Profile),
+        if bytes[2] & 15 > 5 {
+            return Err(Error::Profile);
+        }
+        let duration = if bytes[2] & 1 == 0 {
+            FrameDuration::Ms20
+        } else {
+            FrameDuration::Ms10
         };
         let divisor = duration.divisor();
         if !(12_000 / divisor..=32_000 / divisor).contains(&(bytes.len() as u32)) {
@@ -277,11 +313,20 @@ impl<'a> Packet<'a> {
     }
     /// Required frame duration encoded by the decoding profile.
     pub fn frame_duration(&self) -> FrameDuration {
-        if self.bytes[2] & 15 == 0 {
+        if self.bytes[2] & 1 == 0 {
             FrameDuration::Ms20
         } else {
             FrameDuration::Ms10
         }
+    }
+    /// Upper edge of the coded spectrum: 8,000, 12,000 or 24,000 Hz.
+    ///
+    /// PCM always uses 48 kHz. Bandwidth can change between packets without reset.
+    pub fn bandwidth_hz(&self) -> u32 {
+        24_000 / (1 + u32::from((self.bytes[2] & 15) >> 1))
+    }
+    fn coded_bins(&self) -> usize {
+        self.frame_duration().samples() / (1 + usize::from((self.bytes[2] & 15) >> 1))
     }
     /// Frame sequence number modulo 256.
     pub fn sequence(&self) -> u8 {
@@ -449,67 +494,77 @@ impl Encoder {
             )
             .map_err(|_| Error::Input)?;
         let payload_bytes = length - HEADER - CHECKSUM;
-        let counts = [
-            coefficient_count(payload_bytes, samples, 4),
-            coefficient_count(payload_bytes, samples, 6),
-        ];
-        let maximum_count = counts[0].max(counts[1]);
         let mut indices: [usize; FRAME_SAMPLES] = std::array::from_fn(|index| index);
-        let order = |&left: &usize, &right: &usize| {
-            self.coefficients[right]
-                .abs()
-                .total_cmp(&self.coefficients[left].abs())
-                .then(left.cmp(&right))
-        };
-        indices[..samples].select_nth_unstable_by(maximum_count, order);
-        indices[..maximum_count].sort_unstable_by(order);
-        let ceiling = gain_code(self.coefficients[indices[0]].abs());
-        let mut best_error = f32::INFINITY;
-        let mut code = ceiling;
+        let mut selected_indices = [0usize; 81];
+        let mut best_improvement = f32::NEG_INFINITY;
+        let mut code = 0;
         let mut bits = 4;
-        let mut count = counts[0];
-        for candidate_gain in ceiling.saturating_sub(1).max(u8::from(ceiling != 0))..=ceiling {
-            let scale = gain(candidate_gain);
-            for (candidate_bits, candidate_count) in [(4, counts[0]), (6, counts[1])] {
-                let mut error = 0.0;
-                for (position, &index) in indices[..maximum_count].iter().enumerate() {
-                    let value = self.coefficients[index];
-                    let decoded = if position < candidate_count {
-                        reconstruct(
+        let mut count = 0;
+        let mut band = 0;
+        for candidate_band in 0..3 {
+            let coded_bins = samples / (1 + candidate_band);
+            let counts = [
+                coefficient_count(payload_bytes, coded_bins, 4),
+                coefficient_count(payload_bytes, coded_bins, 6),
+            ];
+            let maximum_count = counts[0].max(counts[1]);
+            for (index, value) in indices[..coded_bins].iter_mut().enumerate() {
+                *value = index;
+            }
+            let order = |&left: &usize, &right: &usize| {
+                self.coefficients[right]
+                    .abs()
+                    .total_cmp(&self.coefficients[left].abs())
+                    .then(left.cmp(&right))
+            };
+            indices[..coded_bins].select_nth_unstable_by(maximum_count, order);
+            indices[..maximum_count].sort_unstable_by(order);
+            let ceiling = gain_code(self.coefficients[indices[0]].abs());
+            for candidate_gain in ceiling.saturating_sub(1).max(u8::from(ceiling != 0))..=ceiling {
+                let scale = gain(candidate_gain);
+                for (candidate_bits, candidate_count) in [(4, counts[0]), (6, counts[1])] {
+                    let mut improvement = 0.0;
+                    for &index in &indices[..candidate_count] {
+                        let value = self.coefficients[index];
+                        let decoded = reconstruct(
                             quantize(value, scale, candidate_bits),
                             scale,
                             candidate_bits,
-                        )
-                    } else {
-                        0.0
-                    };
-                    error += (value - decoded).powi(2);
-                }
-                if error < best_error {
-                    best_error = error;
-                    code = candidate_gain;
-                    bits = candidate_bits;
-                    count = candidate_count;
+                        );
+                        improvement += value * value - (value - decoded).powi(2);
+                    }
+                    if improvement > best_improvement {
+                        best_improvement = improvement;
+                        code = candidate_gain;
+                        bits = candidate_bits;
+                        count = candidate_count;
+                        band = candidate_band;
+                        selected_indices[..count].copy_from_slice(&indices[..count]);
+                    }
                 }
             }
         }
+        let coded_bins = samples / (1 + band);
         let scale = gain(code);
-        indices[..count].sort_unstable();
+        selected_indices[..count].sort_unstable();
         let mut packet = [0; MAX_PACKET_BYTES];
         packet[..2].copy_from_slice(b"SN");
-        packet[2] = (VERSION << 5) | self.config.duration.profile() | if ending { END } else { 0 };
+        packet[2] = (VERSION << 5)
+            | ((band as u8) << 1)
+            | self.config.duration.profile()
+            | if ending { END } else { 0 };
         packet[3] = self.sequence;
         let mut writer = entropy::Encoder::new(&mut packet[HEADER..length - CHECKSUM]);
         writer.raw(u32::from(code), 8)?;
         writer.raw(u32::from(bits == 6), 1)?;
         let mut selected = 0;
-        for index in 0..samples {
+        for index in 0..coded_bins {
             let remaining = count - selected;
             if remaining == 0 {
                 break;
             }
-            let available = samples - index;
-            let present = indices[selected] == index;
+            let available = coded_bins - index;
+            let present = selected_indices[selected] == index;
             if remaining != available {
                 let probabilities = [0, (available - remaining) as u16, available as u16];
                 writer.symbol(usize::from(present), entropy::Model::new(&probabilities)?)?;
@@ -623,15 +678,13 @@ impl Decoder {
         let bits = 4 + 2 * reader.raw(1)? as usize;
         let scale = gain(code);
         let mut coefficients = [0.0; FRAME_SAMPLES];
-        let mut remaining = coefficient_count(payload.len(), self.duration.samples(), bits);
-        for (index, coefficient) in coefficients[..self.duration.samples()]
-            .iter_mut()
-            .enumerate()
-        {
+        let coded_bins = packet.coded_bins();
+        let mut remaining = coefficient_count(payload.len(), coded_bins, bits);
+        for (index, coefficient) in coefficients[..coded_bins].iter_mut().enumerate() {
             if remaining == 0 {
                 break;
             }
-            let available = self.duration.samples() - index;
+            let available = coded_bins - index;
             let present = if remaining == available {
                 true
             } else {

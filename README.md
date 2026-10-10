@@ -12,16 +12,19 @@ production calls. No superiority over established codecs is claimed.
 - 20 ms frames by default; optional 10 ms frames.
 - 12–32 kb/s including six bytes of framing and checksum per packet.
 - Bitrate changes retain stream history; fractional byte budgets remain exact.
+- Per-packet coded bandwidth of 8/12/24 kHz; PCM stays at 48 kHz.
 - 120 samples (2.5 ms) of transform delay beyond frame buffering.
 - Caller-owned buffers; no allocation during encoding, decoding, concealment,
   bitrate updates or reset. Each track owns its independent history.
 - No library dependencies, build script, C, FFI, CMake or unsafe Rust.
 
 The encoder uses a short-overlap MDCT, sparse spectral selection, adaptive
-four- or six-bit quantization
+four- or six-bit quantization, adaptive coded bandwidth
 and arithmetic coding of coefficient subsets. The decoder validates framing,
 CRC, stream sequence and spectral bounds, with explicit concealment for missing
 packets. CRC detects corruption; authentication belongs to the transport.
+The experimental format is version 3. Encoder and decoder must use the same
+version; older native packets are rejected.
 
 ```rust
 use snacka::{Config, Decoder, Encoder, FRAME_SAMPLES, MAX_PACKET_BYTES};
@@ -69,6 +72,6 @@ with `RUSTFLAGS="-L /path/to/lib"`. Neither the feature nor normal builds add
 reference code or linkage to the library.
 
 See [the bitstream](docs/bitstream.md), [development and acceptance](docs/implementation.md),
-[measurements](docs/measurements.md), [fixture provenance](tests/fixtures/README.md)
+[measurements](docs/measurements.md), [quality evaluation](docs/quality.md), [fixture provenance](tests/fixtures/README.md)
 and [fuzzing](fuzz/README.md). The implementation license is [MIT](LICENSE).
 External reference source and trained weights are not vendored.

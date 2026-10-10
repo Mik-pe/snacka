@@ -17,7 +17,12 @@ change per frame without a new decoding configuration.
 Sparse coefficient selection and one shared gain are deliberately simple
 baselines. Per-frame selection between squared four-bit and linear six-bit
 amplitudes balances retained coefficients against amplitude precision. Gain
-selection minimizes coefficient reconstruction error. The main weakness remains
+selection minimizes coefficient reconstruction error.
+The encoder also compares 8/12/24 kHz coded bandwidths. Smaller domains spend
+fewer bits on coefficient positions and can retain more coefficients. All
+choices are compared over the full transform, counting omitted high frequencies
+as error. Full-band coding remains available for high-frequency content.
+The main weakness remains
 speech fidelity, especially unvoiced speech
 and dense spectra. Concealment extrapolates recent decoded PCM with period
 estimation, fractional interpolation and a 40–80 ms fade. It cannot predict
