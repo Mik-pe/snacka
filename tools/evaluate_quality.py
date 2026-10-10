@@ -109,7 +109,7 @@ def main():
                         rows.append(row)
             print(f"evaluated {flac.stem}", flush=True)
     with args.output.open("w", newline="", encoding="utf-8") as output:
-        writer = csv.DictWriter(output, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(output, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
