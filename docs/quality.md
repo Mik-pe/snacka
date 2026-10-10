@@ -5,6 +5,11 @@ not establish subjective quality, conversational acceptance or superiority over
 other libraries. Listening tests and realistic noisy conversations remain
 necessary.
 
+The current [matched external reference](reference-quality.md) compares 864
+pairs with equal packet bytes and delay. It identifies a substantial low-bitrate
+intelligibility gap; the historical native-to-native improvements below do not
+establish competitiveness.
+
 ## Metric reproducibility
 
 The optional scorer now seeds NumPy for every paired comparison, independently

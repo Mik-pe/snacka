@@ -103,6 +103,10 @@ def main():
                             row[f"{label}_lsd_db"] = spectral_distance(reference, values)
                             row[f"{label}_packet_bytes"] = int(fields["packet_bytes"])
                             row[f"{label}_drain_bytes"] = int(fields["drain_bytes"])
+                            for field in ("codec", "algorithmic_delay_samples", "reference_version",
+                                          "reference_library_sha256", "reference_application",
+                                          "reference_complexity", "reference_vbr", "reference_dtx"):
+                                row[f"{label}_{field}"] = fields.get(field, "")
                             if label == "current":
                                 row["band_gain_frames"] = int(fields["band_gain_frames"])
                                 for band in (8000, 12000, 24000):
@@ -112,6 +116,10 @@ def main():
                         if (row["current_packet_bytes"] != row["baseline_packet_bytes"]
                                 or row["current_drain_bytes"] != row["baseline_drain_bytes"]):
                             raise ValueError("paired packet byte budgets differ")
+                        if not row["baseline_algorithmic_delay_samples"] or not row["current_algorithmic_delay_samples"]:
+                            raise ValueError("both examples must report their algorithmic delay")
+                        if row["baseline_algorithmic_delay_samples"] != row["current_algorithmic_delay_samples"]:
+                            raise ValueError("paired algorithmic delays differ")
                         for key, value in row.items():
                             if isinstance(value, float):
                                 if not math.isfinite(value):
