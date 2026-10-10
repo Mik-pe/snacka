@@ -80,7 +80,7 @@ The [raw table](measurements/2026-10-10-loss-seeded.csv) evaluates commit
 clean/noisy conditions, 10/20 ms frames and three seeded traces, at 24 kb/s.
 There are 864 cases. Both independently built executables use that same codec
 source and produce identical scores; this verifies the measurement controls,
-without claiming a codec improvement. The library implementation is unchanged.
+without claiming a codec improvement. These controls use the same library implementation.
 
 Inputs are [LibriSpeech test-clean](https://www.openslr.org/12), CC BY 4.0.
 Attribution: Vassil Panayotov, Guoguo Chen, Daniel Povey and Sanjeev Khudanpur,
@@ -170,3 +170,116 @@ reuses its period estimate. The host is Apple M5, aarch64, macOS 27.0 build
 without LTO, explicit SIMD or native-CPU flags. Desktop load and power are
 uncontrolled; process startup and preparation remain included. These means do
 not prove individual callback deadlines under load or mobile battery use.
+
+## Pitch-search work and exact output
+
+The current-window energy is accumulated once per coarse and fine pitch search,
+with the original f32 summation order. It is independent of the candidate lag.
+This removes 146 repeated 160-sample energy sums in the coarse search; products
+and lagged-window energy retain their order. The fine search likewise reuses
+its 320-sample current-window energy. A precisely zero downsampled window skips
+correlation search and retains the existing waveform fallback. Confirming actual
+zero samples avoids treating underflowed squares as silence; cancellation in
+the downsampled signal must not discard nonzero high-frequency PCM.
+
+The [complete-PCM table](measurements/2026-10-10-plc-correlation-identity.csv)
+contains 2,592 comparisons across the same 48 clips and 24 speakers: 12/24/32
+kb/s, both frame durations, clean/20/10 dB noise, and all three seeded loss
+families. Baseline core source is revision
+`11edd2f28cb180dbb00acf6c54df09df40a57bc6`; the library core is identical in
+`90432f71bc2afe44fed2c0b54b62f11fe75334eb`, before this change. Both examples
+are built from the same current source and compiler flags. Every complete PCM
+buffer, including concealment and recovery, matches byte for byte. Packet/drain
+budgets and received-region byte checks also match. Input hashes and attribution
+are the same [48-clip manifest](measurements/2026-10-10-loss-seeded-input.sha256).
+No new quality scores are inferred from reduced arithmetic work: the unchanged
+PCM preserves the measured audio, including its existing loss weaknesses.
+
+The evaluator records both complete decoded PCM hashes and `pcm_identical`.
+`--require-identical` makes a mismatch an error before a success table is
+written. This is appropriate for output-preserving changes; ordinary quality
+experiments can still compare changed concealment without that flag.
+
+```sh
+python3 tools/evaluate_loss.py corpus identity.csv \
+  --roundtrip ./current-roundtrip --baseline ./baseline-roundtrip \
+  --patterns seeded --require-identical --bitrates 12000 24000 32000
+```
+
+[Source hashes](measurements/2026-10-10-plc-correlation-source.sha256) distinguish
+baseline library files from the current library, common examples and tools.
+Build baseline library revision above and link the common examples exactly as
+in the earlier comparison; both use opt-level 3, 16 codegen units and overflow
+checks. Default library builds enable no optional audio-device dependencies.
+
+### Paired CPU observations
+
+The [speech CPU table](measurements/2026-10-10-plc-correlation-cpu-speech.csv)
+uses one clip from each of speakers 1320, 260, 4507, 5639, 6930, 7021, 8224 and
+908. There are 720 paired observations: 15 repetitions, both durations and
+three receive workloads at 24 kb/s. Each process performs 20,000 operations.
+The shorter process intervals alternate baseline/current order between
+repetitions. Startup, plans and preparation remain included, as in the earlier
+method, so absolute costs should not be compared with the 200,000-operation
+control table above. All 48 uninterrupted preflight traces match.
+
+The [synthetic-silence table](measurements/2026-10-10-plc-correlation-cpu-silence.csv)
+adds 90 paired observations with the same settings and six matching preflight
+traces. Its input is exactly two seconds of zero-valued 48 kHz mono PCM,
+converted to FLAC with FFmpeg; it represents a precisely silent stream, not a
+noisy microphone. The tables retain all samples and record input/trace hashes.
+
+| Receive workload | Speech, 10 ms | Speech, 20 ms | Silence, 10 ms | Silence, 20 ms |
+| --- | --- | --- | --- | --- |
+| Unchanged decode control | −0.02% | +0.10% | −1.50% | +2.57% |
+| One loss per ten frames | −3.43% | −1.71% | −24.15% | −8.84% |
+| Three losses per thirty frames | −1.03% | −0.86% | −4.35% | −8.11% |
+
+Cells are medians of paired process-CPU percentage changes, with 120 speech
+pairs or 15 silence pairs per cell. Negative values indicate lower CPU. The
+speech isolated-loss interquartile ranges are −8.57%..−0.88% at 10 ms and
+−4.73%..+1.53% at 20 ms. Unchanged speech-decode controls span −1.68%..+3.18%
+and −3.30%..+3.32% respectively. Small burst differences remain close to this
+noise; there is no claimed universal receive-speed improvement.
+
+```sh
+python3 tools/measure_cpu.py speech-eight cpu-speech.csv \
+  --baseline ./baseline-probe --current ./current-probe \
+  --operations decode loss burst --repetitions 15 --decode-frames 20000
+```
+
+The silence input is reproducible without an external audio source:
+
+```sh
+python3 -c "from pathlib import Path; Path('silence.f32').write_bytes(bytes(48000*2*4))"
+mkdir -p silence-corpus
+ffmpeg -v error -y -f f32le -ar 48000 -ac 1 -i silence.f32 \
+  -c:a flac silence-corpus/silence.flac
+python3 tools/measure_cpu.py silence-corpus cpu-silence.csv \
+  --baseline ./baseline-probe --current ./current-probe \
+  --operations decode loss burst --repetitions 15 --decode-frames 20000
+```
+
+### Individual loss callbacks
+
+The [callback table](measurements/2026-10-10-plc-correlation-callbacks.csv)
+compares the common `benches/kernels.rs` source linked to each library with the
+same compiler flags. Three paired benchmark repetitions alternate execution
+order. Each profile uses 100 warmups and 1,000 recorded calls, with four
+received packets prepared outside timing, then first loss, continued loss and
+recovery measured separately. Inputs are the repeated synthetic two-tone
+frames defined in that benchmark. These are not the speech-corpus callbacks.
+
+| Stage | 10 ms median paired change | 20 ms median paired change |
+| --- | --- | --- |
+| First loss | −7.78% | −7.24% |
+| Continued loss | 0.00% | +0.30% |
+| Recovery | −0.04% | +0.46% |
+
+Each cell pools nine pairs: three bitrates and three repetitions. The raw table
+includes median, p95 and p99 for both builds, including regressions. First-loss
+median changes range from −12.45% to +98.27% at 10 ms and −9.52% to −3.88% at
+20 ms; some 10 ms control stages also have large outliers. Background desktop
+load is uncontrolled. These observations on Apple M5/macOS 27.0, with Rust
+1.99.0 and the flags above, establish neither mobile battery use nor callback
+deadlines under load. The codec's PCM, delay and packet format are unchanged.
