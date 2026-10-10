@@ -34,7 +34,9 @@ fuzz_target!(|bytes: &[u8]| {
         }
         assert!(output.iter().all(|x| x.is_finite() && x.abs() <= 1.0));
         let length = encoder.encode(&input, &mut packet).unwrap();
-        packet[0] = (packet[0] & !6) | (2 * (bytes.get(1).copied().unwrap_or(0) % 3));
+        packet[0] = (packet[0] & !14)
+            | (2 * (bytes.get(1).copied().unwrap_or(0) % 3))
+            | ((bytes.get(2).copied().unwrap_or(0) & 1) << 3);
         for (destination, &source) in packet[2..length - 2].iter_mut().zip(bytes) {
             *destination ^= source;
         }

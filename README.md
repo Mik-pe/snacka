@@ -20,10 +20,12 @@ production calls. No superiority over established codecs is claimed.
 
 The encoder uses a short-overlap MDCT, sparse spectral selection, adaptive
 four- or six-bit quantization, adaptive coded bandwidth
-and arithmetic coding of coefficient subsets. The decoder validates framing,
+and arithmetic coding. A second spectral model independently codes four band
+gains and normalized signed-pulse vectors. Each packet chooses the model and
+bandwidth with greatest full-spectrum error reduction. The decoder validates framing,
 CRC, stream sequence and spectral bounds, with explicit concealment for missing
 packets. CRC detects corruption; authentication belongs to the transport.
-The experimental format is version 4. Encoder and decoder must use the same
+The experimental format is version 5. Encoder and decoder must use the same
 version; older native packets are rejected.
 
 ```rust

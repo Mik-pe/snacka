@@ -5,6 +5,82 @@ not establish subjective quality, conversational acceptance or superiority over
 other libraries. Listening tests and realistic noisy conversations remain
 necessary.
 
+## Version 5 normalized pulse bands
+
+A packet can now select four band gains and normalized signed-pulse vectors in
+place of the single-gain scalar model. Allocation derives from gain codes and
+byte budget using bounded integer priorities. The encoder compares both models
+and 8/12/24 kHz bandwidths by full-spectrum reconstruction error. The native
+format is version 5; legacy packets are rejected. Frame duration, PCM rate,
+framing overhead, delay and packet byte budgets are unchanged. See the
+[format specification](bitstream.md) for the independent signed-multiset code.
+
+The baseline is version 4 at commit
+`023a8b61414e03a527e9212766f37b3dd63dcdea`. Equal toolchains and evaluation settings
+produce equal normal-frame and drain byte counts in every comparison. The three
+raw tables contain 576 paired cases from 32 clips and 16 distinct speakers:
+
+- [Development](measurements/2026-10-10-quality-pulse-development.csv): eight
+  clips from the original four speakers.
+- [Previously evaluated additional speakers](measurements/2026-10-10-quality-pulse-holdout.csv):
+  sixteen clips from eight speakers already measured for versions 3 and 4.
+- [New unseen speakers](measurements/2026-10-10-quality-pulse-unseen.csv): eight
+  clips from four further speakers, selected before evaluating the final pulse
+  algorithm. Take the first two FLAC members of each of the first four new
+  speakers in official archive order, excluding the original twelve speakers.
+  Their IDs are 1995, 1284, 5142 and 8455. The algorithm was not tuned after
+  observing their scores. A subsequent cache optimization preserves decoded PCM
+  and frame/byte counters exactly in twelve real-speech cases.
+
+Original FLAC hashes for the new inputs are in the
+[unseen-input manifest](measurements/2026-10-10-pulse-unseen-input.sha256).
+Attribution, CC BY 4.0 licensing, archive paths and the official mirror are as
+specified below for LibriSpeech. No audio or transcripts are redistributed.
+The method below is unchanged: clean speech plus seeded Gaussian noise at
+20/10 dB, 10/20 ms and 12/24/32 kb/s. No added-noise samples clipped. Each row
+records the input hash, matched byte counts, model/bandwidth counts and all
+metric values. Reproduce with `tools/evaluate_quality.py` and a separately built
+version 4 baseline executable as described below. There is no packet loss here.
+
+| New unseen condition | Mean SNR change | Mean STOI change | Mean ESTOI change | Mean spectral distance change |
+| --- | --- | --- | --- | --- |
+| Clean | +1.095 dB | +0.017274 | +0.026062 | −2.040 dB |
+| Noise at 20 dB | +0.630 dB | +0.014586 | +0.018897 | −3.142 dB |
+| Noise at 10 dB | +0.211 dB | +0.007340 | +0.004842 | −4.298 dB |
+
+No paired waveform-SNR or speech-band spectral-distance score regresses across
+576 cases; some are unchanged. Intelligibility proxies are mixed: 69 STOI and
+83 ESTOI comparisons regress, with worst changes −0.020156 and −0.021975.
+Among the 144 new unseen cases, 21 STOI and 23 ESTOI scores regress, including
+three and two clean cases respectively. Means give equal weight to each case.
+Reducing spectral error does not guarantee better intelligibility. These results
+support continued development, not a listening, multilingual, conversational
+or competitor-quality acceptance claim.
+
+The [CPU table](measurements/2026-10-10-apple-m5-pulse.csv) uses the same Apple M5,
+Rust release flags and synthetic two-tone throughput method as earlier runs.
+At 20 ms / 24 kb/s, median encode/decode batch averages are 19.88/8.70 microseconds,
+compared with 9.39/5.62 in the recorded version 4 run. At 10 ms / 24 kb/s they
+are 8.24/2.59, compared with 4.66/2.77. Exploring pulse shapes costs additional
+encoding CPU. Workload-dependent model selection and uncontrolled scheduling
+make these historical comparisons approximate; quality is not matched to the
+external codec benchmark. Batch percentiles are not individual callback tails,
+installed mobile deadlines or battery evidence.
+The [source manifest](measurements/2026-10-10-pulse-source.sha256) records codec,
+tests, benchmark, fuzz and evaluation sources.
+
+All 41 local debug/release tests pass. Independent packets cover every supported
+pulse-model byte budget and all six bandwidth/duration combinations, checked
+against double-precision inverse cosine sums. Mixed signed multisets, exact cost
+tables, allocation bounds, invalid gains and scalar/pulse switches with nonzero
+overlap are covered. The counting allocator exercises both models at both
+frame durations and observes zero processing allocations. A new AddressSanitizer
+packet fuzz run, seed 6716 and requested 30-second limit, completes 4,953 inputs
+without a reported failure. It reaches both models with repaired checksums,
+primes four frames and tests twelve-frame loss bursts. iOS, iOS Simulator and
+Android source checks pass. Installed-device behavior, realistic loss quality
+and listening acceptance remain open.
+
 ## Version 4 compact framing comparison
 
 Version 4 removes the fixed two-byte magic and moves version/profile and

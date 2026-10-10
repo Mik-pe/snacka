@@ -1,4 +1,4 @@
-# Experimental native bitstream, version 4
+# Experimental native bitstream, version 5
 
 The format is intentionally independent of legacy audio packet formats.
 Incompatible changes require another version or defined profile. There are no
@@ -13,7 +13,7 @@ four fixed bytes. All remaining bytes are available to spectral coding.
 
 | Bytes | Meaning |
 | --- | --- |
-| 0 | Bits 7–5: version 4. Bit 4: final drain. Bits 3–0: required profile |
+| 0 | Bits 7–5: version 5. Bit 4: final drain. Bits 3–0: required profile |
 | 1 | Frame sequence modulo 256, initially zero |
 | 2 through length−3 | Entropy payload, padded to the allocated byte budget |
 | Last two | Little-endian CRC-16/CCITT-FALSE over all preceding bytes |
@@ -22,20 +22,21 @@ CRC uses polynomial `0x1021`, initial state `0xffff`, no reflection, no final
 XOR. It is not authentication. All profiles produce 48 kHz mono PCM. The profile
 combines frame duration and coded bandwidth:
 
-| Profile | Duration | Coded bandwidth | Transform size N | Coded coefficients M |
-| --- | --- | --- | --- | --- |
-| 0 | 20 ms | 24 kHz | 960 | 960 |
-| 1 | 10 ms | 24 kHz | 480 | 480 |
-| 2 | 20 ms | 12 kHz | 960 | 480 |
-| 3 | 10 ms | 12 kHz | 480 | 240 |
-| 4 | 20 ms | 8 kHz | 960 | 320 |
-| 5 | 10 ms | 8 kHz | 480 | 160 |
+| Scalar profile | Pulse profile | Duration | Coded bandwidth | Transform size N | Coded coefficients M |
+| --- | --- | --- | --- | --- | --- |
+| 0 | 8 | 20 ms | 24 kHz | 960 | 960 |
+| 1 | 9 | 10 ms | 24 kHz | 480 | 480 |
+| 2 | 10 | 20 ms | 12 kHz | 960 | 480 |
+| 3 | 11 | 10 ms | 12 kHz | 480 | 240 |
+| 4 | 12 | 20 ms | 8 kHz | 960 | 320 |
+| 5 | 13 | 10 ms | 8 kHz | 480 | 160 |
 
 Bit 0 identifies duration. Bits 2–1 identify bandwidth, with 0/1/2 for
-24/12/8 kHz. Bit 3 must be zero. Bandwidth may change per packet; duration is
-negotiated before constructing the decoder. Profiles 6–15 are rejected. Any future profile
-must specify all required decoding behavior, including necessary model weights
-and their identity.
+24/12/8 kHz. Bit 3 selects one shared scalar gain (zero) or four normalized
+pulse bands (one). Bandwidth and spectral model may change per packet; duration
+is negotiated before constructing the decoder. Profiles 6, 7, 14 and 15 are
+rejected. Any future profile must specify all required decoding behavior,
+including necessary model weights and their identity.
 
 20 ms packets occupy 30–80 bytes; 10 ms packets occupy 15–40 bytes. These sizes
 include framing and checksum. For target bitrate B, accumulate B into a byte
@@ -57,9 +58,14 @@ The inverse uses the same cosine without the `2/N` scale, then the window.
 Output is inverse[p..p+N] plus the preceding inverse block's O-sample tail on
 its first O samples. Save inverse[p+N..p+N+O] for the next output.
 
-Gain is an eight-bit raw code. Code zero means all selected amplitudes are zero.
+Both spectral models use the same gain mapping. Gain is an eight-bit raw code. Code zero means all selected amplitudes are zero.
 Codes 1–64 represent `2^(-16+code/8)`; codes 65–208 represent
-`2^(-8+(code−64)/16)`. Higher codes are invalid. A one-bit raw quantizer flag
+`2^(-8+(code−64)/16)`. Higher codes are invalid. Final PCM is clipped to [−1,1]. Versions other than
+5 are rejected; there is no older-format compatibility path.
+
+## Scalar spectral model
+
+A one-bit raw quantizer flag
 follows gain: zero selects four-bit amplitudes, one selects six-bit amplitudes.
 
 | Amplitude width | Quantized integer q | Stored value | Invalid value | Reconstruction |
@@ -67,16 +73,15 @@ follows gain: zero selects four-bit amplitudes, one selects six-bit amplitudes.
 | 4 bits | −7 through 7 | q+7 | 15 | q*abs(q)*gain/49 |
 | 6 bits | −31 through 31 | q+31 | 63 | q*gain/31 |
 
-Within each coded band, the encoder compares both quantizers at the smallest
+Within each coded spectral domain, the encoder compares both quantizers at the smallest
 gain covering the greatest absolute coefficient and the adjacent lower nonzero gain. Peaks at or below
 `2^-16` use code zero. Choose the candidate with least squared coefficient error,
 including coefficients omitted by its budget. Quantize to the nearest
 reconstructed level, saturating at the greatest magnitude. Four-bit squared
 levels spend more precision near zero and retain more coefficients at a given
-packet size; six-bit linear levels suit sparse spectra. Final PCM is clipped to
-[−1,1]. Versions other than 4 are rejected; there is no older-format compatibility path.
+packet size; six-bit linear levels suit sparse spectra.
 
-## Subset and entropy coding
+### Scalar subset coding
 
 Choose the greatest K absolute coefficients within M positions, with ascending index as the tie
 break. K is the greatest integer satisfying
@@ -86,14 +91,6 @@ interval rounding and termination. Profiles use exact integer cardinality
 tables for K for M=160/240/320/480/960; the profile and quantizer flag determine
 which budget the decoder uses. Coefficients M through N−1 are zero.
 
-The current encoder evaluates all three bandwidths. For each candidate, compare
-the squared-error reduction `sum(x^2−(x−reconstruction)^2)` over its selected
-coefficients, relative to an all-zero spectrum. This counts both coefficients
-omitted within a band and all coefficients outside it. Choose the greatest
-reduction; ties prefer the earlier candidate. Candidate order is 24/12/8 kHz,
-lower gain before ceiling gain, then four-bit before six-bit amplitudes.
-Band identity is already in the header and consumes no extra payload bits.
-
 After writing gain and the quantizer flag, visit indices in order. If R selections
 remain among A positions, code absence/presence with cumulative frequencies
 `[0, A−R, A]`.
@@ -102,11 +99,92 @@ If R=A, presence is implicit. If R=0, stop. On each presence, write its four- or
 six-bit amplitude and decrement R. The decoder reconstructs this same subset;
 duplicate or out-of-order indices cannot be represented.
 
+## Normalized pulse spectral model
+
+Write four eight-bit raw gain codes in increasing band order, with no scalar
+quantizer flag. Band edges in coefficient positions are
+`[0, N/24, N/12, N/6, M]`: approximately 0–1, 1–2, 2–4 kHz and the remainder
+of the coded spectrum. Let D be a band's number of coefficients. The gain is
+the L2 norm of its coefficient vector. The encoder caps the measured norm at
+2.0, compares the covering gain code with its adjacent lower nonzero code,
+and chooses the closer gain; ties choose the lower code.
+
+Each band has a signed integer vector q with `sum(abs(q))=K`. Its decoded
+coefficients are `gain * q / sqrt(sum(q^2))`. A zero gain receives zero pulses
+and reconstructs exact zeros. Coefficients M through N−1 are zero.
+The mathematical separation of energy and unit-length shape is described in
+[RFC 6716 sections 4.3.2 and 5.3.8](https://www.rfc-editor.org/rfc/rfc6716.html).
+The band boundaries, allocation and signed-multiset representation below define
+Snacka's independent packet format.
+
+### Deterministic pulse allocation
+
+A band's conservative shape cost is
+`C(D,K)=ceil(log2(binomial(D+K−1,K)))+K`, with C(D,0)=0. K is capped at 387.
+The first term covers the multiset of pulse positions; the second reserves the
+worst case of one sign per pulse. Exact tables cover dimensions
+20/40/80/160/320/400/800 and all K from 0 through 387. Four gains and four bits
+for arithmetic rounding/termination leave the constraint
+`36 + sum(C(D,K)) <= 8*payload_bytes`.
+
+Allocation uses integer arithmetic in both encoder and decoder. Start with
+one pulse per nonzero gain, zero otherwise. For every eligible band, compute
+the additional bit cost `C(D,K+1)−C(D,K)`. Among candidates that fit the remaining
+budget and have K<387, add a pulse to the greatest priority
+`W(code)*D / ((K+ceil(sqrt(D)))^3 * additional_bits)`.
+Compare priorities by exact u128 cross products; ties choose the earlier band.
+Repeat until no additional pulse fits. The bounded dimensions, gain codes and
+K cap keep these products within u128.
+
+W is squared gain in units of 2^−32, rounded to the nearest integer: zero for
+code zero, `round(2^(code/4))` for codes 1–64, and
+`round(2^(16+(code−64)/8))` for codes 65–208. The published constants in
+[src/pulse.rs](../src/pulse.rs) are normative. The independent standard-library
+script checks them against the exact combinatorial definition and the gain
+formula; it is not used at build time:
+
+```sh
+python3 tools/generate_pulse_tables.py --check
+```
+
+### Signed multiset coding
+
+Expand each vector magnitude into K sorted, possibly repeated frequency
+positions `p_j`. Map them to the strictly increasing subset `p_j+j` in
+D+K−1 positions. Visit this subset in order using the same presence/absence
+CDF `[0,A−R,A]` as scalar subsets, starting with A=D+K−1 and R=K.
+If R=A, presence is implicit; if R=0, stop. On each presence, its frequency is
+`position−selected_pulses`. The first pulse at a frequency carries one raw sign
+bit (zero positive, one negative); subsequent pulses reuse that sign. Increment
+the signed magnitude and selected pulse count. Visit bands in increasing order.
+The decoder normalizes each completed vector using its integer squared norm.
+This representation cannot encode contradictory signs at one frequency.
+
+The encoder seeds pulse magnitudes with
+`floor(K*abs(x)/sum(abs(x)))`, then greedily assigns remaining pulses to maximize
+squared correlation divided by squared vector norm. Ties choose the lower
+frequency index. Only the greatest min(K,D) absolute input coefficients need
+be candidates; an unused larger coefficient always outranks an unused smaller
+one. Seeding saturates at the remaining pulse count to tolerate floating-point
+rounding. This is a bounded heuristic, not a globally optimal vector search.
+
+## Encoder model selection
+
+Evaluate scalar candidates at all three bandwidths, lower gain before covering
+gain, four-bit before six-bit amplitudes. Then evaluate pulse candidates at
+24/12/8 kHz. Compare full-spectrum squared-error reduction
+`sum(x^2−(x−reconstruction)^2)` relative to an all-zero spectrum. This counts
+omitted coefficients inside and outside the coded domain. Choose the greatest
+reduction; ties retain the earlier candidate. Pulse allocation is saved with
+the winning candidate. Profile identity consumes no payload bits.
+
+## Entropy primitive
+
 The entropy primitive follows the independently implemented 31-bit interval,
 byte normalization and reverse raw-bit suffix mathematics of
 [RFC 6716 sections 4.1 and 5.1](https://www.rfc-editor.org/rfc/rfc6716.html).
-The arithmetic prefix zero-extends; raw reads remain physically bounded. Gain,
-the quantizer flag and amplitudes use raw suffix bits, first bit least significant,
+The arithmetic prefix zero-extends; raw reads remain physically bounded. Gain codes,
+the scalar quantizer flag/amplitudes and pulse signs use raw suffix bits, first bit least significant,
 from the end backwards. Termination pads the unused gap with zero. The decoder additionally
 rejects logical bit usage beyond the payload budget and invalid spectral values.
 This shared primitive does not make native audio packets Opus-compatible.

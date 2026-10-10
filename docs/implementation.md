@@ -15,14 +15,16 @@ its transform workspace, spectral history and short overlap. Byte budgets can
 change per frame without a new decoding configuration. Four framing/checksum
 bytes leave the rest of each packet available for spectral coding.
 
-Sparse coefficient selection and one shared gain are deliberately simple
-baselines. Per-frame selection between squared four-bit and linear six-bit
-amplitudes balances retained coefficients against amplitude precision. Gain
-selection minimizes coefficient reconstruction error.
-The encoder also compares 8/12/24 kHz coded bandwidths. Smaller domains spend
-fewer bits on coefficient positions and can retain more coefficients. All
-choices are compared over the full transform, counting omitted high frequencies
-as error. Full-band coding remains available for high-frequency content.
+Per-packet selection compares two spectral models: sparse four-/six-bit scalar
+amplitudes with one gain, and four independent band gains with normalized signed
+pulse vectors. The second model spends amplitude precision collectively on a
+band shape. Pulse allocation is inferred deterministically from gain codes and
+packet length, requiring no allocation side information. Both models use native
+arithmetic coding and bounded stack workspaces.
+The encoder compares 8/12/24 kHz coded bandwidths and both models over the full
+transform, counting omitted high frequencies as error. Full-band coding remains
+available for high-frequency content. Current objective speech comparisons and
+CPU costs are published in [quality evaluation](quality.md).
 The main weakness remains
 speech fidelity, especially unvoiced speech
 and dense spectra. Concealment extrapolates recent decoded PCM with period
@@ -32,8 +34,8 @@ frame switching or production quality claim.
 
 ## Next experiments
 
-1. Improve spectral coding: band gains, perceptual allocation, prediction and
-   vector quantization. Compare matched-rate outputs on diverse speech,
+1. Improve spectral coding: perceptual allocation, prediction, transient handling
+   and improved vector searches. Compare matched-rate outputs on diverse speech,
    background noise, overlap between talkers and transient signals. Delete
    superseded implementations after a measured replacement wins.
 2. Improve packet-loss concealment and transitions using reproducible isolated

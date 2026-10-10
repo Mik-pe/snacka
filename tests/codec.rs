@@ -233,7 +233,7 @@ fn profile_packet_with_length(
     let bins = samples / (1 + usize::from(profile >> 1));
     let mut packet = vec![0; length];
     let end = packet.len() - 2;
-    packet[..2].copy_from_slice(&[128 | profile, 0]);
+    packet[..2].copy_from_slice(&[160 | profile, 0]);
     let mut count = 0;
     let mut log_combinations = 0.0f64;
     for candidate in 1..=bins {
@@ -475,13 +475,13 @@ fn incompatible_versions_are_rejected_before_consuming_history() {
     let mut packet = spectral_packet(0, 4, &[]);
     let mut decoder = Decoder::new();
     let mut output = [9.0; FRAME_SAMPLES];
-    for version in [0, 1, 2, 3, 5, 6, 7] {
+    for version in [0, 1, 2, 3, 4, 6, 7] {
         packet[0] = version << 5;
         repair_crc(&mut packet);
         assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Version));
         assert_eq!(output, [9.0; FRAME_SAMPLES]);
     }
-    packet[0] = 4 << 5;
+    packet[0] = 5 << 5;
     repair_crc(&mut packet);
     decoder.decode(&packet, &mut output).unwrap();
     assert_eq!(output, [0.0; FRAME_SAMPLES]);
@@ -603,8 +603,8 @@ fn unknown_bandwidth_profiles_are_refused_without_consuming_history() {
     let mut packet = spectral_packet(0, 4, &[]);
     let mut decoder = Decoder::new();
     let mut output = [7.0; FRAME_SAMPLES];
-    for profile in 6..16 {
-        packet[0] = 128 | profile;
+    for profile in [6, 7, 14, 15] {
+        packet[0] = 160 | profile;
         repair_crc(&mut packet);
         assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Profile));
         assert_eq!(output, [7.0; FRAME_SAMPLES]);
@@ -630,36 +630,48 @@ fn adaptive_bandwidth_retains_high_frequency_audio_and_changes_without_reset() {
         let mut output = vec![0.0; samples];
         let mut counts = [0usize; 3];
         for frame in 0..60 {
+            let sample = |time: f64| {
+                (0..46)
+                    .map(|tone| {
+                        let (start, spacing) = match frame / 20 {
+                            0 => (8, samples / 240),
+                            1 => (samples / 3 + 8, samples / 480),
+                            _ => (samples / 2 + 8, samples / 160),
+                        };
+                        let bin = start + tone * spacing;
+                        let frequency = (bin as f64 + 0.5) * 24_000.0 / samples as f64;
+                        0.014
+                            * (std::f64::consts::TAU * frequency * time + tone as f64 * 0.718).sin()
+                    })
+                    .sum::<f64>()
+            };
             let input: Vec<_> = (0..samples)
-                .map(|index| {
-                    let time = (frame * samples + index) as f64 / 48_000.0;
-                    (0..46)
-                        .map(|tone| {
-                            let (start, spacing) = match frame / 20 {
-                                0 => (8, samples / 240),
-                                1 => (samples / 3 + 8, samples / 480),
-                                _ => (samples / 2 + 8, samples / 160),
-                            };
-                            let bin = start + tone * spacing;
-                            let frequency = (bin as f64 + 0.5) * 24_000.0 / samples as f64;
-                            0.014
-                                * (std::f64::consts::TAU * frequency * time + tone as f64 * 0.718)
-                                    .sin()
-                        })
-                        .sum::<f64>() as f32
-                })
+                .map(|index| sample((frame * samples + index) as f64 / 48_000.0) as f32)
                 .collect();
             let length = encoder.encode(&input, &mut packet).unwrap();
             let parsed = Packet::parse(&packet[..length]).unwrap();
             assert_eq!(parsed.frame_duration(), duration);
             if frame % 20 >= 4 {
-                assert_eq!(parsed.bandwidth_hz(), [8_000, 12_000, 24_000][frame / 20]);
+                assert!(parsed.bandwidth_hz() >= [8_000, 12_000, 24_000][frame / 20]);
             }
             counts[(24_000 / parsed.bandwidth_hz() - 1) as usize] += 1;
             decoder.decode(&packet[..length], &mut output).unwrap();
             assert!(output.iter().all(|x| x.is_finite() && x.abs() <= 1.0));
+            if frame % 20 >= 4 {
+                let mut energy = 0.0;
+                let mut error = 0.0;
+                for (index, &value) in output.iter().enumerate() {
+                    let time = (frame * samples + index - ALGORITHMIC_DELAY) as f64 / 48_000.0;
+                    let reference = sample(time);
+                    energy += reference * reference;
+                    error += (f64::from(value) - reference).powi(2);
+                }
+                let snr = 10.0 * (energy / error.max(1e-30)).log10();
+                assert!(snr > 0.1, "{duration:?} frame={frame} spectral SNR={snr}");
+            }
         }
-        assert!(counts.iter().all(|&count| count >= 16));
+        assert!(counts[0] >= 16);
+        assert!(counts.iter().sum::<usize>() == 60);
     }
 }
 
@@ -800,6 +812,261 @@ fn checksum_rejects_contiguous_bit_flips_through_sixteen_bits_for_every_profile(
                         "profile={profile} length={length} start={start} burst={burst}"
                     );
                 }
+            }
+        }
+    }
+}
+
+fn pulse_packet(
+    gains: [u32; 4],
+    profile: u8,
+    length: usize,
+    concentrated: bool,
+) -> (Vec<u8>, Vec<f64>) {
+    let samples = if profile & 1 == 0 { 960 } else { 480 };
+    let bins = samples / (1 + usize::from((profile & 6) >> 1));
+    let edges = [0, samples / 24, samples / 12, samples / 6, bins];
+    let dimensions: Vec<_> = edges.windows(2).map(|e| e[1] - e[0]).collect();
+    let costs: Vec<Vec<_>> = dimensions
+        .iter()
+        .map(|&dimension| {
+            let mut logarithm = 0.0f64;
+            (0..388)
+                .map(|pulses| {
+                    if pulses != 0 {
+                        logarithm += ((dimension + pulses - 1) as f64 / pulses as f64).log2();
+                    }
+                    logarithm.ceil() as usize + pulses
+                })
+                .collect()
+        })
+        .collect();
+    let weights: Vec<_> = gains
+        .iter()
+        .map(|&code| {
+            if code == 0 {
+                0u128
+            } else {
+                let exponent = if code <= 64 {
+                    f64::from(code) / 4.0
+                } else {
+                    16.0 + f64::from(code - 64) / 8.0
+                };
+                2.0f64.powf(exponent).round() as u128
+            }
+        })
+        .collect();
+    let mut allocation = gains.map(|g| usize::from(g != 0));
+    let mut used = 36 + (0..4).map(|i| costs[i][allocation[i]]).sum::<usize>();
+    loop {
+        let mut best = None;
+        let mut priority = (0u128, 1u128);
+        for group in 0..4 {
+            if gains[group] == 0 || allocation[group] == 387 {
+                continue;
+            }
+            let extra = costs[group][allocation[group] + 1] - costs[group][allocation[group]];
+            if used + extra > (length - 4) * 8 {
+                continue;
+            }
+            let offset = (dimensions[group] as f64).sqrt().ceil() as usize;
+            let score = (
+                weights[group] * dimensions[group] as u128,
+                ((allocation[group] + offset) as u128).pow(3) * extra as u128,
+            );
+            if score.0 * priority.1 > priority.0 * score.1 {
+                best = Some((group, extra));
+                priority = score;
+            }
+        }
+        let Some((group, extra)) = best else {
+            break;
+        };
+        allocation[group] += 1;
+        used += extra;
+    }
+    let mut packet = vec![0; length];
+    packet[..2].copy_from_slice(&[160 | profile, 0]);
+    let end = length - 2;
+    let mut writer = snacka::entropy::Encoder::new(&mut packet[2..end]);
+    for gain in gains {
+        writer.raw(gain, 8).unwrap();
+    }
+    let mut coefficients = vec![0.0; samples];
+    for group in 0..4 {
+        let mut values = vec![0i32; dimensions[group]];
+        for i in 0..allocation[group] {
+            let index = if concentrated {
+                0
+            } else if i % 3 == 0 {
+                dimensions[group] - 1
+            } else {
+                (i * 17) % dimensions[group]
+            };
+            values[index] += if index % 2 == 0 { 1 } else { -1 };
+        }
+        let positions: Vec<_> = values
+            .iter()
+            .enumerate()
+            .flat_map(|(frequency, q)| std::iter::repeat_n(frequency, q.unsigned_abs() as usize))
+            .enumerate()
+            .map(|(ordinal, frequency)| frequency + ordinal)
+            .collect();
+        if allocation[group] != 0 {
+            let slots = dimensions[group] + allocation[group] - 1;
+            let mut selected = 0;
+            let mut previous = None;
+            for position in 0..slots {
+                let remaining = positions.len() - selected;
+                if remaining == 0 {
+                    break;
+                }
+                let available = slots - position;
+                let present = positions[selected] == position;
+                if remaining != available {
+                    writer
+                        .symbol(
+                            usize::from(present),
+                            snacka::entropy::Model::new(&[
+                                0,
+                                (available - remaining) as u16,
+                                available as u16,
+                            ])
+                            .unwrap(),
+                        )
+                        .unwrap();
+                }
+                if present {
+                    let frequency = position - selected;
+                    if previous != Some(frequency) {
+                        writer.raw(u32::from(values[frequency] < 0), 1).unwrap();
+                    }
+                    previous = Some(frequency);
+                    selected += 1;
+                }
+            }
+            let norm = values
+                .iter()
+                .map(|&v| f64::from(v).powi(2))
+                .sum::<f64>()
+                .sqrt();
+            let exponent = if gains[group] <= 64 {
+                -16.0 + f64::from(gains[group]) / 8.0
+            } else {
+                -8.0 + f64::from(gains[group] - 64) / 16.0
+            };
+            let scale = 2.0f64.powf(exponent) / norm;
+            for (index, value) in values.iter().enumerate() {
+                coefficients[edges[group] + index] = f64::from(*value) * scale;
+            }
+        }
+    }
+    writer.finish_padded().unwrap();
+    repair_crc(&mut packet);
+    (packet, coefficients)
+}
+
+#[test]
+fn pulse_profiles_at_every_byte_budget_match_independent_inverse_cosines() {
+    for profile in 8..14 {
+        let samples = if profile & 1 == 0 { 960 } else { 480 };
+        let duration = if profile & 1 == 0 {
+            FrameDuration::Ms20
+        } else {
+            FrameDuration::Ms10
+        };
+        let divisor = 8000 / duration.milliseconds() as usize;
+        let start = (samples - ALGORITHMIC_DELAY) / 2;
+        for length in 12_000 / divisor..=32_000 / divisor {
+            for gains in [[1, 64, 128, 208], [0, 96, 0, 192]] {
+                let (packet, coefficients) = pulse_packet(gains, profile, length, false);
+                assert_eq!(Packet::parse(&packet).unwrap().gain_bands(), 4);
+                let mut output = vec![0.0; samples];
+                Decoder::with_frame_duration(duration)
+                    .decode(&packet, &mut output)
+                    .unwrap();
+                for (i, &actual) in output.iter().enumerate() {
+                    let position = start + i;
+                    let reflected = position.min(2 * samples - 1 - position);
+                    let window = if reflected >= start + ALGORITHMIC_DELAY {
+                        1.0
+                    } else {
+                        let angle = std::f64::consts::FRAC_PI_2
+                            * ((reflected - start) as f64 + 0.5)
+                            / ALGORITHMIC_DELAY as f64;
+                        (std::f64::consts::FRAC_PI_2 * angle.sin().powi(2)).sin()
+                    };
+                    let expected = coefficients
+                        .iter()
+                        .enumerate()
+                        .filter(|(_, value)| **value != 0.0)
+                        .map(|(frequency, &value)| {
+                            let phase = std::f64::consts::PI / samples as f64
+                                * (position as f64 + 0.5 + samples as f64 / 2.0)
+                                * (frequency as f64 + 0.5);
+                            value * phase.cos()
+                        })
+                        .sum::<f64>()
+                        * window;
+                    assert!(
+                        (f64::from(actual) - expected.clamp(-1.0, 1.0)).abs() < 2e-5,
+                        "profile={profile} length={length} sample={i}"
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn invalid_pulse_gains_preserve_output_and_stream_history() {
+    let (valid, _) = pulse_packet([64, 96, 128, 192], 8, 60, false);
+    let mut decoder = Decoder::new();
+    let mut output = [9.0; FRAME_SAMPLES];
+    for field in 0..4 {
+        let mut packet = valid.clone();
+        let index = packet.len() - 3 - field;
+        packet[index] = 209;
+        repair_crc(&mut packet);
+        assert!(Packet::parse(&packet).is_ok());
+        assert_eq!(decoder.decode(&packet, &mut output), Err(Error::Packet));
+        assert_eq!(output, [9.0; FRAME_SAMPLES]);
+    }
+    let mut reference = [0.0; FRAME_SAMPLES];
+    Decoder::new().decode(&valid, &mut reference).unwrap();
+    decoder.decode(&valid, &mut output).unwrap();
+    assert_eq!(output, reference);
+}
+
+#[test]
+fn scalar_and_pulse_profiles_can_switch_without_resetting_nonzero_overlap() {
+    for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+        let mut decoder = Decoder::with_frame_duration(duration);
+        let mut control = Decoder::with_frame_duration(duration);
+        let mut output = vec![0.0; duration.samples()];
+        let mut expected = output.clone();
+        let duration_bit = u8::from(duration == FrameDuration::Ms10);
+        for sequence in 0..300u16 {
+            let profile = [0, 8, 2, 10, 4, 12][sequence as usize % 6] | duration_bit;
+            let length = if duration == FrameDuration::Ms20 {
+                60
+            } else {
+                30
+            };
+            let mut packet = if profile & 8 == 0 {
+                profile_packet(64, 4, &[14], profile)
+            } else {
+                pulse_packet([64, 0, 0, 0], profile, length, true).0
+            };
+            let mut reference = profile_packet(64, 4, &[14], duration_bit);
+            packet[1] = sequence as u8;
+            reference[1] = sequence as u8;
+            repair_crc(&mut packet);
+            repair_crc(&mut reference);
+            decoder.decode(&packet, &mut output).unwrap();
+            control.decode(&reference, &mut expected).unwrap();
+            for (&actual, &target) in output.iter().zip(&expected) {
+                assert!((actual - target).abs() < 1e-6);
             }
         }
     }

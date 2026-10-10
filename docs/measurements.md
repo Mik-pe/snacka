@@ -129,7 +129,9 @@ historical measurement artifact, not an alternate library implementation.
   version 2 total to 28. Version 3 adds profile rejection, bandwidth adaptation
   and all-budget independent cosine checks, bringing its total to 31.
   Version 4 adds historical-packet rejection, length boundaries and contiguous
-  bit-flip checks through 16 bits, bringing the current total to 34.
+  bit-flip checks through 16 bits, bringing the version 4 total to 34. Version 5 adds signed-pulse cost/shape/allocation
+  tests and independent pulse packets, invalid-gain refusal and model switching,
+  bringing the current total to 41.
   README examples are not automatically run as doctests.
 - Independent entropy fixtures cover 128 frames and 16,384 events, checking
   values, interval and whole/eighth-bit usage. The live libopus oracle also
@@ -139,7 +141,7 @@ historical measurement artifact, not an alternate library implementation.
   lengths up to 480. MDCT agrees with its defining cosine sum above 110 dB for
   120/240/480/960 coefficients. Unquantized streaming reconstruction has maximum
   error below `3e-6` and exactly 120 priming/drain samples at both frame durations.
-- A thread-local counting allocator checks both profiles over 1,000 processing
+- A thread-local counting allocator checks both durations and scalar/pulse models over 1,000 processing
   repetitions after construction, including concealment, bitrate update and
   reset. Steady-state allocations observed: zero.
 - Coverage-guided libFuzzer with AddressSanitizer, seed 6716 and a requested
@@ -156,7 +158,7 @@ Perceptual metrics and blind listening, a matched-quality competitor comparison,
 long-running fuzzing, realistic loss traces, callback tails under load, installed
 ARM64/x86-64 device measurements and battery evidence are still required.
 Cross-compilation alone does not establish mobile runtime acceptance.
-Adaptive-bandwidth and compact-framing speech scores and their CPU measurements are described in
+Band/pulse coding, adaptive-bandwidth and compact-framing speech scores and CPU measurements are described in
 [the quality evaluation](quality.md). Earlier measurements below remain
 historical evidence for their recorded versions.
 
