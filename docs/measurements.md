@@ -124,7 +124,9 @@ historical measurement artifact, not an alternate library implementation.
 - Both amplitude quantizers and gain boundaries are decoded from independently
   constructed packets and checked against double-precision inverse cosine sums.
   Incompatible versions are refused before changing history. The debug and
-  release suites contain 25 tests, plus the documented example test.
+  release suites previously contained 25 tests. The concealment revision adds
+  phase/long-loss, refusal/history and bounded-recovery tests, bringing the
+  current total to 28. README examples are not automatically run as doctests.
 - Independent entropy fixtures cover 128 frames and 16,384 events, checking
   values, interval and whole/eighth-bit usage. The live libopus oracle also
   decoded all native full-budget entropy frames, independently checking padded
@@ -150,3 +152,69 @@ Perceptual metrics and blind listening, a matched-quality competitor comparison,
 long-running fuzzing, realistic loss traces, callback tails under load, installed
 ARM64/x86-64 device measurements and battery evidence are still required.
 Cross-compilation alone does not establish mobile runtime acceptance.
+
+## Causal concealment revision
+
+The [loss comparison](measurements/2026-10-10-loss.csv) uses the same eight
+LibriSpeech inputs and seeded clean/noisy conditions as the quantizer experiment,
+with unchanged 24 kb/s packets and both frame durations. The baseline is
+commit `1d85ecd180ea4f2ba56e070da2ac36aaf327c909`. Build its library unchanged with
+the current offline `examples/roundtrip.rs`, which adds optional loss-pattern
+arguments. The revision and baseline produce identical uninterrupted PCM in
+all measured conditions.
+
+Each trace drops its last 1/3/6 frames in every 10/30/60 frames respectively,
+giving nominal 10% loss with different burst lengths. The final drain is always
+received. All decoders act at a missing frame's deadline, without reading future
+packets. Thus burst lengths span 10–60 ms at 10 ms framing and 20–120 ms at
+20 ms framing. These deterministic traces are not measured network loss models.
+
+Scores measure waveform distortion against the uninterrupted decoded output,
+isolating concealment from quantization error. Both outputs discard exactly
+120 priming samples. Lost masks shift by this same delay and exclude the received
+final drain; recovery masks cover the first 120 output samples of the packet
+following each burst. Whole-utterance scores include both regions. This is not
+an intelligibility or perceptual metric. The script checks uninterrupted output
+identity before accepting any paired measurement.
+
+| Input condition | Mean lost-region SNR improvement | Mean whole-utterance improvement | Mean recovery-prefix improvement | Recovery regressions |
+| --- | --- | --- | --- | --- |
+| Clean | 1.690 dB | 1.620 dB | 0.753 dB | 15/48 |
+| Noise at 20 dB | 1.684 dB | 1.616 dB | 0.732 dB | 15/48 |
+| Noise at 10 dB | 1.663 dB | 1.598 dB | 0.786 dB | 13/48 |
+
+All 144 lost-region and whole-utterance comparisons improve, but 43 recovery
+prefix comparisons regress. The worst recovery-prefix change is −3.467 dB;
+the best is +4.013 dB. The first 2.5 ms after a loss remains an acceptance concern,
+even with average and whole-utterance improvements. Independent tests prove
+that the rest of that packet and the entire next packet match uninterrupted
+decoding exactly, so loss errors cannot spread beyond the short overlap.
+No noisy samples clipped. Corpus attribution and source/input hashes are above;
+the revision sources are recorded in the
+[concealment source manifest](measurements/2026-10-10-plc-source.sha256).
+
+```sh
+cargo build --release --locked --example roundtrip
+python3 tools/evaluate_loss.py corpus loss.csv \
+  --roundtrip target/release/examples/roundtrip \
+  --baseline /path/to/baseline/roundtrip
+```
+
+Periodic 50/80/117.3/220/497 Hz signals are also checked against independently
+generated PCM during the first loss. Both durations exceed 14 dB waveform SNR.
+Long losses and reset reach exact silence. A new AddressSanitizer packet fuzz
+run, seed 6716 and requested 30-second limit, completes 7,070 inputs without
+reported failures. It exercises four received frames to fill pitch history,
+valid-checksum payload corruption and twelve-frame loss bursts. Its greater
+work per input makes the count incomparable with the earlier shorter harness.
+
+The [CPU table](measurements/2026-10-10-apple-m5-plc.csv) uses the same environment
+and throughput methodology described above. New individual-callback timings
+prepare four decoded frames outside timing, then measure first loss, continued
+loss and recovery separately. They use 100 warmups and 1,000 observations;
+timer overhead remains included. At 20 ms / 24 kb/s the three medians are
+21.58/12.33/4.83 microseconds and p99 values are 28.88/16.33/6.54 microseconds.
+These synthetic, shared-desktop measurements do not prove device deadlines or
+callback tails under load. Zero steady-state allocations and unchanged
+algorithmic delay remain verified. The decoder retains a fixed 1,920-sample
+PCM history instead of the former 960-coefficient concealment history.

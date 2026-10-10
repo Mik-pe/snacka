@@ -6,6 +6,9 @@ The packet target generates valid frames at both durations and mutates their
 payloads while repairing CRC to reach spectral validation. It verifies rejected
 packets leave output untouched and accepted audio stays finite and normalized.
 Both targets cap work per input. The main library remains dependency-free.
+The packet target primes four received frames before corruption, reaching the
+full pitch-analysis history at both durations. Twelve consecutive losses check
+bounded PCM and exact silence after the fade and overlap drain.
 
 Install `cargo-fuzz`, a nightly Rust toolchain and the C++ compiler required by
 libFuzzer, following the [Rust Fuzz setup guide](https://rust-fuzz.github.io/book/cargo-fuzz/setup.html).

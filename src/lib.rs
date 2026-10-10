@@ -5,6 +5,7 @@
 #![deny(missing_docs)]
 
 mod codec;
+mod concealment;
 pub mod entropy;
 pub use codec::{
     ALGORITHMIC_DELAY, Config, Decoder, Encoder, Error, FRAME_SAMPLES, FrameDuration, FrameInfo,

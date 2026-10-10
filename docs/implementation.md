@@ -19,8 +19,9 @@ baselines. Per-frame selection between squared four-bit and linear six-bit
 amplitudes balances retained coefficients against amplitude precision. Gain
 selection minimizes coefficient reconstruction error. The main weakness remains
 speech fidelity, especially unvoiced speech
-and dense spectra. Concealment repeats decaying spectral history and is not a
-speech predictor. There is no trained neural component, FEC, stereo, adaptive
+and dense spectra. Concealment extrapolates recent decoded PCM with period
+estimation, fractional interpolation and a 40–80 ms fade. It cannot predict
+new phonemes or reconstruct missing information. There is no trained neural component, FEC, stereo, adaptive
 frame switching or production quality claim.
 
 ## Next experiments
