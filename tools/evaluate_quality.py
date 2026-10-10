@@ -93,6 +93,7 @@ def main():
                             row[f"{label}_packet_bytes"] = int(fields["packet_bytes"])
                             row[f"{label}_drain_bytes"] = int(fields["drain_bytes"])
                             if label == "current":
+                                row["band_gain_frames"] = int(fields["band_gain_frames"])
                                 for band in (8000, 12000, 24000):
                                     row[f"band_{band}_frames"] = int(fields[f"band_{band}_frames"])
                         for metric in ("snr_db", "stoi", "estoi", "lsd_db"):
@@ -108,7 +109,7 @@ def main():
                         rows.append(row)
             print(f"evaluated {flac.stem}", flush=True)
     with args.output.open("w", newline="", encoding="utf-8") as output:
-        writer = csv.DictWriter(output, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(output, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 

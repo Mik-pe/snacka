@@ -16,7 +16,7 @@ pub const ALGORITHMIC_DELAY: usize = 120;
 
 const HEADER: usize = 2;
 const CHECKSUM: usize = 2;
-const VERSION: u8 = 4;
+const VERSION: u8 = 5;
 const END: u8 = 16;
 const MIN_PACKET_BYTES: usize = 15;
 const GAIN_STEPS: [f32; 17] = [
@@ -293,7 +293,7 @@ impl<'a> Packet<'a> {
         if bytes[0] >> 5 != VERSION {
             return Err(Error::Version);
         }
-        if bytes[0] & 15 > 5 {
+        if bytes[0] & 6 == 6 {
             return Err(Error::Profile);
         }
         let duration = if bytes[0] & 1 == 0 {
@@ -323,10 +323,16 @@ impl<'a> Packet<'a> {
     ///
     /// PCM always uses 48 kHz. Bandwidth can change between packets without reset.
     pub fn bandwidth_hz(&self) -> u32 {
-        24_000 / (1 + u32::from((self.bytes[0] & 15) >> 1))
+        24_000 / (1 + u32::from((self.bytes[0] & 6) >> 1))
+    }
+    /// Number of spectral gains: one scalar gain or four normalized pulse bands.
+    ///
+    /// Four gains cover 0–1, 1–2, 2–4 kHz and the remaining coded spectrum.
+    pub fn gain_bands(&self) -> usize {
+        if self.bytes[0] & 8 == 0 { 1 } else { 4 }
     }
     fn coded_bins(&self) -> usize {
-        self.frame_duration().samples() / (1 + usize::from((self.bytes[0] & 15) >> 1))
+        self.frame_duration().samples() / (1 + usize::from((self.bytes[0] & 6) >> 1))
     }
     /// Frame sequence number modulo 256.
     pub fn sequence(&self) -> u8 {
@@ -501,6 +507,10 @@ impl Encoder {
         let mut bits = 4;
         let mut count = 0;
         let mut band = 0;
+        let mut pulse_mode = false;
+        let mut pulse_codes = [0u8; 4];
+        let mut pulse_allocation = [0usize; 4];
+        let mut best_pulses = [0i16; FRAME_SAMPLES];
         for candidate_band in 0..3 {
             let coded_bins = samples / (1 + candidate_band);
             let counts = [
@@ -544,6 +554,53 @@ impl Encoder {
                 }
             }
         }
+        let mut candidate_pulses = [0i16; FRAME_SAMPLES];
+        for candidate_band in 0..3 {
+            let coded_bins = samples / (1 + candidate_band);
+            let edges = crate::pulse::edges(samples, coded_bins);
+            let mut codes = [0u8; 4];
+            for group in 0..4 {
+                let energy: f32 = self.coefficients[edges[group]..edges[group + 1]]
+                    .iter()
+                    .map(|value| value * value)
+                    .sum();
+                let amplitude = energy.sqrt().min(2.0);
+                let ceiling = gain_code(amplitude);
+                let lower = ceiling.saturating_sub(1).max(u8::from(ceiling != 0));
+                codes[group] =
+                    if (amplitude - gain(lower)).abs() <= (amplitude - gain(ceiling)).abs() {
+                        lower
+                    } else {
+                        ceiling
+                    };
+            }
+            let allocation = crate::pulse::allocate(samples, coded_bins, &codes, payload_bytes);
+            let mut improvement = 0.0;
+            for group in 0..4 {
+                let range = edges[group]..edges[group + 1];
+                let values = &self.coefficients[range.clone()];
+                let shape = &mut candidate_pulses[range.clone()];
+                let norm =
+                    crate::pulse::quantize(values, allocation[group], shape, &mut indices[range]);
+                let scale = if norm == 0.0 {
+                    0.0
+                } else {
+                    gain(codes[group]) / norm
+                };
+                for (&value, &pulse) in values.iter().zip(shape.iter()) {
+                    let decoded = f32::from(pulse) * scale;
+                    improvement += value * value - (value - decoded).powi(2);
+                }
+            }
+            if improvement > best_improvement {
+                best_improvement = improvement;
+                band = candidate_band;
+                pulse_mode = true;
+                pulse_codes = codes;
+                pulse_allocation = allocation;
+                best_pulses = candidate_pulses;
+            }
+        }
         let coded_bins = samples / (1 + band);
         let scale = gain(code);
         selected_indices[..count].sort_unstable();
@@ -551,30 +608,45 @@ impl Encoder {
         packet[0] = (VERSION << 5)
             | ((band as u8) << 1)
             | self.config.duration.profile()
+            | if pulse_mode { 8 } else { 0 }
             | if ending { END } else { 0 };
         packet[1] = self.sequence;
         let mut writer = entropy::Encoder::new(&mut packet[HEADER..length - CHECKSUM]);
-        writer.raw(u32::from(code), 8)?;
-        writer.raw(u32::from(bits == 6), 1)?;
-        let mut selected = 0;
-        for index in 0..coded_bins {
-            let remaining = count - selected;
-            if remaining == 0 {
-                break;
+        if pulse_mode {
+            for code in pulse_codes {
+                writer.raw(u32::from(code), 8)?;
             }
-            let available = coded_bins - index;
-            let present = selected_indices[selected] == index;
-            if remaining != available {
-                let probabilities = [0, (available - remaining) as u16, available as u16];
-                writer.symbol(usize::from(present), entropy::Model::new(&probabilities)?)?;
-            }
-            if present {
-                let radius = (1 << (bits - 1)) - 1;
-                writer.raw(
-                    (quantize(self.coefficients[index], scale, bits) + radius) as u32,
-                    bits as u32,
+            let edges = crate::pulse::edges(samples, coded_bins);
+            for group in 0..4 {
+                crate::pulse::encode(
+                    &mut writer,
+                    &best_pulses[edges[group]..edges[group + 1]],
+                    pulse_allocation[group],
                 )?;
-                selected += 1;
+            }
+        } else {
+            writer.raw(u32::from(code), 8)?;
+            writer.raw(u32::from(bits == 6), 1)?;
+            let mut selected = 0;
+            for index in 0..coded_bins {
+                let remaining = count - selected;
+                if remaining == 0 {
+                    break;
+                }
+                let available = coded_bins - index;
+                let present = selected_indices[selected] == index;
+                if remaining != available {
+                    let probabilities = [0, (available - remaining) as u16, available as u16];
+                    writer.symbol(usize::from(present), entropy::Model::new(&probabilities)?)?;
+                }
+                if present {
+                    let radius = (1 << (bits - 1)) - 1;
+                    writer.raw(
+                        (quantize(self.coefficients[index], scale, bits) + radius) as u32,
+                        bits as u32,
+                    )?;
+                    selected += 1;
+                }
             }
         }
         writer.finish_padded()?;
@@ -670,35 +742,65 @@ impl Decoder {
         }
         let payload = packet.payload();
         let mut reader = entropy::Decoder::new(payload);
-        let code = reader.raw(8)? as u8;
-        if code > 208 {
-            return Err(Error::Packet);
-        }
-        let bits = 4 + 2 * reader.raw(1)? as usize;
-        let scale = gain(code);
         let mut coefficients = [0.0; FRAME_SAMPLES];
         let coded_bins = packet.coded_bins();
-        let mut remaining = coefficient_count(payload.len(), coded_bins, bits);
-        for (index, coefficient) in coefficients[..coded_bins].iter_mut().enumerate() {
-            if remaining == 0 {
-                break;
-            }
-            let available = coded_bins - index;
-            let present = if remaining == available {
-                true
-            } else {
-                let probabilities = [0, (available - remaining) as u16, available as u16];
-                reader.symbol(entropy::Model::new(&probabilities)?) != 0
-            };
-            if present {
-                let value = reader.raw(bits as u32)?;
-                let radius = (1 << (bits - 1)) - 1;
-                if value == (1 << bits) - 1 || (code == 0 && value != radius as u32) {
+        if packet.gain_bands() == 4 {
+            let mut codes = [0u8; 4];
+            for code in &mut codes {
+                *code = reader.raw(8)? as u8;
+                if *code > 208 {
                     return Err(Error::Packet);
                 }
-                let quantized = value as i32 - radius;
-                *coefficient = reconstruct(quantized, scale, bits);
-                remaining -= 1;
+            }
+            let samples = self.duration.samples();
+            let allocation = crate::pulse::allocate(samples, coded_bins, &codes, payload.len());
+            let edges = crate::pulse::edges(samples, coded_bins);
+            let mut shape = [0i16; FRAME_SAMPLES];
+            for group in 0..4 {
+                let range = edges[group]..edges[group + 1];
+                let norm = crate::pulse::decode(
+                    &mut reader,
+                    &mut shape[range.clone()],
+                    allocation[group],
+                )?;
+                let scale = if norm == 0.0 {
+                    0.0
+                } else {
+                    gain(codes[group]) / norm
+                };
+                for (value, &pulse) in coefficients[range.clone()].iter_mut().zip(&shape[range]) {
+                    *value = f32::from(pulse) * scale;
+                }
+            }
+        } else {
+            let code = reader.raw(8)? as u8;
+            if code > 208 {
+                return Err(Error::Packet);
+            }
+            let bits = 4 + 2 * reader.raw(1)? as usize;
+            let scale = gain(code);
+            let mut remaining = coefficient_count(payload.len(), coded_bins, bits);
+            for (index, coefficient) in coefficients[..coded_bins].iter_mut().enumerate() {
+                if remaining == 0 {
+                    break;
+                }
+                let available = coded_bins - index;
+                let present = if remaining == available {
+                    true
+                } else {
+                    let probabilities = [0, (available - remaining) as u16, available as u16];
+                    reader.symbol(entropy::Model::new(&probabilities)?) != 0
+                };
+                if present {
+                    let value = reader.raw(bits as u32)?;
+                    let radius = (1 << (bits - 1)) - 1;
+                    if value == (1 << bits) - 1 || (code == 0 && value != radius as u32) {
+                        return Err(Error::Packet);
+                    }
+                    let quantized = value as i32 - radius;
+                    *coefficient = reconstruct(quantized, scale, bits);
+                    remaining -= 1;
+                }
             }
         }
         if reader.tell() > (payload.len() * 8) as u64 {

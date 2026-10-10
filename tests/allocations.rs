@@ -67,16 +67,29 @@ fn steady_state_processing_never_allocates() {
         let mut audio_decoder = AudioDecoder::with_frame_duration(duration);
         let mut encoded = [0; MAX_PACKET_BYTES];
         let input: [f32; FRAME_SAMPLES] = std::array::from_fn(|i| (i as f32 * 0.15).sin());
-        let input = &input[..duration.samples()];
+        let dense: [f32; FRAME_SAMPLES] = std::array::from_fn(|i| {
+            (1..=48)
+                .map(|tone| ((i as f32 + 0.5) * tone as f32 * 0.041).cos())
+                .sum::<f32>()
+                / 50.0
+        });
+        let silence = [0.0; FRAME_SAMPLES];
+        let mut models = 0u8;
         let mut decoded_storage = [0.0; FRAME_SAMPLES];
         let decoded = &mut decoded_storage[..duration.samples()];
         ALLOCATIONS.with(|counter| counter.set(Some(0)));
-        for _ in 0..1_000 {
+        for frame in 0..1_000 {
+            let input = &match frame / 250 {
+                0 => &input,
+                1 | 2 => &dense,
+                _ => &silence,
+            }[..duration.samples()];
             let length = audio_encoder
                 .encode(black_box(input), &mut encoded)
                 .unwrap();
             let parsed = Packet::parse(black_box(&encoded[..length])).unwrap();
             black_box(parsed.payload());
+            models |= if parsed.gain_bands() == 4 { 2 } else { 1 };
             audio_decoder.decode(&encoded[..length], decoded).unwrap();
             black_box(&*decoded);
             audio_decoder.conceal(decoded).unwrap();
@@ -102,6 +115,10 @@ fn steady_state_processing_never_allocates() {
                 .unwrap();
             black_box(&mdct_output);
         }
+        assert_eq!(
+            models, 3,
+            "both spectral models must reach allocation tracking"
+        );
         audio_encoder.set_bitrate(12_345).unwrap();
         audio_encoder.finish(&mut encoded).unwrap();
         audio_encoder.reset();
