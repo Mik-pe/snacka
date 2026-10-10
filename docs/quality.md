@@ -5,7 +5,76 @@ not establish subjective quality, conversational acceptance or superiority over
 other libraries. Listening tests and realistic noisy conversations remain
 necessary.
 
-## Adaptive bandwidth comparison
+## Version 4 compact framing comparison
+
+Version 4 removes the fixed two-byte magic and moves version/profile and
+sequence to the first two bytes. The transport negotiates codec identity before
+processing packets. CRC-16 is retained and covers version/profile, sequence and
+the complete payload. A complete packet slice remains
+the API boundary. There is no stream scanner. The total bitrate, frame duration,
+PCM rate, transform delay and quantizer are unchanged; two additional bytes per
+packet are available to spectral coding. The largest coefficient count is now
+83, with the expanded exact cardinality tables checked independently.
+
+At 10 ms / 12 kb/s, framing/checksum overhead falls from 6/15 bytes (40%) to
+4/15 bytes (26.67%). Payload grows from 9 to 11 bytes, a 22.22% increase.
+At 20 ms / 12 kb/s, it grows from 24 to 26 bytes. These are packet-format
+calculations, not transport savings: normal and final-drain byte counts are
+unchanged in every measured pair.
+
+The historical baseline is commit `f66d2c8825e8ccc828f2be1bb6933d12b116adcd`.
+The same corpora and method below yield 432 paired comparisons: the
+[development table](measurements/2026-10-10-quality-framing-development.csv)
+and [held-out table](measurements/2026-10-10-quality-framing-holdout.csv).
+The additional speakers remain separate from the development set; they have
+already been evaluated for version 3, so this is not a newly unseen test set.
+All 432 waveform-SNR and speech-band spectral-distance comparisons improve.
+The held-out clean means by duration and bitrate show the largest benefit at
+the lowest bitrate and shorter duration:
+
+| Duration | Bitrate | Mean clean SNR change | Mean clean STOI change |
+| --- | --- | --- | --- |
+| 10 ms | 12 kb/s | +1.502 dB | +0.034071 |
+| 10 ms | 24 kb/s | +0.679 dB | +0.008564 |
+| 10 ms | 32 kb/s | +0.615 dB | +0.005012 |
+| 20 ms | 12 kb/s | +0.540 dB | +0.009941 |
+| 20 ms | 24 kb/s | +0.241 dB | +0.003172 |
+| 20 ms | 32 kb/s | +0.210 dB | +0.001486 |
+
+| Held-out condition | Mean SNR change | Mean STOI change | Mean ESTOI change | Mean spectral distance change |
+| --- | --- | --- | --- | --- |
+| Clean | +0.631 dB | +0.010374 | +0.014303 | −0.381 dB |
+| Noise at 20 dB | +0.503 dB | +0.010401 | +0.012690 | −0.715 dB |
+| Noise at 10 dB | +0.261 dB | +0.009048 | +0.007710 | −0.916 dB |
+
+All 96 held-out clean STOI/ESTOI cases improve. Across both sets, 12 STOI and
+30 ESTOI cases regress; this includes one clean development case for each
+metric. The largest decreases are −0.006196 STOI and −0.009510 ESTOI. Complete
+results remain in the tables. Better reconstruction error does not guarantee
+better intelligibility or perceived quality.
+
+The [compact-framing CPU table](measurements/2026-10-10-apple-m5-framing.csv)
+uses the same toolchain, hardware and benchmark method as the version 3 run.
+At 20 ms / 24 kb/s, median encode/decode throughput is 9.39/5.62 microseconds,
+versus the previously recorded 8.56/5.07. Additional coefficients require more
+work. Shared-desktop scheduling is uncontrolled; 10 ms encoding in this run
+has substantial batch-average tail variation. These runs do not establish
+callback deadlines, mobile battery consumption or a matched-quality competitor
+advantage. The [source manifest](measurements/2026-10-10-framing-source.sha256)
+records processing, tests and offline evaluation sources.
+
+All 34 local debug/release tests pass. New tests reject original version 3
+silence packets and out-of-range packet lengths without consuming history,
+and reject every contiguous run of 1–16 flipped bits at both packet-budget
+endpoints for all six profiles. These are specified corruption patterns, not
+exhaustive validation of arbitrary multi-bit errors. CRC is not authentication.
+Independent cosine checks now reach the expanded coefficient counts. Existing
+sequence-wrap, bitrate-change, concealment and allocation tests continue to pass.
+A requested 30-second AddressSanitizer packet fuzz run with seed 6716 completes
+5,940 inputs without a reported failure. iOS, iOS Simulator and Android source
+checks pass; installed-device behavior and listening acceptance remain open.
+
+## Version 3 adaptive bandwidth comparison
 
 Version 3 compares three coded spectral domains within each existing byte budget.
 The PCM rate, transform length, frame duration, delay and amplitude quantizers
@@ -91,10 +160,10 @@ cargo build --release --locked --example roundtrip
 PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
   /tmp/snacka-quality/bin/python tools/evaluate_quality.py corpus results.csv \
   --roundtrip target/release/examples/roundtrip \
-  --baseline /path/to/version-2/roundtrip
+  --baseline /path/to/baseline/roundtrip
 ```
 
-The [source manifest](measurements/2026-10-10-bandwidth-source.sha256) records
+The [version 3 source manifest](measurements/2026-10-10-bandwidth-source.sha256) records
 codec, benchmark, test and evaluation files. CPU evidence is in the
 [bandwidth table](measurements/2026-10-10-apple-m5-bandwidth.csv), using the same
 environment and limits as earlier measurements. At 20 ms / 24 kb/s, median
@@ -103,7 +172,7 @@ previous implementation's run. Exploring bandwidth adds encoding cost; these
 synthetic shared-desktop measurements do not establish mobile battery usage,
 callback deadlines or a matched-quality competitor advantage.
 
-## Format and robustness checks
+## Version 3 format and robustness checks
 
 All 31 local debug/release tests pass, including all six profiles and every
 supported packet byte budget checked against independently constructed entropy

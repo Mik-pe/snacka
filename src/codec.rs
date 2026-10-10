@@ -14,9 +14,9 @@ pub const MAX_PACKET_BYTES: usize = 80;
 /// Additional sample delay introduced by the transform pipeline.
 pub const ALGORITHMIC_DELAY: usize = 120;
 
-const HEADER: usize = 4;
+const HEADER: usize = 2;
 const CHECKSUM: usize = 2;
-const VERSION: u8 = 3;
+const VERSION: u8 = 4;
 const END: u8 = 16;
 const MIN_PACKET_BYTES: usize = 15;
 const GAIN_STEPS: [f32; 17] = [
@@ -213,41 +213,41 @@ fn checksum(bytes: &[u8]) -> u16 {
 }
 
 // ceil(log2(binomial(M, K))) for exact integer subset cardinalities.
-const SUBSET_BITS: [[usize; 81]; 5] = [
+const SUBSET_BITS: [[usize; 84]; 5] = [
     [
         0, 8, 14, 20, 25, 30, 35, 39, 44, 48, 52, 55, 59, 62, 66, 69, 72, 75, 78, 81, 84, 87, 89,
         92, 95, 97, 99, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 123, 125, 127, 128,
         130, 131, 132, 134, 135, 136, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
         149, 150, 151, 151, 152, 152, 153, 153, 154, 154, 155, 155, 155, 156, 156, 156, 156, 156,
-        156, 156, 157,
+        156, 156, 157, 156, 156, 156,
     ],
     [
         0, 8, 15, 22, 28, 33, 38, 43, 48, 53, 58, 62, 66, 70, 74, 78, 82, 86, 89, 93, 96, 100, 103,
         106, 110, 113, 116, 119, 122, 124, 127, 130, 133, 135, 138, 141, 143, 146, 148, 150, 153,
         155, 157, 159, 162, 164, 166, 168, 170, 172, 174, 176, 177, 179, 181, 183, 185, 186, 188,
         190, 191, 193, 194, 196, 197, 199, 200, 201, 203, 204, 205, 207, 208, 209, 210, 211, 212,
-        214, 215, 216, 217,
+        214, 215, 216, 217, 218, 219, 220,
     ],
     [
         0, 9, 16, 23, 29, 35, 41, 46, 52, 57, 62, 67, 71, 76, 80, 85, 89, 93, 97, 101, 105, 109,
         113, 116, 120, 123, 127, 130, 134, 137, 140, 144, 147, 150, 153, 156, 159, 162, 165, 168,
         171, 173, 176, 179, 181, 184, 187, 189, 192, 194, 197, 199, 201, 204, 206, 208, 210, 213,
         215, 217, 219, 221, 223, 225, 227, 229, 231, 233, 235, 237, 239, 241, 242, 244, 246, 248,
-        249, 251, 253, 254, 256,
+        249, 251, 253, 254, 256, 257, 259, 260,
     ],
     [
         0, 9, 17, 25, 32, 38, 44, 50, 56, 62, 68, 73, 78, 84, 89, 94, 98, 103, 108, 112, 117, 121,
         126, 130, 134, 139, 143, 147, 151, 155, 159, 163, 166, 170, 174, 177, 181, 185, 188, 192,
         195, 199, 202, 205, 209, 212, 215, 218, 222, 225, 228, 231, 234, 237, 240, 243, 246, 249,
         252, 254, 257, 260, 263, 265, 268, 271, 274, 276, 279, 281, 284, 286, 289, 291, 294, 296,
-        299, 301, 303, 306, 308,
+        299, 301, 303, 306, 308, 310, 313, 315,
     ],
     [
         0, 10, 19, 28, 36, 43, 50, 58, 64, 71, 78, 84, 90, 97, 103, 109, 115, 120, 126, 132, 137,
         143, 148, 154, 159, 164, 169, 174, 179, 184, 189, 194, 199, 204, 209, 213, 218, 223, 227,
         232, 236, 241, 245, 250, 254, 259, 263, 267, 271, 276, 280, 284, 288, 292, 296, 300, 304,
         308, 312, 316, 320, 324, 328, 332, 335, 339, 343, 347, 350, 354, 358, 361, 365, 369, 372,
-        376, 379, 383, 386, 390, 393,
+        376, 379, 383, 386, 390, 393, 397, 400, 404,
     ],
 ];
 fn coefficient_count(payload_bytes: usize, bins: usize, amplitude_bits: usize) -> usize {
@@ -262,7 +262,7 @@ fn coefficient_count(payload_bytes: usize, bins: usize, amplitude_bits: usize) -
     let subset_bits = &SUBSET_BITS[table];
     let budget = payload_bytes * 8;
     // Gain and quantizer use nine raw bits; three bits cover interval rounding and termination.
-    // All tables stop at K <= M/2, where the subset cost is monotone.
+    // Subset-plus-amplitude cost is monotone across these table entries.
     let mut start = 0;
     let mut end = subset_bits.len();
     while start < end {
@@ -285,18 +285,18 @@ pub struct Packet<'a> {
     bytes: &'a [u8],
 }
 impl<'a> Packet<'a> {
-    /// Validate packet length, magic, version, profile and CRC-16/CCITT-FALSE.
+    /// Validate packet length, version, profile and CRC-16/CCITT-FALSE.
     pub fn parse(bytes: &'a [u8]) -> Result<Self, Error> {
-        if !(MIN_PACKET_BYTES..=MAX_PACKET_BYTES).contains(&bytes.len()) || bytes[..2] != *b"SN" {
+        if !(MIN_PACKET_BYTES..=MAX_PACKET_BYTES).contains(&bytes.len()) {
             return Err(Error::Packet);
         }
-        if bytes[2] >> 5 != VERSION {
+        if bytes[0] >> 5 != VERSION {
             return Err(Error::Version);
         }
-        if bytes[2] & 15 > 5 {
+        if bytes[0] & 15 > 5 {
             return Err(Error::Profile);
         }
-        let duration = if bytes[2] & 1 == 0 {
+        let duration = if bytes[0] & 1 == 0 {
             FrameDuration::Ms20
         } else {
             FrameDuration::Ms10
@@ -313,7 +313,7 @@ impl<'a> Packet<'a> {
     }
     /// Required frame duration encoded by the decoding profile.
     pub fn frame_duration(&self) -> FrameDuration {
-        if self.bytes[2] & 1 == 0 {
+        if self.bytes[0] & 1 == 0 {
             FrameDuration::Ms20
         } else {
             FrameDuration::Ms10
@@ -323,18 +323,18 @@ impl<'a> Packet<'a> {
     ///
     /// PCM always uses 48 kHz. Bandwidth can change between packets without reset.
     pub fn bandwidth_hz(&self) -> u32 {
-        24_000 / (1 + u32::from((self.bytes[2] & 15) >> 1))
+        24_000 / (1 + u32::from((self.bytes[0] & 15) >> 1))
     }
     fn coded_bins(&self) -> usize {
-        self.frame_duration().samples() / (1 + usize::from((self.bytes[2] & 15) >> 1))
+        self.frame_duration().samples() / (1 + usize::from((self.bytes[0] & 15) >> 1))
     }
     /// Frame sequence number modulo 256.
     pub fn sequence(&self) -> u8 {
-        self.bytes[3]
+        self.bytes[1]
     }
     /// Whether this packet drains and finishes the stream.
     pub fn is_final(&self) -> bool {
-        self.bytes[2] & END != 0
+        self.bytes[0] & END != 0
     }
     /// Encoded spectral payload excluding framing and checksum.
     pub fn payload(&self) -> &'a [u8] {
@@ -495,7 +495,7 @@ impl Encoder {
             .map_err(|_| Error::Input)?;
         let payload_bytes = length - HEADER - CHECKSUM;
         let mut indices: [usize; FRAME_SAMPLES] = std::array::from_fn(|index| index);
-        let mut selected_indices = [0usize; 81];
+        let mut selected_indices = [0usize; 84];
         let mut best_improvement = f32::NEG_INFINITY;
         let mut code = 0;
         let mut bits = 4;
@@ -548,12 +548,11 @@ impl Encoder {
         let scale = gain(code);
         selected_indices[..count].sort_unstable();
         let mut packet = [0; MAX_PACKET_BYTES];
-        packet[..2].copy_from_slice(b"SN");
-        packet[2] = (VERSION << 5)
+        packet[0] = (VERSION << 5)
             | ((band as u8) << 1)
             | self.config.duration.profile()
             | if ending { END } else { 0 };
-        packet[3] = self.sequence;
+        packet[1] = self.sequence;
         let mut writer = entropy::Encoder::new(&mut packet[HEADER..length - CHECKSUM]);
         writer.raw(u32::from(code), 8)?;
         writer.raw(u32::from(bits == 6), 1)?;
