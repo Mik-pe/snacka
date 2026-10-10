@@ -1,3 +1,5 @@
+![Snacka audio codec banner](assets/snacka-banner.webp)
+
 # snacka
 
 An independently implemented, MIT-licensed Rust codec for interactive speech,
