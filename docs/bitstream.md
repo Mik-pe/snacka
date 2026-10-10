@@ -1,4 +1,4 @@
-# Experimental native bitstream, version 6
+# Experimental native bitstream, version 7
 
 The format is intentionally independent of legacy audio packet formats.
 Incompatible changes require another version or defined profile. There are no
@@ -13,7 +13,7 @@ four fixed bytes. All remaining bytes are available to spectral coding.
 
 | Bytes | Meaning |
 | --- | --- |
-| 0 | Bits 7–5: version 6. Bit 4: final drain. Bits 3–0: required profile |
+| 0 | Bits 7–5: version 7. Bit 4: final drain. Bits 3–0: required profile |
 | 1 | Frame sequence modulo 256, initially zero |
 | 2 through length−3 | Entropy payload, padded to the allocated byte budget |
 | Last two | Little-endian CRC-16/CCITT-FALSE over all preceding bytes |
@@ -63,7 +63,7 @@ raw bits; pulse gain precision is specified below. Code zero means all selected
 amplitudes are zero.
 Codes 1–64 represent `2^(-16+code/8)`; codes 65–208 represent
 `2^(-8+(code−64)/16)`. Higher codes are invalid. Final PCM is clipped to [−1,1]. Versions other than
-6 are rejected; there is no older-format compatibility path.
+7 are rejected; there is no older-format compatibility path.
 
 ## Scalar spectral model
 
@@ -130,20 +130,38 @@ Snacka's independent packet format.
 
 ### Deterministic pulse allocation
 
-A band's conservative shape cost is
-`C(D,K)=ceil(log2(binomial(D+K−1,K)))+K`, with C(D,0)=0. K is capped at 387.
-The first term covers the multiset of pulse positions; the second reserves the
-worst case of one sign per pulse. Exact tables cover dimensions
-20/40/80/160/320/400/800 and all K from 0 through 387. Four gains and four bits
-for arithmetic rounding/termination leave the constraint
+For K pulses in D coefficients, the multiset representation has cost
+`U(D,K)=ceil(log2(binomial(D+K−1,K)))+min(D,K)`, with U(D,0)=0.
+Only occupied coefficients need signs, so there can never be more than min(D,K).
+For K≤80, a second representation first codes the occupied coefficient count J.
+Its exact signed class cardinality is
+`V(D,K,J)=binomial(D,J)*binomial(K−1,J−1)*2^J`, for 1≤J≤min(D,K).
+
+Let T=sum(V), L=min(D,K), and Q=65535. Allocate each class a positive integer
+CDF width `w_J=1+floor(V*(Q−L)/T)`. Distribute the remaining units by descending
+remainder `V*(Q−L) mod T`, breaking ties toward the smaller J.
+The certified class cost is
+`H(D,K)=1+max_J(ceil(log2(V*Q/w_J)))`.
+Compute logarithm ceilings with exact integers, including the rational quotient.
+The additional bit covers finite arithmetic interval rounding in this representation.
+Choose classes only when H<U; otherwise use the multiset representation.
+For K>80 always use multisets. Selection depends only on D and K.
+
+The allocator uses the monotone upper envelope of these chosen costs:
+`C(D,K)=max_{0≤k≤K}(min(U(D,k),H(D,k)))`, omitting H where classes are unavailable.
+K is capped at 387. Exact tables cover dimensions 20/40/80/160/320/400/800.
+Four gains and four bits for arithmetic rounding/termination leave the constraint
 `4*G + 4 + sum(C(D,K)) <= 8*payload_bytes`.
+There is no side flag, temporal prediction or extra frame delay.
 
 Allocation uses integer arithmetic in both encoder and decoder. Start with
 one pulse per nonzero gain, zero otherwise. For every eligible band, compute
 the additional bit cost `C(D,K+1)−C(D,K)`. Among candidates that fit the remaining
 budget and have K<387, add a pulse to the greatest priority
 `W(code)*D / ((K+ceil(sqrt(D)))^3 * additional_bits)`.
-Compare priorities by exact u128 cross products; ties choose the earlier band.
+Compare priorities by exact u128 cross products. A zero-cost increment outranks
+all positive-cost increments; ties, including two zero-cost increments, choose
+the earlier band.
 Repeat until no additional pulse fits. The bounded dimensions, gain codes and
 K cap keep these products within u128.
 
@@ -157,6 +175,42 @@ formula; it is not used at build time:
 ```sh
 python3 tools/generate_pulse_tables.py --check
 ```
+
+### Finite interval and termination bound
+
+Before each arithmetic symbol the normalized range R is greater than 2^23.
+For total frequency a, integer division retains at least the ideal interval
+fraction times `(1−a/2^23)`. The zero-lower interval receives the division
+remainder and fares better. A class band has one prior with a≤65535, at most
+D position symbols with a≤D, and at most K−1 composition symbols with a≤K−1.
+For D≤800 and K≤80 the sum of `−log2(1−a/2^23)` is less than 0.123 bits.
+The additional bit in H covers this entire class-band excess.
+
+Fallback multiset bands have at most D+K−1 symbols with a≤D+K−1.
+At K≤387, summing the conservative excess for the largest four 20 ms band
+dimensions 40/40/80/800 is less than 0.342 bits; the 10 ms bound is smaller.
+With m normalized byte shifts, arithmetic information is
+`31+8*m−log2(R)`; integer tell is `32+8*m−floor(log2(R))` plus raw bits,
+less than information plus two. Termination requires at most ceil(tell/8)
+bytes, sharing leftover arithmetic-byte bits with the raw suffix. The joint
+four-bit allocation reserve therefore covers fallback rounding, initial state
+and termination after the class costs have covered their own rounding.
+
+### Signed class coding
+
+When the derived class mask selects this representation, count the J occupied
+coefficients and code J−1 with the generated Q=65535 CDF. Code their strictly
+increasing positions as a J-subset of D using presence/absence `[0,A−R,A]`.
+On each presence write one raw sign bit (zero positive, one negative).
+All occupied magnitudes start at one.
+
+The remaining K−J magnitude units form a multiset over J ordered occupied
+coefficients. Represent it as a subset of K−1 slots: visit with R=K−J,
+A=K−1 and the same binary CDF, decrementing both on each visit and R only on
+presence. Each absence advances to the next occupied coefficient; each presence
+increments its signed magnitude. If R=A presence is implicit; stop when R=0.
+The decoded vector has exactly K total absolute magnitude and J nonzero bins.
+Normalize by the square root of its integer squared norm as for multisets.
 
 ### Signed multiset coding
 

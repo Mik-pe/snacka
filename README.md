@@ -28,7 +28,8 @@ bandwidth with greatest full-spectrum error reduction. The decoder validates fra
 CRC, stream sequence and spectral bounds, with explicit concealment for missing
 packets. CRC detects corruption; authentication belongs to the transport.
 Pulse gain precision adapts to the packet budget, retaining more shape bits at
-low bitrate. The experimental format is version 6. Encoder and decoder must use the same
+low bitrate. Signed pulse classes recover additional shape bits without increasing
+packet size. The experimental format is version 7. Encoder and decoder must use the same
 version; older native packets are rejected.
 
 ```rust
@@ -95,6 +96,6 @@ a separately installed external library only in an offline Python tool. It
 records quality gaps alongside wins at equal bitrate, frame duration and delay.
 
 See [the bitstream](docs/bitstream.md), [development and acceptance](docs/implementation.md),
-[measurements](docs/measurements.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [packet-loss evaluation](docs/loss.md), [fixture provenance](tests/fixtures/README.md)
+[measurements](docs/measurements.md), [signed pulse classes](docs/pulse-classes.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [packet-loss evaluation](docs/loss.md), [fixture provenance](tests/fixtures/README.md)
 and [fuzzing](fuzz/README.md). The implementation license is [MIT](LICENSE).
 External reference source and trained weights are not vendored.
