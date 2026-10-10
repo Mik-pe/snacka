@@ -1,0 +1,41 @@
+Four-lag pitch scoring audit, 2026-10-11
+Baseline: main 765b7e10a0a40c8c1a7c8bc9d64e796c7d730c63, immutable eight-lane analysis probe
+Current: that main plus harmonic-pitch-source.sha256 content, without retuning after the screen
+Compiler: rustc 1.99.0, b940084d7eb6a299eb4bfeb8e34901bc051e7ac4, LLVM 23.1.1
+Target: aarch64-apple-darwin, Apple M5, macOS 27.0 build 26A428
+Python: 3.14.8; FFmpeg: 9.0.2
+No LTO, native-CPU, fast-math, or profiling compiler options.
+Use the pinned toolchain and separate target directories for source trees.
+
+cargo test --locked --release
+cargo test --locked harmonic
+cargo clippy --locked --all-targets --features live-audio -- -D warnings
+cargo fmt --all -- --check
+cargo build --locked --release --lib
+rustc --edition=2024 -C opt-level=3 -C codegen-units=16 -C overflow-checks=yes examples/cpu_probe.rs --extern snacka=target/release/libsnacka.rlib -L dependency=target/release/deps -o current-probe
+
+# Entire frozen quality-reference stream, with harmonic encoding enabled.
+python3 tools/check_frozen_traces.py corpus-all72 docs/measurements/2026-10-11-harmonic-speech-frozen-traces.csv results-on.csv --current ./current-probe --harmonic
+# Default gate: eight original development inputs, both durations and three rates.
+python3 tools/check_frozen_traces.py corpus-dev8 docs/measurements/2026-10-11-harmonic-analysis-default-traces.csv results-off.csv --current ./current-probe
+
+# Earlier screen: first four development clips, three repetitions (AB, BA, AB).
+python3 tools/measure_cpu.py corpus-dev4 screen-cpu.csv --baseline ./baseline-probe --current ./screen-probe --harmonic --baseline-harmonic --bitrates 12000 --repetitions 3 --encode-frames 2000 --operations encode
+
+# Preregistered final matrix: eight development clips, four balanced repetitions.
+# Other agent builds, tests, quality scoring and timing are paused during the single run.
+python3 tools/measure_cpu.py corpus-dev8 results-cpu.csv --baseline ./baseline-probe --current ./current-probe --harmonic --baseline-harmonic --bitrates 12000 --repetitions 4 --encode-frames 10000 --operations encode
+
+# Actual linked sections, frames and instruction counts, both probes.
+otool -l baseline-probe
+otool -l current-probe
+otool -tvV baseline-probe
+otool -tvV current-probe
+nm -nm current-probe
+# Inspect harmonic::candidates through the next symbol boundary in each disassembly.
+# Emitted specializations are inlined, including the one/two/three-lag tails.
+
+CPU is child process user plus system time divided by requested frames.
+The probe cycles through its first 256 prepared frames; totals include startup,
+input loading and encoder/transform-plan construction. Full traces verify each
+whole utterance separately. All observations, including regressions, are retained.

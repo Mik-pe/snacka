@@ -1,0 +1,7 @@
+label,section,bytes,probe_sha256
+baseline,"__TEXT,__text",308092,b28af61ea09ec3beef8b59582b6959046e34e5c53578b9cc117d1e3bf5633103
+baseline,"__TEXT,__const",74704,b28af61ea09ec3beef8b59582b6959046e34e5c53578b9cc117d1e3bf5633103
+baseline,"__DATA_CONST,__const",15400,b28af61ea09ec3beef8b59582b6959046e34e5c53578b9cc117d1e3bf5633103
+current,"__TEXT,__text",314364,8f5733c1df5fd7be9fcfe1854c931e66a27923e2e850f516ae46ca434e6cb230
+current,"__TEXT,__const",74704,8f5733c1df5fd7be9fcfe1854c931e66a27923e2e850f516ae46ca434e6cb230
+current,"__DATA_CONST,__const",15688,8f5733c1df5fd7be9fcfe1854c931e66a27923e2e850f516ae46ca434e6cb230

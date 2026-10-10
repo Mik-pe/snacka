@@ -74,7 +74,10 @@ normalized lag correlation from the current input and 120 available history
 samples, requires correlation at least 0.55, and retains the eight greatest
 scores, breaking ties toward lower f0. Lag is the nearest integer to 48000/f0;
 adjacent frequencies with the same integer lag reuse the exact same score. All
-326 frequency entries and their tie order are retained. At least one third of
+326 frequency entries and their tie order are retained. Four distinct eligible
+lags share chronological correlation loops and prefix-energy snapshots; every
+frequency entry is replayed in its original order. The [pitch scoring audit](harmonic-pitch.md)
+records bit identity and measured CPU/storage costs. At least one third of
 this analysis window must remain after the lag. This
 excludes fundamentals below 120 Hz from the 10 ms encoder's search, although
 the decoder accepts all defined frequencies. Longer causal pitch analysis is
@@ -188,7 +191,8 @@ The decoder adds sinusoidal rendering and one forward transform before the
 ordinary inverse. Paired process CPU must account for the probe's 256-frame
 packet preparation; a decode count slope can separate fixed preparation from
 additional decoding. The [eight-lane analysis audit](harmonic-analysis.md) measures
-the current analysis implementation. The historical [resource audit](harmonic-resources.md) reports separate encoder costs,
+the analysis implementation. The [pitch scoring audit](harmonic-pitch.md) covers
+the subsequent correlation-loop optimization. The historical [resource audit](harmonic-resources.md) reports separate encoder costs,
 decoder count slopes and disabled-mode comparisons. These desktop measurements
 do not establish mobile callback deadlines or battery use.
 

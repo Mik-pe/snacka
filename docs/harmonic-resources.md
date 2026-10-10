@@ -3,7 +3,8 @@
 This is the historical four-lane implementation snapshot integrated in main
 `b1e55b22c2882d80bafc4f84ad9f850792c369a1`. Its raw measurements and source hashes
 remain pinned. See the [eight-lane analysis audit](harmonic-analysis.md) for the
-current encoder optimization and its compiled storage costs.
+subsequent analysis optimization and the [pitch scoring audit](harmonic-pitch.md)
+for the later correlation-loop optimization and compiled costs.
 
 These measurements compare the opt-in harmonic implementation with the preceding
 version 7 core, commit `449518da02e3cc768fff273f069cd46c6f9ea535`. Probe and source

@@ -232,20 +232,111 @@ const SMALL_COST: [[u16; 388]; 3] = [
 
 pub(crate) fn candidates(input: &[f32]) -> [(f32, usize); 8] {
     let mut finalists = [(f32::NEG_INFINITY, 0usize); 8];
-    let mut previous = (usize::MAX, 0.0f32);
-    for f0 in MIN_F0..=MAX_F0 {
-        let score = cached_periodicity(input, f0, &mut previous);
-        if score < 0.55 {
-            continue;
+    let mut prefix = (0usize, 0.0f64);
+    let mut first = MIN_F0;
+    while first <= MAX_F0 {
+        let (end, lags, scores, count) = periodicity_batch(input, first, &mut prefix);
+        let mut lane = 0;
+        for f0 in first..end {
+            let lag = (48000 + f0 / 2) / f0;
+            while lane + 1 < count && lag < lags[lane] {
+                lane += 1;
+            }
+            let score = if count > 0 && lag == lags[lane] {
+                scores[lane]
+            } else {
+                0.0
+            };
+            if score < 0.55 {
+                continue;
+            }
+            if score > finalists[7].0 {
+                finalists[7] = (score, f0);
+                finalists.sort_unstable_by(|a, b| b.0.total_cmp(&a.0).then(a.1.cmp(&b.1)));
+            }
         }
-        if score > finalists[7].0 {
-            finalists[7] = (score, f0);
-            finalists.sort_unstable_by(|a, b| b.0.total_cmp(&a.0).then(a.1.cmp(&b.1)));
-        }
+        first = end;
     }
     finalists
 }
 
+fn periodicity_batch(
+    input: &[f32],
+    first: usize,
+    prefix: &mut (usize, f64),
+) -> (usize, [usize; 4], [f32; 4], usize) {
+    let mut lags = [0usize; 4];
+    let mut count = 0;
+    let mut end = first;
+    while end <= MAX_F0 {
+        let lag = (48000 + end / 2) / end;
+        if lag < input.len()
+            && input.len() - lag >= input.len() / 3
+            && (count == 0 || lag != lags[count - 1])
+        {
+            if count == 4 {
+                break;
+            }
+            lags[count] = lag;
+            count += 1;
+        }
+        end += 1;
+    }
+    let mut scores = [0.0f32; 4];
+    if count == 0 {
+        return (end, lags, scores, count);
+    }
+    let mut energy_b = [0.0f64; 4];
+    for lane in 0..count {
+        let pairs = input.len() - lags[lane];
+        // Ascending pitches extend the same chronological prefix, without subtraction.
+        for &sample in &input[prefix.0..pairs] {
+            prefix.1 += f64::from(sample) * f64::from(sample);
+        }
+        prefix.0 = pairs;
+        energy_b[lane] = prefix.1;
+    }
+    let (cross, energy_a) = match count {
+        1 => correlate::<1>(input, &lags),
+        2 => correlate::<2>(input, &lags),
+        3 => correlate::<3>(input, &lags),
+        4 => correlate::<4>(input, &lags),
+        _ => unreachable!("bounded correlation lanes"),
+    };
+    for lane in 0..count {
+        scores[lane] = if energy_a[lane] * energy_b[lane] < 1e-18 {
+            0.0
+        } else {
+            (cross[lane] / (energy_a[lane] * energy_b[lane]).sqrt()) as f32
+        };
+    }
+    (end, lags, scores, count)
+}
+
+fn correlate<const LANES: usize>(input: &[f32], lags: &[usize; 4]) -> ([f64; 4], [f64; 4]) {
+    let mut cross = [0.0f64; 4];
+    let mut energy_a = [0.0f64; 4];
+    let common = input.len() - lags[0];
+    for index in 0..common {
+        let b = f64::from(input[index]);
+        for lane in 0..LANES {
+            let a = f64::from(input[index + lags[lane]]);
+            cross[lane] += a * b;
+            energy_a[lane] += a * a;
+        }
+    }
+    for lane in 0..LANES {
+        for index in common..input.len() - lags[lane] {
+            let a = f64::from(input[index + lags[lane]]);
+            let b = f64::from(input[index]);
+            cross[lane] += a * b;
+            energy_a[lane] += a * a;
+        }
+    }
+    (cross, energy_a)
+}
+
+#[cfg(test)]
 fn cached_periodicity(input: &[f32], f0: usize, previous: &mut (usize, f32)) -> f32 {
     let lag = (48000 + f0 / 2) / f0;
     if lag != previous.0 {
@@ -254,6 +345,7 @@ fn cached_periodicity(input: &[f32], f0: usize, previous: &mut (usize, f32)) -> 
     previous.1
 }
 
+#[cfg(test)]
 fn periodicity(input: &[f32], f0: usize) -> f32 {
     let lag = (48000 + f0 / 2) / f0;
     if lag >= input.len() || input.len() - lag < input.len() / 3 {
@@ -444,6 +536,24 @@ mod tests {
                         }
                     })
                     .collect();
+                let mut prefix = (0usize, 0.0f64);
+                let mut first = MIN_F0;
+                while first <= MAX_F0 {
+                    let (end, lags, scores, count) = periodicity_batch(&input, first, &mut prefix);
+                    for f0 in first..end {
+                        let lag = (48000 + f0 / 2) / f0;
+                        let actual = lags[..count]
+                            .iter()
+                            .position(|&candidate| candidate == lag)
+                            .map_or(0.0, |lane| scores[lane]);
+                        assert_eq!(
+                            actual.to_bits(),
+                            periodicity(&input, f0).to_bits(),
+                            "batched samples={samples} pattern={pattern} f0={f0}"
+                        );
+                    }
+                    first = end;
+                }
                 let mut previous = (usize::MAX, 0.0f32);
                 let mut uncached = [(f32::NEG_INFINITY, 0usize); 8];
                 for f0 in MIN_F0..=MAX_F0 {
@@ -463,6 +573,82 @@ mod tests {
                 }
                 let cached = candidates(&input);
                 for (actual, expected) in cached.iter().zip(uncached) {
+                    assert_eq!(actual.0.to_bits(), expected.0.to_bits());
+                    assert_eq!(actual.1, expected.1);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn batched_periodicity_preserves_every_score_and_duplicate_finalist() {
+        for length in [0, 1, 119, 120, 180, 181, 599, 600, 601, 1079, 1080, 1081] {
+            for pattern in 0..8 {
+                let input: Vec<f32> = (0..length)
+                    .map(|index| match pattern {
+                        0 => 0.0,
+                        1 => -0.0,
+                        2 => 1.0,
+                        3 => {
+                            if index % 2 == 0 {
+                                1.0
+                            } else {
+                                -1.0
+                            }
+                        }
+                        4 => {
+                            if index % 7 == 0 {
+                                f32::from_bits(1)
+                            } else {
+                                -f32::from_bits(3)
+                            }
+                        }
+                        5 => {
+                            if index % 31 == 0 {
+                                f32::MAX
+                            } else {
+                                1e-12
+                            }
+                        }
+                        6 => ((index * 7919 % 997) as f32 / 997.0 - 0.5) * 1.3e-6,
+                        _ => (std::f64::consts::TAU * 137.0 * index as f64 / 48000.0).sin() as f32,
+                    })
+                    .collect();
+                let mut prefix = (0usize, 0.0f64);
+                let mut first = MIN_F0;
+                let mut evaluated = 0;
+                let mut expected = [(f32::NEG_INFINITY, 0usize); 8];
+                while first <= MAX_F0 {
+                    let (end, lags, scores, count) = periodicity_batch(&input, first, &mut prefix);
+                    assert!(end > first);
+                    let mut lane = 0;
+                    for f0 in first..end {
+                        let lag = (48000 + f0 / 2) / f0;
+                        while lane + 1 < count && lag < lags[lane] {
+                            lane += 1;
+                        }
+                        let actual = if count > 0 && lag == lags[lane] {
+                            scores[lane]
+                        } else {
+                            0.0
+                        };
+                        let score = periodicity(&input, f0);
+                        assert_eq!(
+                            actual.to_bits(),
+                            score.to_bits(),
+                            "length={length} pattern={pattern} f0={f0}"
+                        );
+                        evaluated += 1;
+                        if score >= 0.55 && score > expected[7].0 {
+                            expected[7] = (score, f0);
+                            expected
+                                .sort_unstable_by(|a, b| b.0.total_cmp(&a.0).then(a.1.cmp(&b.1)));
+                        }
+                    }
+                    first = end;
+                }
+                assert_eq!(evaluated, MAX_F0 - MIN_F0 + 1);
+                for (actual, expected) in candidates(&input).iter().zip(expected) {
                     assert_eq!(actual.0.to_bits(), expected.0.to_bits());
                     assert_eq!(actual.1, expected.1);
                 }
