@@ -1,0 +1,91 @@
+{
+  "all_record_ledger_hash_status_field_schema_bit_joins": true,
+  "audit_status": "PASS_EXACT_PACKED_API_DATA_IDENTITY_AND_CONTRACTS",
+  "baseline_api_independent_review": {
+    "path": "@evidence-000019",
+    "sha256": "73eda55a326a6be8094a2b4520040908a5d0f297a29dff9644451218d7be75a8"
+  },
+  "baseline_role": "Existing independently accepted published-runtime fixture only; baseline not regenerated or rebuilt237 during this run. Exact full-byte comparison transfers prior literal valid/error/PRNG input recipe proof; those recipe functions were not rerun. Candidate whole file was independently parsed and all semantic contracts/TDAC sums verified.",
+  "binding_files_verified": 423,
+  "blockers": [],
+  "bootstrap_metadata_hash_reconstructed_exact": true,
+  "checks": {
+    "codec_decode_or_conceal": 5520,
+    "codec_encode": 1840,
+    "codec_error": 460,
+    "conceal_calls": 360,
+    "constructor_invalid": 16,
+    "constructor_valid": 312,
+    "decoded_drains": 60,
+    "error_buffers_preserved": 6672,
+    "tdac_intermediate_sum_joins": 1488,
+    "transform_error": 6212,
+    "transform_valid_or_sum": 15088
+  },
+  "encoded_packet_profiles": {
+    "10": 5,
+    "11": 47,
+    "12": 651,
+    "13": 505,
+    "14": 264,
+    "15": 267,
+    "5": 97,
+    "9": 4
+  },
+  "finite_valid_output_f32_samples": 32546176,
+  "fixture_bytes_each": 363602645,
+  "fixture_sha256_each": "b0ea17b1604a7f5585a60d4222825a84e9b56594144edbd4a3da1bd98ffcb640",
+  "full_file_byte_comparison": true,
+  "lifecycle": {
+    "CPUtimings": 0,
+    "all_children_waited": true,
+    "all_records_PASS": true,
+    "children": [
+      {
+        "argv": [
+          "@evidence-000020",
+          "@evidence-000021"
+        ],
+        "end_utc": "2026-10-11T06:40:53.704647+00:00",
+        "exit_code": 0,
+        "pid": 98558,
+        "post_wait_ps_exit": 1,
+        "post_wait_ps_stdout": "",
+        "start_utc": "2026-10-11T06:40:52.547916+00:00",
+        "status": "TERMINAL",
+        "waited": true
+      }
+    ],
+    "end_utc": "2026-10-11T06:40:59.905287+00:00",
+    "generation_count": 1,
+    "metrics": 0,
+    "parent_pid": 98549,
+    "plan_sha256": "f21c0b24480e127d85e8b0334187ee4c18c6f02369dc1c9f6f7d71e5fd68fd4f",
+    "publication": false,
+    "records_sha256": "ded041341fb7a4ef765bf15a611dbef6d08304ac8a716222c02666ed71d06443",
+    "start_utc": "2026-10-11T06:40:51.459722+00:00",
+    "status": "PASS",
+    "wrapper_sha256": "f2ca3936e82376574566514c2d02a54f4d95caa2767098dc12a022caa62bbb69"
+  },
+  "lifecycle_sha256": "db0dea040a35e4a8d3dea0035f87668c70895d52e1ac401cf7258eb0ce7dfe4a",
+  "limits": [
+    "Observable public outputs/error sentinel and reset/loss histories only; private workspace state not directly observed.",
+    "Identity and finite contract checks do not prove subjective quality, transform accuracy beyond existing contracts, speed or deadline behavior.",
+    "Remaining corpus controls/CPU/publication require separate ROOT authority."
+  ],
+  "manifest_entries_verified": 11,
+  "manifest_sha256": "89b5fbf3375d6dfcc07ce0bc135cc682739323b3011e0a0274ec897944487de1",
+  "ordered_records": 29448,
+  "plan_sha256": "f21c0b24480e127d85e8b0334187ee4c18c6f02369dc1c9f6f7d71e5fd68fd4f",
+  "readiness_static_review_sha256": "4148d7a8d70d16ead7dc43af41637c958150765dac69477a1eb5befec74ac004",
+  "scope": "Own read-only stdlib file hashes/parser/retained float additions/Git metadata/PID absence audit only; no emitter/API/codec/validator/prepared runner/helper/corpus/metrics/conversion/build/CPU rerun.",
+  "script_sha256": "8be48da8ef65a88dac11b0530677e2ba3a564e290d99a01ca0221db9f688e0a4",
+  "source_head": "8a2a066bcc6743acec38748c1232b03ad610d06c",
+  "source_resource_review": {
+    "path": "@evidence-000018",
+    "sha256": "bde476d4ede09e10edf9de5dcf723f59d6d490830a8141fd19679429b6643c7f"
+  },
+  "summary_sha256": "2f96c31eca5bd9d73df6d25f7ade8440698f4a03bfd569c42472a17d2b27d26b",
+  "window_role": "All186 canonical private WindowView indices remain separately scoped source/unit evidence approvedbde476; no new getter API emitter records fabricated.",
+  "wrapper_sha256": "f2ca3936e82376574566514c2d02a54f4d95caa2767098dc12a022caa62bbb69"
+}

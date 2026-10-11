@@ -1,5 +1,10 @@
 # Measurements
 
+The [packed MDCT comparison](mdct-packed-plan.md) preserves tested packet/PCM
+bits and records one Apple M5 paired CPU trial, including every regression and
+the constructor/resource tradeoffs. The measured source and the current
+publication source are recorded separately.
+
 ## CPU method and version 2 run
 
 Run `cargo bench --locked --bench kernels --features reference-tests` in a release

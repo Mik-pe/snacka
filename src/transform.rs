@@ -293,6 +293,58 @@ impl MdctWorkspace {
     }
 }
 
+#[derive(Debug)]
+struct MdctRow {
+    window: [f32; 4],
+    pre: Complex,
+    post: Complex,
+}
+
+#[derive(Clone, Copy)]
+pub(crate) struct WindowView<'a> {
+    rows: &'a [MdctRow],
+}
+
+impl<'a> WindowView<'a> {
+    pub(crate) fn len(self) -> usize {
+        4 * self.rows.len()
+    }
+
+    fn slot(self, index: usize) -> (usize, usize) {
+        assert!(index < self.len());
+        let q = self.rows.len();
+        let (folded, edge) = if index < q {
+            (q + index, true)
+        } else if index < 3 * q {
+            (3 * q - 1 - index, false)
+        } else {
+            (index - 3 * q, true)
+        };
+        if folded.is_multiple_of(2) {
+            (folded / 2, usize::from(edge))
+        } else {
+            ((2 * q - 1 - folded) / 2, 2 + usize::from(edge))
+        }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn iter(self) -> impl Iterator<Item = &'a f32> {
+        (0..self.len()).map(move |index| {
+            let (row, field) = self.slot(index);
+            &self.rows[row].window[field]
+        })
+    }
+}
+
+impl std::ops::Index<usize> for WindowView<'_> {
+    type Output = f32;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        let (row, field) = self.slot(index);
+        &self.rows[row].window[field]
+    }
+}
+
 /// An immutable low-overlap MDCT plan using one half-length complex FFT.
 ///
 /// Forward coefficients use `2 / N` scaling; the inverse is unscaled. Windowed
@@ -300,9 +352,7 @@ impl MdctWorkspace {
 #[derive(Debug)]
 pub struct MdctPlan {
     coefficients: usize,
-    window: Vec<f32>,
-    pre: Vec<Complex>,
-    post: Vec<Complex>,
+    rows: Vec<MdctRow>,
     fft: FftPlan,
 }
 impl MdctPlan {
@@ -332,19 +382,39 @@ impl MdctPlan {
             window[padding + index] = value;
             window[2 * coefficients - 1 - padding - index] = value;
         }
-        let pre = (0..coefficients / 2)
-            .map(|index| Complex::phase(-std::f64::consts::PI * index as f64 / coefficients as f64))
-            .collect();
-        let post = (0..coefficients / 2)
-            .map(|index| {
-                Complex::phase(-std::f64::consts::PI * (index as f64 + 0.25) / coefficients as f64)
-            })
-            .collect();
+        let q = coefficients / 2;
+        let mut rows = Vec::with_capacity(q);
+        for index in 0..q {
+            let real = 2 * index;
+            let imaginary = 2 * q - 1 - real;
+            let edge = |folded| {
+                if folded < q {
+                    3 * q + folded
+                } else {
+                    folded - q
+                }
+            };
+            rows.push(MdctRow {
+                window: [
+                    window[3 * q - 1 - real],
+                    window[edge(real)],
+                    window[3 * q - 1 - imaginary],
+                    window[edge(imaginary)],
+                ],
+                pre: Complex::ZERO,
+                post: Complex::ZERO,
+            });
+        }
+        for (index, row) in rows.iter_mut().enumerate() {
+            row.pre = Complex::phase(-std::f64::consts::PI * index as f64 / coefficients as f64);
+        }
+        for (index, row) in rows.iter_mut().enumerate() {
+            row.post =
+                Complex::phase(-std::f64::consts::PI * (index as f64 + 0.25) / coefficients as f64);
+        }
         Ok(Self {
             coefficients,
-            window,
-            pre,
-            post,
+            rows,
             fft,
         })
     }
@@ -354,8 +424,14 @@ impl MdctPlan {
         self.coefficients
     }
 
-    pub(crate) fn window(&self) -> &[f32] {
-        &self.window
+    pub(crate) fn window_view(&self) -> WindowView<'_> {
+        WindowView { rows: &self.rows }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn set_window_sample(&mut self, index: usize, value: f32) {
+        let (row, field) = self.window_view().slot(index);
+        self.rows[row].window[field] = value;
     }
 
     fn validate(
@@ -384,18 +460,6 @@ impl MdctPlan {
         Ok(())
     }
 
-    fn fold(&self, input: &[f32], index: usize) -> f32 {
-        let n = self.coefficients;
-        let mirrored = 3 * n / 2 - 1 - index;
-        if index < n / 2 {
-            let right = 3 * n / 2 + index;
-            -input[mirrored] * self.window[mirrored] - input[right] * self.window[right]
-        } else {
-            let left = index - n / 2;
-            input[left] * self.window[left] - input[mirrored] * self.window[mirrored]
-        }
-    }
-
     /// Transform `2 * N` time samples to `N` coefficients, applying the plan's window.
     ///
     /// Invalid buffers, workspace sizes or numeric input leave output untouched.
@@ -407,33 +471,35 @@ impl MdctPlan {
     ) -> Result<(), Error> {
         self.validate(input, output, workspace, false)?;
         let n = self.coefficients;
-        for (index, sample) in workspace.input.iter_mut().enumerate() {
-            *sample = Complex {
-                real: self.fold(input, 2 * index),
-                imaginary: self.fold(input, n - 1 - 2 * index),
-            }
-            .multiply(self.pre[index]);
+        let q = n / 2;
+        let boundary = q.div_ceil(2);
+        for (index, (sample, row)) in workspace.input.iter_mut().zip(&self.rows).enumerate() {
+            let real = 2 * index;
+            let imaginary = n - 1 - real;
+            let mirrored_real = 3 * q - 1 - real;
+            let mirrored_imaginary = 3 * q - 1 - imaginary;
+            let (real, imaginary) = if index < boundary {
+                (
+                    -input[mirrored_real] * row.window[0] - input[3 * q + real] * row.window[1],
+                    input[imaginary - q] * row.window[3]
+                        - input[mirrored_imaginary] * row.window[2],
+                )
+            } else {
+                (
+                    input[real - q] * row.window[1] - input[mirrored_real] * row.window[0],
+                    -input[mirrored_imaginary] * row.window[2]
+                        - input[3 * q + imaginary] * row.window[3],
+                )
+            };
+            *sample = Complex { real, imaginary }.multiply(row.pre);
         }
         self.fft.run(&workspace.input, &mut workspace.output, false);
-        for (index, &sample) in workspace.output.iter().enumerate() {
-            let value = sample.multiply(self.post[index]).scale(2.0 / n as f32);
+        for (index, (&sample, row)) in workspace.output.iter().zip(&self.rows).enumerate() {
+            let value = sample.multiply(row.post).scale(2.0 / n as f32);
             output[2 * index] = value.real;
             output[n - 1 - 2 * index] = -value.imaginary;
         }
         Ok(())
-    }
-
-    fn unfold(&self, output: &mut [f32], index: usize, sample: f32) {
-        let n = self.coefficients;
-        let mirrored = 3 * n / 2 - 1 - index;
-        output[mirrored] = -sample * self.window[mirrored];
-        if index < n / 2 {
-            let right = 3 * n / 2 + index;
-            output[right] = -sample * self.window[right];
-        } else {
-            let left = index - n / 2;
-            output[left] = sample * self.window[left];
-        }
     }
 
     /// Transform `N` coefficients to a windowed `2 * N` inverse block.
@@ -447,19 +513,86 @@ impl MdctPlan {
     ) -> Result<(), Error> {
         self.validate(input, output, workspace, true)?;
         let n = self.coefficients;
-        for (index, sample) in workspace.input.iter_mut().enumerate() {
+        for (index, (sample, row)) in workspace.input.iter_mut().zip(&self.rows).enumerate() {
             *sample = Complex {
                 real: input[2 * index],
                 imaginary: input[n - 1 - 2 * index],
             }
-            .multiply(self.pre[index]);
+            .multiply(row.pre);
         }
         self.fft.run(&workspace.input, &mut workspace.output, false);
-        for (index, &sample) in workspace.output.iter().enumerate() {
-            let value = sample.multiply(self.post[index]);
-            self.unfold(output, 2 * index, value.real);
-            self.unfold(output, n - 1 - 2 * index, -value.imaginary);
+        let q = n / 2;
+        let boundary = q.div_ceil(2);
+        for (index, (&sample, row)) in workspace.output.iter().zip(&self.rows).enumerate() {
+            let value = sample.multiply(row.post);
+            let real = 2 * index;
+            let imaginary = n - 1 - real;
+            let mirrored_real = 3 * q - 1 - real;
+            let mirrored_imaginary = 3 * q - 1 - imaginary;
+            let imaginary_value = -value.imaginary;
+            output[mirrored_real] = -value.real * row.window[0];
+            if index < boundary {
+                output[3 * q + real] = -value.real * row.window[1];
+                output[mirrored_imaginary] = -imaginary_value * row.window[2];
+                output[imaginary - q] = imaginary_value * row.window[3];
+            } else {
+                output[real - q] = value.real * row.window[1];
+                output[mirrored_imaginary] = -imaginary_value * row.window[2];
+                output[3 * q + imaginary] = -imaginary_value * row.window[3];
+            }
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn packed_windows_preserve_literal_bits_and_allocated_storage() {
+        assert_eq!(std::mem::size_of::<MdctRow>(), 32);
+        assert_eq!(std::mem::align_of::<MdctRow>(), 4);
+        let mut pairs = 0;
+        for n in (2..=3840).step_by(2) {
+            if FftPlan::new(n / 2).is_err() {
+                continue;
+            }
+            for (case, overlap) in [n, 120].into_iter().enumerate() {
+                if overlap > n || (case == 1 && n == 120) {
+                    continue;
+                }
+                let plan = MdctPlan::new(n, overlap).unwrap();
+                let padding = (n - overlap) / 2;
+                let mut expected = vec![0.0f32; 2 * n];
+                expected[padding + overlap..n + padding].fill(1.0);
+                for t in 0..overlap {
+                    let angle = std::f64::consts::FRAC_PI_2 * (t as f64 + 0.5) / overlap as f64;
+                    let value = (std::f64::consts::FRAC_PI_2 * angle.sin().powi(2)).sin() as f32;
+                    expected[padding + t] = value;
+                    expected[2 * n - 1 - padding - t] = value;
+                }
+                let old_pre: Vec<Complex> = (0..n / 2).map(|_| Complex::ZERO).collect();
+                let old_post: Vec<Complex> = (0..n / 2).map(|_| Complex::ZERO).collect();
+                let old_bytes = expected.capacity() * std::mem::size_of::<f32>()
+                    + (old_pre.capacity() + old_post.capacity()) * std::mem::size_of::<Complex>();
+                assert!(plan.rows.capacity() * std::mem::size_of::<MdctRow>() <= old_bytes);
+                let window = plan.window_view();
+                assert_eq!(window.len(), expected.len());
+                for (k, &value) in expected.iter().enumerate() {
+                    assert_eq!(
+                        window[k].to_bits(),
+                        value.to_bits(),
+                        "N={n}, overlap={overlap}, k={k}"
+                    );
+                }
+                assert_eq!(
+                    window.iter().map(|x| x.to_bits()).collect::<Vec<_>>(),
+                    expected.iter().map(|x| x.to_bits()).collect::<Vec<_>>()
+                );
+                pairs += 1;
+            }
+        }
+        assert_eq!(pairs, 186);
     }
 }

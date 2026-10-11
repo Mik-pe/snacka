@@ -1,0 +1,930 @@
+{
+  "absolute_endpoint_summaries": [
+    {
+      "cpu": {
+        "maximum": "12015.717",
+        "mean": "8551.69390625",
+        "median": "7989.792",
+        "minimum": "7740.692",
+        "n": "32"
+      },
+      "frame_ms": 10,
+      "frames": 32768,
+      "label": "baseline",
+      "units": "rounded ns/frame",
+      "wall": {
+        "maximum": "13656.019",
+        "mean": "8782.63053125",
+        "median": "8039.4155",
+        "minimum": "7787.571",
+        "n": "32"
+      }
+    },
+    {
+      "cpu": {
+        "maximum": "12434.967",
+        "mean": "8469.06946875",
+        "median": "7851.2575",
+        "minimum": "7393.463",
+        "n": "32"
+      },
+      "frame_ms": 10,
+      "frames": 32768,
+      "label": "current",
+      "units": "rounded ns/frame",
+      "wall": {
+        "maximum": "15979.059",
+        "mean": "8825.68196875",
+        "median": "7898.961",
+        "minimum": "7440.111",
+        "n": "32"
+      }
+    },
+    {
+      "cpu": {
+        "maximum": "26361.420",
+        "mean": "19206.3895",
+        "median": "18579.9865",
+        "minimum": "17552.826",
+        "n": "32"
+      },
+      "frame_ms": 20,
+      "frames": 32768,
+      "label": "baseline",
+      "units": "rounded ns/frame",
+      "wall": {
+        "maximum": "29739.616",
+        "mean": "19461.2791875",
+        "median": "18629.9175",
+        "minimum": "17599.954",
+        "n": "32"
+      }
+    },
+    {
+      "cpu": {
+        "maximum": "27243.500",
+        "mean": "18940.52403125",
+        "median": "18257.4765",
+        "minimum": "17420.715",
+        "n": "32"
+      },
+      "frame_ms": 20,
+      "frames": 32768,
+      "label": "current",
+      "units": "rounded ns/frame",
+      "wall": {
+        "maximum": "31335.046",
+        "mean": "19175.18453125",
+        "median": "18317.739",
+        "minimum": "17474.951",
+        "n": "32"
+      }
+    }
+  ],
+  "all_cpu_regressions": [
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "1320-122617-0003",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "2.2372",
+      "repetition": 2,
+      "wall_change_percent": "2.9860949100220386141569158567405384998189327787620340406375927376003601325653300"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "1320-122617-0012",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "1.1566",
+      "repetition": 0,
+      "wall_change_percent": "1.1898695221075137243672510416201561572288309684161506383302195123841265612309500"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "260-123440-0004",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "2.2080",
+      "repetition": 0,
+      "wall_change_percent": "-11.950231107157465463292760116392108086316071232421755097211778173821842737053895"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "260-123440-0004",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "2.9841",
+      "repetition": 3,
+      "wall_change_percent": "6.7003125033559209183947422115787325894822753680774063295353257659553904144159600"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "260-123440-0004",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "39.1285",
+      "repetition": 1,
+      "wall_change_percent": "59.217956690137159450134594487423603693343057970088104030172253912203277563009010"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "260-123440-0004",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "4.1268",
+      "repetition": 2,
+      "wall_change_percent": "4.8975353557080886350977541959603621861674575697287257008731679726369399048200600"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0002",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "0.0601",
+      "repetition": 0,
+      "wall_change_percent": "0.1503781292378345549389751824088787573733121458938243050991289300065725434079100"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0002",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "1.7565",
+      "repetition": 1,
+      "wall_change_percent": "1.7884867836420297632447334991374540844003458711163238008647209680289421219628000"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0002",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "0.3759",
+      "repetition": 2,
+      "wall_change_percent": "0.4484367443331350594953888500439781062026284421938469769381177608279370845360300"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0002",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "3.0046",
+      "repetition": 3,
+      "wall_change_percent": "3.3587637709512147287789175793273243874489642105194912548280383617329233721629400"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0032",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "0.8225",
+      "repetition": 0,
+      "wall_change_percent": "0.7842885802742502602860064803917875118104853407769434376614702610295025736691100"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0032",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "29.0661",
+      "repetition": 2,
+      "wall_change_percent": "38.894583801287241801404103636847008132318363894605511288518349479164663660596510"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0032",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "28.6828",
+      "repetition": 3,
+      "wall_change_percent": "47.456798411899822154309743219748616544600194383264550035201408138499822195396880"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0032",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "6.3305",
+      "repetition": 1,
+      "wall_change_percent": "7.3334131472146732438991375937495779561777111917441171026017599062379828574811400"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0032",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "1.6468",
+      "repetition": 3,
+      "wall_change_percent": "1.5954872595249224456306757896591891185086861056718065535365004409274855163624200"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "6930-75918-0000",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "4.0287",
+      "repetition": 0,
+      "wall_change_percent": "4.0039406033550632992095112809628976164257240306834733071162200467373387919161900"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "6930-75918-0000",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "1.7262",
+      "repetition": 1,
+      "wall_change_percent": "2.2069367248918957740705421117743476038418469570806020642234389303146221409793800"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "6930-75918-0000",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "3.8606",
+      "repetition": 3,
+      "wall_change_percent": "3.8953066382449450786305577965270050508776795356672526300239757225993257865809800"
+    }
+  ],
+  "all_wall_regressions": [
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "1320-122617-0003",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "2.2372",
+      "repetition": 2,
+      "wall_change_percent": "2.9860949100220386141569158567405384998189327787620340406375927376003601325653300"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "1320-122617-0012",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "1.1566",
+      "repetition": 0,
+      "wall_change_percent": "1.1898695221075137243672510416201561572288309684161506383302195123841265612309500"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "260-123440-0004",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "-2.0320",
+      "repetition": 1,
+      "wall_change_percent": "22.025773086050876747245839061742186205953299254216723662473330109158405577532430"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "260-123440-0004",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "2.9841",
+      "repetition": 3,
+      "wall_change_percent": "6.7003125033559209183947422115787325894822753680774063295353257659553904144159600"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "260-123440-0004",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "39.1285",
+      "repetition": 1,
+      "wall_change_percent": "59.217956690137159450134594487423603693343057970088104030172253912203277563009010"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "260-123440-0004",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "4.1268",
+      "repetition": 2,
+      "wall_change_percent": "4.8975353557080886350977541959603621861674575697287257008731679726369399048200600"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0002",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "0.0601",
+      "repetition": 0,
+      "wall_change_percent": "0.1503781292378345549389751824088787573733121458938243050991289300065725434079100"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0002",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "1.7565",
+      "repetition": 1,
+      "wall_change_percent": "1.7884867836420297632447334991374540844003458711163238008647209680289421219628000"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0002",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "0.3759",
+      "repetition": 2,
+      "wall_change_percent": "0.4484367443331350594953888500439781062026284421938469769381177608279370845360300"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0002",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "3.0046",
+      "repetition": 3,
+      "wall_change_percent": "3.3587637709512147287789175793273243874489642105194912548280383617329233721629400"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0032",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "0.8225",
+      "repetition": 0,
+      "wall_change_percent": "0.7842885802742502602860064803917875118104853407769434376614702610295025736691100"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0032",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "29.0661",
+      "repetition": 2,
+      "wall_change_percent": "38.894583801287241801404103636847008132318363894605511288518349479164663660596510"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0032",
+      "current_harmonic": false,
+      "frame_ms": 10,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "28.6828",
+      "repetition": 3,
+      "wall_change_percent": "47.456798411899822154309743219748616544600194383264550035201408138499822195396880"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0032",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "6.3305",
+      "repetition": 1,
+      "wall_change_percent": "7.3334131472146732438991375937495779561777111917441171026017599062379828574811400"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "5639-40744-0032",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "1.6468",
+      "repetition": 3,
+      "wall_change_percent": "1.5954872595249224456306757896591891185086861056718065535365004409274855163624200"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "6930-75918-0000",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "baseline:32768;current:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "4.0287",
+      "repetition": 0,
+      "wall_change_percent": "4.0039406033550632992095112809628976164257240306834733071162200467373387919161900"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "6930-75918-0000",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "1.7262",
+      "repetition": 1,
+      "wall_change_percent": "2.2069367248918957740705421117743476038418469570806020642234389303146221409793800"
+    },
+    {
+      "baseline_harmonic": false,
+      "bitrate": 12000,
+      "clip": "6930-75918-0000",
+      "current_harmonic": false,
+      "frame_ms": 20,
+      "operation": "encode",
+      "order": "current:32768;baseline:32768",
+      "phase": "encode_OFF64",
+      "process_cpu_change_percent": "3.8606",
+      "repetition": 3,
+      "wall_change_percent": "3.8953066382449450786305577965270050508776795356672526300239757225993257865809800"
+    }
+  ],
+  "clip_duration_summaries": [
+    {
+      "clip": "1320-122617-0003",
+      "cpu": {
+        "maximum": "2.2372",
+        "mean": "-2.44675",
+        "median": "-3.37695",
+        "minimum": "-5.2703",
+        "n": "4",
+        "regressions": "1"
+      },
+      "frame_ms": 10,
+      "wall": {
+        "maximum": "2.9860949100220386141569158567405384998189327787620340406375927376003601325653300",
+        "mean": "-2.2926863344885799565290790970581879238475072472976325282096429742954587598359510",
+        "median": "-3.4489549998686461476153299223703431378938329191474428110243073232175089916922810",
+        "minimum": "-5.2589302482390661450425724002326039194212959296576785314275499883471771885245720",
+        "n": "4",
+        "regressions": "1"
+      }
+    },
+    {
+      "clip": "1320-122617-0003",
+      "cpu": {
+        "maximum": "-0.2821",
+        "mean": "-2.561625",
+        "median": "-2.32465",
+        "minimum": "-5.3151",
+        "n": "4",
+        "regressions": "0"
+      },
+      "frame_ms": 20,
+      "wall": {
+        "maximum": "-0.25448494988397558506412237552862161131388359308943098449805546231053542510817600",
+        "mean": "-2.664579419957135512186917527727428576838348570460549632385432074397415228956762",
+        "median": "-2.2902557177080117766923851887153088566331521906069797995024039267200428934324055",
+        "minimum": "-5.8233212945285429102987773579504749827732063075388079460388649818390397038540610",
+        "n": "4",
+        "regressions": "0"
+      }
+    },
+    {
+      "clip": "1320-122617-0012",
+      "cpu": {
+        "maximum": "1.1566",
+        "mean": "-3.3876",
+        "median": "-4.0101",
+        "minimum": "-6.6868",
+        "n": "4",
+        "regressions": "1"
+      },
+      "frame_ms": 10,
+      "wall": {
+        "maximum": "1.1898695221075137243672510416201561572288309684161506383302195123841265612309500",
+        "mean": "-3.4392997951988038794518130550025767858163111472073194343578556189860962802373315",
+        "median": "-4.0568462630730764693428115975965955872288166083995574553000740996645252930166585",
+        "minimum": "-6.8333761767565763034888800664372721260364423404463134651614937889994610961469590",
+        "n": "4",
+        "regressions": "1"
+      }
+    },
+    {
+      "clip": "1320-122617-0012",
+      "cpu": {
+        "maximum": "-0.5416",
+        "mean": "-5.6812",
+        "median": "-1.6268",
+        "minimum": "-18.9296",
+        "n": "4",
+        "regressions": "0"
+      },
+      "frame_ms": 20,
+      "wall": {
+        "maximum": "-0.52069454272437302961132739324205051899567464778601125889306301596015535040602900",
+        "mean": "-6.6446412350359077985669054747129925786861812668893674727844434499097999760532992",
+        "median": "-1.5538711637540768750055617473054872445673080937187864202356595955460161747489960",
+        "minimum": "-22.950128069911104414645171010998945306614434232333885791773391592587012204309176",
+        "n": "4",
+        "regressions": "0"
+      }
+    },
+    {
+      "clip": "260-123440-0004",
+      "cpu": {
+        "maximum": "2.9841",
+        "mean": "0.270325",
+        "median": "0.0880",
+        "minimum": "-2.0788",
+        "n": "4",
+        "regressions": "2"
+      },
+      "frame_ms": 10,
+      "wall": {
+        "maximum": "22.025773086050876747245839061742186205953299254216723662473330109158405577532430",
+        "mean": "2.669249499997620889597724093815734671486972366592737589528638672616068383398395",
+        "median": "0.3007280105485361372189087149564302831553307222879908964265013775638553465575225",
+        "minimum": "-11.950231107157465463292760116392108086316071232421755097211778173821842737053895",
+        "n": "4",
+        "regressions": "2"
+      }
+    },
+    {
+      "clip": "260-123440-0004",
+      "cpu": {
+        "maximum": "39.1285",
+        "mean": "9.6058",
+        "median": "1.15855",
+        "minimum": "-3.0224",
+        "n": "4",
+        "regressions": "2"
+      },
+      "frame_ms": 20,
+      "wall": {
+        "maximum": "59.217956690137159450134594487423603693343057970088104030172253912203277563009010",
+        "mean": "14.278226044468211111349046527274247317556127426188118671552774960691524604871358",
+        "median": "1.3234123572466673625712836160204306729952067051237665694679255117643093133191680",
+        "minimum": "-4.7518772267576497298809756103674757691089616755831624828970050929657977701619120",
+        "n": "4",
+        "regressions": "2"
+      }
+    },
+    {
+      "clip": "260-123440-0018",
+      "cpu": {
+        "maximum": "-2.8230",
+        "mean": "-8.56745",
+        "median": "-7.2981",
+        "minimum": "-16.8506",
+        "n": "4",
+        "regressions": "0"
+      },
+      "frame_ms": 10,
+      "wall": {
+        "maximum": "-2.7592326666199653599950174133633324481806603706788811887429131915860954253062520",
+        "mean": "-8.322727429311649877506708730716923030045923356807187064402141050053474012869600",
+        "median": "-7.5115576984527864566963759022430390131704138456720326790062144694544562117116165",
+        "minimum": "-15.508561653721061236639065705018281645662205365205801710853222069718888202748915",
+        "n": "4",
+        "regressions": "0"
+      }
+    },
+    {
+      "clip": "260-123440-0018",
+      "cpu": {
+        "maximum": "-1.9301",
+        "mean": "-2.40345",
+        "median": "-2.17735",
+        "minimum": "-3.3290",
+        "n": "4",
+        "regressions": "0"
+      },
+      "frame_ms": 20,
+      "wall": {
+        "maximum": "-1.9495257645328194408892523421658997870197278299867867066928314557911928866736900",
+        "mean": "-2.4397808498477342622313715829106846207643565440509621875514595799237430067580202",
+        "median": "-2.1750137304702273547263719381642088594612568188883475895065954348251504029123280",
+        "minimum": "-3.4595701739176628985834901131484209771151847084403668644998159942534783345337350",
+        "n": "4",
+        "regressions": "0"
+      }
+    },
+    {
+      "clip": "5639-40744-0002",
+      "cpu": {
+        "maximum": "0.0601",
+        "mean": "-0.59095",
+        "median": "-0.49345",
+        "minimum": "-1.4370",
+        "n": "4",
+        "regressions": "1"
+      },
+      "frame_ms": 10,
+      "wall": {
+        "maximum": "0.1503781292378345549389751824088787573733121458938243050991289300065725434079100",
+        "mean": "-0.5883036528643149164716116227365923082298716252261401450376426581754773085486825",
+        "median": "-0.5578287376265491640031265000908496662114787449015874666125070356795338512785500",
+        "minimum": "-1.3879352654419958928191686731735486578698411569952099520246854913494140750455400",
+        "n": "4",
+        "regressions": "1"
+      }
+    },
+    {
+      "clip": "5639-40744-0002",
+      "cpu": {
+        "maximum": "3.0046",
+        "mean": "0.7381",
+        "median": "1.0662",
+        "minimum": "-2.1846",
+        "n": "4",
+        "regressions": "3"
+      },
+      "frame_ms": 20,
+      "wall": {
+        "maximum": "3.3587637709512147287789175793273243874489642105194912548280383617329233721629400",
+        "mean": "0.83983474428122984586019706585203003034123659275685165096974849931335776240491275",
+        "median": "1.1184617639875824113700611745907160953014871566550853889014193644284396032494150",
+        "minimum": "-2.2363483218014601680782516651006364566869921528022554287518830933363715290421190",
+        "n": "4",
+        "regressions": "3"
+      }
+    },
+    {
+      "clip": "5639-40744-0032",
+      "cpu": {
+        "maximum": "29.0661",
+        "mean": "14.30895",
+        "median": "14.75265",
+        "minimum": "-1.3356",
+        "n": "4",
+        "regressions": "3"
+      },
+      "frame_ms": 10,
+      "wall": {
+        "maximum": "47.456798411899822154309743219748616544600194383264550035201408138499822195396880",
+        "mean": "21.470064622038655334082831384270840369143658368902452029408944993785113564916381",
+        "median": "19.839436190780746030845055058619397822064424617691227363089909870097083117132810",
+        "minimum": "-1.2554123053066928796685277999040507121544101430371966437454479035535341699969760",
+        "n": "4",
+        "regressions": "3"
+      }
+    },
+    {
+      "clip": "5639-40744-0032",
+      "cpu": {
+        "maximum": "6.3305",
+        "mean": "1.21285",
+        "median": "0.34215",
+        "minimum": "-2.1634",
+        "n": "4",
+        "regressions": "2"
+      },
+      "frame_ms": 20,
+      "wall": {
+        "maximum": "7.3334131472146732438991375937495779561777111917441171026017599062379828574811400",
+        "mean": "1.4248092453220773759784763149377538215683652690970613571487470137062901576324948",
+        "median": "0.36644258016188148660697453100313099053258047553855201101717026076252909405493000",
+        "minimum": "-2.3670613262501267131991813960048246509694110664329756960411123729378804150610210",
+        "n": "4",
+        "regressions": "2"
+      }
+    },
+    {
+      "clip": "6930-75918-0000",
+      "cpu": {
+        "maximum": "-0.4944",
+        "mean": "-4.33485",
+        "median": "-3.40115",
+        "minimum": "-10.0427",
+        "n": "4",
+        "regressions": "0"
+      },
+      "frame_ms": 10,
+      "wall": {
+        "maximum": "-0.44220463607972241922417143933583398469176075569648096948329588263143925108355400",
+        "mean": "-4.267063878907623480608377332724296631588574621762230236467779273786394339469597",
+        "median": "-3.3356951810582038882483421527409531847691900688312695348345285729131262622404590",
+        "minimum": "-9.9546605174343637267126535860794461721241575936899009067187640666878855823139160",
+        "n": "4",
+        "regressions": "0"
+      }
+    },
+    {
+      "clip": "6930-75918-0000",
+      "cpu": {
+        "maximum": "4.0287",
+        "mean": "1.8680",
+        "median": "2.7934",
+        "minimum": "-2.1435",
+        "n": "4",
+        "regressions": "3"
+      },
+      "frame_ms": 20,
+      "wall": {
+        "maximum": "4.0039406033550632992095112809628976164257240306834733071162200467373387919161900",
+        "mean": "1.9860277722085187303631209176707017236611693596756916032167446086792068604508585",
+        "median": "3.0511216815684204263505499541506763273597632463739273471237073264569739637801800",
+        "minimum": "-2.1620728776578292304581275185814433765005730847285615884966562649344592776731160",
+        "n": "4",
+        "regressions": "3"
+      }
+    },
+    {
+      "clip": "6930-75918-0007",
+      "cpu": {
+        "maximum": "-1.0894",
+        "mean": "-3.369975",
+        "median": "-3.08645",
+        "minimum": "-6.2176",
+        "n": "4",
+        "regressions": "0"
+      },
+      "frame_ms": 10,
+      "wall": {
+        "maximum": "-1.0362471382986540628068488180264435862671840097285471866139576782307385083630400",
+        "mean": "-3.3710877022640183358840150790032160484522496693748775919998038386336326049917588",
+        "median": "-3.1013814904927231821662107443282295156285777871421724735912780351249761687731140",
+        "minimum": "-6.2453406897719729163967900093299615762846590934866182342027016060538395740577670",
+        "n": "4",
+        "regressions": "0"
+      }
+    },
+    {
+      "clip": "6930-75918-0007",
+      "cpu": {
+        "maximum": "-1.8907",
+        "mean": "-10.565825",
+        "median": "-4.06135",
+        "minimum": "-32.2499",
+        "n": "4",
+        "regressions": "0"
+      },
+      "frame_ms": 20,
+      "wall": {
+        "maximum": "-1.8062296294729910296887266670659720819086857895580010121395858066188968962787210",
+        "mean": "-12.440350697787564551745503443686898738416284238326906058629970524868505352921023",
+        "median": "-4.0897356415393501009244080011020000134308072964470508761490501040049566665612265",
+        "minimum": "-39.775701878598566975444471105477622844894836570855521470082196084845211182282919",
+        "n": "4",
+        "regressions": "0"
+      }
+    }
+  ],
+  "fixed_duration_summaries": [
+    {
+      "cpu": {
+        "maximum": "29.0661",
+        "mean": "-1.0147875",
+        "median": "-2.0554",
+        "minimum": "-16.8506",
+        "n": "32",
+        "regressions": "8"
+      },
+      "frame_ms": 10,
+      "gate": "<=2",
+      "phase": "encode_OFF64",
+      "status": "PASS",
+      "wall": {
+        "maximum": "47.456798411899822154309743219748616544600194383264550035201408138499822195396880",
+        "mean": "0.23226816612516072215361882010559778908127413347747532730783978155883108029523191",
+        "median": "-2.8056629087646923956262534362753765664583136602442809564282421843519994928328990",
+        "minimum": "-15.508561653721061236639065705018281645662205365205801710853222069718888202748915",
+        "n": "32",
+        "regressions": "8"
+      },
+      "wall_unavailable_pairs": 0
+    },
+    {
+      "cpu": {
+        "maximum": "39.1285",
+        "mean": "-0.97341875",
+        "median": "-1.88945",
+        "minimum": "-32.2499",
+        "n": "32",
+        "regressions": "10"
+      },
+      "frame_ms": 20,
+      "gate": "<=2",
+      "phase": "encode_OFF64",
+      "status": "PASS",
+      "wall": {
+        "maximum": "59.217956690137159450134594487423603693343057970088104030172253912203277563009010",
+        "mean": "-0.70755679954353813264748215041290895269728399650125775855791131833863552241618503",
+        "median": "-1.8778776970029052352889895046159359344642068097723938594162086312050448914762055",
+        "minimum": "-39.775701878598566975444471105477622844894836570855521470082196084845211182282919",
+        "n": "32",
+        "regressions": "10"
+      },
+      "wall_unavailable_pairs": 0
+    }
+  ],
+  "limitations": "Existing canonical helpers only: no new fields/modes/output/rounding switch. Both wholephaseCSVs buffered until success, fatal unreturned in-memory timer rows may be lost. Decoder retains returned processCPU/wall totals/slopes and input/packet/PCM preparation hashes in output; temporary PCM/trace payloads are deleted. Encoder retains3decimalns/frame and4decimalCPUpercent plus returned preparation hashes, no underlying process totals/permanent timedchild PID/stdout journal. Preserve all available rows, regressions, stdout/stderr and hashes without inventing missing payloads.",
+  "phase": "encode_OFF64",
+  "scope": "Decode uses each executable\u2019s own256 prepared encoded packets, cycling first256 input frames1024/2048 times at262144/524288. Wholeprocess startup/read/construction/256packet prep is only approximately fixed between counts; cancellation assumption, noise and possible invalid nonpositive slopes disclosed. Encode32768 cycles first256 prepared PCMframes128 times; startup/read/constructors/transform/PCMprep included, does NOT preencode256packets. No purecore/phone/battery/deadline/tail guarantee.",
+  "status": "PASS"
+}

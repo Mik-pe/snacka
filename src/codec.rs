@@ -704,7 +704,7 @@ impl Encoder {
                             &self.input[start..start + samples + ALGORITHMIC_DELAY],
                             f0,
                             &positions,
-                            self.plan.window(),
+                            self.plan.window_view(),
                             &mut compact_values,
                         )
                     {

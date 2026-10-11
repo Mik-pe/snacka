@@ -1,0 +1,30 @@
+{
+  "CPUtimings": 0,
+  "actual_candidate_generations": 1,
+  "baseline_fixture_sha256": "b0ea17b1604a7f5585a60d4222825a84e9b56594144edbd4a3da1bd98ffcb640",
+  "baseline_generations_this_run": 0,
+  "baseline_role": "Previously accepted existing published-runtime fixture; not compiled237 during this run.",
+  "candidate_fixture_bytes": 363602645,
+  "candidate_fixture_sha256": "b0ea17b1604a7f5585a60d4222825a84e9b56594144edbd4a3da1bd98ffcb640",
+  "candidate_source_HEAD": "8a2a066bcc6743acec38748c1232b03ad610d06c",
+  "canonical_semantic_checks": {
+    "codec_decode_or_conceal": 5520,
+    "codec_encode": 1840,
+    "codec_error": 460,
+    "constructor_invalid": 16,
+    "constructor_valid": 312,
+    "error_output_preservation": 6672,
+    "tdac_exact_intermediate_and_sum_joins": 1488,
+    "transform_error": 6212,
+    "transform_valid_or_sum": 15088
+  },
+  "complete_status_field_bit_ledger_sha256": "ded041341fb7a4ef765bf15a611dbef6d08304ac8a716222c02666ed71d06443",
+  "controls": "NOT_RUN",
+  "metrics": 0,
+  "publication": "NOTAUTHORIZED",
+  "records": 29448,
+  "semantic_validator_sha256": "d8eda3d551319a537299a17aa77ce16a64e18479bf0833073e0182234bef79e9",
+  "source_bindings_prepost_PASS": true,
+  "status": "API_DATA_PASS_PENDING_INDEPENDENT_DATA_REVIEW",
+  "whole_file_byte_equal": true
+}

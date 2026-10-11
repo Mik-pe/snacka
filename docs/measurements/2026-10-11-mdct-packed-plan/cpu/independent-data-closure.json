@@ -1,0 +1,22 @@
+{
+  "actual_4helper_stdout_exact8clips_complete": true,
+  "actual_full39_source_inputs_rehashed": true,
+  "all768_frozen_argv_templates_independently_derived": true,
+  "immutable_first_STOP_and_failure_exit_scope_checked": true,
+  "own_script_sha256": "8395206fa399f1a90e0cdfeb4bdabb02edb678558433a2dee977fd552f7c21b0",
+  "plan_sha256": "d6523c6ec081190c42d261750e890c45644280d8b60eb78f6d1b40b1e7b4a643",
+  "primary_data_review": {
+    "path": "@evidence-003877",
+    "sha256": "63f9f11e912854baeb1fccec082fe42bb171baae1b042c3fc49e69d48fa02d01"
+  },
+  "ready_static_review": {
+    "path": "@evidence-003878",
+    "sha256": "22762f9e86ac550448b4d4f9ee335324d5403d6233f5a9bb3e72646cb1d110b7"
+  },
+  "root_stdout_exact_terminal_lifecycle": true,
+  "root_terminal_sha256": "32eb2b059b5347c19fce37ce8905f9735c843871ed3f21ace5d23d6f7faac646",
+  "runner_sha256": "2a9f501bb39714848e5adb39eb0fd765f05c2315c17db451ee279146fd9a4b92",
+  "scope": "Together with primary full data report, final DATA approval only for exact8a2a/ba6f/d705/d652/2a9f ONE retained run. No execution/publication permission. Internal768 timed-call PID/stdout journal unavailable and not inferred.",
+  "source_head": "8a2a066bcc6743acec38748c1232b03ad610d06c",
+  "verdict": "DATA_APPROVE_FINAL_CLOSURE"
+}
