@@ -1,0 +1,112 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "bf3391112693d2768589d616e09262307f8ed5e163e4e4e1e02a218723bfcfce",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "frozen_at_utc": "2026-10-11T00:16:11.301211+00:00",
+    "source": "038a5b80a57aeb2ae3bb911fa752a7e63b332d78",
+    "base_main": "80ae6c540560a9b8b2d1398be21be7e8516a6731",
+    "runtime_exact_2eb": "2eb8a40d023722f814484cf8922433bdfef5e90b",
+    "matched_baseline_main": "91fef4a87a777e412a7a5b3497fdc5590307ab93",
+    "binaries_sha256": {
+      "location-role-045": "15b56472cf94730923c847f6aafd96b10651eab38369060c0700f2bef501866b",
+      "location-role-006": "8f5733c1df5fd7be9fcfe1854c931e66a27923e2e850f516ae46ca434e6cb230"
+    },
+    "source_sha256": {
+      "src/codec.rs": "6cc26854ed003ce7584210ca76eca2abb37a77f2e399043f07550ae6daea6422",
+      "src/concealment.rs": "0b024870fc663fc17eda2de8a93a20c2dbf5b0ff82a295a97040c2b00bc73d4c",
+      "src/entropy.rs": "ede43cb7ac92a1d00245307d99f58f080ca909614476cf26c1b78508e7086509",
+      "src/harmonic.rs": "0eddd938566232bd91b5eba280c26a8d79a14b8edf3bb69071853a283625addc",
+      "src/harmonic_joint.rs": "24f0902f3584689d9f2ca1b895404e96e46a511b9b10e4f2b3359bad9b2a8285",
+      "src/lib.rs": "bc6abbd62db785af492ce3a21aa0061da75ff2f1fa72c5d6b050c823be95073b",
+      "src/pulse.rs": "ed639fb3441c37d8251849bc5b6ffb2958558ce1d74d89726ddb7684eac971d3",
+      "src/pulse_classes.rs": "b5abb1763796c54d33081fdabb64ca5f5db2ea3bbb9cf96e6d3f506647d112eb",
+      "src/transform.rs": "4bcac58e353f08ccbaf0f6cc6bed175a55780f25fad5c6c080045fe433ec93fc"
+    },
+    "script_sha256": "3900bb42c87e1d073dba99a12decd33ae3968dad241c6c08cd3c891104a7f514",
+    "input_sha256": {
+      "1320-122617-0003.flac": "bbe9ef85bbe228c73a414f064c9bd992c94135d73f9900b33104ad93c07d0594",
+      "1320-122617-0012.flac": "6b5cd2c31ee61665ea0d81f2c76a1f2c32cb4f46e5ec5861bd9157e262785252",
+      "260-123440-0004.flac": "288d22f60ab2527ac2e4035a16c9095438c71deed8becde769d91a964234d139",
+      "260-123440-0018.flac": "a80d66d866b8f9114094301a965a7b6d0a62d9467c96885ff1098a27f5b02cb4",
+      "5639-40744-0002.flac": "111c6b8b19d093736570bced344035b48f75c770aacc60103da9d9a20f904fb2",
+      "5639-40744-0032.flac": "ecba1c65406f3d2fdfe383a22385dfe19cc117b71b126817f5e20df791f22a50",
+      "6930-75918-0000.flac": "9ce35224156f071ab58eb7feb8a5ceae600f6f9f353da2a6cbf797b6b1ac8a23",
+      "6930-75918-0007.flac": "059969de8f6b780e1a4982805e977c3e73e40d3759c8fa8cb0cb8fabd9eb5b27"
+    },
+    "settings": {
+      "pairs_per_screen": 64,
+      "clips": 8,
+      "durations_ms": [
+        10,
+        20
+      ],
+      "bitrate": 12000,
+      "repetitions": 4,
+      "frames": 10000,
+      "operation": "encode",
+      "pair_order": "repetitions0/2 baseline-first,1/3 current-first",
+      "retries": 0,
+      "filtered_rows": 0,
+      "harmonic_cost_gate": "median paired process CPU overhead<=100% EACH duration",
+      "default_gate": "strict full-trace equality; report all CPU/wall overhead; no quality-based filtering",
+      "limitations": "single-host desktop process averages including fixed setup; not mobile/battery/deadline-tail evidence"
+    },
+    "screens": {
+      "harmonic": {
+        "argv": [
+          "location-role-096",
+          "location-role-021",
+          "location-role-097",
+          "docs/measurements/2026-10-11-harmonic-joint-one-cpu-harmonic.csv",
+          "--current",
+          "location-role-045",
+          "--baseline",
+          "location-role-006",
+          "--bitrates",
+          "12000",
+          "--repetitions",
+          "4",
+          "--encode-frames",
+          "10000",
+          "--decode-frames",
+          "10000",
+          "--operations",
+          "encode",
+          "--allow-trace-changes",
+          "--harmonic",
+          "--baseline-harmonic"
+        ],
+        "output": "docs/measurements/2026-10-11-harmonic-joint-one-cpu-harmonic.csv",
+        "trace_changes_allowed": true
+      },
+      "default": {
+        "argv": [
+          "location-role-096",
+          "location-role-021",
+          "location-role-097",
+          "docs/measurements/2026-10-11-harmonic-joint-one-cpu-default.csv",
+          "--current",
+          "location-role-045",
+          "--baseline",
+          "location-role-006",
+          "--bitrates",
+          "12000",
+          "--repetitions",
+          "4",
+          "--encode-frames",
+          "10000",
+          "--decode-frames",
+          "10000",
+          "--operations",
+          "encode"
+        ],
+        "output": "docs/measurements/2026-10-11-harmonic-joint-one-cpu-default.csv",
+        "trace_changes_allowed": false
+      }
+    },
+    "launch_authority": "WAIT explicit root GO after unseen96 and all heavy jobs terminal; no automatic launch"
+  }
+}

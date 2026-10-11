@@ -1,0 +1,61 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "19a813938851ef8b0f162ad2dc249bf744a75cf44e2b14a2e140323b8aa06860",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "started_utc": "2026-10-11T00:36:46.650839+00:00",
+    "release_source": "038a5b80a57aeb2ae3bb911fa752a7e63b332d78",
+    "frozen_source": "2eb8a40d023722f814484cf8922433bdfef5e90b",
+    "source_hashes": {
+      "src/codec.rs": "6cc26854ed003ce7584210ca76eca2abb37a77f2e399043f07550ae6daea6422",
+      "src/concealment.rs": "0b024870fc663fc17eda2de8a93a20c2dbf5b0ff82a295a97040c2b00bc73d4c",
+      "src/entropy.rs": "ede43cb7ac92a1d00245307d99f58f080ca909614476cf26c1b78508e7086509",
+      "src/harmonic.rs": "0eddd938566232bd91b5eba280c26a8d79a14b8edf3bb69071853a283625addc",
+      "src/harmonic_joint.rs": "24f0902f3584689d9f2ca1b895404e96e46a511b9b10e4f2b3359bad9b2a8285",
+      "src/lib.rs": "bc6abbd62db785af492ce3a21aa0061da75ff2f1fa72c5d6b050c823be95073b",
+      "src/pulse.rs": "ed639fb3441c37d8251849bc5b6ffb2958558ce1d74d89726ddb7684eac971d3",
+      "src/pulse_classes.rs": "b5abb1763796c54d33081fdabb64ca5f5db2ea3bbb9cf96e6d3f506647d112eb",
+      "src/transform.rs": "4bcac58e353f08ccbaf0f6cc6bed175a55780f25fad5c6c080045fe433ec93fc"
+    },
+    "executables": {
+      "frozen_probe": "location-role-019",
+      "release_probe": "location-role-045",
+      "frozen_roundtrip": "location-role-055",
+      "release_roundtrip": "location-role-048"
+    },
+    "executable_hashes": {
+      "frozen_probe": "0b927af554d82644e0eca27bcb12990b0d006d1cfa141c4518b5ce6b2275a0c8",
+      "release_probe": "15b56472cf94730923c847f6aafd96b10651eab38369060c0700f2bef501866b",
+      "frozen_roundtrip": "dd1cf73a77ae9bfd317f5b41ecc145b6167e0d749f35ccad04d406e16e544ddf",
+      "release_roundtrip": "7e9278f6c32a72371e410dce81ac7846f2de157548ece3256f85d8086f1f8272"
+    },
+    "input_hashes": {
+      "116-288048-0002.flac": "2b9008642aa715dfec0b76f7141ff9f67ae5f8a20d6972e9757545fea1f4e1ee",
+      "116-288048-0031.flac": "c77af620b95e5a1cdf41cd6710dfe519097c6df2883258f63c15ffbf503f4f07",
+      "1255-138279-0002.flac": "c8da998eaefafb628a3c284d27953751a1c209752c6a1ffd80a9c1199c2fca5e",
+      "1255-138279-0012.flac": "658003d69af290d9f1f4cf4b8c2d32fa9e44e14a6e3e0ec5ffa02471fd885bff",
+      "1462-170138-0021.flac": "99e6e1bbdc98ff6e153f8632cc39b2d3525844fd88124d47ba3b39e9754e5f47",
+      "1462-170138-0027.flac": "88118c60081bd8d096e5e42addb18361fa30d2b01f6d9672529ce2e841fbc74f",
+      "1585-131718-0043.flac": "fff230ac85001475d572fcf0ad6ec332d2dd9193189fd47ccc6c1677b4f3be87",
+      "1585-131718-0053.flac": "da1a5430c0ccf03c22aa4190d151c9f2edf616b9e2d33103ba2d7903cb04ae2d",
+      "174-50561-0005.flac": "25c81fd3af839dad7f0185dba4c836479d4f3fdc828d9c0ae605960ed542ff5c",
+      "174-50561-0018.flac": "2b9bd5b5511aa95ce26166586a656fd17c3dbeb4f75812708eae71a41001314c",
+      "251-136532-0009.flac": "328838d2f1ba0dbcd3a4be61927bd51f26cf8f0a033da766159d6b84a51c44d8",
+      "251-136532-0019.flac": "1222caea81aee75267531c171b80fd5a2d4d9a85c5dd44a91a661a5f9ff3d05c",
+      "700-122868-0016.flac": "e0e4be9d39478400d23f10c0f5e4be75fa0e9353b2a0ab0287c47fa7a195a95a",
+      "700-122868-0032.flac": "0e0c2d81546305b538865afd22fb23fec8453b6e92f37e6f3e020b7fee32328a",
+      "84-121123-0012.flac": "b8b2682f6d8e8daa29bd0d54e2506bf9ebb91d96eb03c9f38d415ef08813aab8",
+      "84-121123-0018.flac": "0cbb426b683e06707e0bb0f30bd9e34917d2a75aac5877cdc3d64320cd9f7fbd"
+    },
+    "quality_sha256": "6fde027afb68724e3ffceba47b6d113bc990611b5af17bfedc4a8e40f91550ab",
+    "script_sha256": "330c9b89bad5ba87b646dc8225cecc368d6ccacb54c7c26443230f0c0a952ef1",
+    "rows": 96,
+    "flags": [
+      "--harmonic"
+    ],
+    "metric_rerun": false,
+    "checks": "whole trace bytes, all encoded packets incl drain, aligned PCM, roundtrip raw PCM, all profiles, CRC/sequence/budget/delay and exact recorded96 hashes"
+  }
+}

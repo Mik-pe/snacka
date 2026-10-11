@@ -1,0 +1,87 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "9007f076b54609d59f338fb890eca0703392974bc81fcaca2d28763c3a0a1497",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "name": "joint-one-original-render",
+    "protocol_frozen_at_utc": "2026-10-10T23:49:51.132738+00:00",
+    "source_parent": "ee9b8049850e65dbad90e787c3cdc28f78fc51b6",
+    "initial_main": "765b7e10a0a40c8c1a7c8bc9d64e796c7d730c63",
+    "branch_updates": "ordinarymerge publishedPR20; exact source/baseline/exe hashes pinned BEFORE48scores",
+    "algorithm": "ALL8 originalquantizedcandidatesFIRST, unchanged originalorder/math. TrackbestoriginalharmonicF0bystrict actualfullf32MDCTscore startingNEG_INFINITY; firsttie wins. ThenexactlyONE correctedcandidate for thatF0, noneifnoeligibleoriginalharmonicrender. Reanalyze inexisting scratch; two originaljointcoordinatepasses/Gram/RHS/quantizer/decoder unchanged. Acceptonlystrictscoreimprovementoveroveralloriginalwinner. No newheuristics,threshold,cache/history/arrays/delay/heap/deps.",
+    "correctness_before_quality": [
+      "independentoriginal-only route complete336traces versusmatchedcurrentmain",
+      "defaultoff144 andhighrateenabled96completeidentities",
+      "exactfullmath/block/rollback/zeroallocation/directselectionfloor tests",
+      "actuallinkedstack/sections audit and resource report"
+    ],
+    "quality_matrix": {
+      "clips": 8,
+      "known_voice_ids": [
+        1320,
+        260,
+        5639,
+        6930
+      ],
+      "conditions": [
+        "clean",
+        "noise20",
+        "noise10"
+      ],
+      "bitrates": [
+        12000
+      ],
+      "durations_ms": [
+        10,
+        20
+      ],
+      "rows": 48,
+      "both_harmonic_flags": true,
+      "retain": [
+        "all SNR/STOI/ESTOI/LSD rows,means,regressions",
+        "encodedF0/profilecounts",
+        "packet/fulltrace/input/decodedSHA",
+        "packet/drain quotas and120sampledelay"
+      ]
+    },
+    "input_hashes": {
+      "1320-122617-0003.flac": "bbe9ef85bbe228c73a414f064c9bd992c94135d73f9900b33104ad93c07d0594",
+      "1320-122617-0012.flac": "6b5cd2c31ee61665ea0d81f2c76a1f2c32cb4f46e5ec5861bd9157e262785252",
+      "260-123440-0004.flac": "288d22f60ab2527ac2e4035a16c9095438c71deed8becde769d91a964234d139",
+      "260-123440-0018.flac": "a80d66d866b8f9114094301a965a7b6d0a62d9467c96885ff1098a27f5b02cb4",
+      "5639-40744-0002.flac": "111c6b8b19d093736570bced344035b48f75c770aacc60103da9d9a20f904fb2",
+      "5639-40744-0032.flac": "ecba1c65406f3d2fdfe383a22385dfe19cc117b71b126817f5e20df791f22a50",
+      "6930-75918-0000.flac": "9ce35224156f071ab58eb7feb8a5ceae600f6f9f353da2a6cbf797b6b1ac8a23",
+      "6930-75918-0007.flac": "059969de8f6b780e1a4982805e977c3e73e40d3759c8fa8cb0cb8fabd9eb5b27"
+    },
+    "noise_seed": "random.Random(snacka-speech-6716:{clip}:{snr})",
+    "stoi_estoi_dither_seed": "numpy.seed(int.from_bytes(SHA256(snacka-quality-6716:{clip}:{condition}:{duration}:{bitrate})[:4],little)); same seedreset independentlyeachcodec",
+    "evaluator_sha256": "976820dfbc22d6a8939e65d2d2b07f0193c36ae37ff861e96e4603df327a19f0",
+    "speech_helper_sha256": "104b07f0b1ee68cf9f182c75a3c18639f33f123ae20ec27d37db486ec1d2c793",
+    "gates": {
+      "each_duration_clean_mean_STOI_delta": ">0",
+      "each_duration_clean_mean_ESTOI_delta": ">0",
+      "each_duration_each_noise_mean_STOI_ESTOI_delta": ">=0",
+      "each_clean_clip_STOI_ESTOI_delta": ">=-0.01",
+      "SNR_LSD": "report everyvalue/regression; no globalguarantee/extra gate",
+      "no_holdout": "ALL40testcleanspeakersalreadyexposed; developmentonly, no unseenclaim",
+      "retuning": "noneafterscores; no extraquality/CPU/publicationwithoutroot"
+    },
+    "conditional_cpu_screen": {
+      "only_after": "parentreviewspositivefrozendevscreen",
+      "clips": "first4sorteddev",
+      "bitrate": 12000,
+      "durations_ms": [
+        10,
+        20
+      ],
+      "repetitions": 3,
+      "frames": 2000,
+      "both_harmonic": true,
+      "baseline": "matchedfreshcurrentmain exactexe pinnedbeforetiming",
+      "gate": "medianpaired overhead<=100% eachduration; retainallrows/no retries"
+    }
+  }
+}

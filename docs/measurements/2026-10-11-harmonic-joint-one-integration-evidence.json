@@ -1,0 +1,57 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "53aaeaf32fdf4ee8613ebd5a40b2539ddd8c4185983a707dfaca9c62cb32c63d",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "source_commit": "038a5b80a57aeb2ae3bb911fa752a7e63b332d78",
+    "base_main": "80ae6c540560a9b8b2d1398be21be7e8516a6731",
+    "frozen_runtime_parent": "2eb8a40d023722f814484cf8922433bdfef5e90b",
+    "source_and_binary_hashes_reverified": true,
+    "writer_clean": true,
+    "all_heavy_terminal": true,
+    "identity_proofs": {
+      "known432": {
+        "rows": 432,
+        "csv": "docs/measurements/2026-10-11-harmonic-joint-one-integration-known.csv",
+        "sha256": "548a2b59c0d57bb3d058ff0b25101eb80721d07d8d16101baebaf7c802146de9"
+      },
+      "default144": {
+        "rows": 144,
+        "csv": "docs/measurements/2026-10-11-harmonic-joint-one-default-traces.csv",
+        "sha256": "72fd92eae131b6ea75be743a0fb19a44ede2d74ae94cf343c4abc9c1c18ed925"
+      },
+      "highrate96": {
+        "rows": 96,
+        "csv": "docs/measurements/2026-10-11-harmonic-joint-one-highrate-traces.csv",
+        "sha256": "daef183e2d6bfaff5a6a359daf49421c1f83c15becf6790a641e78112c0101c1"
+      }
+    },
+    "known432_full_trace_sha_matches_frozen_telemetry": true,
+    "dormant_proof_rows_exact_old_frozen": true,
+    "checks": {
+      "release": 70,
+      "focused_debug_joint": 9,
+      "monitor": 15,
+      "fmt": "pass",
+      "clippy_all_targets": "pass",
+      "clippy_live_audio": "pass"
+    },
+    "artifacts": {
+      "location-role-050": "9a09d31d73a87f8d3e8ce851b3b59fd72b74cb40cb346a7060eee26b46ad5796",
+      "location-role-022": "8d44fbb0987a6a12395098f89003fdb5743f9b53f45aca0246dfda0dc3254529",
+      "location-role-047": "5366279895a30ad28251f88eba081a7f2b0bf8779fb6f9d43544d7b20010c539",
+      "location-role-023": "fa82fcaee80d0cd8b9a03223124d3315f126e8ae95637a3c75b20645d97f0b9b",
+      "location-role-026": "6d5cd3f589654bf651374b7db297ae259eb0cae239d2038b31e7b61e390d0040",
+      "location-role-028": "bac2dd39d5a482db1fe6fbc5c8868b17f73faca61fc36b6fc67a4202dc45434c",
+      "location-role-025": "7116b26a3fc02d35fc4d3b792ad7870d8a46fa6f88493f0f5196013d2c21fced",
+      "location-role-044": "560564992a9b047154532dae50439eaa0a8d240fd60c460933dfe5eaa63bd557",
+      "location-role-024": "9698474f59c101566e9f39818ef4f39288f047e3c85c75b31a4a5e1b49e7fa4e",
+      "location-role-046": "cf6ae94a8c343e793cbf715b7fc7b5cc8f2a430292cc7972c0c342a0c6abc6d2",
+      "location-role-037": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "location-role-043": "66d0960b8ab3e88978ae94dc90cdc49ed559acb487c20f98517c6ecc706b039e",
+      "location-role-041": "bac2dd39d5a482db1fe6fbc5c8868b17f73faca61fc36b6fc67a4202dc45434c"
+    }
+  }
+}

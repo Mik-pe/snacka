@@ -1,0 +1,41 @@
+frame_ms,pattern,metric,expected_N,available_N,paired_loss_delta_mean,extra_loss_degradation_difference_mean,arithmetic
+10,isolated5,stoi,8,8,0.004919750000,-0.000138250000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+10,isolated5,estoi,8,8,0.007799125000,0.000010250000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+10,isolated5,lsd_db,8,8,-0.157147375000,0.005378625000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+10,isolated5,input_snr_db,8,8,0.118927000000,-0.048211375000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+10,isolated5,lost_loss_snr_db,8,8,-0.031544250000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+10,isolated5,onset_loss_snr_db,8,8,-0.177246500000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+10,isolated5,recovery_loss_snr_db,8,8,-0.189464625000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+10,isolated5,whole_loss_snr_db,8,8,0.036002500000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+10,paired5,stoi,8,8,0.004248875000,-0.000809125000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+10,paired5,estoi,8,8,0.007161125000,-0.000627750000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+10,paired5,lsd_db,8,8,-0.155751000000,0.006775000000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+10,paired5,input_snr_db,8,8,0.116756875000,-0.050381500000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+10,paired5,lost_loss_snr_db,8,8,0.096256125000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+10,paired5,onset_loss_snr_db,8,8,0.289199000000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+10,paired5,recovery_loss_snr_db,8,8,-0.185928875000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+10,paired5,whole_loss_snr_db,8,8,0.072645500000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+20,isolated5,stoi,8,8,0.007163500000,-0.000082875000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+20,isolated5,estoi,8,8,0.010014625000,-0.000085000000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+20,isolated5,lsd_db,8,8,-0.207654875000,0.010993000000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+20,isolated5,input_snr_db,8,8,0.114570000000,-0.142682250000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+20,isolated5,lost_loss_snr_db,8,8,0.006812875000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+20,isolated5,onset_loss_snr_db,8,8,0.099613750000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+20,isolated5,recovery_loss_snr_db,8,8,-0.110352625000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+20,isolated5,whole_loss_snr_db,8,8,-0.033749875000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+20,paired5,stoi,8,8,0.007067000000,-0.000179375000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+20,paired5,estoi,8,8,0.009401625000,-0.000698000000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+20,paired5,lsd_db,8,8,-0.209071875000,0.009576000000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+20,paired5,input_snr_db,8,8,0.101037875000,-0.156214375000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+20,paired5,lost_loss_snr_db,8,8,0.007806375000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+20,paired5,onset_loss_snr_db,8,8,-0.345813500000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+20,paired5,recovery_loss_snr_db,8,8,-0.057279250000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+20,paired5,whole_loss_snr_db,8,8,-0.036903625000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+all,all,stoi,32,32,0.005849781250,-0.000302406250,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+all,all,estoi,32,32,0.008594125000,-0.000350125000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+all,all,lsd_db,32,32,-0.182406281250,0.008180656250,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+all,all,input_snr_db,32,32,0.112822937500,-0.099372375000,raw endpoint strings rounded to canonical6decimal first; Decimal subtraction; raw loss.csv unchanged
+all,all,lost_loss_snr_db,32,32,0.019832781250,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+all,all,onset_loss_snr_db,32,32,-0.033561812500,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+all,all,recovery_loss_snr_db,32,32,-0.135756343750,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero
+all,all,whole_loss_snr_db,32,32,0.009498625000,,each codec OWN uninterrupted reference; raw endpoints rounded6decimal then Decimal; blank values never zero

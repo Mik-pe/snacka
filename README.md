@@ -102,6 +102,6 @@ byte budgets, 10/20 ms frames and 120-sample additional delay. Payload budgets,
 ordering/integrity services and end-to-end latency are not matched.
 
 See [the bitstream](docs/bitstream.md), [development and acceptance](docs/implementation.md),
-[measurements](docs/measurements.md), [signed pulse classes](docs/pulse-classes.md), [harmonic speech experiment](docs/harmonic-speech.md), [harmonic analysis performance](docs/harmonic-analysis.md), [pitch scoring performance](docs/harmonic-pitch.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [packet-loss evaluation](docs/loss.md), [fixture provenance](tests/fixtures/README.md)
+[measurements](docs/measurements.md), [signed pulse classes](docs/pulse-classes.md), [harmonic speech experiment](docs/harmonic-speech.md), [joint harmonic fit](docs/harmonic-joint-fit.md), [harmonic analysis performance](docs/harmonic-analysis.md), [pitch scoring performance](docs/harmonic-pitch.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [packet-loss evaluation](docs/loss.md), [fixture provenance](tests/fixtures/README.md)
 and [fuzzing](fuzz/README.md). The implementation license is [MIT](LICENSE).
 External reference source and trained weights are not vendored.

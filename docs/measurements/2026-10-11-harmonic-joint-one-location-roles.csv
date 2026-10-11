@@ -1,0 +1,135 @@
+public_role,semantic_fields
+location-role-001,new-provenance.json.metric_helper_module_paths.evaluate_quality.py
+location-role-002,new-provenance.json.metric_helper_module_paths.evaluate_speech.py
+location-role-003,new-provenance.json.package_metadata.numpy.metadata_path
+location-role-004,new-provenance.json.package_metadata.pystoi.metadata_path
+location-role-005,new-provenance.json.package_metadata.scipy.metadata_path
+location-role-006,cpu-plan.json.binaries_sha256.key | cpu-plan.json.screens.default.argv.7 | cpu-plan.json.screens.harmonic.argv.7 | cpu-run.json.stages.default.argv.7 | cpu-run.json.stages.harmonic.argv.7 | known-protocol.json.binaries_sha256.key | loss-authorized-protocol.json.frozen.executables.baseline.probe.path | loss-protocol.json.executables.baseline.probe.path | new-protocol.json.baseline.probe_path | new-provenance.json.executables.baseline_probe
+location-role-007,new-speakers.json.known72_frozen_trace_reference_path
+location-role-008,new-protocol.json.metrics.functions_source_path
+location-role-009,new-protocol.json.metrics.noise_score_source_path
+location-role-010,known-protocol.json.argv.2 | known-protocol.json.corpus
+location-role-011,new-protocol.json.metadata.path
+location-role-012,known-protocol.json.argv.7 | known-protocol.json.binaries_sha256.key | loss-authorized-protocol.json.frozen.executables.baseline.roundtrip.path | loss-protocol.json.executables.baseline.roundtrip.path | new-protocol.json.baseline.preferred_shared_roundtrip_path | new-provenance.json.executables.baseline_roundtrip
+location-role-013,cpu-rough-evidence.json.artifacts.key | cpu-rough-evidence.json.protocol
+location-role-014,known-protocol.json.argv.1 | known-protocol.json.scripts_sha256.key
+location-role-015,loss-authorized-protocol.json.frozen.existing_evidence.key | loss-protocol.json.existing_evidence.key | new-protocol.json.frozen_candidates.joint_one.source_registry_path
+docs/measurements/2026-10-11-harmonic-joint-one-telemetry-known.csv,known-protocol.json.telemetry_output
+location-role-017,known-protocol.json.scripts_sha256.key
+docs/measurements/2026-10-11-harmonic-joint-one-quality-known.csv,known-protocol.json.argv.3 | known-protocol.json.quality_output
+location-role-019,integration-new-evidence.json.executables.frozen_probe | integration-new-protocol.json.executables.frozen_probe | known-protocol.json.binaries_sha256.key | new-protocol.json.frozen_candidates.joint_one.probe_path | new-provenance.json.executables.joint_one_probe
+location-role-020,loss-authorized-protocol.json.frozen.source_root | loss-protocol.json.source_root
+location-role-021,cpu-plan.json.screens.default.argv.1 | cpu-plan.json.screens.harmonic.argv.1 | cpu-run.json.stages.default.argv.1 | cpu-run.json.stages.harmonic.argv.1
+location-role-022,integration-evidence.json.artifacts.key | loss-authorized-protocol.json.frozen.existing_evidence.key | loss-protocol.json.existing_evidence.key
+location-role-023,integration-evidence.json.artifacts.key
+location-role-024,integration-evidence.json.artifacts.key
+location-role-025,integration-evidence.json.artifacts.key
+location-role-026,integration-evidence.json.artifacts.key
+docs/measurements/2026-10-11-harmonic-joint-one-default-traces.csv,integration-evidence.json.identity_proofs.default144.csv | loss-authorized-protocol.json.frozen.existing_evidence.key | loss-protocol.json.existing_evidence.key
+location-role-028,integration-evidence.json.artifacts.key
+docs/measurements/2026-10-11-harmonic-joint-one-cpu-default.csv,cpu-evidence.json.artifacts.key | cpu-plan.json.screens.default.argv.3 | cpu-plan.json.screens.default.output | cpu-run.json.stages.default.argv.3
+location-role-030,cpu-evidence.json.artifacts.key
+location-role-031,binary-freeze.json.key
+location-role-032,loss-authorized-protocol.json.frozen.existing_evidence.key | loss-protocol.json.existing_evidence.key
+location-role-033,cpu-evidence.json.artifacts.key | cpu-run.json.plan
+location-role-034,cpu-evidence.json.artifacts.key
+location-role-035,cpu-evidence.json.artifacts.key
+location-role-036,cpu-evidence.json.artifacts.key
+location-role-037,integration-evidence.json.artifacts.key
+docs/measurements/2026-10-11-harmonic-joint-one-cpu-harmonic.csv,cpu-evidence.json.artifacts.key | cpu-plan.json.screens.harmonic.argv.3 | cpu-plan.json.screens.harmonic.output | cpu-run.json.stages.harmonic.argv.3
+location-role-039,cpu-evidence.json.artifacts.key
+docs/measurements/2026-10-11-harmonic-joint-one-highrate-traces.csv,integration-evidence.json.identity_proofs.highrate96.csv | loss-authorized-protocol.json.frozen.existing_evidence.key | loss-protocol.json.existing_evidence.key
+location-role-041,integration-evidence.json.artifacts.key
+docs/measurements/2026-10-11-harmonic-joint-one-integration-known.csv,integration-evidence.json.identity_proofs.known432.csv
+location-role-043,integration-evidence.json.artifacts.key
+location-role-044,integration-evidence.json.artifacts.key
+location-role-045,binary-freeze.json.key | cpu-plan.json.binaries_sha256.key | cpu-plan.json.screens.default.argv.5 | cpu-plan.json.screens.harmonic.argv.5 | cpu-run.json.stages.default.argv.5 | cpu-run.json.stages.harmonic.argv.5 | integration-new-evidence.json.executables.release_probe | integration-new-protocol.json.executables.release_probe | loss-authorized-protocol.json.frozen.executables.current.probe.path | loss-protocol.json.executables.current.probe.path
+location-role-046,integration-evidence.json.artifacts.key
+location-role-047,integration-evidence.json.artifacts.key
+location-role-048,binary-freeze.json.key | integration-new-evidence.json.executables.release_roundtrip | integration-new-protocol.json.executables.release_roundtrip | loss-authorized-protocol.json.frozen.executables.current.roundtrip.path | loss-protocol.json.executables.current.roundtrip.path
+location-role-049,binary-freeze.json.key
+location-role-050,integration-evidence.json.artifacts.key | loss-authorized-protocol.json.frozen.existing_evidence.key | loss-protocol.json.existing_evidence.key
+location-role-051,binary-freeze.json.key
+location-role-052,cpu-rough-evidence.json.artifacts.key
+docs/measurements/2026-10-11-harmonic-joint-one-cpu-rough.csv,cpu-rough-evidence.json.artifacts.key
+location-role-054,cpu-rough-evidence.json.artifacts.key
+location-role-055,integration-new-evidence.json.executables.frozen_roundtrip | integration-new-protocol.json.executables.frozen_roundtrip | known-protocol.json.argv.5 | known-protocol.json.binaries_sha256.key | new-protocol.json.frozen_candidates.joint_one.roundtrip_path | new-provenance.json.executables.joint_one_roundtrip
+location-role-056,known-protocol.json.scripts_sha256.key
+location-role-057,known-protocol.json.scripts_sha256.key
+location-role-058,new-speakers.json.previous_remaining4_selection_path
+location-role-059,new-protocol.json.metrics.existing_hybrid_driver_path
+location-role-060,loss-authorized-protocol.json.frozen.immutable_version_parent.immutable_parent | loss-protocol.json.immutable_version_parent.immutable_parent | loss-version-parent.json.immutable_parent
+location-role-061,loss-authorized-protocol.json.frozen.existing_release_test_log.path | loss-protocol.json.existing_release_test_log.path
+location-role-062,loss-authorized-protocol.json.frozen.cases.0.mask | loss-protocol.json.cases.0.mask
+location-role-063,loss-authorized-protocol.json.frozen.cases.1.mask | loss-protocol.json.cases.1.mask
+location-role-064,loss-authorized-protocol.json.frozen.cases.2.mask | loss-protocol.json.cases.2.mask
+location-role-065,loss-authorized-protocol.json.frozen.cases.3.mask | loss-protocol.json.cases.3.mask
+location-role-066,loss-authorized-protocol.json.frozen.cases.4.mask | loss-protocol.json.cases.4.mask
+location-role-067,loss-authorized-protocol.json.frozen.cases.5.mask | loss-protocol.json.cases.5.mask
+location-role-068,loss-authorized-protocol.json.frozen.cases.6.mask | loss-protocol.json.cases.6.mask
+location-role-069,loss-authorized-protocol.json.frozen.cases.7.mask | loss-protocol.json.cases.7.mask
+location-role-070,loss-authorized-protocol.json.frozen.cases.8.mask | loss-protocol.json.cases.8.mask
+location-role-071,loss-authorized-protocol.json.frozen.cases.9.mask | loss-protocol.json.cases.9.mask
+location-role-072,loss-authorized-protocol.json.frozen.cases.10.mask | loss-protocol.json.cases.10.mask
+location-role-073,loss-authorized-protocol.json.frozen.cases.11.mask | loss-protocol.json.cases.11.mask
+location-role-074,loss-authorized-protocol.json.frozen.cases.12.mask | loss-protocol.json.cases.12.mask
+location-role-075,loss-authorized-protocol.json.frozen.cases.13.mask | loss-protocol.json.cases.13.mask
+location-role-076,loss-authorized-protocol.json.frozen.cases.14.mask | loss-protocol.json.cases.14.mask
+location-role-077,loss-authorized-protocol.json.frozen.cases.15.mask | loss-protocol.json.cases.15.mask
+location-role-078,loss-authorized-protocol.json.frozen.cases.16.mask | loss-protocol.json.cases.16.mask
+location-role-079,loss-authorized-protocol.json.frozen.cases.17.mask | loss-protocol.json.cases.17.mask
+location-role-080,loss-authorized-protocol.json.frozen.cases.18.mask | loss-protocol.json.cases.18.mask
+location-role-081,loss-authorized-protocol.json.frozen.cases.19.mask | loss-protocol.json.cases.19.mask
+location-role-082,loss-authorized-protocol.json.frozen.cases.20.mask | loss-protocol.json.cases.20.mask
+location-role-083,loss-authorized-protocol.json.frozen.cases.21.mask | loss-protocol.json.cases.21.mask
+location-role-084,loss-authorized-protocol.json.frozen.cases.22.mask | loss-protocol.json.cases.22.mask
+location-role-085,loss-authorized-protocol.json.frozen.cases.23.mask | loss-protocol.json.cases.23.mask
+location-role-086,loss-authorized-protocol.json.frozen.cases.24.mask | loss-protocol.json.cases.24.mask
+location-role-087,loss-authorized-protocol.json.frozen.cases.25.mask | loss-protocol.json.cases.25.mask
+location-role-088,loss-authorized-protocol.json.frozen.cases.26.mask | loss-protocol.json.cases.26.mask
+location-role-089,loss-authorized-protocol.json.frozen.cases.27.mask | loss-protocol.json.cases.27.mask
+location-role-090,loss-authorized-protocol.json.frozen.cases.28.mask | loss-protocol.json.cases.28.mask
+location-role-091,loss-authorized-protocol.json.frozen.cases.29.mask | loss-protocol.json.cases.29.mask
+location-role-092,loss-authorized-protocol.json.frozen.cases.30.mask | loss-protocol.json.cases.30.mask
+location-role-093,loss-authorized-protocol.json.frozen.cases.31.mask | loss-protocol.json.cases.31.mask
+location-role-094,loss-summary.json.output
+location-role-095,loss-authorized-protocol.json.frozen.environment.python_prefix | loss-protocol.json.environment.python_prefix
+location-role-096,cpu-plan.json.screens.default.argv.0 | cpu-plan.json.screens.harmonic.argv.0 | cpu-run.json.stages.default.argv.0 | cpu-run.json.stages.harmonic.argv.0 | known-protocol.json.argv.0 | loss-authorized-protocol.json.frozen.environment.python | loss-protocol.json.environment.python
+location-role-097,cpu-plan.json.screens.default.argv.2 | cpu-plan.json.screens.harmonic.argv.2 | cpu-run.json.stages.default.argv.2 | cpu-run.json.stages.harmonic.argv.2
+location-role-098,loss-authorized-protocol.json.frozen.inputs.0.flac | loss-protocol.json.inputs.0.flac
+location-role-099,loss-authorized-protocol.json.frozen.inputs.1.flac | loss-protocol.json.inputs.1.flac
+location-role-100,loss-authorized-protocol.json.frozen.inputs.2.flac | loss-protocol.json.inputs.2.flac
+location-role-101,loss-authorized-protocol.json.frozen.inputs.3.flac | loss-protocol.json.inputs.3.flac
+location-role-102,loss-authorized-protocol.json.frozen.inputs.4.flac | loss-protocol.json.inputs.4.flac
+location-role-103,loss-authorized-protocol.json.frozen.inputs.5.flac | loss-protocol.json.inputs.5.flac
+location-role-104,loss-authorized-protocol.json.frozen.inputs.6.flac | loss-protocol.json.inputs.6.flac
+location-role-105,loss-authorized-protocol.json.frozen.inputs.7.flac | loss-protocol.json.inputs.7.flac
+location-role-106,new-protocol.json.baseline.other_frozen_main91_roundtrip_path
+location-role-107,new-protocol.json.frozen_candidates.hybrid_staged.source_manifest_path
+location-role-108,new-protocol.json.frozen_candidates.hybrid_staged.probe_path | new-provenance.json.executables.hybrid_staged_probe
+location-role-109,new-protocol.json.frozen_candidates.hybrid_staged.roundtrip_path | new-provenance.json.executables.hybrid_staged_roundtrip
+location-role-110,new-selection.json.selected_flacs.8.flac_path
+location-role-111,new-selection.json.selected_flacs.9.flac_path
+location-role-112,new-selection.json.selected_flacs.11.flac_path
+location-role-113,new-selection.json.selected_flacs.10.flac_path
+location-role-114,new-selection.json.selected_flacs.5.flac_path
+location-role-115,new-selection.json.selected_flacs.4.flac_path
+location-role-116,new-selection.json.selected_flacs.13.flac_path
+location-role-117,new-selection.json.selected_flacs.12.flac_path
+location-role-118,new-selection.json.selected_flacs.2.flac_path
+location-role-119,new-selection.json.selected_flacs.3.flac_path
+location-role-120,new-selection.json.selected_flacs.7.flac_path
+location-role-121,new-selection.json.selected_flacs.6.flac_path
+location-role-122,new-selection.json.selected_flacs.14.flac_path
+location-role-123,new-selection.json.selected_flacs.15.flac_path
+location-role-124,new-selection.json.selected_flacs.0.flac_path
+location-role-125,new-selection.json.selected_flacs.1.flac_path
+location-role-126,new-selection.json.metadata_records.0.path
+location-role-127,new-selection.json.metadata_records.1.path
+location-role-128,new-selection.json.metadata_records.2.path
+location-role-129,new-selection.json.archive_records.0.archive_path
+location-role-130,new-selection.json.metadata_records.3.path
+location-role-131,new-selection.json.metadata_records.4.path
+location-role-132,new-selection.json.metadata_records.5.path
+location-role-133,new-selection.json.archive_records.1.archive_path
+location-role-134,new-selection.json.joint_registry_snapshot_path
