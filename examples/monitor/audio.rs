@@ -23,11 +23,15 @@ pub struct Stats {
     pub playback_gaps: AtomicUsize,
     pub clipped_input: AtomicUsize,
     pub playback_drops: AtomicUsize,
+    pub reference_drops: AtomicUsize,
 }
 
 pub struct Audio {
     pub captured: Consumer<f32>,
     pub playback: Producer<f32>,
+    // Used by the call example; the monitor does not enable the reference tap.
+    #[allow(dead_code)]
+    pub rendered: Option<Consumer<f32>>,
     pub stats: Arc<Stats>,
     pub errors: mpsc::Receiver<cpal::Error>,
     pub input_name: String,
@@ -179,6 +183,22 @@ where
     )
 }
 
+struct RenderReference {
+    producer: Producer<f32>,
+    converter: Converter,
+}
+
+impl RenderReference {
+    fn push(&mut self, sample: f32, stats: &Stats) {
+        let mut dropped = 0;
+        for &sample in self.converter.push(sample) {
+            dropped += usize::from(self.producer.push(sample).is_err());
+        }
+        stats.reference_drops.fetch_add(dropped, Ordering::Relaxed);
+    }
+}
+
+#[allow(clippy::too_many_arguments)] // Callback state is constructed before opening audio.
 fn play<T: SizedSample + FromSample<f32>>(
     device: &Device,
     config: SupportedStreamConfig,
@@ -187,6 +207,7 @@ fn play<T: SizedSample + FromSample<f32>>(
     errors: mpsc::Sender<cpal::Error>,
     target: Arc<AtomicUsize>,
     mut converter: Converter,
+    mut reference: Option<RenderReference>,
 ) -> Result<Stream, cpal::Error> {
     let channels = usize::from(config.channels());
     let mut primed = false;
@@ -209,6 +230,11 @@ fn play<T: SizedSample + FromSample<f32>>(
             if !primed {
                 if consumer.slots() < target {
                     data.fill(T::EQUILIBRIUM);
+                    if let Some(reference) = &mut reference {
+                        for _ in data.chunks_exact(channels) {
+                            reference.push(0.0, &stats);
+                        }
+                    }
                     return;
                 }
                 primed = true;
@@ -223,6 +249,11 @@ fn play<T: SizedSample + FromSample<f32>>(
                     })
                 });
                 frame.fill(T::from_sample(sample));
+                if let Some(reference) = &mut reference {
+                    // Tap the device-rate signal actually handed to playback,
+                    // including gain, resampling, priming silence and underruns.
+                    reference.push(sample, &stats);
+                }
             }
             if !primed {
                 // Re-priming must not retain a partially played conversion block.
@@ -260,6 +291,7 @@ pub fn start(
     input: Option<usize>,
     output: Option<usize>,
     target: usize,
+    with_reference: bool,
 ) -> Result<Audio, Box<dyn Error>> {
     let host = cpal::default_host();
     let input = match input {
@@ -281,6 +313,18 @@ pub fn start(
     let (capture_producer, captured) = RingBuffer::new(FRAME_SAMPLES * 4);
     // Allocate once for the largest live buffer choice (200 ms, with headroom).
     let (playback, playback_consumer) = RingBuffer::new(SAMPLE_RATE as usize * 400 / 1000);
+    let (reference, rendered) = if with_reference {
+        let (producer, consumer) = RingBuffer::new(SAMPLE_RATE as usize * 400 / 1000);
+        (
+            Some(RenderReference {
+                producer,
+                converter: Converter::new(output_config.sample_rate(), SAMPLE_RATE)?,
+            }),
+            Some(consumer),
+        )
+    } else {
+        (None, None)
+    };
     let target = Arc::new(AtomicUsize::new(target));
     let stats = Arc::new(Stats::default());
     let (error_tx, errors) = mpsc::channel();
@@ -302,7 +346,8 @@ pub fn start(
         stats.clone(),
         error_tx,
         target.clone(),
-        playback_converter
+        playback_converter,
+        reference
     )
     .map_err(|error| io::Error::other(format!("Could not open output {output_name}: {error}")))?;
     output_stream.play()?;
@@ -310,6 +355,7 @@ pub fn start(
     Ok(Audio {
         captured,
         playback,
+        rendered,
         stats,
         errors,
         input_name,

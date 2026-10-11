@@ -72,10 +72,30 @@ It starts at 24 kb/s and 50% playback gain; no audio is saved. See
 [the listening guide](docs/monitor.md) for devices, Linux build prerequisites and
 latency details. Audio/TUI dependencies are enabled only by `live-audio`.
 
+For a two-person internet call with a live VoIP dashboard, AEC3 echo cancellation,
+noise suppression, automatic gain control and encrypted UDP, build the optional
+calling example:
+
+```sh
+cargo build --locked --release --features internet-call --example call
+target/release/examples/call --generate-key
+# Set the printed key as SNACKA_CALL_KEY on both computers, then on client 1:
+target/release/examples/call --peer '[PEER_IPV6]:5000' --role 1
+# Client 2 uses client 1's address and --role 2.
+```
+
+Direct mode needs reachable IPv6 addresses and inbound UDP port 5000 on both
+clients. It uses no server. A small optional relay supports networks where direct
+UDP is impractical. The dashboard shows both voice meters, link health and packet
+loss; M mutes, arrows adjust volume/bitrate, and A/N/G toggle processing. See
+[the call guide](docs/call.md) for complete two-client commands, firewall setup,
+relay mode and a device-free IPv6 smoke test.
+
 Rust 1.99 or newer is required. Plans allocate during construction, before the
 audio callback. Snacka operates on PCM and packet bytes; capture, playback,
 echo cancellation, resampling, encryption, jitter buffering and relaying remain
-application responsibilities. A relay can forward bytes and send separate copies
+application responsibilities, implemented by the optional call example. A relay
+can forward bytes and send separate copies
 to an analysis pipeline without delaying participant audio.
 
 ```sh

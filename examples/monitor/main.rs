@@ -157,7 +157,7 @@ fn run(mut options: Options) -> Result<(), Box<dyn Error>> {
         None
     };
     let target = options.buffer_ms * SAMPLE_RATE as usize / 1000;
-    let mut audio = audio::start(options.input, options.output, target)?;
+    let mut audio = audio::start(options.input, options.output, target, false)?;
     if !options.tui {
         println!(
             "{} -> Snacka {} b/s, {} ms, harmonic {} -> {}. Use headphones. Ctrl-C to stop.",
