@@ -1,5 +1,5 @@
 37557f323aa71489361451b7260e78ed49f36b72c490c2f842cc1cf5d34c0875  docs/mdct-packed-plan.md
-a0335efc347b0e6c6ccaa55770c39a866b7ea8c31e5735eb29e94063383aa1fb  docs/measurements/2026-10-11-mdct-packed-plan/README.md
+050474ca6f7cb6d26c73885b584303150a34c30634d22e76b96666589fc6f7fc  docs/measurements/2026-10-11-mdct-packed-plan/README.md
 0f4a9c9fddf7af885b938e7796572d656ea5b573b00cb4e39cac03c67d26a284  docs/measurements/2026-10-11-mdct-packed-plan/api/independent-data-review.json
 ded041341fb7a4ef765bf15a611dbef6d08304ac8a716222c02666ed71d06443  docs/measurements/2026-10-11-mdct-packed-plan/api/records29448.csv
 2f96c31eca5bd9d73df6d25f7ade8440698f4a03bfd569c42472a17d2b27d26b  docs/measurements/2026-10-11-mdct-packed-plan/api/summary.json
@@ -31,7 +31,7 @@ a144a6aa18d01a61acb88fa55a277a7305ce6ecf233ababfb4dd316353eee8b8  docs/measureme
 4ceb51770ecb62d2cc6fadebdf3da1c36233e1fa7be8247b87385926ae508556  docs/measurements/2026-10-11-mdct-packed-plan/cpu/summary8.csv
 249788c400ce46e62f1a7df6334d4a48d0bf6e82ea444362fefcb4b158ef7668  docs/measurements/2026-10-11-mdct-packed-plan/projection-ledger.json
 4534ed36fe851d373db69608300499dc35ec8fa33fd93451c7868251261f20db  docs/measurements/2026-10-11-mdct-packed-plan/protocol.json
-e5a96475da2fe3f5d4c1695eb82b0fcf15cb03529ac2452e9690d721bcdbbbc4  docs/measurements/2026-10-11-mdct-packed-plan/publication-provenance.json
+82aadc9061ca6eb21ba0d3bace4a121d7c39118bcf94a90bfc948984033552d2  docs/measurements/2026-10-11-mdct-packed-plan/publication-provenance.json
 ca5b8379d08127cdc615aba8ee8a1d044d1d45fc7c1601878b319aee9878cda1  docs/measurements/2026-10-11-mdct-packed-plan/resources/first-resource-observation.json
 d8b2f1157df0d478ee61e4679658d8d996e40c4f9bb0de2ca18181ff5bd214a1  docs/measurements/2026-10-11-mdct-packed-plan/resources/independent-source-resource-review.json
 fc124e53e14e4861d9d2294831f9a02edcb5863eb8acce6af276e2016a24cf24  docs/measurements/2026-10-11-mdct-packed-plan/resources/mdct-linked-owner-inventory.json

@@ -57,7 +57,7 @@ the supported plans; allocator/FFT overhead is outside this payload bound.
 Nominal 64-bit vector-descriptor storage falls by 48 bytes, without an object-size
 or whole-process memory claim. Encode/decode processing adds no heap allocations.
 The internal window view was checked against the literal canonical formula for
-all 186 supported MDCT plans; it is not a public API change.
+all 186 tested full-overlap/120-sample-overlap plan pairs; it is not a public API change.
 
 Linked code grew by 512 text bytes. Conservative normal Rust stack-chain bounds
 were 58,576 bytes for the encoder and 26,672 for the decoder, below the prospective

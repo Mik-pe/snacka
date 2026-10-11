@@ -7,5 +7,6 @@
   "independent_privacy_provenance_review_sha256": "95d74ea7fef9b01b72bcf2c42782b9a778090192b5450060f3194560f09158d7",
   "measured_parent": "2379d4a25897fba99b293c196fb6d6b8acc6e43b",
   "measured_source": "8a2a066bcc6743acec38748c1232b03ad610d06c",
+  "publication_coverage_correction": "The 186 MDCT plans are the tested accepted (length, overlap) pairs using full overlap or 120-sample overlap where legal, not every legal constructor overlap. Historical projected reviewer/resource reports are preserved unchanged; this correction governs publication coverage wording.",
   "publication_main_base": "29f24563bf56e2fa06eb087cf0b0c76cac7478e9"
 }
