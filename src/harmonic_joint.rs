@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+use crate::transform::WindowView;
 const OVERLAP: usize = 120;
 const MAX_HARMONICS: usize = 106;
 const MOMENTS: usize = 2 * MAX_HARMONICS + 1;
@@ -64,10 +65,9 @@ fn signed(values: &[Complex], index: i32) -> Complex {
 }
 
 impl Gram {
-    fn new(samples: usize, f0: usize, window: &[f32]) -> Self {
+    fn new(samples: usize, f0: usize, window: WindowView<'_>) -> Self {
         let harmonics = 8000 / f0;
         let padding = (samples - OVERLAP) / 2;
-        let ramp = &window[padding..padding + OVERLAP];
         let omega = std::f64::consts::TAU * f0 as f64 / 48000.0;
         let mut result = Self {
             diagonal: [Complex::ZERO; MOMENTS],
@@ -85,8 +85,8 @@ impl Gram {
             let mut ramp_power = Complex::ZERO;
             let mut reflected = Complex::ZERO;
             for t in 0..OVERLAP {
-                let value = f64::from(ramp[t]);
-                let mirror = f64::from(ramp[OVERLAP - 1 - t]);
+                let value = f64::from(window[padding + t]);
+                let mirror = f64::from(window[padding + OVERLAP - 1 - t]);
                 ramp_power = ramp_power.add(phase.scale(value * value));
                 reflected = reflected.add(phase.conjugate().scale(value * mirror));
                 phase = phase.multiply(rotation);
@@ -193,7 +193,7 @@ impl Gram {
     }
 }
 
-fn weighted_sample(input: &[f32], window: &[f32], samples: usize, t: usize) -> f64 {
+fn weighted_sample(input: &[f32], window: WindowView<'_>, samples: usize, t: usize) -> f64 {
     let padding = (samples - OVERLAP) / 2;
     if t < OVERLAP || t >= samples {
         let mirrored = if t < OVERLAP {
@@ -212,7 +212,7 @@ fn weighted_sample(input: &[f32], window: &[f32], samples: usize, t: usize) -> f
 
 fn right_hand_side(
     input: &[f32],
-    window: &[f32],
+    window: WindowView<'_>,
     samples: usize,
     f0: usize,
 ) -> [f64; 2 * MAX_HARMONICS] {
@@ -297,7 +297,7 @@ pub(crate) fn correct(
     input: &[f32],
     f0: usize,
     positions: &[usize; 960],
-    window: &[f32],
+    window: WindowView<'_>,
     values: &mut [f32; 960],
 ) -> bool {
     if !(75..=400).contains(&f0)
@@ -423,7 +423,7 @@ mod tests {
     use super::*;
     use crate::transform::MdctPlan;
 
-    fn folded(values: &[f64], samples: usize, window: &[f32]) -> Vec<f64> {
+    fn folded(values: &[f64], samples: usize, window: WindowView<'_>) -> Vec<f64> {
         let padding = (samples - OVERLAP) / 2;
         let weighted: Vec<_> = values
             .iter()
@@ -441,7 +441,7 @@ mod tests {
         result
     }
 
-    fn direct_columns(samples: usize, f0: usize, window: &[f32]) -> Vec<Vec<f64>> {
+    fn direct_columns(samples: usize, f0: usize, window: WindowView<'_>) -> Vec<Vec<f64>> {
         let mut columns = Vec::new();
         for h in 1..=8000 / f0 {
             let angle = std::f64::consts::TAU * (h * f0) as f64 / 48000.0;
@@ -493,7 +493,7 @@ mod tests {
         for samples in [480, 960] {
             let plan = MdctPlan::new(samples, OVERLAP).unwrap();
             for f0 in 75..=400 {
-                let gram = Gram::new(samples, f0, plan.window());
+                let gram = Gram::new(samples, f0, plan.window_view());
                 for h in 1..=8000 / f0 {
                     for j in 1..=8000 / f0 {
                         assert_eq!(
@@ -551,10 +551,10 @@ mod tests {
                         }
                         let mut generic = paired;
                         let paired_result =
-                            correct(&source, f0, &positions, plan.window(), &mut paired);
+                            correct(&source, f0, &positions, plan.window_view(), &mut paired);
                         GENERIC_BLOCKS.with(|flag| flag.set(true));
                         let generic_result =
-                            correct(&source, f0, &positions, plan.window(), &mut generic);
+                            correct(&source, f0, &positions, plan.window_view(), &mut generic);
                         GENERIC_BLOCKS.with(|flag| flag.set(false));
                         assert_eq!(paired_result, generic_result);
                         assert_eq!(
@@ -572,7 +572,7 @@ mod tests {
     fn analytic_folded_gram_and_rhs_match_direct_stored_window_trigonometry() {
         for samples in [480, 960] {
             let plan = MdctPlan::new(samples, OVERLAP).unwrap();
-            let window = plan.window();
+            let window = plan.window_view();
             let source = input(samples);
             let target = folded(
                 &source.iter().map(|&x| f64::from(x)).collect::<Vec<_>>(),
@@ -680,7 +680,7 @@ mod tests {
     fn defining_cosine_energy_matches_independent_fold_for_boundary_and_noise_vectors() {
         for samples in [480, 960] {
             let plan = MdctPlan::new(samples, OVERLAP).unwrap();
-            let window = plan.window();
+            let window = plan.window_view();
             let padding = (samples - OVERLAP) / 2;
             let source = input(samples);
             for pattern in 0..10 {
@@ -734,7 +734,7 @@ mod tests {
     fn coordinate_steps_reduce_independently_evaluated_folded_residual() {
         for samples in [480, 960] {
             let plan = MdctPlan::new(samples, OVERLAP).unwrap();
-            let window = plan.window();
+            let window = plan.window_view();
             for f0 in [75, 120, 177, 239, 400] {
                 let source = input(samples);
                 let target = folded(
@@ -811,12 +811,18 @@ mod tests {
                 let mut values = [0.0; 960];
                 crate::harmonic::analyze(&source, f0, &positions, &mut values);
                 let old = values;
-                assert!(correct(&source, f0, &positions, plan.window(), &mut values));
-                let columns = direct_columns(samples, f0, plan.window());
+                assert!(correct(
+                    &source,
+                    f0,
+                    &positions,
+                    plan.window_view(),
+                    &mut values
+                ));
+                let columns = direct_columns(samples, f0, plan.window_view());
                 let target = folded(
                     &source.iter().map(|&x| f64::from(x)).collect::<Vec<_>>(),
                     samples,
-                    plan.window(),
+                    plan.window_view(),
                 );
                 let error = |parameters: &[f32; 960]| {
                     let mut residual = target.clone();
@@ -843,7 +849,7 @@ mod tests {
                 &vec![0.0; source.len()],
                 120,
                 &positions,
-                plan.window(),
+                plan.window_view(),
                 &mut values
             ));
             assert!(values.iter().all(|x| *x == 0.0));
@@ -853,7 +859,7 @@ mod tests {
                 &source,
                 120,
                 &positions,
-                plan.window(),
+                plan.window_view(),
                 &mut values
             ));
             assert_eq!(old, values.map(f32::to_bits));
@@ -863,7 +869,7 @@ mod tests {
                 &source,
                 120,
                 &positions,
-                plan.window(),
+                plan.window_view(),
                 &mut values
             ));
             assert_eq!(old, values.map(f32::to_bits));
@@ -876,13 +882,19 @@ mod tests {
                     &bad_input,
                     120,
                     &positions,
-                    plan.window(),
+                    plan.window_view(),
                     &mut values
                 ));
                 assert_eq!(old, values.map(f32::to_bits));
-                let mut bad_window = plan.window().to_vec();
-                bad_window[(samples - OVERLAP) / 2 + 17] = invalid;
-                assert!(!correct(&source, 120, &positions, &bad_window, &mut values));
+                let mut bad_plan = MdctPlan::new(samples, OVERLAP).unwrap();
+                bad_plan.set_window_sample((samples - OVERLAP) / 2 + 17, invalid);
+                assert!(!correct(
+                    &source,
+                    120,
+                    &positions,
+                    bad_plan.window_view(),
+                    &mut values
+                ));
                 assert_eq!(old, values.map(f32::to_bits));
             }
         }
