@@ -1,0 +1,38 @@
+{
+  "seed": "snacka-speech-6716:sv_se-test-record-7:10",
+  "target_snr_db": 10,
+  "signal_energy_hex": "0x1.02c8981a6c3f6p+13",
+  "noise_energy_hex": "0x1.6dcf3e2a2f6fap+18",
+  "scale_hex": "0x1.812c470cc125dp-5",
+  "pre_clamp": {
+    "samples": 374400,
+    "min": -1.0812406320381651,
+    "max": 1.103003224693667,
+    "peak": 1.103003224693667,
+    "outside_one": 33,
+    "positive_zero": 0,
+    "negative_zero": 0,
+    "nonzero_abs_below_f32_normal": 0,
+    "saturated_positive": 0,
+    "saturated_negative": 0
+  },
+  "clipped_upper": 23,
+  "clipped_lower": 10,
+  "clipped_total": 33,
+  "canonical_clipped_total": 33,
+  "post_clamp_f32": {
+    "samples": 374400,
+    "min": -1.0,
+    "max": 1.0,
+    "peak": 1.0,
+    "outside_one": 0,
+    "positive_zero": 0,
+    "negative_zero": 0,
+    "nonzero_abs_below_f32_normal": 0,
+    "saturated_positive": 23,
+    "saturated_negative": 10
+  },
+  "conditioned_sha256": "512ceccf7611cadd968b311597db7f6d79baa3baf917e2f34b25d2cf88bd41d9",
+  "exact_canonical_bytes_and_count": true,
+  "rng_scope": "local Random only"
+}

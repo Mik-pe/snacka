@@ -1,0 +1,23 @@
+{
+  "original_manifest_sha256": "a1a9b551120cca4c6ea16d8adbdcd8013790b7f6bcd46231dcf7e22ac284037e",
+  "retained_artifacts": 4,
+  "payloads_redistributed": false,
+  "entries": [
+    {
+      "artifact_role": "lifecycle.json",
+      "sha256": "38ebf5523e952e3a0a528a8bb1341b7aeeb7f1e0dc5b2876c82d0d98482a30a2"
+    },
+    {
+      "artifact_role": "stderr.log",
+      "sha256": "d2fc364971395762206c560466d7bb32535fe0adf922645b0c58e30d38855d2f"
+    },
+    {
+      "artifact_role": "stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "artifact_role": "terminal.json",
+      "sha256": "cf457b90049abaa8aac0b575352a8e993d42c282edd37e0c5d3eaa7e3960bb07"
+    }
+  ]
+}

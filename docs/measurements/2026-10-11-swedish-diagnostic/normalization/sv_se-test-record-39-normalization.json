@@ -1,0 +1,38 @@
+{
+  "raw_sha256": "fb0afbca580a525e50be4821b808bb54b8b56e58f74660db7981cf726d5f6989",
+  "normalized_sha256": "fb0afbca580a525e50be4821b808bb54b8b56e58f74660db7981cf726d5f6989",
+  "raw_bytes": 2430720,
+  "normalized_bytes": 2430720,
+  "peak_hex": "0x1.f32a880000000p-1",
+  "gain_hex": "0x1.0000000000000p+0",
+  "peak": 0.9749338626861572,
+  "gain": 1.0,
+  "identity_branch": true,
+  "raw": {
+    "samples": 607680,
+    "min": -0.7831975817680359,
+    "max": 0.9749338626861572,
+    "peak": 0.9749338626861572,
+    "outside_one": 0,
+    "positive_zero": 1,
+    "negative_zero": 0,
+    "nonzero_abs_below_f32_normal": 0,
+    "saturated_positive": 0,
+    "saturated_negative": 0
+  },
+  "normalized": {
+    "samples": 607680,
+    "min": -0.7831975817680359,
+    "max": 0.9749338626861572,
+    "peak": 0.9749338626861572,
+    "outside_one": 0,
+    "positive_zero": 1,
+    "negative_zero": 0,
+    "nonzero_abs_below_f32_normal": 0,
+    "saturated_positive": 0,
+    "saturated_negative": 0
+  },
+  "nonzero_to_zero": 0,
+  "finite_and_bounded": true,
+  "clean_clipping": false
+}

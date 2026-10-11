@@ -1,0 +1,112 @@
+{
+  "status": "TERMINAL_LIFECYCLE_EXIT0_QUALITY_GATE_FAIL",
+  "execution_session": 12951,
+  "exit_code": 0,
+  "actual_started_at_utc": "2026-10-11T02:09:11.985777+00:00",
+  "actual_finished_at_utc": "2026-10-11T02:10:53.014232+00:00",
+  "owned_driver_children_remaining": 0,
+  "rows": 96,
+  "gates": 76,
+  "descriptives": 72,
+  "complete_rows": 54,
+  "protocol_failed_rows": 42,
+  "complete_recordings": 9,
+  "failed_recordings": [
+    "sv_se-test-record-3",
+    "sv_se-test-record-7",
+    "sv_se-test-record-10",
+    "sv_se-test-record-18",
+    "sv_se-test-record-21",
+    "sv_se-test-record-28",
+    "sv_se-test-record-32"
+  ],
+  "metric_unevaluable_rows": 0,
+  "metric_regressions": 10,
+  "failure_phase": "Input conversion admission finite [-1,1], before baseline/current codec or metric calls for those42 rows",
+  "already_produced_input_guard_diagnostics": [
+    {
+      "clip": "sv_se-test-record-3",
+      "already_converted_pcm_sha256": "db71b33cf286cea77aa878b339382b49c6513521cc20b0e3548604acd57d8eb3",
+      "samples": 910080,
+      "nonfinite_samples": 0,
+      "min": -1.0658440589904785,
+      "max": 1.04463791847229,
+      "outside_minus1_plus1": 118,
+      "method": "Read existing retained converted f32 bytes only; no new conversion, codec call or metric function execution"
+    },
+    {
+      "clip": "sv_se-test-record-7",
+      "already_converted_pcm_sha256": "5b5f0bcb1dea4c1855138bd1e71d7b98b802841bdc1b1142170293898e9b5679",
+      "samples": 374400,
+      "nonfinite_samples": 0,
+      "min": -1.0152944326400757,
+      "max": 1.0,
+      "outside_minus1_plus1": 5,
+      "method": "Read existing retained converted f32 bytes only; no new conversion, codec call or metric function execution"
+    },
+    {
+      "clip": "sv_se-test-record-10",
+      "already_converted_pcm_sha256": "a408a7d0e04b3a7f04a9a1ac194bd7a8f5f79c997c56b890214a4602ad2f3c14",
+      "samples": 783360,
+      "nonfinite_samples": 0,
+      "min": -1.0051867961883545,
+      "max": 1.0015010833740234,
+      "outside_minus1_plus1": 6,
+      "method": "Read existing retained converted f32 bytes only; no new conversion, codec call or metric function execution"
+    },
+    {
+      "clip": "sv_se-test-record-18",
+      "already_converted_pcm_sha256": "250ce9064c2c94c354efc0078f6ca5ffbd1468a3bf7d71c377088d003e7e6055",
+      "samples": 1247040,
+      "nonfinite_samples": 0,
+      "min": -1.0164480209350586,
+      "max": 1.022692322731018,
+      "outside_minus1_plus1": 67,
+      "method": "Read existing retained converted f32 bytes only; no new conversion, codec call or metric function execution"
+    },
+    {
+      "clip": "sv_se-test-record-21",
+      "already_converted_pcm_sha256": "d87e5539ddf807081e2b106650a4b66845d50ab0b20ec3a9e6885e21cd603dc5",
+      "samples": 593280,
+      "nonfinite_samples": 0,
+      "min": -0.9985312223434448,
+      "max": 1.0012041330337524,
+      "outside_minus1_plus1": 1,
+      "method": "Read existing retained converted f32 bytes only; no new conversion, codec call or metric function execution"
+    },
+    {
+      "clip": "sv_se-test-record-28",
+      "already_converted_pcm_sha256": "907513111b8a6d331b00a4f2fe909722683508cf7907ba1156bafa2fe6a0dc18",
+      "samples": 924480,
+      "nonfinite_samples": 0,
+      "min": -1.0285816192626953,
+      "max": 1.0214872360229492,
+      "outside_minus1_plus1": 100,
+      "method": "Read existing retained converted f32 bytes only; no new conversion, codec call or metric function execution"
+    },
+    {
+      "clip": "sv_se-test-record-32",
+      "already_converted_pcm_sha256": "8edbc57ee65cbcd3d979bcf0f02c544be790a0a7456499c34aef556a5d5cc082",
+      "samples": 1252800,
+      "nonfinite_samples": 0,
+      "min": -0.9370779991149902,
+      "max": 1.003109335899353,
+      "outside_minus1_plus1": 16,
+      "method": "Read existing retained converted f32 bytes only; no new conversion, codec call or metric function execution"
+    }
+  ],
+  "no_partial_population_mean_claim": true,
+  "no_input_replacement_source_change_or_rerun": true,
+  "post_run_frozen_integrity_verified": true,
+  "output_manifest_sha256": "7d0fd29ae7160949c4a9b63231fd4f68d6eb8c93fa9ca52888e8ac886e841e66",
+  "stdout_log_sha256": "1289271eb68d7f6711fdfe88846e1e37097cbd7c6a98439814bb3539b56a52f2",
+  "raw_quality_sha256": "9a86f062383fb212e1c95604fec3514e3e66c09d4450cc6da02a5e4a5a4db74f",
+  "gates_sha256": "f06f13fc8f70e371579bc6f8518a4fca573ac44595cb66e4b9239bc7ec0afe64",
+  "regressions_sha256": "efb10e544918da07ee7e5638eb0f624fb2980df5cd6db1785956aeb7f4c2dabf",
+  "descriptives_sha256": "9f0c2d24292a8d45f31d67ce84a6140e1ce8cb532d213e17d11e2ff7e902cd28",
+  "summary_sha256": "15c8d07049192f74bcc87f68ad2cb784cd23e6f80ab49b58e35bc345d1e0c288",
+  "selection_registry_sha256": "95c7bfb673b8d2ba51fd3192359e62e46d9a457ae61b53fbc4b234eb8b250c89",
+  "protocol_sha256": "3b080c1f2b78ab410d4b9f2a63ae110700178e027e0c7e36efe80996d76a1647",
+  "prepared_manifest_sha256": "6ede83a2f5b6070c7343145a9d33523eb09dbb0c13fded5a73618984fd589803",
+  "scope": "16 Swedish read recordings,10 unique metadataIDs, speaker identities/independence unknown; no listening/native48k/phone evidence"
+}

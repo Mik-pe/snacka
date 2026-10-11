@@ -1,0 +1,14 @@
+{
+  "candidate": "joint_published",
+  "primary_gate_status": "FAIL",
+  "rows": 96,
+  "recordings": 16,
+  "distinct_speaker_count": "UNKNOWN",
+  "statistical_independence": "NOT_ESTABLISHED",
+  "protocol_failures": 42,
+  "metric_unevaluable_rows": 0,
+  "individual_metric_regressions": 10,
+  "fatal_error": "",
+  "post_run_frozen_integrity_verified": true,
+  "finished_at_utc": "2026-10-11T02:10:53.014232+00:00"
+}

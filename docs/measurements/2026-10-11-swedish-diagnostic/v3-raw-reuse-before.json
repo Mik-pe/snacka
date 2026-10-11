@@ -1,0 +1,98 @@
+{
+  "sv_se-test-record-1": {
+    "path": "location-role-021",
+    "sha256": "6381f2203e13cbd44d291be44283cfa97ab7bba51387bf2de8fb7d5d70c5cade",
+    "bytes": 3121920,
+    "original_wav_sha256": "829c93a452d319c692276fed8b9ab09fa67ac431feff8d8138873e7d3df435c2"
+  },
+  "sv_se-test-record-2": {
+    "path": "location-role-025",
+    "sha256": "9f0002aab9cf57a3280e2a83d68b97b301e8817990bb0f8c97d270c26f997e4c",
+    "bytes": 2545920,
+    "original_wav_sha256": "5a44c3a1a64deea6be775ea82c2155bab42026572f9bcbc3b6c698b4e2c17139"
+  },
+  "sv_se-test-record-3": {
+    "path": "location-role-028",
+    "sha256": "db71b33cf286cea77aa878b339382b49c6513521cc20b0e3548604acd57d8eb3",
+    "bytes": 3640320,
+    "original_wav_sha256": "1f5a23edfa4100f5154bbbf91a9505c66876b14a9eabc002b17f53c065324401"
+  },
+  "sv_se-test-record-4": {
+    "path": "location-role-031",
+    "sha256": "a5ab94389a9fbd4630ba6f70c521a0a143a24797e174b71e52d82f03c7e287a7",
+    "bytes": 2810880,
+    "original_wav_sha256": "09130dbc71aef1250807236e6437d94b9840a9fbccd5bfd9c5adfdb586e2381e"
+  },
+  "sv_se-test-record-5": {
+    "path": "location-role-032",
+    "sha256": "2a8e03d3d16a20fbcf3b044709e7f66acb04cc9e6661b0b03dcd97ff612194c0",
+    "bytes": 2304000,
+    "original_wav_sha256": "59736c2cca05fff85d9d7264b571c6ba393d4c6164a733a864ae5b1d7e987f66"
+  },
+  "sv_se-test-record-6": {
+    "path": "location-role-033",
+    "sha256": "9b2d4621de63ec8f1439b456f0206f75c61f2bfea0e566991ad9599014d36f54",
+    "bytes": 3340800,
+    "original_wav_sha256": "c02c7f262be5118b699369a1b00a57c1cc0be0ac0d6769e16a625689dd1b3b8b"
+  },
+  "sv_se-test-record-7": {
+    "path": "location-role-034",
+    "sha256": "5b5f0bcb1dea4c1855138bd1e71d7b98b802841bdc1b1142170293898e9b5679",
+    "bytes": 1497600,
+    "original_wav_sha256": "171b9c52f96a5d220795b858aeb73b8acc32e76d169c35b1286dfec47aa28dd6"
+  },
+  "sv_se-test-record-8": {
+    "path": "location-role-035",
+    "sha256": "c3c38b9223f21e9763427053e1ed0501f50ba2e588cf116be0579d5b7d256477",
+    "bytes": 1474560,
+    "original_wav_sha256": "336fed1720948645811a02c7e566cb8a245f79deebd7cb59bc5d97d17c82f9e9"
+  },
+  "sv_se-test-record-9": {
+    "path": "location-role-036",
+    "sha256": "e6e04f6207964dc2bc7e7ea3c4365fed7777ea7d4b39ea04626fdd3106b2628b",
+    "bytes": 2995200,
+    "original_wav_sha256": "4680872156b6a4ae63c330301ac624c4a347808fbc812ffcb3ead15d03e85044"
+  },
+  "sv_se-test-record-10": {
+    "path": "location-role-022",
+    "sha256": "a408a7d0e04b3a7f04a9a1ac194bd7a8f5f79c997c56b890214a4602ad2f3c14",
+    "bytes": 3133440,
+    "original_wav_sha256": "119a45eaac1f0b0fd7b90b1dac4673fdfa88324c6f65c2a302cc436756891eaf"
+  },
+  "sv_se-test-record-11": {
+    "path": "location-role-023",
+    "sha256": "80cf947ab0c48144be32ccb7eb4227b102fc6a386b57eb12f73386bf5b2044ac",
+    "bytes": 2787840,
+    "original_wav_sha256": "34bd0666ab7f88999d80e6602dc7ff2f64b3e5a5cd62fdf260e33e165cab6c3a"
+  },
+  "sv_se-test-record-18": {
+    "path": "location-role-024",
+    "sha256": "250ce9064c2c94c354efc0078f6ca5ffbd1468a3bf7d71c377088d003e7e6055",
+    "bytes": 4988160,
+    "original_wav_sha256": "874ad5ecbeb6230b856313542d24eed31b84a36f74bbdf4982e48913079af9cf"
+  },
+  "sv_se-test-record-21": {
+    "path": "location-role-026",
+    "sha256": "d87e5539ddf807081e2b106650a4b66845d50ab0b20ec3a9e6885e21cd603dc5",
+    "bytes": 2373120,
+    "original_wav_sha256": "9b84d6c6cc6874b4731ea70d5be90237e1e226ff40415ecf9e8783ffe8fe74b1"
+  },
+  "sv_se-test-record-28": {
+    "path": "location-role-027",
+    "sha256": "907513111b8a6d331b00a4f2fe909722683508cf7907ba1156bafa2fe6a0dc18",
+    "bytes": 3697920,
+    "original_wav_sha256": "b6447bc084e1b5faaab5c9690ae088fe020f4d9cab68cef97479abfa87d72b12"
+  },
+  "sv_se-test-record-32": {
+    "path": "location-role-029",
+    "sha256": "8edbc57ee65cbcd3d979bcf0f02c544be790a0a7456499c34aef556a5d5cc082",
+    "bytes": 5011200,
+    "original_wav_sha256": "50077544162a96e262f8d7b420070fa11bd09d124f820c4097ceb0009037d844"
+  },
+  "sv_se-test-record-39": {
+    "path": "location-role-030",
+    "sha256": "fb0afbca580a525e50be4821b808bb54b8b56e58f74660db7981cf726d5f6989",
+    "bytes": 2430720,
+    "original_wav_sha256": "76a1231b8472a4068f1d62f2eb484f011b7599939e67c35f69e2743957f5cce5"
+  }
+}

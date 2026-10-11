@@ -1,0 +1,28 @@
+{
+  "files": {
+    "started.json": "7196dc1867f6bcf55be685519a989f0ab38c0b652a3bc1ca4161d43bbd196fa2",
+    "metadata-proof.json": "bea5407063dd5d0e5146321267c447cd48bf8730e283e08d35333b091ff895d8",
+    "selection.json": "a566a99a935a3d8fc5a0a4cd5bdf8b20536b4f0058e6c8fb21aaad3dc42f89d6",
+    "planned96.csv": "f172e9a44b670fcba8667234aaaf67eefe1559a08ede202f8aabaad1f7c3b71e",
+    "input-inventory.csv": "f4a6805ea9987aed0dcc58d57ed2e841fc352cabf6acbd53358150fad00fe844"
+  },
+  "inputs": {
+    "sv_se-test-record-1": "829c93a452d319c692276fed8b9ab09fa67ac431feff8d8138873e7d3df435c2",
+    "sv_se-test-record-2": "5a44c3a1a64deea6be775ea82c2155bab42026572f9bcbc3b6c698b4e2c17139",
+    "sv_se-test-record-3": "1f5a23edfa4100f5154bbbf91a9505c66876b14a9eabc002b17f53c065324401",
+    "sv_se-test-record-4": "09130dbc71aef1250807236e6437d94b9840a9fbccd5bfd9c5adfdb586e2381e",
+    "sv_se-test-record-5": "59736c2cca05fff85d9d7264b571c6ba393d4c6164a733a864ae5b1d7e987f66",
+    "sv_se-test-record-6": "c02c7f262be5118b699369a1b00a57c1cc0be0ac0d6769e16a625689dd1b3b8b",
+    "sv_se-test-record-7": "171b9c52f96a5d220795b858aeb73b8acc32e76d169c35b1286dfec47aa28dd6",
+    "sv_se-test-record-8": "336fed1720948645811a02c7e566cb8a245f79deebd7cb59bc5d97d17c82f9e9",
+    "sv_se-test-record-9": "4680872156b6a4ae63c330301ac624c4a347808fbc812ffcb3ead15d03e85044",
+    "sv_se-test-record-10": "119a45eaac1f0b0fd7b90b1dac4673fdfa88324c6f65c2a302cc436756891eaf",
+    "sv_se-test-record-11": "34bd0666ab7f88999d80e6602dc7ff2f64b3e5a5cd62fdf260e33e165cab6c3a",
+    "sv_se-test-record-18": "874ad5ecbeb6230b856313542d24eed31b84a36f74bbdf4982e48913079af9cf",
+    "sv_se-test-record-21": "9b84d6c6cc6874b4731ea70d5be90237e1e226ff40415ecf9e8783ffe8fe74b1",
+    "sv_se-test-record-28": "b6447bc084e1b5faaab5c9690ae088fe020f4d9cab68cef97479abfa87d72b12",
+    "sv_se-test-record-32": "50077544162a96e262f8d7b420070fa11bd09d124f820c4097ceb0009037d844",
+    "sv_se-test-record-39": "76a1231b8472a4068f1d62f2eb484f011b7599939e67c35f69e2743957f5cce5"
+  },
+  "frozen_before_any_audio_decode_or_score": true
+}

@@ -1,0 +1,71 @@
+{
+  "original_manifest_sha256": "ca2fda00a6dd935312c4287d335f70a588b1db995faa1b7344a485cc9ab4c8c1",
+  "retained_artifacts": 16,
+  "payloads_redistributed": false,
+  "entries": [
+    {
+      "artifact_role": "README.md",
+      "sha256": "4d793f22b83d658a3de305531f47dc93ac228f54923d665515658f377880502e"
+    },
+    {
+      "artifact_role": "common.py",
+      "sha256": "aa0ee526dc9cfa0646fa3ad41f602526dc1670fe5c179bf0bc33c231a2d74fa4"
+    },
+    {
+      "artifact_role": "evaluate.py",
+      "sha256": "d02c63bf452afcc1cd88a872b781c59cc9a572e81b748174963b39c3e0bb62a7"
+    },
+    {
+      "artifact_role": "frozen.json",
+      "sha256": "aa8a1c802009570dc69511e4dcecb811534703cc9964a9a457134878bb8ea52c"
+    },
+    {
+      "artifact_role": "parser-addendum-artifacts.sha256",
+      "sha256": "f9bf5e63459e49b8c71ed3a2a435362bcb8dd59d22cdd6297bf044ed715623e8"
+    },
+    {
+      "artifact_role": "parser-contract.json",
+      "sha256": "db6efcfd18e658a2c0369c4d4c855926184160d029a07cebdc9afecd07838a33"
+    },
+    {
+      "artifact_role": "proposal-artifacts.sha256",
+      "sha256": "cdde9b1dd059570a29e132f512f40e9998d11a3c5c01488f4b0200d0657c7df9"
+    },
+    {
+      "artifact_role": "protocol.json",
+      "sha256": "3b080c1f2b78ab410d4b9f2a63ae110700178e027e0c7e36efe80996d76a1647"
+    },
+    {
+      "artifact_role": "published-binaries.csv",
+      "sha256": "5953f65f38cd26c981cbc268de95a38939422bf6e13c540815cd444b08574938"
+    },
+    {
+      "artifact_role": "published-source.csv",
+      "sha256": "9da4b9a00c41ad111fbbb114054a6f6dc4cea01d2ad9be8ed89d5d70c9c11b90"
+    },
+    {
+      "artifact_role": "reference_validate.py",
+      "sha256": "fa253d0542d7ca95262259e14c3eb9e1505b1cc380e481d01a53965b74e229c8"
+    },
+    {
+      "artifact_role": "release-binaries.json",
+      "sha256": "8d44fbb0987a6a12395098f89003fdb5743f9b53f45aca0246dfda0dc3254529"
+    },
+    {
+      "artifact_role": "release-evidence.json",
+      "sha256": "53aaeaf32fdf4ee8613ebd5a40b2539ddd8c4185983a707dfaca9c62cb32c63d"
+    },
+    {
+      "artifact_role": "release-source-freeze.json",
+      "sha256": "9a09d31d73a87f8d3e8ce851b3b59fd72b74cb40cb346a7060eee26b46ad5796"
+    },
+    {
+      "artifact_role": "select.py",
+      "sha256": "549bbfb17391e84b2ee4325a31019a3d650bb0bf0f367b2d35064f75ba789d57"
+    },
+    {
+      "artifact_role": "static-inspection.json",
+      "sha256": "434f46bd59c14c2c65a357653241d1eafa820abea81de285d7e6e5ab72f9e6c5"
+    }
+  ]
+}

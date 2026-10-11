@@ -1,0 +1,951 @@
+{
+  "created_utc": "2026-10-11T02:18:17.879901+00:00",
+  "scope": "read original headers via seeks skipping data; inspect already retained converted PCM; no source audio payload decoding, new conversion, codec, metric, noise generation, normalization, listening or network",
+  "selection_json_sha256": "a566a99a935a3d8fc5a0a4cd5bdf8b20536b4f0058e6c8fb21aaad3dc42f89d6",
+  "records": [
+    {
+      "clip": "sv_se-test-record-1",
+      "record_ordinal": 1,
+      "official_gender": "MALE",
+      "declared_num_samples": 260160,
+      "previously_verified_wav_sha256": "829c93a452d319c692276fed8b9ab09fa67ac431feff8d8138873e7d3df435c2",
+      "wav_bytes": 1040698,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 1040690,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 1040640
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 260160,
+      "data_bytes": 1040640,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 260160,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-075",
+        "sha256": "6381f2203e13cbd44d291be44283cfa97ab7bba51387bf2de8fb7d5d70c5cade",
+        "bytes": 3121920,
+        "samples": 780480,
+        "finite": true,
+        "min": -0.13932719826698303,
+        "max": 0.18071796000003815,
+        "peak": 0.18071796000003815,
+        "abs_gt_one_count": 0,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-2",
+      "record_ordinal": 2,
+      "official_gender": "MALE",
+      "declared_num_samples": 212160,
+      "previously_verified_wav_sha256": "5a44c3a1a64deea6be775ea82c2155bab42026572f9bcbc3b6c698b4e2c17139",
+      "wav_bytes": 848698,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 848690,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 848640
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 212160,
+      "data_bytes": 848640,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 212160,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-079",
+        "sha256": "9f0002aab9cf57a3280e2a83d68b97b301e8817990bb0f8c97d270c26f997e4c",
+        "bytes": 2545920,
+        "samples": 636480,
+        "finite": true,
+        "min": -0.3102220296859741,
+        "max": 0.30759739875793457,
+        "peak": 0.3102220296859741,
+        "abs_gt_one_count": 0,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-3",
+      "record_ordinal": 3,
+      "official_gender": "FEMALE",
+      "declared_num_samples": 303360,
+      "previously_verified_wav_sha256": "1f5a23edfa4100f5154bbbf91a9505c66876b14a9eabc002b17f53c065324401",
+      "wav_bytes": 1213498,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 1213490,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 1213440
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 303360,
+      "data_bytes": 1213440,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 303360,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-082",
+        "sha256": "db71b33cf286cea77aa878b339382b49c6513521cc20b0e3548604acd57d8eb3",
+        "bytes": 3640320,
+        "samples": 910080,
+        "finite": true,
+        "min": -1.0658440589904785,
+        "max": 1.04463791847229,
+        "peak": 1.0658440589904785,
+        "abs_gt_one_count": 118,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-4",
+      "record_ordinal": 4,
+      "official_gender": "MALE",
+      "declared_num_samples": 234240,
+      "previously_verified_wav_sha256": "09130dbc71aef1250807236e6437d94b9840a9fbccd5bfd9c5adfdb586e2381e",
+      "wav_bytes": 937018,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 937010,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 936960
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 234240,
+      "data_bytes": 936960,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 234240,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-085",
+        "sha256": "a5ab94389a9fbd4630ba6f70c521a0a143a24797e174b71e52d82f03c7e287a7",
+        "bytes": 2810880,
+        "samples": 702720,
+        "finite": true,
+        "min": -0.1334056258201599,
+        "max": 0.1612575650215149,
+        "peak": 0.1612575650215149,
+        "abs_gt_one_count": 0,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-5",
+      "record_ordinal": 5,
+      "official_gender": "MALE",
+      "declared_num_samples": 192000,
+      "previously_verified_wav_sha256": "59736c2cca05fff85d9d7264b571c6ba393d4c6164a733a864ae5b1d7e987f66",
+      "wav_bytes": 768058,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 768050,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 768000
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 192000,
+      "data_bytes": 768000,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 192000,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-086",
+        "sha256": "2a8e03d3d16a20fbcf3b044709e7f66acb04cc9e6661b0b03dcd97ff612194c0",
+        "bytes": 2304000,
+        "samples": 576000,
+        "finite": true,
+        "min": -0.5654658675193787,
+        "max": 0.48037081956863403,
+        "peak": 0.5654658675193787,
+        "abs_gt_one_count": 0,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-6",
+      "record_ordinal": 6,
+      "official_gender": "MALE",
+      "declared_num_samples": 278400,
+      "previously_verified_wav_sha256": "c02c7f262be5118b699369a1b00a57c1cc0be0ac0d6769e16a625689dd1b3b8b",
+      "wav_bytes": 1113658,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 1113650,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 1113600
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 278400,
+      "data_bytes": 1113600,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 278400,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-087",
+        "sha256": "9b2d4621de63ec8f1439b456f0206f75c61f2bfea0e566991ad9599014d36f54",
+        "bytes": 3340800,
+        "samples": 835200,
+        "finite": true,
+        "min": -0.14360636472702026,
+        "max": 0.1637638509273529,
+        "peak": 0.1637638509273529,
+        "abs_gt_one_count": 0,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-7",
+      "record_ordinal": 7,
+      "official_gender": "FEMALE",
+      "declared_num_samples": 124800,
+      "previously_verified_wav_sha256": "171b9c52f96a5d220795b858aeb73b8acc32e76d169c35b1286dfec47aa28dd6",
+      "wav_bytes": 499258,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 499250,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 499200
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 124800,
+      "data_bytes": 499200,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 124800,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-088",
+        "sha256": "5b5f0bcb1dea4c1855138bd1e71d7b98b802841bdc1b1142170293898e9b5679",
+        "bytes": 1497600,
+        "samples": 374400,
+        "finite": true,
+        "min": -1.0152944326400757,
+        "max": 1.0,
+        "peak": 1.0152944326400757,
+        "abs_gt_one_count": 5,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-8",
+      "record_ordinal": 8,
+      "official_gender": "MALE",
+      "declared_num_samples": 122880,
+      "previously_verified_wav_sha256": "336fed1720948645811a02c7e566cb8a245f79deebd7cb59bc5d97d17c82f9e9",
+      "wav_bytes": 491578,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 491570,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 491520
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 122880,
+      "data_bytes": 491520,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 122880,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-089",
+        "sha256": "c3c38b9223f21e9763427053e1ed0501f50ba2e588cf116be0579d5b7d256477",
+        "bytes": 1474560,
+        "samples": 368640,
+        "finite": true,
+        "min": -0.08646748214960098,
+        "max": 0.10812805593013763,
+        "peak": 0.10812805593013763,
+        "abs_gt_one_count": 0,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-9",
+      "record_ordinal": 9,
+      "official_gender": "MALE",
+      "declared_num_samples": 249600,
+      "previously_verified_wav_sha256": "4680872156b6a4ae63c330301ac624c4a347808fbc812ffcb3ead15d03e85044",
+      "wav_bytes": 998458,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 998450,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 998400
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 249600,
+      "data_bytes": 998400,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 249600,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-090",
+        "sha256": "e6e04f6207964dc2bc7e7ea3c4365fed7777ea7d4b39ea04626fdd3106b2628b",
+        "bytes": 2995200,
+        "samples": 748800,
+        "finite": true,
+        "min": -0.16742698848247528,
+        "max": 0.1783316731452942,
+        "peak": 0.1783316731452942,
+        "abs_gt_one_count": 0,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-10",
+      "record_ordinal": 10,
+      "official_gender": "FEMALE",
+      "declared_num_samples": 261120,
+      "previously_verified_wav_sha256": "119a45eaac1f0b0fd7b90b1dac4673fdfa88324c6f65c2a302cc436756891eaf",
+      "wav_bytes": 1044538,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 1044530,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 1044480
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 261120,
+      "data_bytes": 1044480,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 261120,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-076",
+        "sha256": "a408a7d0e04b3a7f04a9a1ac194bd7a8f5f79c997c56b890214a4602ad2f3c14",
+        "bytes": 3133440,
+        "samples": 783360,
+        "finite": true,
+        "min": -1.0051867961883545,
+        "max": 1.0015010833740234,
+        "peak": 1.0051867961883545,
+        "abs_gt_one_count": 6,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-11",
+      "record_ordinal": 11,
+      "official_gender": "MALE",
+      "declared_num_samples": 232320,
+      "previously_verified_wav_sha256": "34bd0666ab7f88999d80e6602dc7ff2f64b3e5a5cd62fdf260e33e165cab6c3a",
+      "wav_bytes": 929338,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 929330,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 929280
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 232320,
+      "data_bytes": 929280,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 232320,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-077",
+        "sha256": "80cf947ab0c48144be32ccb7eb4227b102fc6a386b57eb12f73386bf5b2044ac",
+        "bytes": 2787840,
+        "samples": 696960,
+        "finite": true,
+        "min": -0.10737097263336182,
+        "max": 0.13979065418243408,
+        "peak": 0.13979065418243408,
+        "abs_gt_one_count": 0,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-18",
+      "record_ordinal": 18,
+      "official_gender": "FEMALE",
+      "declared_num_samples": 415680,
+      "previously_verified_wav_sha256": "874ad5ecbeb6230b856313542d24eed31b84a36f74bbdf4982e48913079af9cf",
+      "wav_bytes": 1662778,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 1662770,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 1662720
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 415680,
+      "data_bytes": 1662720,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 415680,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-078",
+        "sha256": "250ce9064c2c94c354efc0078f6ca5ffbd1468a3bf7d71c377088d003e7e6055",
+        "bytes": 4988160,
+        "samples": 1247040,
+        "finite": true,
+        "min": -1.0164480209350586,
+        "max": 1.022692322731018,
+        "peak": 1.022692322731018,
+        "abs_gt_one_count": 67,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-21",
+      "record_ordinal": 21,
+      "official_gender": "FEMALE",
+      "declared_num_samples": 197760,
+      "previously_verified_wav_sha256": "9b84d6c6cc6874b4731ea70d5be90237e1e226ff40415ecf9e8783ffe8fe74b1",
+      "wav_bytes": 791098,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 791090,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 791040
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 197760,
+      "data_bytes": 791040,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 197760,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-080",
+        "sha256": "d87e5539ddf807081e2b106650a4b66845d50ab0b20ec3a9e6885e21cd603dc5",
+        "bytes": 2373120,
+        "samples": 593280,
+        "finite": true,
+        "min": -0.9985312223434448,
+        "max": 1.0012041330337524,
+        "peak": 1.0012041330337524,
+        "abs_gt_one_count": 1,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-28",
+      "record_ordinal": 28,
+      "official_gender": "FEMALE",
+      "declared_num_samples": 308160,
+      "previously_verified_wav_sha256": "b6447bc084e1b5faaab5c9690ae088fe020f4d9cab68cef97479abfa87d72b12",
+      "wav_bytes": 1232698,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 1232690,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 1232640
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 308160,
+      "data_bytes": 1232640,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 308160,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-081",
+        "sha256": "907513111b8a6d331b00a4f2fe909722683508cf7907ba1156bafa2fe6a0dc18",
+        "bytes": 3697920,
+        "samples": 924480,
+        "finite": true,
+        "min": -1.0285816192626953,
+        "max": 1.0214872360229492,
+        "peak": 1.0285816192626953,
+        "abs_gt_one_count": 100,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-32",
+      "record_ordinal": 32,
+      "official_gender": "FEMALE",
+      "declared_num_samples": 417600,
+      "previously_verified_wav_sha256": "50077544162a96e262f8d7b420070fa11bd09d124f820c4097ceb0009037d844",
+      "wav_bytes": 1670458,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 1670450,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 1670400
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 417600,
+      "data_bytes": 1670400,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 417600,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-083",
+        "sha256": "8edbc57ee65cbcd3d979bcf0f02c544be790a0a7456499c34aef556a5d5cc082",
+        "bytes": 5011200,
+        "samples": 1252800,
+        "finite": true,
+        "min": -0.9370779991149902,
+        "max": 1.003109335899353,
+        "peak": 1.003109335899353,
+        "abs_gt_one_count": 16,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    },
+    {
+      "clip": "sv_se-test-record-39",
+      "record_ordinal": 39,
+      "official_gender": "FEMALE",
+      "declared_num_samples": 202560,
+      "previously_verified_wav_sha256": "76a1231b8472a4068f1d62f2eb484f011b7599939e67c35f69e2743957f5cce5",
+      "wav_bytes": 810298,
+      "wav_sha_recomputed_now": false,
+      "payload_read_now": false,
+      "container": "RIFF",
+      "form": "WAVE",
+      "riff_size": 810290,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "header_offset": 12,
+          "bytes": 18
+        },
+        {
+          "id": "fact",
+          "header_offset": 38,
+          "bytes": 4
+        },
+        {
+          "id": "data",
+          "header_offset": 50,
+          "bytes": 810240
+        }
+      ],
+      "format_code": 3,
+      "channels": 1,
+      "sample_rate": 16000,
+      "byte_rate": 64000,
+      "block_align": 4,
+      "bits_per_sample": 32,
+      "fmt_extension_hex": "0000",
+      "fact_sample_count": 202560,
+      "data_bytes": 810240,
+      "container_exact_size": true,
+      "data_divisible_block_align": true,
+      "container_frame_count": 202560,
+      "header_declared_count_equal": true,
+      "retained_conversion": {
+        "path": "location-role-084",
+        "sha256": "fb0afbca580a525e50be4821b808bb54b8b56e58f74660db7981cf726d5f6989",
+        "bytes": 2430720,
+        "samples": 607680,
+        "finite": true,
+        "min": -0.7831975817680359,
+        "max": 0.9749338626861572,
+        "peak": 0.9749338626861572,
+        "abs_gt_one_count": 0,
+        "sample_rate_from_frozen_conversion_command": 48000,
+        "channels_from_frozen_conversion_command": 1,
+        "format_from_frozen_conversion_command": "f32le",
+        "new_conversion_performed": false,
+        "new_normalization_performed": false
+      }
+    }
+  ]
+}

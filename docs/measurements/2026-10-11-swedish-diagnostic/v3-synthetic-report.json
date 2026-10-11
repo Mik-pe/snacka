@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "started_at_utc": "2026-10-11T02:26:27.786348+00:00",
+  "finished_at_utc": "2026-10-11T02:26:27.793606+00:00",
+  "tests_run": 11,
+  "failures": 0,
+  "errors": 0,
+  "arguments": [
+    "location-role-070",
+    "--output",
+    "location-role-069"
+  ],
+  "scope": "synthetic floats/noise/trace/warning/denominator only",
+  "metric_modules_imported": false,
+  "real_inputs_accessed": false,
+  "real_normalization_or_scores": false,
+  "codec_executables_called": false,
+  "child_processes_started": false
+}
