@@ -95,9 +95,11 @@ This benchmark alone contains reference FFI. Supply a nonstandard search path
 with `RUSTFLAGS="-L /path/to/lib"`. Neither the feature nor normal builds add
 reference code or linkage to the library.
 
-The optional [matched speech-quality reference](docs/reference-quality.md) uses
-a separately installed external library only in an offline Python tool. It
-records quality gaps alongside wins at equal bitrate, frame duration and delay.
+The optional [speech-quality reference](docs/reference-quality.md) compares
+historical version 5 with restricted-lowdelay CBR libopus 1.6.1 through an offline
+Python tool. It records quality gaps alongside wins at equal complete codec-packet
+byte budgets, 10/20 ms frames and 120-sample additional delay. Payload budgets,
+ordering/integrity services and end-to-end latency are not matched.
 
 See [the bitstream](docs/bitstream.md), [development and acceptance](docs/implementation.md),
 [measurements](docs/measurements.md), [signed pulse classes](docs/pulse-classes.md), [harmonic speech experiment](docs/harmonic-speech.md), [harmonic analysis performance](docs/harmonic-analysis.md), [pitch scoring performance](docs/harmonic-pitch.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [packet-loss evaluation](docs/loss.md), [fixture provenance](tests/fixtures/README.md)

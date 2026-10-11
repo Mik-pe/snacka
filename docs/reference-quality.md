@@ -1,9 +1,10 @@
-# Matched speech quality reference
+# Speech quality at equal packet budgets
 
 Snacka needs substantial improvement at 12 kb/s. This comparison evaluates the
 version 5 Rust codec at commit `57a5211170fddb432326b5c7d72ad16be5d35956` against a
-separately installed libopus 1.6.1, with matched frame duration, packet bytes and
-120-sample algorithmic delay. It changes no codec implementation or format.
+separately installed libopus 1.6.1, with matched frame duration, complete
+codec-packet byte budgets and 120-sample additional delay. It changes no codec
+implementation or format.
 The external library is an optional offline measurement oracle, never a runtime
 codec, fallback or dependency of the Rust library.
 
@@ -28,14 +29,37 @@ budget as Snacka, including each format's framing. Transport overhead is
 excluded for both. Stream state persists throughout each utterance. Both paths
 encode a final drain frame, discard exactly 120 priming samples and trim
 partial-frame padding. Normal packet bytes and drain bytes match separately in
-all 864 cases; the scorer refuses mismatched budgets or reported delay.
+all 864 cases; the scorer refuses mismatched budgets or reported delay. These
+bitrate labels describe steady-state packet budgets; partial-frame padding and
+the drain packet also count toward the total bytes for a finite utterance.
+
+The native packet spends four bytes on a version/profile/final-drain byte, a
+sequence byte and a two-byte CRC. The remaining body includes model parameters,
+entropy coding and termination padding:
+
+| Target kb/s | 10 ms packet bytes | 10 ms body bytes | 20 ms packet bytes | 20 ms body bytes |
+| ---: | ---: | ---: | ---: | ---: |
+| 12 | 15 | 11 | 30 | 26 |
+| 24 | 30 | 26 | 60 | 56 |
+| 32 | 40 | 36 | 80 | 76 |
+
+This overhead consumes 3.2 kb/s at 10 ms and 1.6 kb/s at 20 ms. At a 12 kb/s
+target, the native body therefore receives 8.8 or 10.4 kb/s. The reference counts
+the complete raw packet returned by its encoder, including its own framing and
+any codec padding; no equivalent native sequence/CRC wrapper is added. Its
+framing/padding split is not recorded. Equal packet budgets do not establish
+equal audio-model payload bits or equivalent ordering and corruption-detection
+services. Native CRC detects corruption; authentication belongs to the transport.
 
 This is a comparison with one explicitly configured low-delay Opus profile.
 It does not cover Opus's other applications, higher-delay modes, VBR, FEC,
-packet loss or all possible encoder settings. The 120 samples exclude frame
-buffering, resampling, devices and transport for both codecs. A Python reference
-process is unsuitable for callback CPU comparisons; these results measure
-quality only.
+packet loss or all possible encoder settings. The 120 samples are 2.5 ms of
+additional codec delay, excluding 10/20 ms frame accumulation, resampling,
+devices and transport for both codecs. This is not an end-to-end latency
+measurement. Reference bandwidth controls remain at their defaults and effective
+bandwidth per packet is not recorded; matching the PCM sample rate does not
+establish matched coded bandwidth. A Python reference process is unsuitable for
+callback CPU comparisons; these results measure quality only.
 
 ## Corpus and scoring
 
@@ -47,7 +71,8 @@ Original files follow `LibriSpeech/test-clean/speaker/chapter/clip.flac`;
 [input hashes](measurements/2026-10-10-loss-seeded-input.sha256) identify the
 complete selection. No audio or transcripts are redistributed.
 
-FFmpeg 9.0.2 converts 16 kHz FLAC to 48 kHz f32. Each clip is evaluated clean,
+FFmpeg 9.0.2 converts 16 kHz FLAC to 48 kHz f32. Upsampling does not establish
+quality on speech originally captured at 48 kHz. Each clip is evaluated clean,
 with seeded Gaussian noise at 20 dB and at 10 dB, for both frame durations and
 all three bitrates: 864 pairs. No noise samples clipped. These are read-English
 recordings with synthetic noise, not unseen evaluation data, multilingual
