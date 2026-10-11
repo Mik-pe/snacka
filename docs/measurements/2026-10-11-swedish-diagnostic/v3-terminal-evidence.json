@@ -1,0 +1,28 @@
+{
+  "finished_at_utc": "2026-10-11T02:26:55.813539+00:00",
+  "mode": "ROOT_APPROVED_IMPLEMENTATION_SYNTHETIC_AND_DEFAULT_IMPORT_ONLY",
+  "synthetic_exit_code": 0,
+  "path_preflight_exit_code": 0,
+  "tool_session_ids": null,
+  "both_exec_calls_terminal": true,
+  "active_owned_driver_processes": [],
+  "synthetic_tests": 11,
+  "source_protocol_files_unchanged_after_freeze": true,
+  "frozen_file_count": 21,
+  "real_input_functions_or_metric_modules_executed": false,
+  "real_normalization_conditioned_buffers_or_scores_created": false,
+  "codec_network_conversion_or_timing_execution": false,
+  "arguments": [
+    [
+      "location-role-070",
+      "--output",
+      "location-role-069"
+    ],
+    [
+      "location-role-066",
+      "--output",
+      "location-role-065"
+    ]
+  ],
+  "separate_exact_package_scoring_approval_pending": true
+}

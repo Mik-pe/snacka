@@ -1,0 +1,38 @@
+{
+  "seed": "snacka-speech-6716:sv_se-test-record-2:20",
+  "target_snr_db": 20,
+  "signal_energy_hex": "0x1.facd5344b5db5p+9",
+  "noise_energy_hex": "0x1.35d76d5292a3ep+19",
+  "scale_hex": "0x1.05ed2ae2b8347p-8",
+  "pre_clamp": {
+    "samples": 636480,
+    "min": -0.31218475178922767,
+    "max": 0.3091496851788536,
+    "peak": 0.31218475178922767,
+    "outside_one": 0,
+    "positive_zero": 0,
+    "negative_zero": 0,
+    "nonzero_abs_below_f32_normal": 0,
+    "saturated_positive": 0,
+    "saturated_negative": 0
+  },
+  "clipped_upper": 0,
+  "clipped_lower": 0,
+  "clipped_total": 0,
+  "canonical_clipped_total": 0,
+  "post_clamp_f32": {
+    "samples": 636480,
+    "min": -0.31218475103378296,
+    "max": 0.30914968252182007,
+    "peak": 0.31218475103378296,
+    "outside_one": 0,
+    "positive_zero": 0,
+    "negative_zero": 0,
+    "nonzero_abs_below_f32_normal": 0,
+    "saturated_positive": 0,
+    "saturated_negative": 0
+  },
+  "conditioned_sha256": "bae88ea7f147be1b847cc94e6b85ef53fd2a527a147e72d516598eb490e1b7f0",
+  "exact_canonical_bytes_and_count": true,
+  "rng_scope": "local Random only"
+}

@@ -1,0 +1,191 @@
+{
+  "protocol_id": "snacka-prospective-swedish-test16-v1",
+  "frozen_at_utc": "2026-10-11T01:47:20.944300+00:00",
+  "state": "STATIC_ONLY_BEFORE_SWEDISH_METADATA_IDS_OR_AUDIO",
+  "dataset_revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+  "dataset_name": "google/fleurs",
+  "dataset_config": "sv_se",
+  "dataset_split": "test",
+  "license": "CC BY 4.0",
+  "scope": "16kHz Swedish read recordings; no exposed speaker IDs, no speaker independence/conversation/native48k/mobile/listening claim",
+  "proposal_manifest_sha256": "cdde9b1dd059570a29e132f512f40e9998d11a3c5c01488f4b0200d0657c7df9",
+  "parser_addendum_manifest_sha256": "f9bf5e63459e49b8c71ed3a2a435362bcb8dd59d22cdd6297bf044ed715623e8",
+  "parser_contract_sha256": "db6efcfd18e658a2c0369c4d4c855926184160d029a07cebdc9afecd07838a33",
+  "metadata": {
+    "relative_path": "data/sv_se/test.tsv",
+    "url": "https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/sv_se/test.tsv",
+    "size": 437092,
+    "git_blob_sha1": "0adf1457a95fb5355d15e132324dedbe67226fb2"
+  },
+  "archive": {
+    "relative_path": "data/sv_se/audio/test.tar.gz",
+    "url": "https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/sv_se/audio/test.tar.gz",
+    "size": 440702047,
+    "sha256": "3792fd432675e16d85a67f5caf9927ad608aefc2484d738f26704f75584a5a6f"
+  },
+  "selection": {
+    "labels": {
+      "FEMALE": 8,
+      "MALE": 8
+    },
+    "order": "original TSV readlines one-based record ordinal; first8 each exact label, merged back by ordinal",
+    "clip_key": "sv_se-test-record-{ordinal}",
+    "duplicates": "duplicate int ID retained; duplicate filename stops whole structural job without overwrite/dedup/replacement",
+    "no_exclusions": "No length, silence, transcript, quality, metric or audio inspection exclusions; unknown labels fail parser, OTHER valid but outside declared strata",
+    "missing_or_corrupt_selected_audio": "retained INPUT_FAIL at selected ordinal, all6 corresponding evaluation rows FAIL, never replaced"
+  },
+  "matrix": {
+    "conditions": [
+      "clean",
+      "noise20",
+      "noise10"
+    ],
+    "frame_ms": [
+      10,
+      20
+    ],
+    "bitrate": 12000,
+    "clips": 16,
+    "rows": 96,
+    "gates": 76
+  },
+  "source_repository": "location-role-007",
+  "source_commits": {
+    "baseline": "91fef4a87a777e412a7a5b3497fdc5590307ab93",
+    "current": "56a347c61f831c30b2d2fef63631aec03598875c"
+  },
+  "source_hashes": {
+    "baseline": {
+      "Cargo.toml": "b21802694254e6a9c312f0acea6e836c827b2d15b992543caa2bb4348f97ff42",
+      "Cargo.lock": "bbd2279b38108a5f8364a3f1d7b0fab7bc36f05343ec4e47bf202f3fa7613cb8",
+      "src/codec.rs": "c66f58212928706ec0ea58b78918ff0fb083d9658986bb5801a76825fa84355c",
+      "src/concealment.rs": "0b024870fc663fc17eda2de8a93a20c2dbf5b0ff82a295a97040c2b00bc73d4c",
+      "src/entropy.rs": "ede43cb7ac92a1d00245307d99f58f080ca909614476cf26c1b78508e7086509",
+      "src/harmonic.rs": "0eddd938566232bd91b5eba280c26a8d79a14b8edf3bb69071853a283625addc",
+      "src/lib.rs": "7c2a323551100f566da5d84f3af0633924efacad684802838ec9b79616867079",
+      "src/pulse.rs": "ed639fb3441c37d8251849bc5b6ffb2958558ce1d74d89726ddb7684eac971d3",
+      "src/pulse_classes.rs": "b5abb1763796c54d33081fdabb64ca5f5db2ea3bbb9cf96e6d3f506647d112eb",
+      "src/transform.rs": "5833576f72e09b78f0cd8758af6b418a9571370368f6859ad38771e69328fb10",
+      "examples/cpu_probe.rs": "b9c61ab124f979aa18063e2a4ce27a3b1aabf46471e196b62b52e9a0ccd1c6e1",
+      "examples/roundtrip.rs": "cc7d00a39f05f4b4df994687fc237be923b7e2c64459b37b04e78e11e425db3e",
+      "tools/evaluate_speech.py": "104b07f0b1ee68cf9f182c75a3c18639f33f123ae20ec27d37db486ec1d2c793",
+      "tools/evaluate_quality.py": "8b3fd85de8a04534abdf4036a6ab5780c506097989dff6b4034f9825cf8e90c3",
+      "tools/measure_cpu.py": "3900bb42c87e1d073dba99a12decd33ae3968dad241c6c08cd3c891104a7f514"
+    },
+    "current": {
+      "Cargo.toml": "b21802694254e6a9c312f0acea6e836c827b2d15b992543caa2bb4348f97ff42",
+      "Cargo.lock": "bbd2279b38108a5f8364a3f1d7b0fab7bc36f05343ec4e47bf202f3fa7613cb8",
+      "src/codec.rs": "6cc26854ed003ce7584210ca76eca2abb37a77f2e399043f07550ae6daea6422",
+      "src/concealment.rs": "0b024870fc663fc17eda2de8a93a20c2dbf5b0ff82a295a97040c2b00bc73d4c",
+      "src/entropy.rs": "ede43cb7ac92a1d00245307d99f58f080ca909614476cf26c1b78508e7086509",
+      "src/harmonic.rs": "0eddd938566232bd91b5eba280c26a8d79a14b8edf3bb69071853a283625addc",
+      "src/harmonic_joint.rs": "24f0902f3584689d9f2ca1b895404e96e46a511b9b10e4f2b3359bad9b2a8285",
+      "src/lib.rs": "bc6abbd62db785af492ce3a21aa0061da75ff2f1fa72c5d6b050c823be95073b",
+      "src/pulse.rs": "ed639fb3441c37d8251849bc5b6ffb2958558ce1d74d89726ddb7684eac971d3",
+      "src/pulse_classes.rs": "b5abb1763796c54d33081fdabb64ca5f5db2ea3bbb9cf96e6d3f506647d112eb",
+      "src/transform.rs": "4bcac58e353f08ccbaf0f6cc6bed175a55780f25fad5c6c080045fe433ec93fc",
+      "examples/cpu_probe.rs": "b9c61ab124f979aa18063e2a4ce27a3b1aabf46471e196b62b52e9a0ccd1c6e1",
+      "examples/roundtrip.rs": "cc7d00a39f05f4b4df994687fc237be923b7e2c64459b37b04e78e11e425db3e",
+      "tools/evaluate_speech.py": "104b07f0b1ee68cf9f182c75a3c18639f33f123ae20ec27d37db486ec1d2c793",
+      "tools/evaluate_quality.py": "8b3fd85de8a04534abdf4036a6ab5780c506097989dff6b4034f9825cf8e90c3",
+      "tools/measure_cpu.py": "3900bb42c87e1d073dba99a12decd33ae3968dad241c6c08cd3c891104a7f514"
+    }
+  },
+  "executables": {
+    "baseline_roundtrip": "location-role-054",
+    "baseline_probe": "location-role-053",
+    "joint_published_roundtrip": "location-role-056",
+    "joint_published_probe": "location-role-055"
+  },
+  "executable_sha256": {
+    "baseline_roundtrip": "9bc7d3be301de691cff01a84c837f85faa02e6f351b1d5288a82d804f170d6a2",
+    "baseline_probe": "8f5733c1df5fd7be9fcfe1854c931e66a27923e2e850f516ae46ca434e6cb230",
+    "joint_published_roundtrip": "7e9278f6c32a72371e410dce81ac7846f2de157548ece3256f85d8086f1f8272",
+    "joint_published_probe": "15b56472cf94730923c847f6aafd96b10651eab38369060c0700f2bef501866b"
+  },
+  "baseline": {
+    "source_commit": "91fef4a87a777e412a7a5b3497fdc5590307ab93",
+    "flags": [
+      "--harmonic"
+    ]
+  },
+  "frozen_candidates": {
+    "joint_published": {
+      "source_commit": "56a347c61f831c30b2d2fef63631aec03598875c",
+      "candidate_flags": [
+        "--harmonic"
+      ]
+    }
+  },
+  "metric_helper_paths": {
+    "evaluate_quality.py": "location-role-008",
+    "evaluate_speech.py": "location-role-009"
+  },
+  "metric_helper_hashes": {
+    "evaluate_quality.py": "8b3fd85de8a04534abdf4036a6ab5780c506097989dff6b4034f9825cf8e90c3",
+    "evaluate_speech.py": "104b07f0b1ee68cf9f182c75a3c18639f33f123ae20ec27d37db486ec1d2c793"
+  },
+  "metric_helper_ast_hashes": {
+    "evaluate_quality.py": {
+      "intelligibility": "847e197d2bbeeb72ea4eb8ba9303aef2f440c44989fa9e729bbe3a09d4f21b10",
+      "spectrum": "a9cd5feeff0fc82ae01ff75746f60f744ab6adeceb02e57c42189f0678f699f5",
+      "spectral_distance": "3a620cef132dd1786214308a9e1490ab085654893ccaf4c6824cff7575f7af16"
+    },
+    "evaluate_speech.py": {
+      "floats": "ae5a35096e86bca6ba7cf1c6d7ade7eb06a500b93598636fcdb349cc6ccb5538",
+      "pcm": "ccc5581927a616e807e0a8fff0e9fa4a575d6f2994dcc5d2b4ab6fce4b75c807",
+      "noisy": "a4120c00d4a68c2e614ef264e12fa379f8876b3db70fb7e7c0df92d9715be4a5",
+      "score": "be9e58d382298a239a9e0b9f632bf2625205d884d2c37015b7a8671c154acbef"
+    }
+  },
+  "package_metadata": {
+    "numpy": {
+      "version": "2.5.3",
+      "metadata_sha256": "451a9b8028000588e66b0b415587b6aef0bbc51a96d8e8a0cba0dc23acf64f99",
+      "metadata_path": "location-role-011"
+    },
+    "scipy": {
+      "version": "1.18.1",
+      "metadata_sha256": "1adfbde8be136cbf348b889c51028e7e1824cdb90d29a26d8e81501948864fae",
+      "metadata_path": "location-role-013"
+    },
+    "pystoi": {
+      "version": "0.4.1",
+      "metadata_sha256": "cc783ed1abfbc02fdd7fd974933cae7708790134da128e0bea24e6e175e52d87",
+      "metadata_path": "location-role-012"
+    }
+  },
+  "python_version": "3.14.8 (main, Sep 30 2026, 17:55:09) [Clang 21.0.0 (clang-2100.3.34.2)]",
+  "ffmpeg_path": "location-role-001",
+  "ffmpeg_sha256": "c8173e9755795978bce8e104f8d7044fabe7d6d84044aba37d3648c6f4e4e1a8",
+  "reference_driver_sha256": "fa253d0542d7ca95262259e14c3eb9e1505b1cc380e481d01a53965b74e229c8",
+  "noise_seed": "snacka-speech-6716:{clip}:{snr}",
+  "dither_seed": "snacka-quality-6716:{clip}:{condition}:{frame_ms}:12000",
+  "metric_reference": "STOI/ESTOI clean reference; SNR/LSD encoder input; unchanged frozen metric funcs/call order",
+  "input_pipeline": "one direct selected WAV to mono48k f32le per clip, no FLAC derivative",
+  "wire_contract": {
+    "version": 7,
+    "algorithmic_delay": 120,
+    "frame_packet_bytes": {
+      "10": 15,
+      "20": 30
+    },
+    "drain_samples": 120,
+    "drain_count": 1,
+    "profile_hybrid_allowed": false
+  },
+  "gates": "Decimal differences of six-decimal endpoints; clean means STOI/ESTOI >0 per duration; noise20/noise10 means >=0; every clean clip duration delta >=−0.01;16 fixed denominator; any missing endpoint UNEVALUABLE and operational/trace/provenance FAIL",
+  "warning_policy": "Catch warnings/nonfinite/short/silent endpoints as blank UNEVALUABLE; no fallback1.0, replacement, reduced denominator or retuning",
+  "approval_policy": "Separate root GO for selection/download/access and later first scoring; no builds/timing or scores in static preparation; new exclusive outputs only; no reruns for desired result",
+  "binary_build_provenance": {
+    "current_built_source_commit": "038a5b80a57aeb2ae3bb911fa752a7e63b332d78",
+    "published_comparison_commit": "56a347c61f831c30b2d2fef63631aec03598875c",
+    "current_main56_all16_pinned_runtime_build_example_helper_files_exact038": true,
+    "baseline_built_source_commit": "91fef4a87a777e412a7a5b3497fdc5590307ab93",
+    "build_flags": "Cargo release library; manual example edition2024,O3,CGU16,overflow-checks=yes; no LTO/nativeCPU/instrumentation",
+    "no_binary_rebuilt_for_this_protocol": true,
+    "release_source_registry_snapshot_sha256": "9a09d31d73a87f8d3e8ce851b3b59fd72b74cb40cb346a7060eee26b46ad5796",
+    "release_binaries_registry_snapshot_sha256": "8d44fbb0987a6a12395098f89003fdb5743f9b53f45aca0246dfda0dc3254529",
+    "release_evidence_snapshot_sha256": "53aaeaf32fdf4ee8613ebd5a40b2539ddd8c4185983a707dfaca9c62cb32c63d"
+  }
+}

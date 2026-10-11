@@ -1,0 +1,14 @@
+candidate,clip,condition,frame_ms,metric,baseline,current,delta
+joint_published,sv_se-test-record-2,noise10,10,estoi,0.550602,0.548331,-0.002271
+joint_published,sv_se-test-record-2,noise10,20,estoi,0.592949,0.588933,-0.004016
+joint_published,sv_se-test-record-3,noise10,20,estoi,0.619934,0.619498,-0.000436
+joint_published,sv_se-test-record-4,noise20,10,stoi,0.697066,0.697037,-0.000029
+joint_published,sv_se-test-record-4,noise20,10,estoi,0.585796,0.585738,-0.000058
+joint_published,sv_se-test-record-6,noise10,10,estoi,0.435596,0.435320,-0.000276
+joint_published,sv_se-test-record-8,clean,10,estoi,0.656223,0.656106,-0.000117
+joint_published,sv_se-test-record-8,noise20,10,estoi,0.507049,0.506592,-0.000457
+joint_published,sv_se-test-record-8,noise10,10,estoi,0.389115,0.387605,-0.001510
+joint_published,sv_se-test-record-10,noise10,10,estoi,0.631926,0.631359,-0.000567
+joint_published,sv_se-test-record-11,clean,10,estoi,0.623547,0.623291,-0.000256
+joint_published,sv_se-test-record-11,noise10,10,estoi,0.396664,0.396373,-0.000291
+joint_published,sv_se-test-record-28,noise10,20,estoi,0.568085,0.567700,-0.000385

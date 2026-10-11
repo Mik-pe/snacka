@@ -1,7 +1,7 @@
-8c8460c091640dbd0b3a78f2e918ae354655155f1579dc8fc123aae9ecbf4b6c  README.md
+6ac692b3e14e2b4040f8ab08aa52b29b8c4fdef1f1cfec321a27dc0d4b04424f  README.md
 76d30c2a110593c1d28ff0ce80985283ddb0a9c2b0c1175f128c238515c9a5c5  docs/harmonic-joint-fit.md
-1f3cff0bd7ca6606967b11da2bd06573538bae615a7759f6db6517eebe659b55  docs/measurements/2026-10-11-harmonic-analysis-artifacts.sha256
-96b6220c62bdf4cafea0900b5e287789470dbb9f52d4f371a143a0267d77b09f  docs/measurements/2026-10-11-harmonic-pitch-artifacts.sha256
+955a3f592a17634eb1162567006e74df7c0bbdb474570ed46e1da27ed138d097  docs/measurements/2026-10-11-harmonic-analysis-artifacts.sha256
+b53650ad90c7003bb17470c5b83466826bb5c42de8f65d6a1a4e470a31188f7f  docs/measurements/2026-10-11-harmonic-pitch-artifacts.sha256
 5953f65f38cd26c981cbc268de95a38939422bf6e13c540815cd444b08574938  docs/measurements/2026-10-11-harmonic-joint-one-binaries.csv
 026af2e8b1ac58425cdb5d9b56725d0797663011506a3b15e1f4741862c39dfe  docs/measurements/2026-10-11-harmonic-joint-one-binary-freeze.json
 c582761ae0b3a51e3cbe5f30c87c6de67d5b483567c78183461ac89c536f39ab  docs/measurements/2026-10-11-harmonic-joint-one-cpu-default.csv

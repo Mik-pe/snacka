@@ -1,0 +1,14 @@
+{
+  "recorded_at_utc": "2026-10-11T02:00:40.183321+00:00",
+  "status": "STOPPED_BEFORE_ANY_DOWNLOAD_OR_INDIVIDUAL_INPUT",
+  "frozen_package_manifest_sha256": "ca2fda00a6dd935312c4287d335f70a588b1db995faa1b7344a485cc9ab4c8c1",
+  "failure": "common imports subprocess, which imports select; local select.py shadows the standard-library module and re-imports partially initialized common",
+  "exception": "ImportError: cannot import name BASE from partially initialized module common",
+  "frozen_files_unchanged": true,
+  "download_directory_created": false,
+  "network_requests": 0,
+  "individual_ids_or_audio_accessed": false,
+  "codec_or_metric_functions_executed": false,
+  "process_terminal_exit_code": 1,
+  "retry_performed": false
+}

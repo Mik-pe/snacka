@@ -1,0 +1,31 @@
+{
+  "frozen_at_utc": "2026-10-11T02:26:18.548298+00:00",
+  "state": "V3_PACKAGE_RULES_SOURCE_INPUT_PROVENANCE_FROZEN_BEFORE_ANY_REAL_NORMALIZATION_OR_NEW_SCORES",
+  "files": {
+    "README.md": "dcbc6feebc502ea2cf5a2d4d16859f3cf3a72a0de4c3af9321769b6a01b40a9e",
+    "amplitude-design-bindings.json": "1166594a74648b903139160d4d8b3c81af5c3930918eeaf5d7b8de91e878ce17",
+    "amplitude-design-observations.json": "aa7155f985fda805044543bd87182a91dc5752921dc368cb6c0892cbb088fe31",
+    "amplitude-design-proposal.md": "5c24112e3c950dfcba28adc9585d990a7c7e1d608052937b933d2c9effe14530",
+    "amplitude_contract.py": "ef4a07066d27e61f57269bff507837debeda5bc3bf5c1ac3fa016978f4e80ef8",
+    "common.py": "34c0825e8bd3276a2df5c051153c1f5690589f87adf573930148ea8d0623d4ce",
+    "evaluate.py": "5718d1b04d5813dcc1eda255cb9836f97e4c525d3ce918506a673fe45abca686",
+    "path_preflight.py": "06a8fe971b0e2e5776dfa1690b2d5ce55e54537647c2203c098ae3e9ac4193d7",
+    "prior-v2-artifacts.sha256": "6ede83a2f5b6070c7343145a9d33523eb09dbb0c13fded5a73618984fd589803",
+    "prior-v2-frozen.json": "fdf84fac9076a3053c46ad07fc7d548b0c7d39732e30e9114999c21fba3180df",
+    "prior-v2-protocol.json": "3b080c1f2b78ab410d4b9f2a63ae110700178e027e0c7e36efe80996d76a1647",
+    "protocol.json": "dd59bec0bbdd42ed49b370c964f1126a152aff26fdfa0084f0f313f1b02af3d5",
+    "published-binaries.csv": "5953f65f38cd26c981cbc268de95a38939422bf6e13c540815cd444b08574938",
+    "published-source.csv": "9da4b9a00c41ad111fbbb114054a6f6dc4cea01d2ad9be8ed89d5d70c9c11b90",
+    "raw-conversion-inventory.json": "b0c18b88779bd8679fd5984b56bc4eab13717986010d1e92ae3022909924409d",
+    "reference_validate.py": "fa253d0542d7ca95262259e14c3eb9e1505b1cc380e481d01a53965b74e229c8",
+    "release-binaries.json": "8d44fbb0987a6a12395098f89003fdb5743f9b53f45aca0246dfda0dc3254529",
+    "release-evidence.json": "53aaeaf32fdf4ee8613ebd5a40b2539ddd8c4185983a707dfaca9c62cb32c63d",
+    "release-source-freeze.json": "9a09d31d73a87f8d3e8ce851b3b59fd72b74cb40cb346a7060eee26b46ad5796",
+    "static-inspection.json": "a324d1956f766c2830ae3ab710fba5f380fc57e915f7b9ce98c822e2413e9b6a",
+    "synthetic_checks.py": "247ccc4f8c86f4129c2427c75a76bbd4d126138ce8635066a71cf4b4bb20a8a0"
+  },
+  "prior_v2_evidence_immutable": true,
+  "approval_scope": "implementation/synthetic/default-nonaudio-preflight only; separate exact-head scoring approval required",
+  "old_main56_vs91_executables_unchanged": true,
+  "no_real_input_functions_executed": true
+}

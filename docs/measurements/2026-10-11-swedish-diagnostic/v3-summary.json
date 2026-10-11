@@ -1,0 +1,15 @@
+{
+  "candidate": "joint_published",
+  "comparison_scope": "V3 diagnostic fixed exposed16; never pooled with failed V2; retained raw reuse, no new conversion",
+  "primary_gate_status": "PASS",
+  "rows": 96,
+  "recordings": 16,
+  "distinct_speaker_count": "UNKNOWN",
+  "statistical_independence": "NOT_ESTABLISHED",
+  "protocol_failures": 0,
+  "metric_unevaluable_rows": 0,
+  "individual_metric_regressions": 13,
+  "fatal_error": "",
+  "post_run_frozen_integrity_verified": true,
+  "finished_at_utc": "2026-10-11T02:32:55.573299+00:00"
+}

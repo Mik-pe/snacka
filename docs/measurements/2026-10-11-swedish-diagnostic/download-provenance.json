@@ -1,0 +1,21 @@
+[
+  {
+    "role": "metadata",
+    "requested_url": "https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/sv_se/test.tsv",
+    "http_status": 200,
+    "local_filename": "test.tsv",
+    "size": 437092,
+    "sha256": "55f48c5385a6e5fb8a62ea90212c04b005e2f77d7bd8fcf20bc3a5bda223aae2",
+    "completed_at_utc": "2026-10-11T02:05:00.151301+00:00",
+    "git_blob_sha1": "0adf1457a95fb5355d15e132324dedbe67226fb2"
+  },
+  {
+    "role": "archive",
+    "requested_url": "https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/sv_se/audio/test.tar.gz",
+    "http_status": 200,
+    "local_filename": "test.tar.gz",
+    "size": 440702047,
+    "sha256": "3792fd432675e16d85a67f5caf9927ad608aefc2484d738f26704f75584a5a6f",
+    "completed_at_utc": "2026-10-11T02:05:20.182939+00:00"
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "validation_scope": "static publication projection/hash/CSV/Decimal/privacy/link checks; no audio/codec/metrics/build/timing",
+  "source_base_commit": "56a347c61f831c30b2d2fef63631aec03598875c",
+  "source_git_object_rows": 31,
+  "executable_rows": 4,
+  "projection_registry_rows": 84,
+  "verbatim_artifacts": 58,
+  "json_projections": 20,
+  "hash_ledgers": 6,
+  "injective_location_roles": 99,
+  "declared_removed_selection_fields": 48,
+  "declared_removed_transient_transport_fields": 6,
+  "recomputed": {
+    "v2": {
+      "rows": 96,
+      "gates_recomputed": 76,
+      "descriptives_recomputed": 72,
+      "regressions_recomputed": 10,
+      "protocol_status_counts": {
+        "PASS": 54,
+        "FAIL": 42
+      },
+      "gate_counts": {
+        "FAIL": 40,
+        "PASS": 36
+      }
+    },
+    "v3": {
+      "rows": 96,
+      "gates_recomputed": 76,
+      "descriptives_recomputed": 72,
+      "regressions_recomputed": 13,
+      "protocol_status_counts": {
+        "PASS": 96
+      },
+      "gate_counts": {
+        "PASS": 76
+      }
+    }
+  },
+  "normalization_verbatim_records": 16,
+  "noise_verbatim_records": 32,
+  "scaled_records": 7,
+  "identity_records": 9,
+  "nonzero_to_zero_total": 0,
+  "noise_clipped_total": 801,
+  "original_independent_data_audit_sha256": "3269fe7d4dca4cec43f81d648e0e25f9554d4e1caaa2e5ed4ce52a2741a20f04",
+  "all_original_transcript_strings_absent": true,
+  "private_names_machine_paths_and_signed_transport_absent": true,
+  "local_document_links_exist": true,
+  "runtime_tools_tests_edited": false
+}
