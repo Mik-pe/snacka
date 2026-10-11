@@ -1,0 +1,332 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "a3eeff3262eba95e9b221f70cbebed27f0fb87af34c953b305ca82521e876856",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "protocol_sha256": "c4fe6d2a5a431b82c6c9d9f829b0141e6b2e2801db93594eac321cdb3e487a40",
+    "speaker_selection_sha256": "e48d1ee2480f9811ba34a2a4ee6353bd974adf2dd76ec44e1708ddaf14b414c6",
+    "selected_after_protocol_freeze": true,
+    "selected_at_utc": "2026-10-11T00:07:19.159725+00:00",
+    "no_audio_decoding_or_listening": true,
+    "no_quality_metrics": true,
+    "no_source_changes": true,
+    "archive_records": [
+      {
+        "subset": "dev-clean",
+        "source_url": "https://openslr.trmal.net/resources/12/dev-clean.tar.gz",
+        "official_md5": "42e2234ba48799c1f50f24a7926300a1",
+        "observed_md5": "42e2234ba48799c1f50f24a7926300a1",
+        "sha256": "76f87d090650617fca0cac8f88b9416e0ebf80350acb97b343a85fa903728ab3",
+        "archive_bytes": 337926286,
+        "archive_path": "location-role-129",
+        "official_md5_metadata_sha256": "efe6522682d078fdcfd2c3b2d418a53a89683b342dd5147a769a41a7e021fe3f",
+        "total_members": 2943,
+        "total_flac_members": 2703,
+        "selected_voice_total_flac_members": {
+          "84": 65,
+          "1462": 94,
+          "174": 59,
+          "251": 75
+        }
+      },
+      {
+        "subset": "dev-other",
+        "source_url": "https://openslr.trmal.net/resources/12/dev-other.tar.gz",
+        "official_md5": "c8d0bcc9cca99d4f8b62fcc847357931",
+        "observed_md5": "c8d0bcc9cca99d4f8b62fcc847357931",
+        "sha256": "12661c48e8c3fe1de2c1caa4c3e135193bfb1811584f11f569dd12645aa84365",
+        "archive_bytes": 314305928,
+        "archive_path": "location-role-133",
+        "official_md5_metadata_sha256": "efe6522682d078fdcfd2c3b2d418a53a89683b342dd5147a769a41a7e021fe3f",
+        "total_members": 3085,
+        "total_flac_members": 2864,
+        "selected_voice_total_flac_members": {
+          "700": 126,
+          "1585": 72,
+          "116": 101,
+          "1255": 108
+        }
+      }
+    ],
+    "metadata_records": [
+      {
+        "subset": "dev-clean",
+        "member_ordinal": 1,
+        "member_name": "LibriSpeech/LICENSE.TXT",
+        "bytes": 193,
+        "sha256": "908b0b565ae9bf61b7b41447cb0b83564f320375723bcc884ec30e5537a0d5dc",
+        "path": "location-role-126"
+      },
+      {
+        "subset": "dev-clean",
+        "member_ordinal": 2,
+        "member_name": "LibriSpeech/README.TXT",
+        "bytes": 8039,
+        "sha256": "596ea41ecf75d10a0393f086d863d46d1a0b0afd6670717c352b8a46f42650bf",
+        "path": "location-role-127"
+      },
+      {
+        "subset": "dev-clean",
+        "member_ordinal": 4,
+        "member_name": "LibriSpeech/SPEAKERS.TXT",
+        "bytes": 125034,
+        "sha256": "3350f093382f8baa1d589c9f5a5cee8ec3705e656f521d6eafbaa31a5fcd8f76",
+        "path": "location-role-128"
+      },
+      {
+        "subset": "dev-other",
+        "member_ordinal": 1,
+        "member_name": "LibriSpeech/LICENSE.TXT",
+        "bytes": 193,
+        "sha256": "908b0b565ae9bf61b7b41447cb0b83564f320375723bcc884ec30e5537a0d5dc",
+        "path": "location-role-130"
+      },
+      {
+        "subset": "dev-other",
+        "member_ordinal": 2,
+        "member_name": "LibriSpeech/README.TXT",
+        "bytes": 8039,
+        "sha256": "596ea41ecf75d10a0393f086d863d46d1a0b0afd6670717c352b8a46f42650bf",
+        "path": "location-role-131"
+      },
+      {
+        "subset": "dev-other",
+        "member_ordinal": 4,
+        "member_name": "LibriSpeech/SPEAKERS.TXT",
+        "bytes": 125034,
+        "sha256": "3350f093382f8baa1d589c9f5a5cee8ec3705e656f521d6eafbaa31a5fcd8f76",
+        "path": "location-role-132"
+      }
+    ],
+    "selected_flacs": [
+      {
+        "subset": "dev-clean",
+        "speaker_id": 84,
+        "official_sex": "F",
+        "metadata_line": 59,
+        "member_ordinal": 507,
+        "flac_member_ordinal": 463,
+        "voice_flac_ordinal": 1,
+        "member_name": "LibriSpeech/dev-clean/84/121123/84-121123-0012.flac",
+        "clip": "84-121123-0012",
+        "flac_bytes": 51846,
+        "flac_sha256": "b8b2682f6d8e8daa29bd0d54e2506bf9ebb91d96eb03c9f38d415ef08813aab8",
+        "flac_path": "location-role-124"
+      },
+      {
+        "subset": "dev-clean",
+        "speaker_id": 84,
+        "official_sex": "F",
+        "metadata_line": 59,
+        "member_ordinal": 508,
+        "flac_member_ordinal": 464,
+        "voice_flac_ordinal": 2,
+        "member_name": "LibriSpeech/dev-clean/84/121123/84-121123-0018.flac",
+        "clip": "84-121123-0018",
+        "flac_bytes": 73307,
+        "flac_sha256": "0cbb426b683e06707e0bb0f30bd9e34917d2a75aac5877cdc3d64320cd9f7fbd",
+        "flac_path": "location-role-125"
+      },
+      {
+        "subset": "dev-clean",
+        "speaker_id": 174,
+        "official_sex": "M",
+        "metadata_line": 106,
+        "member_ordinal": 1368,
+        "flac_member_ordinal": 1248,
+        "voice_flac_ordinal": 1,
+        "member_name": "LibriSpeech/dev-clean/174/50561/174-50561-0005.flac",
+        "clip": "174-50561-0005",
+        "flac_bytes": 84498,
+        "flac_sha256": "25c81fd3af839dad7f0185dba4c836479d4f3fdc828d9c0ae605960ed542ff5c",
+        "flac_path": "location-role-118"
+      },
+      {
+        "subset": "dev-clean",
+        "speaker_id": 174,
+        "official_sex": "M",
+        "metadata_line": 106,
+        "member_ordinal": 1369,
+        "flac_member_ordinal": 1249,
+        "voice_flac_ordinal": 2,
+        "member_name": "LibriSpeech/dev-clean/174/50561/174-50561-0018.flac",
+        "clip": "174-50561-0018",
+        "flac_bytes": 35309,
+        "flac_sha256": "2b9bd5b5511aa95ce26166586a656fd17c3dbeb4f75812708eae71a41001314c",
+        "flac_path": "location-role-119"
+      },
+      {
+        "subset": "dev-clean",
+        "speaker_id": 1462,
+        "official_sex": "F",
+        "metadata_line": 542,
+        "member_ordinal": 1821,
+        "flac_member_ordinal": 1665,
+        "voice_flac_ordinal": 1,
+        "member_name": "LibriSpeech/dev-clean/1462/170138/1462-170138-0027.flac",
+        "clip": "1462-170138-0027",
+        "flac_bytes": 91334,
+        "flac_sha256": "88118c60081bd8d096e5e42addb18361fa30d2b01f6d9672529ce2e841fbc74f",
+        "flac_path": "location-role-115"
+      },
+      {
+        "subset": "dev-clean",
+        "speaker_id": 1462,
+        "official_sex": "F",
+        "metadata_line": 542,
+        "member_ordinal": 1822,
+        "flac_member_ordinal": 1666,
+        "voice_flac_ordinal": 2,
+        "member_name": "LibriSpeech/dev-clean/1462/170138/1462-170138-0021.flac",
+        "clip": "1462-170138-0021",
+        "flac_bytes": 170393,
+        "flac_sha256": "99e6e1bbdc98ff6e153f8632cc39b2d3525844fd88124d47ba3b39e9754e5f47",
+        "flac_path": "location-role-114"
+      },
+      {
+        "subset": "dev-clean",
+        "speaker_id": 251,
+        "official_sex": "M",
+        "metadata_line": 148,
+        "member_ordinal": 1922,
+        "flac_member_ordinal": 1759,
+        "voice_flac_ordinal": 1,
+        "member_name": "LibriSpeech/dev-clean/251/136532/251-136532-0019.flac",
+        "clip": "251-136532-0019",
+        "flac_bytes": 173792,
+        "flac_sha256": "1222caea81aee75267531c171b80fd5a2d4d9a85c5dd44a91a661a5f9ff3d05c",
+        "flac_path": "location-role-121"
+      },
+      {
+        "subset": "dev-clean",
+        "speaker_id": 251,
+        "official_sex": "M",
+        "metadata_line": 148,
+        "member_ordinal": 1923,
+        "flac_member_ordinal": 1760,
+        "voice_flac_ordinal": 2,
+        "member_name": "LibriSpeech/dev-clean/251/136532/251-136532-0009.flac",
+        "clip": "251-136532-0009",
+        "flac_bytes": 71255,
+        "flac_sha256": "328838d2f1ba0dbcd3a4be61927bd51f26cf8f0a033da766159d6b84a51c44d8",
+        "flac_path": "location-role-120"
+      },
+      {
+        "subset": "dev-other",
+        "speaker_id": 116,
+        "official_sex": "M",
+        "metadata_line": 80,
+        "member_ordinal": 120,
+        "flac_member_ordinal": 105,
+        "voice_flac_ordinal": 1,
+        "member_name": "LibriSpeech/dev-other/116/288048/116-288048-0002.flac",
+        "clip": "116-288048-0002",
+        "flac_bytes": 92446,
+        "flac_sha256": "2b9008642aa715dfec0b76f7141ff9f67ae5f8a20d6972e9757545fea1f4e1ee",
+        "flac_path": "location-role-110"
+      },
+      {
+        "subset": "dev-other",
+        "speaker_id": 116,
+        "official_sex": "M",
+        "metadata_line": 80,
+        "member_ordinal": 121,
+        "flac_member_ordinal": 106,
+        "voice_flac_ordinal": 2,
+        "member_name": "LibriSpeech/dev-other/116/288048/116-288048-0031.flac",
+        "clip": "116-288048-0031",
+        "flac_bytes": 47208,
+        "flac_sha256": "c77af620b95e5a1cdf41cd6710dfe519097c6df2883258f63c15ffbf503f4f07",
+        "flac_path": "location-role-111"
+      },
+      {
+        "subset": "dev-other",
+        "speaker_id": 1255,
+        "official_sex": "M",
+        "metadata_line": 473,
+        "member_ordinal": 1700,
+        "flac_member_ordinal": 1563,
+        "voice_flac_ordinal": 1,
+        "member_name": "LibriSpeech/dev-other/1255/138279/1255-138279-0012.flac",
+        "clip": "1255-138279-0012",
+        "flac_bytes": 98784,
+        "flac_sha256": "658003d69af290d9f1f4cf4b8c2d32fa9e44e14a6e3e0ec5ffa02471fd885bff",
+        "flac_path": "location-role-113"
+      },
+      {
+        "subset": "dev-other",
+        "speaker_id": 1255,
+        "official_sex": "M",
+        "metadata_line": 473,
+        "member_ordinal": 1701,
+        "flac_member_ordinal": 1564,
+        "voice_flac_ordinal": 2,
+        "member_name": "LibriSpeech/dev-other/1255/138279/1255-138279-0002.flac",
+        "clip": "1255-138279-0002",
+        "flac_bytes": 145271,
+        "flac_sha256": "c8da998eaefafb628a3c284d27953751a1c209752c6a1ffd80a9c1199c2fca5e",
+        "flac_path": "location-role-112"
+      },
+      {
+        "subset": "dev-other",
+        "speaker_id": 1585,
+        "official_sex": "F",
+        "metadata_line": 577,
+        "member_ordinal": 1817,
+        "flac_member_ordinal": 1671,
+        "voice_flac_ordinal": 1,
+        "member_name": "LibriSpeech/dev-other/1585/131718/1585-131718-0053.flac",
+        "clip": "1585-131718-0053",
+        "flac_bytes": 148471,
+        "flac_sha256": "da1a5430c0ccf03c22aa4190d151c9f2edf616b9e2d33103ba2d7903cb04ae2d",
+        "flac_path": "location-role-117"
+      },
+      {
+        "subset": "dev-other",
+        "speaker_id": 1585,
+        "official_sex": "F",
+        "metadata_line": 577,
+        "member_ordinal": 1818,
+        "flac_member_ordinal": 1672,
+        "voice_flac_ordinal": 2,
+        "member_name": "LibriSpeech/dev-other/1585/131718/1585-131718-0043.flac",
+        "clip": "1585-131718-0043",
+        "flac_bytes": 138311,
+        "flac_sha256": "fff230ac85001475d572fcf0ad6ec332d2dd9193189fd47ccc6c1677b4f3be87",
+        "flac_path": "location-role-116"
+      },
+      {
+        "subset": "dev-other",
+        "speaker_id": 700,
+        "official_sex": "F",
+        "metadata_line": 308,
+        "member_ordinal": 2213,
+        "flac_member_ordinal": 2049,
+        "voice_flac_ordinal": 1,
+        "member_name": "LibriSpeech/dev-other/700/122868/700-122868-0016.flac",
+        "clip": "700-122868-0016",
+        "flac_bytes": 51736,
+        "flac_sha256": "e0e4be9d39478400d23f10c0f5e4be75fa0e9353b2a0ab0287c47fa7a195a95a",
+        "flac_path": "location-role-122"
+      },
+      {
+        "subset": "dev-other",
+        "speaker_id": 700,
+        "official_sex": "F",
+        "metadata_line": 308,
+        "member_ordinal": 2214,
+        "flac_member_ordinal": 2050,
+        "voice_flac_ordinal": 2,
+        "member_name": "LibriSpeech/dev-other/700/122868/700-122868-0032.flac",
+        "clip": "700-122868-0032",
+        "flac_bytes": 116863,
+        "flac_sha256": "0e0c2d81546305b538865afd22fb23fec8453b6e92f37e6f3e020b7fee32328a",
+        "flac_path": "location-role-123"
+      }
+    ],
+    "joint_registry_snapshot_path": "location-role-134",
+    "joint_registry_snapshot_sha256": "c00ece7286033a5f1c30f0ef91670fe4346ad16c7dc019f482c9850062e204de"
+  }
+}

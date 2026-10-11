@@ -1,0 +1,80 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "60150f1a1c381e66af61103c9919a94149e0684c96809c2426fc8f877e84c023",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "driver_pid": 46757,
+    "plan": "location-role-033",
+    "source": "038a5b80a57aeb2ae3bb911fa752a7e63b332d78",
+    "started_utc": "2026-10-11T00:40:15.177395+00:00",
+    "order": [
+      "harmonic",
+      "default"
+    ],
+    "retries": 0,
+    "filtered_rows": 0,
+    "stages": {
+      "harmonic": {
+        "started_utc": "2026-10-11T00:40:15.177566+00:00",
+        "argv": [
+          "location-role-096",
+          "location-role-021",
+          "location-role-097",
+          "docs/measurements/2026-10-11-harmonic-joint-one-cpu-harmonic.csv",
+          "--current",
+          "location-role-045",
+          "--baseline",
+          "location-role-006",
+          "--bitrates",
+          "12000",
+          "--repetitions",
+          "4",
+          "--encode-frames",
+          "10000",
+          "--decode-frames",
+          "10000",
+          "--operations",
+          "encode",
+          "--allow-trace-changes",
+          "--harmonic",
+          "--baseline-harmonic"
+        ],
+        "child_pid": 46758,
+        "exit_code": 0,
+        "ended_utc": "2026-10-11T00:44:41.521399+00:00",
+        "child_terminal": true
+      },
+      "default": {
+        "started_utc": "2026-10-11T00:44:41.521538+00:00",
+        "argv": [
+          "location-role-096",
+          "location-role-021",
+          "location-role-097",
+          "docs/measurements/2026-10-11-harmonic-joint-one-cpu-default.csv",
+          "--current",
+          "location-role-045",
+          "--baseline",
+          "location-role-006",
+          "--bitrates",
+          "12000",
+          "--repetitions",
+          "4",
+          "--encode-frames",
+          "10000",
+          "--decode-frames",
+          "10000",
+          "--operations",
+          "encode"
+        ],
+        "child_pid": 47495,
+        "exit_code": 0,
+        "ended_utc": "2026-10-11T00:45:00.547482+00:00",
+        "child_terminal": true
+      }
+    },
+    "ended_utc": "2026-10-11T00:45:00.547631+00:00",
+    "all_children_terminal": true
+  }
+}

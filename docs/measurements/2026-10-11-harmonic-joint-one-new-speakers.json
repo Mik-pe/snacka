@@ -1,0 +1,161 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "e48d1ee2480f9811ba34a2a4ee6353bd974adf2dd76ec44e1708ddaf14b414c6",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "protocol_json_sha256": "c4fe6d2a5a431b82c6c9d9f829b0141e6b2e2801db93594eac321cdb3e487a40",
+    "metadata_sha256": "3350f093382f8baa1d589c9f5a5cee8ec3705e656f521d6eafbaa31a5fcd8f76",
+    "official_test_clean_speakers": [
+      61,
+      121,
+      237,
+      260,
+      672,
+      908,
+      1089,
+      1188,
+      1221,
+      1284,
+      1320,
+      1580,
+      1995,
+      2094,
+      2300,
+      2830,
+      2961,
+      3570,
+      3575,
+      3729,
+      4077,
+      4446,
+      4507,
+      4970,
+      4992,
+      5105,
+      5142,
+      5639,
+      5683,
+      6829,
+      6930,
+      7021,
+      7127,
+      7176,
+      7729,
+      8224,
+      8230,
+      8455,
+      8463,
+      8555
+    ],
+    "known72_frozen_trace_reference_path": "location-role-007",
+    "known72_frozen_trace_reference_sha256": "152b80a2b04e6df34474999dfe5ce98bdb41d5f0932450f0a9a08c5c59921d33",
+    "known72_exposed36": [
+      61,
+      260,
+      672,
+      908,
+      1089,
+      1188,
+      1221,
+      1284,
+      1320,
+      1580,
+      1995,
+      2094,
+      2300,
+      2830,
+      2961,
+      3575,
+      3729,
+      4077,
+      4446,
+      4507,
+      4970,
+      4992,
+      5105,
+      5142,
+      5639,
+      6829,
+      6930,
+      7021,
+      7127,
+      7176,
+      7729,
+      8224,
+      8230,
+      8455,
+      8463,
+      8555
+    ],
+    "previous_remaining4_selection_path": "location-role-058",
+    "previous_remaining4_selection_sha256": "6a67d94caf332e40dda248ce8539d4111d520ade5e974d70059bbc84f580d65b",
+    "previous_remaining4": [
+      121,
+      237,
+      3570,
+      5683
+    ],
+    "selected_speakers": [
+      {
+        "metadata_line": 59,
+        "speaker_id": 84,
+        "official_sex": "F",
+        "subset": "dev-clean",
+        "minutes": "8.02"
+      },
+      {
+        "metadata_line": 542,
+        "speaker_id": 1462,
+        "official_sex": "F",
+        "subset": "dev-clean",
+        "minutes": "8.04"
+      },
+      {
+        "metadata_line": 106,
+        "speaker_id": 174,
+        "official_sex": "M",
+        "subset": "dev-clean",
+        "minutes": "8.04"
+      },
+      {
+        "metadata_line": 148,
+        "speaker_id": 251,
+        "official_sex": "M",
+        "subset": "dev-clean",
+        "minutes": "8.04"
+      },
+      {
+        "metadata_line": 308,
+        "speaker_id": 700,
+        "official_sex": "F",
+        "subset": "dev-other",
+        "minutes": "10.01"
+      },
+      {
+        "metadata_line": 577,
+        "speaker_id": 1585,
+        "official_sex": "F",
+        "subset": "dev-other",
+        "minutes": "10.03"
+      },
+      {
+        "metadata_line": 80,
+        "speaker_id": 116,
+        "official_sex": "M",
+        "subset": "dev-other",
+        "minutes": "10.02"
+      },
+      {
+        "metadata_line": 473,
+        "speaker_id": 1255,
+        "official_sex": "M",
+        "subset": "dev-other",
+        "minutes": "10.03"
+      }
+    ],
+    "selected_speakers_exposed_overlap": [],
+    "selection_derived_after_protocol_freeze": true
+  }
+}

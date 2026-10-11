@@ -670,90 +670,129 @@ impl Encoder {
             let finalists = crate::harmonic::candidates(
                 &self.input[start..start + samples + ALGORITHMIC_DELAY],
             );
-            for (_, f0) in finalists {
-                if f0 == 0 {
-                    continue;
-                }
-                let (dimensions, edges) = crate::harmonic::layout(f0, &mut positions);
-                crate::harmonic::analyze(
-                    &self.input[start..start + samples + ALGORITHMIC_DELAY],
-                    f0,
-                    &positions,
-                    &mut compact_values,
-                );
-                let codes: [u8; 4] = std::array::from_fn(|group| {
-                    let amplitude = compact_values[edges[group]..edges[group + 1]]
-                        .iter()
-                        .map(|x| x * x)
-                        .sum::<f32>()
-                        .sqrt()
-                        .min(2.0);
-                    let mask = gain_step - 1;
-                    let ceiling = (gain_code(amplitude) + mask) & !mask;
-                    let lower = ceiling
-                        .saturating_sub(gain_step)
-                        .max(u8::from(ceiling != 0) * gain_step);
-                    if (amplitude - gain(lower)).abs() <= (amplitude - gain(ceiling)).abs() {
-                        lower
+            let mut original_harmonic = (f32::NEG_INFINITY, 0usize);
+            #[cfg(test)]
+            crate::harmonic_joint::reset_trials();
+            for joint in [false, true] {
+                let trials = if joint {
+                    usize::from(original_harmonic.1 != 0)
+                } else {
+                    finalists.len()
+                };
+                for &(_, finalist_f0) in &finalists[..trials] {
+                    let f0 = if joint {
+                        original_harmonic.1
                     } else {
-                        ceiling
-                    }
-                });
-                let allocation = crate::pulse::allocate_dimensions(
-                    dimensions,
-                    &codes,
-                    payload_bytes * 8 - 9,
-                    4 * gain_bits as usize,
-                );
-                let mut decoded_values = [0.0f32; FRAME_SAMPLES];
-                for group in 0..4 {
-                    let range = edges[group]..edges[group + 1];
-                    let norm = crate::pulse::quantize(
-                        &compact_values[range.clone()],
-                        allocation[group],
-                        &mut compact_shape[range.clone()],
-                        &mut indices[range.clone()],
-                    );
-                    let scale = if norm == 0.0 {
-                        0.0
-                    } else {
-                        gain(codes[group]) / norm
+                        finalist_f0
                     };
-                    for index in range {
-                        decoded_values[index] = f32::from(compact_shape[index]) * scale;
+                    if f0 == 0 {
+                        continue;
+                    }
+                    let (dimensions, edges) = crate::harmonic::layout(f0, &mut positions);
+                    crate::harmonic::analyze(
+                        &self.input[start..start + samples + ALGORITHMIC_DELAY],
+                        f0,
+                        &positions,
+                        &mut compact_values,
+                    );
+                    #[cfg(test)]
+                    if joint {
+                        crate::harmonic_joint::attempted_trial(f0);
+                    }
+                    if joint
+                        && !crate::harmonic_joint::correct(
+                            &self.input[start..start + samples + ALGORITHMIC_DELAY],
+                            f0,
+                            &positions,
+                            self.plan.window(),
+                            &mut compact_values,
+                        )
+                    {
+                        continue;
+                    }
+                    let codes: [u8; 4] = std::array::from_fn(|group| {
+                        let amplitude = compact_values[edges[group]..edges[group + 1]]
+                            .iter()
+                            .map(|x| x * x)
+                            .sum::<f32>()
+                            .sqrt()
+                            .min(2.0);
+                        let mask = gain_step - 1;
+                        let ceiling = (gain_code(amplitude) + mask) & !mask;
+                        let lower = ceiling
+                            .saturating_sub(gain_step)
+                            .max(u8::from(ceiling != 0) * gain_step);
+                        if (amplitude - gain(lower)).abs() <= (amplitude - gain(ceiling)).abs() {
+                            lower
+                        } else {
+                            ceiling
+                        }
+                    });
+                    let allocation = crate::pulse::allocate_dimensions(
+                        dimensions,
+                        &codes,
+                        payload_bytes * 8 - 9,
+                        4 * gain_bits as usize,
+                    );
+                    let mut decoded_values = [0.0f32; FRAME_SAMPLES];
+                    for group in 0..4 {
+                        let range = edges[group]..edges[group + 1];
+                        let norm = crate::pulse::quantize(
+                            &compact_values[range.clone()],
+                            allocation[group],
+                            &mut compact_shape[range.clone()],
+                            &mut indices[range.clone()],
+                        );
+                        let scale = if norm == 0.0 {
+                            0.0
+                        } else {
+                            gain(codes[group]) / norm
+                        };
+                        for index in range {
+                            decoded_values[index] = f32::from(compact_shape[index]) * scale;
+                        }
+                    }
+                    let mut waveform = [0.0f32; 2 * FRAME_SAMPLES];
+                    let mut decoded_coefficients = [0.0f32; FRAME_SAMPLES];
+                    crate::harmonic::synthesize(
+                        &mut waveform,
+                        samples,
+                        f0,
+                        &positions,
+                        &decoded_values,
+                    );
+                    self.plan
+                        .forward(
+                            &waveform[..2 * samples],
+                            &mut decoded_coefficients[..samples],
+                            &mut self.workspace,
+                        )
+                        .map_err(|_| Error::Input)?;
+                    let improvement: f32 = self.coefficients[..samples]
+                        .iter()
+                        .zip(&decoded_coefficients[..samples])
+                        .map(|(&x, &y)| x * x - (x - y).powi(2))
+                        .sum();
+                    if !joint {
+                        #[cfg(test)]
+                        crate::harmonic_joint::original_trial(f0, improvement);
+                        if improvement > original_harmonic.0 {
+                            original_harmonic = (improvement, f0);
+                        }
+                    }
+                    if improvement > best_improvement {
+                        best_improvement = improvement;
+                        harmonic_mode = true;
+                        harmonic_f0 = f0;
+                        harmonic_dimensions = dimensions;
+                        harmonic_edges = edges;
+                        pulse_codes = codes;
+                        pulse_allocation = allocation;
+                        best_pulses = compact_shape;
                     }
                 }
-                let mut waveform = [0.0f32; 2 * FRAME_SAMPLES];
-                let mut decoded_coefficients = [0.0f32; FRAME_SAMPLES];
-                crate::harmonic::synthesize(
-                    &mut waveform,
-                    samples,
-                    f0,
-                    &positions,
-                    &decoded_values,
-                );
-                self.plan
-                    .forward(
-                        &waveform[..2 * samples],
-                        &mut decoded_coefficients[..samples],
-                        &mut self.workspace,
-                    )
-                    .map_err(|_| Error::Input)?;
-                let improvement: f32 = self.coefficients[..samples]
-                    .iter()
-                    .zip(&decoded_coefficients[..samples])
-                    .map(|(&x, &y)| x * x - (x - y).powi(2))
-                    .sum();
-                if improvement > best_improvement {
-                    best_improvement = improvement;
-                    harmonic_mode = true;
-                    harmonic_f0 = f0;
-                    harmonic_dimensions = dimensions;
-                    harmonic_edges = edges;
-                    pulse_codes = codes;
-                    pulse_allocation = allocation;
-                    best_pulses = compact_shape;
-                }
+                #[cfg(test)]
+                crate::harmonic_joint::selection_score(joint, best_improvement);
             }
         }
         let coded_bins = samples / (1 + band);

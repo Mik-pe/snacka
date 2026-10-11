@@ -1,0 +1,15 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "cda483dc1668882fad82830a27cb756b90f64cc736ec84c51ea21dd7ba06308c",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "immutable_parent": "location-role-060",
+    "sha256": {
+      "run.py": "12cc36cb194523f1db61b1238b9ddf693206a1277ef00eccbad510fe51950e30",
+      "frozen.json": "f2443ae6517e10d0947c333b916968e5a9d7c4db6214177f71f8585e7bedbca2",
+      "protocol.md": "d21de66b76555a8ff389b309253c8210c36dcf25b47c82714711d622108536ac"
+    }
+  }
+}

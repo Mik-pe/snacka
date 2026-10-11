@@ -1,0 +1,54 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "9fae11d9ed1c3d29fcc6cc7f35822ab1278c2c43dc8c10d3a73570c6a0c2ef11",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "source": "038a5b80a57aeb2ae3bb911fa752a7e63b332d78",
+    "plan_sha256": "bf3391112693d2768589d616e09262307f8ed5e163e4e4e1e02a218723bfcfce",
+    "source_executable_helper_input_hashes_reverified": true,
+    "all128_complete": true,
+    "all_owned_children_terminal": true,
+    "retries": 0,
+    "filtered_rows": 0,
+    "artifacts": {
+      "location-role-033": "bf3391112693d2768589d616e09262307f8ed5e163e4e4e1e02a218723bfcfce",
+      "location-role-036": "43a3a977f1aad9e3d61681bd5c274a2ef461bc1d036b5eb83426b378a4f4cf92",
+      "location-role-034": "28d13f3c804be6f8b4083012db07591480ae23b9091f58cba63080fbfde3d3c5",
+      "location-role-035": "60150f1a1c381e66af61103c9919a94149e0684c96809c2426fc8f877e84c023",
+      "docs/measurements/2026-10-11-harmonic-joint-one-cpu-harmonic.csv": "55d4082cc5c991acfcb1fde4d6fcdd04b9865675c34e0e40625a06f5ef4d0cdf",
+      "docs/measurements/2026-10-11-harmonic-joint-one-cpu-default.csv": "c582761ae0b3a51e3cbe5f30c87c6de67d5b483567c78183461ac89c536f39ab",
+      "location-role-039": "4d542f6c898f3eb099c0e3265bddab42f681158b67e4c61eb82af10fd86b1890",
+      "location-role-030": "e25f6eb087e8c321f59ee599f00a1b3635c9ce19f2b741fa57dc395fe2dc84c8"
+    },
+    "balanced_order_key_audit": {
+      "harmonic": {
+        "exact64_ordered_keys_match_frozen_plan": true,
+        "all_repetitions_0_through_3_per_clip_duration": true,
+        "baseline_first_repetitions": [
+          0,
+          2
+        ],
+        "current_first_repetitions": [
+          1,
+          3
+        ],
+        "actual_pair_order_authority": "immutable canonical helper3900, no retries or wrapper intervention"
+      },
+      "default": {
+        "exact64_ordered_keys_match_frozen_plan": true,
+        "all_repetitions_0_through_3_per_clip_duration": true,
+        "baseline_first_repetitions": [
+          0,
+          2
+        ],
+        "current_first_repetitions": [
+          1,
+          3
+        ],
+        "actual_pair_order_authority": "immutable canonical helper3900, no retries or wrapper intervention"
+      }
+    }
+  }
+}

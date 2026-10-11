@@ -1,0 +1,243 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "c4fe6d2a5a431b82c6c9d9f829b0141e6b2e2801db93594eac321cdb3e487a40",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "protocol_id": "snacka-frozen-unseen-dev16-v1",
+    "frozen_at_utc": "2026-10-11T00:04:40.980500+00:00",
+    "state": "FROZEN_BEFORE_SPEAKER_DERIVATION_AND_ARCHIVE_DOWNLOAD; NO_AUDIO_OR_METRICS",
+    "official_source_url": "https://www.openslr.org/12/",
+    "corpus_name": "LibriSpeech",
+    "license": "CC BY 4.0",
+    "audio_scope": "16 kHz English read speech, resampled to mono 48 kHz for this codec; not native-wideband microphone/conversation/multilingual/mobile validation",
+    "metadata": {
+      "path": "location-role-011",
+      "sha256": "3350f093382f8baa1d589c9f5a5cee8ec3705e656f521d6eafbaa31a5fcd8f76",
+      "rule": "Official SPEAKERS.TXT line order; numeric ID, sex F/M, exact subset fields; no name/audio/transcript filtering"
+    },
+    "previously_exposed_speaker_ids": [
+      61,
+      121,
+      237,
+      260,
+      672,
+      908,
+      1089,
+      1188,
+      1221,
+      1284,
+      1320,
+      1580,
+      1995,
+      2094,
+      2300,
+      2830,
+      2961,
+      3570,
+      3575,
+      3729,
+      4077,
+      4446,
+      4507,
+      4970,
+      4992,
+      5105,
+      5142,
+      5639,
+      5683,
+      6829,
+      6930,
+      7021,
+      7127,
+      7176,
+      7729,
+      8224,
+      8230,
+      8455,
+      8463,
+      8555
+    ],
+    "selection": {
+      "subsets": [
+        "dev-clean",
+        "dev-other"
+      ],
+      "speakers_per_subset_and_official_sex": 2,
+      "sex_groups": [
+        "F",
+        "M"
+      ],
+      "speaker_rule": "For EACH subset take first TWO eligible F and first TWO eligible M readers in official metadata order after excluding every exposed ID; no selection from audio",
+      "speakers_total": 8,
+      "clip_rule": "For EACH selected voice retain the first TWO .flac members encountered in its official gzip/tar archive order across all chapters; archive order, not lexical sorting",
+      "clips_per_voice": 2,
+      "clips_total": 16,
+      "exclusions": "NONE based on length, silence, signal quality, intelligibility, transcript, metric or result",
+      "replacement": "NEVER replace any selected voice or clip. Missing members/download corruption are protocol/data failures, not permission to substitute."
+    },
+    "archives": [
+      {
+        "subset": "dev-clean",
+        "url": "https://openslr.trmal.net/resources/12/dev-clean.tar.gz",
+        "official_md5": "42e2234ba48799c1f50f24a7926300a1",
+        "official_size_label": "337M"
+      },
+      {
+        "subset": "dev-other",
+        "url": "https://openslr.trmal.net/resources/12/dev-other.tar.gz",
+        "official_md5": "c8d0bcc9cca99d4f8b62fcc847357931",
+        "official_size_label": "314M"
+      }
+    ],
+    "official_md5_url": "https://openslr.trmal.net/resources/12/md5sum.txt",
+    "archive_proof": "Download immutable complete archives, verify official MD5 and record SHA256/bytes/source URL; validate archive SPEAKERS metadata against pinned metadata; retain global member ordinal, member name, uncompressed FLAC byte count and SHA256 for each selection. Extract only selected FLACs and metadata, never arbitrary archive paths. No audio decode/listening/metrics during selection.",
+    "frozen_candidates": {
+      "joint_one": {
+        "source_commit": "2eb8a40d023722f814484cf8922433bdfef5e90b",
+        "source_hashes": {
+          "src/harmonic_joint.rs": "24f0902f3584689d9f2ca1b895404e96e46a511b9b10e4f2b3359bad9b2a8285",
+          "src/lib.rs": "bc6abbd62db785af492ce3a21aa0061da75ff2f1fa72c5d6b050c823be95073b",
+          "src/pulse.rs": "ed639fb3441c37d8251849bc5b6ffb2958558ce1d74d89726ddb7684eac971d3",
+          "src/pulse_classes.rs": "b5abb1763796c54d33081fdabb64ca5f5db2ea3bbb9cf96e6d3f506647d112eb",
+          "src/entropy.rs": "ede43cb7ac92a1d00245307d99f58f080ca909614476cf26c1b78508e7086509",
+          "src/harmonic.rs": "0eddd938566232bd91b5eba280c26a8d79a14b8edf3bb69071853a283625addc",
+          "src/codec.rs": "6cc26854ed003ce7584210ca76eca2abb37a77f2e399043f07550ae6daea6422",
+          "src/concealment.rs": "0b024870fc663fc17eda2de8a93a20c2dbf5b0ff82a295a97040c2b00bc73d4c",
+          "src/transform.rs": "4bcac58e353f08ccbaf0f6cc6bed175a55780f25fad5c6c080045fe433ec93fc",
+          "examples/roundtrip.rs": "cc7d00a39f05f4b4df994687fc237be923b7e2c64459b37b04e78e11e425db3e",
+          "examples/cpu_probe.rs": "b9c61ab124f979aa18063e2a4ce27a3b1aabf46471e196b62b52e9a0ccd1c6e1"
+        },
+        "source_registry_path": "location-role-015",
+        "source_registry_sha256": "c00ece7286033a5f1c30f0ef91670fe4346ad16c7dc019f482c9850062e204de",
+        "probe_path": "location-role-019",
+        "probe_sha256": "0b927af554d82644e0eca27bcb12990b0d006d1cfa141c4518b5ce6b2275a0c8",
+        "roundtrip_path": "location-role-055",
+        "roundtrip_sha256": "dd1cf73a77ae9bfd317f5b41ecc145b6167e0d749f35ccad04d406e16e544ddf",
+        "candidate_flags": [
+          "--harmonic"
+        ],
+        "baseline_flags": [
+          "--harmonic"
+        ]
+      },
+      "hybrid_staged": {
+        "source_commit": "cac2bd0b7022d75e13df95e95d714e7e08ee5061",
+        "source_manifest_path": "location-role-107",
+        "source_manifest_sha256": "fd9e7db458e2007e55f1cdc0a365fd8cb7506239dc063aa1ee32ef194520b369",
+        "probe_path": "location-role-108",
+        "probe_sha256": "95f1488a9c6b5ce48d846cdc1b535240f19fec47ffa1f4009285e3dfb79a267f",
+        "roundtrip_path": "location-role-109",
+        "roundtrip_sha256": "8eb56aa09d5b3d9bd24368f7cdf3248b0a11a327af8206e6b571761ef8f28b92",
+        "candidate_flags": [
+          "--harmonic",
+          "--hybrid"
+        ],
+        "baseline_flags": [
+          "--harmonic"
+        ]
+      }
+    },
+    "baseline": {
+      "source_commit": "91fef4a87a777e412a7a5b3497fdc5590307ab93",
+      "probe_path": "location-role-006",
+      "probe_sha256": "8f5733c1df5fd7be9fcfe1854c931e66a27923e2e850f516ae46ca434e6cb230",
+      "preferred_shared_roundtrip_path": "location-role-012",
+      "preferred_shared_roundtrip_sha256": "9bc7d3be301de691cff01a84c837f85faa02e6f351b1d5288a82d804f170d6a2",
+      "other_frozen_main91_roundtrip_path": "location-role-106",
+      "other_frozen_main91_roundtrip_sha256": "ff8e014df2d79a17aba7a31e417c9bbeb1bce63ac46bf840e153823633789f42",
+      "flags": [
+        "--harmonic"
+      ],
+      "baseline_rule": "Prefer one shared immutable main91 roundtrip/probe for both candidates. Any use of the other frozen main91 roundtrip must first prove full packet/aligned-PCM identity on every selected row, record its identity, and never mix unlabelled baselines."
+    },
+    "matrix": {
+      "conditions": [
+        "clean",
+        "noise20",
+        "noise10"
+      ],
+      "frame_ms": [
+        10,
+        20
+      ],
+      "bitrate": 12000,
+      "rows_per_candidate": 96,
+      "candidate_comparisons": 2,
+      "total_candidate_rows": 192,
+      "unit": "8 independent voice IDs,16 correlated clips,96 repeated condition/duration observations per candidate; not96 independent people"
+    },
+    "input_pipeline": {
+      "ffmpeg": [
+        "ffmpeg",
+        "-v",
+        "error",
+        "-y",
+        "-i",
+        "SELECTED.flac",
+        "-ar",
+        "48000",
+        "-ac",
+        "1",
+        "-f",
+        "f32le",
+        "input.f32"
+      ],
+      "noise_seed": "snacka-speech-6716:{clip}:{snr}",
+      "noise_function": "Unchanged evaluate_speech.noisy; Python Random.gauss, whole-clip RMS scaling,20/10dB,[-1,1] clamp,f32le; record clean/mixed PCM hashes and clipping count",
+      "dither_seed_key": "snacka-quality-6716:{clip}:{condition}:{duration}:12000",
+      "dither_function": "Unchanged evaluate_quality.intelligibility: SHA256 string first4bytes little-endian numpy seed, reset for each baseline/current pair; same STOI then ESTOI order",
+      "algorithmic_delay_samples": 120,
+      "packet_bytes": {
+        "10": 15,
+        "20": 30
+      },
+      "frames": "ceil(input_samples/(48*frame_ms))",
+      "drain": "One separate drain packet, exactly120 samples, same15/30bytequota; never count drain as a normal input frame",
+      "alignment": "Existing roundtrip removes the same120-sample delay and preserves original sample count; no second re-alignment or truncation"
+    },
+    "metrics": {
+      "functions_source_path": "location-role-008",
+      "functions_source_sha256": "8b3fd85de8a04534abdf4036a6ab5780c506097989dff6b4034f9825cf8e90c3",
+      "noise_score_source_path": "location-role-009",
+      "noise_score_source_sha256": "104b07f0b1ee68cf9f182c75a3c18639f33f123ae20ec27d37db486ec1d2c793",
+      "existing_hybrid_driver_path": "location-role-059",
+      "existing_hybrid_driver_sha256": "f46152a87e5e4d07b1eae7b4700b5837ec5d39791d6c952428c36cdc2bf6bcee",
+      "reference_STOI_ESTOI": "Clean resampled speech in all conditions",
+      "reference_SNR_LSD": "Actual encoder input, including fixed mixed noise when present",
+      "LSD": "Existing1024pointHann/480hop/150..8000Hzinclusive/activegate/floorunchanged",
+      "recorded_precision": "Canonical6decimal BASELINE/CURRENT; all deltas/gates from exact Decimal subtraction and means of those recorded endpoints, not separately rounded delta columns or hidden precision",
+      "metrics_per_row": [
+        "snr_db",
+        "stoi",
+        "estoi",
+        "lsd_db"
+      ],
+      "library_versions": {
+        "python": "3.14.8",
+        "numpy": "2.5.3",
+        "scipy": "1.18.1",
+        "pystoi": "0.4.1",
+        "ffmpeg": "9.0.2"
+      }
+    },
+    "gate": {
+      "unit": "Each candidate evaluated separately against the same matched main91; six condition/duration cells each contain16 fixed clips",
+      "clean_mean": "At EACH duration mean delta STOI>0 AND mean delta ESTOI>0",
+      "noisy_mean": "At EACH duration and EACH noise20/noise10 condition mean delta STOI>=0 AND mean delta ESTOI>=0",
+      "clean_individual": "EVERY clean clip/duration delta STOI>=-0.01 AND delta ESTOI>=-0.01",
+      "SNR_LSD": "No hidden pass thresholds; every value and regression retained",
+      "missing_metric": "Retain every selected row with explicit metric_status/reason; no replacement, exclusion, silent zero or fabricated score. If <1s, silent/unviable STOI, warning or other documented metric precondition failure prevents scoring, retain available outputs/hash/protocol proof and mark affected gates UNEVALUABLE, neverPASS from a smaller denominator. Operational failures are reported FAIL, not missingmetric wins.",
+      "other_hard_contracts": "Verify full packet trace/profile counts,validframe/CRC/drain/budget/120delay,finite[-1,1]PCM and exactlength before accepting rows; malformed or missing outputs are failure",
+      "reporting": "ALL96 expected keys per candidate,all baselines/currents/deltas,all regressions,count/profile/drain/fulltrace/PCM/input/source/probe/evaluator hashes and arguments. Report aggregate6cells,subset/gender/voice descriptives without posthoc split gates or96-person significance claim."
+    },
+    "execution": {
+      "current_stage": "Protocol and metadata selection only; NO builds/source tuning/listening/metrics",
+      "download_authorization": "Root released CPU hold and explicitly authorized official archive download AFTER this protocol is written",
+      "first_score_authorization": "ROOT_APPROVAL_REQUIRED after selection/input provenance and one adapted harness freeze; no first scores during this task",
+      "harness_rule": "Prefer one private96-row harness importing frozen unchanged metric/noise functions with explicit candidate/baseline flags and fulltrace coupling. Only matrix/retainedfailure rows/provenance adaptations, no metric rewrite; freeze driver/source/probe/input manifests before ANY new scores",
+      "attempts": "One scoring pass per alreadyfrozen candidate. No source/threshold/fit/budget/model tuning after heldout, no rerun for desired outcomes. Infrastructure/metric failures preserve evidence and cannot change selection."
+    }
+  }
+}

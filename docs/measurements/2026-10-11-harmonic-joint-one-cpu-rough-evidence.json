@@ -1,0 +1,27 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "c85a42755a2e62da1ec3f6a63956280a6413b32d56047c622b1777b234b8c221",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "protocol": "location-role-013",
+    "source_commit": "2eb8a40d023722f814484cf8922433bdfef5e90b",
+    "baseline_main": "91fef4a87a777e412a7a5b3497fdc5590307ab93",
+    "source_hashes_verified_after_timing": true,
+    "probe_hashes_verified_after_timing": true,
+    "heavy_terminal": true,
+    "driver_pid": 96855,
+    "session": 47428,
+    "retries": 0,
+    "filtered_rows": 0,
+    "rows": 24,
+    "trace_changes_expected_and_retained": 24,
+    "artifacts": {
+      "location-role-013": "b46d7aae1f42781af234ef18b2fc0bea66677de1e3ab26044b0dc41b5e7eebe3",
+      "docs/measurements/2026-10-11-harmonic-joint-one-cpu-rough.csv": "3f77334ca0b4255e4e3f6654d69a3e9f8bced8a862e82c6570ee6443f4d1dcfa",
+      "location-role-052": "5a553f1aff459f8959a7642a26143b54c78d44984ac627767c7f47a24b53dd27",
+      "location-role-054": "6281ee219a8738fd8c154329c12bbacbffc1df1b7b83974a587215a8d983cf32"
+    }
+  }
+}

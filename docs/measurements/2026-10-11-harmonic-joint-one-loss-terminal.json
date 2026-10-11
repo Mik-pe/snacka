@@ -1,0 +1,28 @@
+{
+  "projection": {
+    "schema": "location-role-map-v1",
+    "original_private_sha256": "ce0a599963f0c3dbb8ba3e5f0909f75c8761af23d558eb30e5d168a0e91ce891",
+    "rule": "Every absolute local location in JSON keys and strings is replaced by its declared public location role or published artifact path; all other keys, values and statistical fields retained."
+  },
+  "record": {
+    "frozen_sha256": "8b69ca1910adf950b4c67f23fe3f4fc2164bf2cf5f500e1660085e87be2d7738",
+    "planned_cases": 32,
+    "case_status_counts": {
+      "PASS": 32
+    },
+    "structural_case_status_counts": {
+      "PASS": 32
+    },
+    "metric_case_status_counts": {
+      "PASS": 32
+    },
+    "structural_check_records": 96,
+    "structural_status": "PASS",
+    "metric_status": "PASS",
+    "metric_failures": [],
+    "execution_error": null,
+    "postrun_bindings_status": "PASS",
+    "postrun_bindings_failures": [],
+    "no_timing": true
+  }
+}
