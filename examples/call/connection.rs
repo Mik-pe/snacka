@@ -69,7 +69,9 @@ impl Connection {
             Err(error)
                 if matches!(
                     error.kind(),
-                    io::ErrorKind::WouldBlock | io::ErrorKind::ConnectionRefused
+                    io::ErrorKind::WouldBlock
+                        | io::ErrorKind::ConnectionRefused
+                        | io::ErrorKind::ConnectionReset
                 ) =>
             {
                 Ok(())
@@ -196,11 +198,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn direct_ipv6_handshake_audio_and_restart_without_a_relay() {
+    fn direct_ipv4_and_ipv6_handshake_audio_and_restart_without_a_relay() {
+        for bind in ["127.0.0.1:0", "[::1]:0"] {
+            direct_roundtrip(bind);
+        }
+    }
+
+    fn direct_roundtrip(bind: &str) {
         let key = [11; 32];
         // CI platforms must provide the IPv6 loopback used by direct mode.
-        let a = UdpSocket::bind("[::1]:0").unwrap();
-        let b = UdpSocket::bind("[::1]:0").unwrap();
+        let a = UdpSocket::bind(bind).unwrap();
+        let b = UdpSocket::bind(bind).unwrap();
         let addresses = [a.local_addr().unwrap(), b.local_addr().unwrap()];
         drop(a);
         drop(b);

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+use super::editor::Editor;
 use ratatui::{
     Frame,
     layout::{Constraint, Layout, Rect},
@@ -22,6 +23,7 @@ pub struct Dashboard {
     pub input: String,
     pub output: String,
     pub connected: bool,
+    pub active: bool,
     pub registered: bool,
     pub seconds: f64,
     pub bitrate: u32,
@@ -54,6 +56,7 @@ impl Dashboard {
             input: String::new(),
             output: String::new(),
             connected: false,
+            active: false,
             registered: false,
             seconds: 0.0,
             bitrate: 24000,
@@ -91,11 +94,30 @@ impl Dashboard {
             .push_back((meter(self.remote_level) * 100.0) as u64);
     }
 
+    pub fn reset_link(&mut self) {
+        self.active = false;
+        self.connected = false;
+        self.registered = false;
+        self.tx = 0;
+        self.rx = 0;
+        self.decoded = 0;
+        self.concealed = 0;
+        self.rejected = 0;
+        self.drops = 0;
+        self.gaps = 0;
+        self.queue_ms = 0;
+        self.local_level = 0.0;
+        self.remote_level = 0.0;
+        for value in &mut self.history {
+            *value = 0;
+        }
+    }
+
     pub fn draw(&self, frame: &mut Frame) {
         let area = frame.area();
         if area.width < 64 || area.height < 25 {
             frame.render_widget(Paragraph::new(format!(
-                "SNACKA / {}\n{}  {:02}:{:02}\nTX {}  RX {}  PLC {}\nMute {}  AEC {}  NS {}  AGC {}\n\nResize to 64 x 25 for the full call panel.\nM mute / arrows volume + bitrate / Q quit",
+                "SNACKA / {}\n{}  {:02}:{:02}\nTX {}  RX {}  PLC {}\nMute {}  AEC {}  NS {}  AGC {}\n\nResize to 64 x 25 for the full call panel.\nC connection / M mute / arrows / Q quit",
                 self.mode, self.status(), self.seconds as usize / 60, self.seconds as usize % 60,
                 self.tx, self.rx, self.concealed, self.muted, self.aec, self.ns, self.agc
             )).style(Style::default().fg(CYAN)).wrap(Wrap { trim: false }), area);
@@ -215,7 +237,7 @@ impl Dashboard {
         frame.render_widget(
             Paragraph::new(vec![
                 Line::from(Span::styled(
-                    " M mute   ↑↓ volume   ←→ bitrate   A/N/G processing   Q / Esc hang up",
+                    " C connection   M mute   ↑↓ volume   ←→ bitrate   A/N/G   Q quit",
                     Style::default().fg(GOLD),
                 )),
                 Line::from(Span::styled(
@@ -232,14 +254,18 @@ impl Dashboard {
             "● CONNECTED"
         } else if self.registered {
             "◌ WAITING FOR PEER"
-        } else {
+        } else if self.active {
             "◌ CONNECTING"
+        } else {
+            "○ DISCONNECTED / C TO CONNECT"
         }
     }
 
     fn peer_card(&self, frame: &mut Frame, area: Rect, local: bool) {
         let title = if local {
             " YOU / MICROPHONE "
+        } else if self.mode.starts_with("RELAY") {
+            " RELAY / PLAYBACK "
         } else {
             " PEER / PLAYBACK "
         };
@@ -326,20 +352,34 @@ impl Terminal {
             return Ok(None);
         }
         match ratatui::try_init() {
-            Ok(terminal) => Ok(Some(Self(terminal))),
+            Ok(terminal) => {
+                if let Err(error) =
+                    crossterm::execute!(io::stdout(), crossterm::event::EnableBracketedPaste)
+                {
+                    ratatui::restore();
+                    return Err(error);
+                }
+                Ok(Some(Self(terminal)))
+            }
             Err(error) => {
                 ratatui::restore();
                 Err(error)
             }
         }
     }
-    pub fn draw(&mut self, state: &Dashboard) -> io::Result<()> {
-        self.0.draw(|frame| state.draw(frame))?;
+    pub fn draw(&mut self, state: &Dashboard, editor: Option<&Editor>) -> io::Result<()> {
+        self.0.draw(|frame| {
+            state.draw(frame);
+            if let Some(editor) = editor {
+                editor.draw(frame);
+            }
+        })?;
         Ok(())
     }
 }
 impl Drop for Terminal {
     fn drop(&mut self) {
+        let _ = crossterm::execute!(io::stdout(), crossterm::event::DisableBracketedPaste);
         ratatui::restore();
     }
 }

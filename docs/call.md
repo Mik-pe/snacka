@@ -8,8 +8,65 @@ It defaults to 48 kHz mono, 20 ms frames, 24 kb/s, 60 ms of jitter buffering and
 
 ![Snacka Voice Link dashboard](../assets/snacka-call.png)
 
-Live dashboard from two device-free test clients connected directly over IPv6
+Live dashboard from two device-free test clients connected directly over IPv4
 loopback. The meters use a logarithmic -60 to 0 dBFS scale.
+
+## Choose the connection in the TUI
+
+Start the client in a terminal without connection arguments:
+
+```sh
+target/release/examples/call
+```
+
+The connection panel opens before any microphone or speaker is opened. Choose
+**Direct** or **UDP relay**, **IPv4 / IPv6 / Automatic**, the remote address and
+port, local bind (leave empty for automatic), role 1 or 2 and a shared room key.
+The key is masked, can be pasted, and is prefilled from `SNACKA_CALL_KEY` when set.
+Settings stay in memory and are not written to disk. Generate a fresh key with
+`call --generate-key` and use that same key on the other client and any relay.
+
+![Connection settings with IPv4 selected and a masked shared key](../assets/snacka-connection.png)
+
+Use Tab or Up/Down to select a field, Left/Right to change choices, and Ctrl-U to
+clear a text field. Enter connects; Esc cancels. Press **C** during a call to edit
+the destination. Editing keeps the current call running; applying a valid new
+connection hangs up the old call, releases its local socket and starts fresh
+audio/codec/crypto state. Choose the **Hang up** row and press Enter to disconnect
+while keeping the client open.
+
+Address/key errors are shown inside the panel. In TUI mode a failed handshake
+returns to the panel so you can correct settings and retry; plain CLI mode exits
+with an error. A bind failure after releasing the previous socket leaves the
+client disconnected. Start both endpoints within ten seconds of connecting, or
+press Enter to retry once the other client is ready.
+
+## Direct IPv4: LAN or port forwarding
+
+Select IPv4 in the connection panel, or pass `--ipv4`. On a LAN, use the other
+computer's LAN IPv4 address and allow inbound UDP port 5000 on both machines.
+For example, with A at `192.168.1.10` and B at `192.168.1.11`:
+
+```sh
+# A (same SNACKA_CALL_KEY on both computers)
+target/release/examples/call --ipv4 --peer 192.168.1.11:5000 --role 1
+# B
+target/release/examples/call --ipv4 --peer 192.168.1.10:5000 --role 2
+```
+
+Across the public internet, use each router's public IPv4 address, forward the
+chosen UDP port to the corresponding computer on **both** routers, and allow
+that port in both host firewalls. If the external port differs, enter the external
+port in the other client's remote address and the internal port in the local
+bind. The connected UDP socket expects packets from the configured IP **and
+port**, so the forwarded port must also match the actual outbound source port.
+Some NAT devices rewrite that source port. Carrier-grade NAT or a network where
+you cannot configure forwarding generally needs the relay mode below. Selecting
+IPv4 does not automatically traverse NAT or discover your public address.
+
+`--ipv4` and `--ipv6` also constrain hostname resolution. Automatic chooses the
+first address matching any explicit local bind; it does not race IPv4 and IPv6
+or automatically fall back after a failed handshake.
 
 ## Direct IPv6: no server
 
@@ -60,8 +117,9 @@ target/release/examples/call \
 
 PowerShell uses `$env:SNACKA_CALL_KEY = "..."` and the Windows binary is
 `target/release/examples/call.exe`. Start both clients within ten seconds, or
-restart the first client if its handshake times out. The connecting dashboard is
-visible immediately; audio devices open after an authenticated response.
+retry in the TUI if the handshake times out. The connecting dashboard is visible
+immediately; audio devices open after an authenticated response. `--ipv6`
+explicitly selects IPv6 when resolving a hostname.
 
 Each client sends directly to the other. No third machine, account, certificate
 or external relay is used. The UDP socket accepts traffic from the configured
@@ -74,6 +132,7 @@ endpoints are reachable (for example, on a LAN or with port forwarding).
 
 | Key | Action |
 | --- | --- |
+| C | Choose/change destination, IP family, mode, role, key; hang up |
 | M | Mute/unmute outgoing microphone audio |
 | Up / Down | Playback volume, 0–100% |
 | Left / Right | Encoder bitrate, 12–32 kb/s; stream history retained |
@@ -184,8 +243,19 @@ a test application, not a production VoIP stack.
 
 ## Device-free checks
 
-On a single machine, test **direct IPv6 without a relay** in two terminals, with
+On a single machine, test **direct IPv4 without a relay** in two terminals, with
 the same random `SNACKA_CALL_KEY` exported in each:
+
+```sh
+# Terminal A
+target/release/examples/call --ipv4 --bind 127.0.0.1:5000 --peer 127.0.0.1:5001 \
+  --role 1 --test-tone --no-tui --seconds 5
+# Terminal B
+target/release/examples/call --ipv4 --bind 127.0.0.1:5001 --peer 127.0.0.1:5000 \
+  --role 2 --test-tone --no-tui --seconds 5
+```
+
+For **direct IPv6**, use the same key and these addresses:
 
 ```sh
 # Terminal A
@@ -202,7 +272,7 @@ audio. Both should report increasing TX, RX and decoded counts. Omit `--no-tui`
 to inspect the live dashboard without audio devices. This checks the application
 path, not public internet reachability or acoustic echo quality.
 
-For an automated two-process IPv6/relay smoke test and developer checks:
+For an automated two-process IPv4/IPv6/relay smoke test and developer checks:
 
 ```sh
 cargo build --locked --release --features internet-call --example call --example call_relay

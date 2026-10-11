@@ -23,13 +23,17 @@ def run_pair(client, relay_binary, mode):
     with tempfile.TemporaryDirectory(prefix="snacka-call-") as directory:
         logs = []
         try:
-            if mode == "direct-ipv6":
-                a = port(socket.AF_INET6, "::1")
-                b = port(socket.AF_INET6, "::1")
+            if mode.startswith("direct-"):
+                ipv6 = mode == "direct-ipv6"
+                family, host = (socket.AF_INET6, "::1") if ipv6 else (socket.AF_INET, "127.0.0.1")
+                flag = "--ipv6" if ipv6 else "--ipv4"
+                a = port(family, host)
+                b = port(family, host)
                 while b == a:
-                    b = port(socket.AF_INET6, "::1")
-                routes = [["--bind", f"[::1]:{a}", "--peer", f"[::1]:{b}"],
-                          ["--bind", f"[::1]:{b}", "--peer", f"[::1]:{a}"]]
+                    b = port(family, host)
+                address = lambda number: f"[{host}]:{number}" if ipv6 else f"{host}:{number}"
+                routes = [["--bind", address(a), "--peer", address(b), flag],
+                          ["--bind", address(b), "--peer", address(a), flag]]
             else:
                 relay_port = port(socket.AF_INET, "127.0.0.1")
                 relay_log = open(Path(directory) / "relay.log", "w+", encoding="utf-8")
@@ -93,6 +97,7 @@ def main():
     for binary in [client, relay]:
         if not binary.is_file():
             parser.error(f"Build the examples first; missing {binary}")
+    run_pair(client, relay, "direct-ipv4")
     run_pair(client, relay, "direct-ipv6")
     run_pair(client, relay, "relay-ipv4")
 

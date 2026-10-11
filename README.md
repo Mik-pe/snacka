@@ -79,17 +79,20 @@ calling example:
 ```sh
 cargo build --locked --release --features internet-call --example call
 target/release/examples/call --generate-key
-# Set the printed key as SNACKA_CALL_KEY on both computers, then on client 1:
-target/release/examples/call --peer '[PEER_IPV6]:5000' --role 1
-# Client 2 uses client 1's address and --role 2.
+# Open the connection panel; choose IPv4/IPv6, address, role and shared key:
+target/release/examples/call
+# Or connect from the CLI (same SNACKA_CALL_KEY on both clients):
+target/release/examples/call --ipv4 --peer PEER_IPV4:5000 --role 1
 ```
 
-Direct mode needs reachable IPv6 addresses and inbound UDP port 5000 on both
-clients. It uses no server. A small optional relay supports networks where direct
-UDP is impractical. The dashboard shows both voice meters, link health and packet
-loss; M mutes, arrows adjust volume/bitrate, and A/N/G toggle processing. See
+Direct mode supports IPv4 and IPv6 without a server. IPv4 over the internet needs
+port forwarding on both sides; IPv6 needs reachable addresses and inbound UDP
+allowed. A small optional relay supports networks where direct UDP is impractical.
+Press C to choose or change the connection in the TUI, or hang up and reconnect.
+The dashboard shows both voice meters, link health and packet loss; M mutes,
+arrows adjust volume/bitrate, and A/N/G toggle processing. See
 [the call guide](docs/call.md) for complete two-client commands, firewall setup,
-relay mode and a device-free IPv6 smoke test.
+relay mode and device-free IPv4/IPv6 smoke tests.
 
 Rust 1.99 or newer is required. Plans allocate during construction, before the
 audio callback. Snacka operates on PCM and packet bytes; capture, playback,

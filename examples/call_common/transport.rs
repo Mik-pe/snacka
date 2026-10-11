@@ -29,6 +29,7 @@ pub fn generate_key() -> io::Result<String> {
     Ok(bytes.iter().map(|b| format!("{b:02x}")).collect())
 }
 
+#[allow(dead_code)] // The relay reads the environment; the client also accepts a TUI key.
 pub fn key_from_env() -> io::Result<[u8; 32]> {
     parse_key(&std::env::var("SNACKA_CALL_KEY").map_err(|_| {
         io::Error::other("Set SNACKA_CALL_KEY to the 64 hex digits from call_relay --generate-key")
