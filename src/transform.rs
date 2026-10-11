@@ -354,6 +354,10 @@ impl MdctPlan {
         self.coefficients
     }
 
+    pub(crate) fn window(&self) -> &[f32] {
+        &self.window
+    }
+
     fn validate(
         &self,
         input: &[f32],

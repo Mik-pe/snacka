@@ -16,3 +16,4 @@ pub use codec::{
 pub mod transform;
 
 mod harmonic;
+mod harmonic_joint;
