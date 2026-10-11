@@ -27,6 +27,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libasound2-dev pkg-config
       - run: cargo clippy --locked --all-targets --features live-audio -- -D warnings
       - run: cargo test --locked --features live-audio --example monitor
+      - run: cargo clippy --locked --all-targets --features internet-call -- -D warnings
+      - run: cargo test --locked --features internet-call --example call --example call_relay
+      - run: cargo build --locked --release --features internet-call --example call --example call_relay
+      - run: python tools/smoke_call.py
 
   mobile:
     runs-on: macos-latest
