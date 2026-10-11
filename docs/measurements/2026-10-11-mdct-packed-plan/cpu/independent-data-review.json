@@ -1,0 +1,267 @@
+{
+  "actual_bound_bytes_rehashed": 2839016850,
+  "actual_bound_files_checked": 3870,
+  "all128_decoder_CPU_endpoint_differences_finite_positive": true,
+  "all_phase_comparisons_stats_regressions_absolute_endpoints_exact": true,
+  "audit_script_sha256": "bcc9d22ec3f04cff9ccc8cd2ffe7a0c9c13f2612d21bf12f692ed4270fe7fe3e",
+  "canonical_timed_calls_supported_by_complete_helper_execution_and_frozen_matrix": 768,
+  "fixed_pairs": 256,
+  "lifecycle_sha256": "02c02d05d002c8f74271615b1ca9a63630f20c6462afd4117056e3472c967e47",
+  "limitations": [
+    "Encoder primary is canonical serialized FOUR-decimal CPU change; THREE-decimal absolute ns/frame do not recover raw CPU totals.",
+    "Decoder primary uses literal serialized CPU endpoints and Decimal80/ROUND_HALF_EVEN; canonical float slope/percentage separately validated unchanged.",
+    "Decoder each role prepares its own256 packets: subtraction cancels setup only approximately; this is not pure-loop timing or equal setup costs.",
+    "Canonical helpers retain no internal timed-child PID/stdout journal;768 supported calls are not768 independently observed PIDs.",
+    "Temp input/trace payloads deleted by unchanged helpers; returned12k reference hashes checked, encoder24/32 inline hashes not returned; separate full controls prove high-rate identity.",
+    "All individual CPU and wall regressions and negative wall endpoint differences retained; wall is not an acceptance gate.",
+    "Historical baseline was compiled038 with runtime source equivalent to56/237, not falsely relabeled compiled237.",
+    "One host, no phone/battery/deadline/universal performance or audio-quality claim."
+  ],
+  "negative_decoder_wall_endpoint_differences_retained": 2,
+  "output_manifest_files_checked": 49,
+  "parent_and4_phase_helpers_root_waited_and_observed_absent": [
+    9660,
+    42708,
+    42727,
+    85029,
+    88986
+  ],
+  "phases": [
+    {
+      "absolute_endpoint_groups_checked": 8,
+      "clip_summaries_checked": 16,
+      "comparisons": 64,
+      "cpu_regressions": 14,
+      "fixed_duration_summaries": [
+        {
+          "cpu": {
+            "maximum": "55.289667768139680699441245486712164843096143183211035503059871577260591593868440",
+            "mean": "-5.0934116362985925492582037159708032735795020939206175519204491389617930675796059",
+            "median": "-6.0125877728692600990793681982951138175191407644002754737989475132641289119946985",
+            "minimum": "-41.162907305443887291984262944047856375365141344018085363131546176766756041685335",
+            "n": "32",
+            "regressions": "7"
+          },
+          "frame_ms": 10,
+          "gate": "<=-5",
+          "phase": "decode_H64",
+          "status": "PASS",
+          "wall": {
+            "maximum": "177.89710849010892736466982059749254456532884939940588847194930429991052887543405",
+            "mean": "-0.19516288580205172595058233146532646610643699963736386156017250705042309672473488",
+            "median": "-6.1478565103498783792576060264797660437965297833246361931239993153919885092353755",
+            "minimum": "-135.99019328559563149807539521483473294852193383701560599005353533826731483768471",
+            "n": "32",
+            "regressions": "8"
+          },
+          "wall_unavailable_pairs": 0
+        },
+        {
+          "cpu": {
+            "maximum": "20.846758963186170908598067916229764465741513079318393403721343739312728218503410",
+            "mean": "-6.201159126433316968745353173275964698036852146159271921586127807045795627252875",
+            "median": "-5.527813146069828189338531383981326129927950739414424790272617459374427602328237",
+            "minimum": "-36.105942222032139985401210230472264010037317910424786253038367795786013124728486",
+            "n": "32",
+            "regressions": "7"
+          },
+          "frame_ms": 20,
+          "gate": "<=-5",
+          "phase": "decode_H64",
+          "status": "PASS",
+          "wall": {
+            "maximum": "177.71440740922238665364767676249973151520985074119743472254714978884212806918122",
+            "mean": "-12.634197590253590103935645279646008449713174852947083836841747783450212553824492",
+            "median": "-7.7001891627298431735872868308666428958378981902233572823043994499085197958386475",
+            "minimum": "-280.92971223254070406489974475842442800366267962645866920465842844935650123684183",
+            "n": "32",
+            "regressions": "7"
+          },
+          "wall_unavailable_pairs": 0
+        }
+      ],
+      "phase": "decode_H64",
+      "raw_endpoints": 256,
+      "wall_regressions": 15
+    },
+    {
+      "absolute_endpoint_groups_checked": 8,
+      "clip_summaries_checked": 16,
+      "comparisons": 64,
+      "cpu_regressions": 7,
+      "fixed_duration_summaries": [
+        {
+          "cpu": {
+            "maximum": "41.451229072825792924201034088485392518852855241063177519562070119925629583998570",
+            "mean": "-5.5228834043654328652281798648440339226008813151206468941522322420535272655653881",
+            "median": "-7.9626140249263846465655894649483603405212396470857622220602149935552219530676335",
+            "minimum": "-22.683721769826289345462884418036569319752515179679609844473484375235513331345396",
+            "n": "32",
+            "regressions": "5"
+          },
+          "frame_ms": 10,
+          "gate": "<=-5",
+          "phase": "decode_OFF64",
+          "status": "PASS",
+          "wall": {
+            "maximum": "121.31767997544098655911790060965431749852717502516975538247587970401500251243524",
+            "mean": "-2.7397526076671313689839349665638359858292046962474232344036653311733056644417691",
+            "median": "-8.311840133071073282760914599363566205338628797616627526235694384698651860336701",
+            "minimum": "-31.171704196385957842732838638888019309965742814778717838979658677279605701633098",
+            "n": "32",
+            "regressions": "8"
+          },
+          "wall_unavailable_pairs": 0
+        },
+        {
+          "cpu": {
+            "maximum": "5.0446077145105556467445693102526717718844208985662931717041177053615990920089200",
+            "mean": "-7.3760761058903121660536273198218554691306329006324375563470851834158255058208531",
+            "median": "-6.661128876673585918950908095193223665871763372654858386234631830499958238022032",
+            "minimum": "-26.884836323743103184920529975267020686205950787188073458410453306991062112571452",
+            "n": "32",
+            "regressions": "2"
+          },
+          "frame_ms": 20,
+          "gate": "<=-5",
+          "phase": "decode_OFF64",
+          "status": "PASS",
+          "wall": {
+            "maximum": "14.506099177002260891287988861807071027782361330036032626922287146417541363168380",
+            "mean": "-8.56010591402828410144498576322083774205387615021050656509398883514518897726348",
+            "median": "-6.378535125506455517307986546979232944083435053337735918726465163415485067442887",
+            "minimum": "-45.361566808666650825825004563285140942009945745708684574278980398197399104467505",
+            "n": "32",
+            "regressions": "6"
+          },
+          "wall_unavailable_pairs": 0
+        }
+      ],
+      "phase": "decode_OFF64",
+      "raw_endpoints": 256,
+      "wall_regressions": 14
+    },
+    {
+      "absolute_endpoint_groups_checked": 4,
+      "clip_summaries_checked": 16,
+      "comparisons": 64,
+      "cpu_regressions": 22,
+      "fixed_duration_summaries": [
+        {
+          "cpu": {
+            "maximum": "8.6476",
+            "mean": "-1.409784375",
+            "median": "-0.48785",
+            "minimum": "-16.0095",
+            "n": "32",
+            "regressions": "12"
+          },
+          "frame_ms": 10,
+          "gate": "<=2",
+          "phase": "encode_H64",
+          "status": "PASS",
+          "wall": {
+            "maximum": "10.163969704400624348833012675031617237754302089480890469900785596633982679013130",
+            "mean": "-2.2978508085409237239981336379165050007087415928455180348215992116751409853480043",
+            "median": "-0.5125044789871476318505942735526250094176099930351753600840212560734506167874170",
+            "minimum": "-31.528548785571941538096167504043443143036535996873247024106650144089692601316204",
+            "n": "32",
+            "regressions": "11"
+          },
+          "wall_unavailable_pairs": 0
+        },
+        {
+          "cpu": {
+            "maximum": "43.5688",
+            "mean": "1.5161125",
+            "median": "-0.57715",
+            "minimum": "-12.4242",
+            "n": "32",
+            "regressions": "10"
+          },
+          "frame_ms": 20,
+          "gate": "<=2",
+          "phase": "encode_H64",
+          "status": "PASS",
+          "wall": {
+            "maximum": "75.608396137799082959775061395619818572503966189721068074188504410914680419097360",
+            "mean": "3.4099489573822029689524808059851069477034537149460433897801721581556430714468966",
+            "median": "-0.8099338611638536515196385277381819819230951148153822480229009242713627751471895",
+            "minimum": "-16.301636347018611906888591223942410890279747208232264536043558337719474402303843",
+            "n": "32",
+            "regressions": "11"
+          },
+          "wall_unavailable_pairs": 0
+        }
+      ],
+      "phase": "encode_H64",
+      "raw_endpoints": 64,
+      "wall_regressions": 22
+    },
+    {
+      "absolute_endpoint_groups_checked": 4,
+      "clip_summaries_checked": 16,
+      "comparisons": 64,
+      "cpu_regressions": 18,
+      "fixed_duration_summaries": [
+        {
+          "cpu": {
+            "maximum": "29.0661",
+            "mean": "-1.0147875",
+            "median": "-2.0554",
+            "minimum": "-16.8506",
+            "n": "32",
+            "regressions": "8"
+          },
+          "frame_ms": 10,
+          "gate": "<=2",
+          "phase": "encode_OFF64",
+          "status": "PASS",
+          "wall": {
+            "maximum": "47.456798411899822154309743219748616544600194383264550035201408138499822195396880",
+            "mean": "0.23226816612516072215361882010559778908127413347747532730783978155883108029523191",
+            "median": "-2.8056629087646923956262534362753765664583136602442809564282421843519994928328990",
+            "minimum": "-15.508561653721061236639065705018281645662205365205801710853222069718888202748915",
+            "n": "32",
+            "regressions": "8"
+          },
+          "wall_unavailable_pairs": 0
+        },
+        {
+          "cpu": {
+            "maximum": "39.1285",
+            "mean": "-0.97341875",
+            "median": "-1.88945",
+            "minimum": "-32.2499",
+            "n": "32",
+            "regressions": "10"
+          },
+          "frame_ms": 20,
+          "gate": "<=2",
+          "phase": "encode_OFF64",
+          "status": "PASS",
+          "wall": {
+            "maximum": "59.217956690137159450134594487423603693343057970088104030172253912203277563009010",
+            "mean": "-0.70755679954353813264748215041290895269728399650125775855791131833863552241618503",
+            "median": "-1.8778776970029052352889895046159359344642068097723938594162086312050448914762055",
+            "minimum": "-39.775701878598566975444471105477622844894836570855521470082196084845211182282919",
+            "n": "32",
+            "regressions": "10"
+          },
+          "wall_unavailable_pairs": 0
+        }
+      ],
+      "phase": "encode_OFF64",
+      "raw_endpoints": 64,
+      "wall_regressions": 18
+    }
+  ],
+  "plan_sha256": "d6523c6ec081190c42d261750e890c45644280d8b60eb78f6d1b40b1e7b4a643",
+  "raw_endpoints": 640,
+  "raw_output_manifest_sha256": "bc593940515f907964f5fe5e595fad54808e33b92c07bdf228104f8fda83e0fb",
+  "root_terminal_sha256": "32eb2b059b5347c19fce37ce8905f9735c843871ed3f21ace5d23d6f7faac646",
+  "runner_sha256": "2a9f501bb39714848e5adb39eb0fd765f05c2315c17db451ee279146fd9a4b92",
+  "scope": "Independent retained-data audit only; no codec/helper/metric/audio/build/timing rerun and no publication authorization.",
+  "source_head": "8a2a066bcc6743acec38748c1232b03ad610d06c",
+  "verdict": "DATA_APPROVE"
+}

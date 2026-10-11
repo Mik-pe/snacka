@@ -1,0 +1,33 @@
+{
+  "UTC": "2026-10-11T06:22:03.917474+00:00",
+  "baseline_total_section_bytes": 62391,
+  "candidate_total_section_bytes": 62331,
+  "literal_numeric_payload_added_B": 0,
+  "literal_objects_added": [],
+  "literal_objects_removed": [
+    {
+      "hex": "00000000000000000100000000000000",
+      "multiplicity": 3,
+      "width": 16
+    },
+    {
+      "hex": "02000000000000000300000000000000",
+      "multiplicity": 3,
+      "width": 16
+    }
+  ],
+  "max_allowed_B": 64,
+  "only_changed_const_pool": {
+    "ASCII_added_B": 36,
+    "baseline_bytes": 121,
+    "baseline_sha256": "64ac2e9e4c26f33b3d8740036bfd13e7464635b8670ef00db4697362b8bc8978",
+    "candidate_bytes": 157,
+    "candidate_sha256": "dcf1b5284678623dbb7c72c06dc02ad37cedcdebe13cb00b01b735275cea9646",
+    "exact_added_ASCII_string": "assertion failed: index < self.len()",
+    "numeric_payload_added_B": 0
+  },
+  "scope": "Every library object __TEXT,__literal4/8/16 payload compared by exact literal width/bits/multiplicity; no new literal chunks. All __TEXT,__const pool payloads bitidentical/multiplicity unchanged except one exact ASCII assert-message insertion. Numeric tables/zeroobjects not excluded as padding. Linked section size differs; no rawlinked byteidentity claim. DATA_CONST panic/location/relocation metadata remains observed in retained full binaries/section inventory; not application numeric lookup data. Actual readonly planrows dynamically constructed, no new static table.",
+  "status": "AUTHOR_RAW_OBJECT_NUMERIC_POOL_ACCOUNTING_PASS_PENDING_INDEPENDENT_REVIEW",
+  "total_added_numeric_payload_B": 0,
+  "unchanged_raw_const_pool_count": 6
+}

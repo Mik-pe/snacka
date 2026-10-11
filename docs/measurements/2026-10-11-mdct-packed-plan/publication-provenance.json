@@ -1,0 +1,11 @@
+{
+  "changes_since_reviewed_projection": "Publication prose/status and a separate current-source inventory only. All measured CPU/API/control rows and source/build/resource evidence remain unchanged.",
+  "historical_manifest_policy": "Live README and nested document manifest references updated. Three original joint-one source entries remain pinned to038a5b80a57aeb2ae3bb911fa752a7e63b332d78 and are verified against those Git blobs; measured historical data/source hashes remain unchanged.",
+  "imported_public_projection_manifest_sha256": "8ff75a478f95e70dcab460fd3dc481421a676c8f49613b2c220093e49dea646d",
+  "independent_CPU_data_closure_sha256": "377cf4f45f895d0bec348bed0d606a670babeb824d8af14fe1e7cf6f0aadd2ee",
+  "independent_CPU_data_review_sha256": "63f9f11e912854baeb1fccec082fe42bb171baae1b042c3fc49e69d48fa02d01",
+  "independent_privacy_provenance_review_sha256": "95d74ea7fef9b01b72bcf2c42782b9a778090192b5450060f3194560f09158d7",
+  "measured_parent": "2379d4a25897fba99b293c196fb6d6b8acc6e43b",
+  "measured_source": "8a2a066bcc6743acec38748c1232b03ad610d06c",
+  "publication_main_base": "29f24563bf56e2fa06eb087cf0b0c76cac7478e9"
+}

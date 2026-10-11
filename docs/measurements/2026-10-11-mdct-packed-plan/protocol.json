@@ -1,0 +1,143 @@
+{
+  "actual_pairs": 256,
+  "actual_timed_calls": 768,
+  "actual_trace_controls": 1472,
+  "api_records": 29448,
+  "bitrate": 12000,
+  "clips": [
+    "1320-122617-0003.flac",
+    "1320-122617-0012.flac",
+    "260-123440-0004.flac",
+    "260-123440-0018.flac",
+    "5639-40744-0002.flac",
+    "5639-40744-0032.flac",
+    "6930-75918-0000.flac",
+    "6930-75918-0007.flac"
+  ],
+  "cpu_independent_data_closure": {
+    "binding": "@evidence-003879",
+    "sha256": "377cf4f45f895d0bec348bed0d606a670babeb824d8af14fe1e7cf6f0aadd2ee"
+  },
+  "cpu_independent_data_review": {
+    "binding": "@evidence-003877",
+    "sha256": "63f9f11e912854baeb1fccec082fe42bb171baae1b042c3fc49e69d48fa02d01"
+  },
+  "decoder_counts": [
+    262144,
+    524288
+  ],
+  "decoder_gates": "Every processCPU count difference finite positive; lexical raw endpoints, Decimal80 ROUND_HALF_EVEN; each duration median32 <= -5%.",
+  "derived_same_trace_controls": 96,
+  "duration_pairs": 32,
+  "durations_ms": [
+    10,
+    20
+  ],
+  "encoder_frames": 32768,
+  "encoder_gates": "Canonical FOUR-decimal percentage median32 <= +2% each duration;3decimalns/frame endpoints descriptive.",
+  "external_parent_terminal": {
+    "binding": "@evidence-003880",
+    "sha256": "32eb2b059b5347c19fce37ce8905f9735c843871ed3f21ace5d23d6f7faac646"
+  },
+  "failure_policy": "First phase numeric/operation/validity/provenance failure STOP, later NEVERSTARTED, no retry/filter/rounding rescue. All4 actual phases PASS.",
+  "four_phase_order": [
+    "decode_H64",
+    "decode_OFF64",
+    "encode_H64",
+    "encode_OFF64"
+  ],
+  "independent_privacy_provenance_review_sha256": "95d74ea7fef9b01b72bcf2c42782b9a778090192b5450060f3194560f09158d7",
+  "machine": "Apple M5, macOS, aarch64",
+  "no_new_quality_measurements": true,
+  "normalized_symbolic_commands_not_original_argv": {
+    "decode_H64": [
+      "python",
+      "tools/measure_decoder_slopes.py",
+      "CORPUS",
+      "OUTPUT_PREFIX",
+      "--baseline",
+      "BASELINE",
+      "--current",
+      "CURRENT",
+      "--bitrate",
+      "12000",
+      "--repetitions",
+      "4",
+      "--short-frames",
+      "262144",
+      "--long-frames",
+      "524288",
+      "--require-identical-traces",
+      "--harmonic",
+      "--baseline-harmonic"
+    ],
+    "decode_OFF64": [
+      "python",
+      "tools/measure_decoder_slopes.py",
+      "CORPUS",
+      "OUTPUT_PREFIX",
+      "--baseline",
+      "BASELINE",
+      "--current",
+      "CURRENT",
+      "--bitrate",
+      "12000",
+      "--repetitions",
+      "4",
+      "--short-frames",
+      "262144",
+      "--long-frames",
+      "524288",
+      "--require-identical-traces"
+    ],
+    "encode_H64": [
+      "python",
+      "tools/measure_cpu.py",
+      "CORPUS",
+      "OUTPUT.csv",
+      "--baseline",
+      "BASELINE",
+      "--current",
+      "CURRENT",
+      "--bitrates",
+      "12000",
+      "--operations",
+      "encode",
+      "--repetitions",
+      "4",
+      "--encode-frames",
+      "32768",
+      "--harmonic",
+      "--baseline-harmonic"
+    ],
+    "encode_OFF64": [
+      "python",
+      "tools/measure_cpu.py",
+      "CORPUS",
+      "OUTPUT.csv",
+      "--baseline",
+      "BASELINE",
+      "--current",
+      "CURRENT",
+      "--bitrates",
+      "12000",
+      "--operations",
+      "encode",
+      "--repetitions",
+      "4",
+      "--encode-frames",
+      "32768"
+    ]
+  },
+  "order": "Balanced2AB/2BA each clip-duration; decoder inner count order alternates as unchanged canonical helper, ABBA4calls per pair.",
+  "pairs_per_phase": 64,
+  "planned_before_run": true,
+  "repetitions": 4,
+  "retention_limits": "Existing canonical helpers only: no new fields/modes/output/rounding switch. Both wholephaseCSVs buffered until success, fatal unreturned in-memory timer rows may be lost. Decoder retains returned processCPU/wall totals/slopes and input/packet/PCM preparation hashes in output; temporary PCM/trace payloads are deleted. Encoder retains3decimalns/frame and4decimalCPUpercent plus returned preparation hashes, no underlying process totals/permanent timedchild PID/stdout journal. Preserve all available rows, regressions, stdout/stderr and hashes without inventing missing payloads.",
+  "setup_scope": "Decode uses each executable\u2019s own256 prepared encoded packets, cycling first256 input frames1024/2048 times at262144/524288. Wholeprocess startup/read/construction/256packet prep is only approximately fixed between counts; cancellation assumption, noise and possible invalid nonpositive slopes disclosed. Encode32768 cycles first256 prepared PCMframes128 times; startup/read/constructors/transform/PCMprep included, does NOT preencode256packets. No purecore/phone/battery/deadline/tail guarantee.",
+  "shared_host": "Other system/application workloads were present. Phase comm-only load snapshots are retained privately; no unrelated processes were modified.",
+  "source_measured": "8a2a066bcc6743acec38748c1232b03ad610d06c",
+  "source_parent": "2379d4a25897fba99b293c196fb6d6b8acc6e43b",
+  "speaker_ID_prefixes": 4,
+  "status": "MEASUREMENT_DATA_AND_PRIVACY_PROVENANCE_INDEPENDENTLY_APPROVED"
+}

@@ -1,0 +1,118 @@
+[
+  {
+    "fused_opcodes": [],
+    "instruction_count": 28,
+    "normal_calls": [
+      "__RNvCsdtSMxSA38aw_7___rustc14___rust_dealloc",
+      "__RNvCsdtSMxSA38aw_7___rustc14___rust_dealloc",
+      "__RNvCsdtSMxSA38aw_7___rustc14___rust_dealloc"
+    ],
+    "symbol": "__RINvNtCsjIpoRzUjyHQ_4core3ptr9drop_glueNtNtCs1fzqdedti6l_6snacka9transform8MdctPlanEBF_:",
+    "vector4_ops": {
+      "fadd": 0,
+      "fmul": 0,
+      "fsub": 0
+    }
+  },
+  {
+    "fused_opcodes": [],
+    "instruction_count": 332,
+    "normal_calls": [
+      "__RNvMs1_NtCs1fzqdedti6l_6snacka9transformNtB5_7FftPlan3new",
+      "__RNvCsdtSMxSA38aw_7___rustc35___rust_no_alloc_shim_is_unstable_v2",
+      "__RNvCsdtSMxSA38aw_7___rustc19___rust_alloc_zeroed",
+      "__RNvCsdtSMxSA38aw_7___rustc35___rust_no_alloc_shim_is_unstable_v2",
+      "__RNvCsdtSMxSA38aw_7___rustc12___rust_alloc",
+      "__RNvMs4_NtCs6zY7rJBZy9D_5alloc7raw_vecINtB5_6RawVecNtNtCs1fzqdedti6l_6snacka9transform7MdctRowE8grow_oneBQ_",
+      "__RNvCsdtSMxSA38aw_7___rustc14___rust_dealloc",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core5slice5index16slice_index_fail",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_add_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtCs6zY7rJBZy9D_5alloc7raw_vec12handle_error",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_add_overflow",
+      "__RNvNtCs6zY7rJBZy9D_5alloc7raw_vec12handle_error",
+      "__RINvNtCsjIpoRzUjyHQ_4core3ptr9drop_glueNtNtCs1fzqdedti6l_6snacka9transform7FftPlanEBF_",
+      "__RNvCsdtSMxSA38aw_7___rustc14___rust_dealloc",
+      "__RNvCsdtSMxSA38aw_7___rustc14___rust_dealloc",
+      "__RINvNtCsjIpoRzUjyHQ_4core3ptr9drop_glueNtNtCs1fzqdedti6l_6snacka9transform7FftPlanEBF_"
+    ],
+    "symbol": "__RNvMs5_NtCs1fzqdedti6l_6snacka9transformNtB5_8MdctPlan3new:",
+    "vector4_ops": {
+      "fadd": 0,
+      "fmul": 0,
+      "fsub": 0
+    }
+  },
+  {
+    "fused_opcodes": [],
+    "instruction_count": 316,
+    "normal_calls": [
+      "__RNvMs1_NtCs1fzqdedti6l_6snacka9transformNtB5_7FftPlan5split",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_mul_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_add_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_mul_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_mul_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_add_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_add_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_mul_overflow"
+    ],
+    "symbol": "__RNvMs5_NtCs1fzqdedti6l_6snacka9transformNtB5_8MdctPlan7forward:",
+    "vector4_ops": {
+      "fadd": 0,
+      "fmul": 0,
+      "fsub": 0
+    }
+  },
+  {
+    "fused_opcodes": [],
+    "instruction_count": 285,
+    "normal_calls": [
+      "__RNvMs1_NtCs1fzqdedti6l_6snacka9transformNtB5_7FftPlan5split",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_mul_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_add_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_mul_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_mul_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_sub_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_add_overflow",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtCsjIpoRzUjyHQ_4core9panicking18panic_bounds_check",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_add_overflow",
+      "__RNvNtNtCsjIpoRzUjyHQ_4core9panicking11panic_const24panic_const_mul_overflow"
+    ],
+    "symbol": "__RNvMs5_NtCs1fzqdedti6l_6snacka9transformNtB5_8MdctPlan7inverse:",
+    "vector4_ops": {
+      "fadd": 0,
+      "fmul": 0,
+      "fsub": 0
+    }
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "SDK_exit": 0,
+  "SDK_session": 12680,
+  "all_observed_parent_and4_helper_pids_absent": true,
+  "canonical_internal_timed_child_PID_journal": "Not retained by unchanged helpers; not inferred",
+  "end_utc": "2026-10-11T08:10:24.903261+00:00",
+  "lifecycle_sha256": "02c02d05d002c8f74271615b1ca9a63630f20c6462afd4117056e3472c967e47",
+  "lifecycle_status": "PASS",
+  "observed_pids": [
+    9660,
+    42708,
+    42727,
+    85029,
+    88986
+  ],
+  "parent_pid": 42708,
+  "parent_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "parent_stdout_sha256": "8dfcfce437d345d11f84761d60ec8483ca0e792792376a71e4b9185e9b68c546",
+  "root_admission_sha256": "403e89d9019a2827bb5806fda7c25722c0cd3a49d9d05a917b4ce15034a7d875"
+}

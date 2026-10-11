@@ -1,0 +1,33 @@
+{
+  "TEXT_added_B": 512,
+  "TEXT_growth_cap_B": 4096,
+  "TEXT_section": "__TEXT,__text",
+  "UTC": "2026-10-11T06:22:47.058498+00:00",
+  "actual_linked_owner": "MdctPlannew332instructions/forward316/inverse285, nofold/unfoldsymbols/helperclones,32byte rowstride lhs5 andfieldloads window0/4/8/12,pre16/post24; unchangedFFT.run/Complex.multiply DAG, no fusedopcodes inMDCTfunctions. WindowView indices inlined intojointconsumer. No mandatorySIMDgate inpackedprotocol.",
+  "baseline_TEXT_B": 320252,
+  "candidate_TEXT_B": 320764,
+  "canonical_window_correctness": "All186planpairs allindices/ascendingiteration equality to original literalwindowequations plusexisting alljointindependent/invalidactualpackedproducer testPASS. FullfrozenAPI/corpusidentitystillNOTRUN",
+  "constructor_peak_payload": "Temporiginalwindow8N+rows16N=24N vsold16N, extra8N/max30720B; samepre-allthenpost-allphaseorder. AllocatedrowcapacityboundPASS, no phaseVecscratch",
+  "decoder_cap_B": 27232,
+  "decoder_normal_chain_B": 26672,
+  "encoder_cap_B": 59040,
+  "encoder_normal_chain_B": 58576,
+  "linked_const_scope": "Rawbaseline74704/current74736bytes are DIFFERENT; exactrawSHA/size/offsets retained. Objectnumericmultiplicities decrease, exactASCIIassertmessage+36B, alignmentchange notclaimedrawidentity. No numerical table transfer/deduction fromnetsize.",
+  "mdct_owner_inventory_sha256": "21b7ac5558bd8b3a22c7d5a91d085fcc7c159155c95398d799c688a8a22f23cf",
+  "normal_graph_scope": "Full conservative normalRustprologues/callgraph withcodecFFT8/sort32recursivebounds; excludescaller/platform/panic/unwinding, not wholethread/mobile",
+  "numeric_added_B": 0,
+  "numeric_cap_B": 64,
+  "numeric_proof_sha256": "e0454837f202aa29d88ab537d9a652b29cf702f9d66f339c0c7ae52239647929",
+  "processing_heap": "ReleaseallocationPASS; onlyconstructorrows/windowheap",
+  "prohibited_phase_status": {
+    "API": "NOTRUN",
+    "CPU": "NOTRUN",
+    "corpus": "NOTRUN",
+    "publication": "NOTAUTHORIZED",
+    "quality": "NOTRUN"
+  },
+  "source_freeze_sha256": "55fa63f15731f02de47010bf22990b49c7361e0ec0d1d415fb263cbd4367b3f6",
+  "source_tables_added_B": 0,
+  "state_payload": "Existing window/pre/post storedbytes16N replacedsoleRowVec32Q=16N; actual Row32/align4 and allocated capacities verified acrossALL106Q/all186planpairs includingQ1 usingproductionconstructor. No newproductioncache/workspace. Nominal Vecdescriptor\u221248B on64bit, no claimed debug-objectsize measure.",
+  "status": "FIRST_LINKED_RESOURCE_AUTHOR_PASS_PENDING_INDEPENDENT_NO_DATA_GO"
+}

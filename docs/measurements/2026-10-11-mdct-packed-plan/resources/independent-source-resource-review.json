@@ -1,0 +1,117 @@
+{
+  "all76_artifact_bindings_verified": true,
+  "audit_execution": "Own stdlib existingfile/Git/ASM/archive/Mach-O/graph/log verification only; no preparedscript/helper/probe/build/API/corpus/audio/conversion/metrics/CPU execution.",
+  "bindings_sha256": {
+    "artifacts.sha256": "5d01ad87a336d1c44f7e9c24fbf8a7d1d1021f7240485ac1b6022ec4619ac019",
+    "first-resource-observation.json": "1e8329088e0b81053b25e7d0a77b1f3b2fde1fb2041e37bee81dbcfc16728f4a",
+    "numeric-constant-proof.json": "e0454837f202aa29d88ab537d9a652b29cf702f9d66f339c0c7ae52239647929",
+    "source-freeze.json": "55fa63f15731f02de47010bf22990b49c7361e0ec0d1d415fb263cbd4367b3f6"
+  },
+  "blockers": [],
+  "canonical": {
+    "CPU": {
+      "path": "@evidence-000013",
+      "sha256": "ba6fb07642fe1a0d6b4842941ed541bb0e70fad85bc6681f79840db924cb496b"
+    },
+    "RT": {
+      "path": "@evidence-001712",
+      "sha256": "d7056db4616f8a8df31e5affe418aa213172729a6e2d971ad9a710c057f9608a"
+    },
+    "library": {
+      "path": "@evidence-001713",
+      "sha256": "ed96bb1ac080accb18e398cc57154660cf813b05c6f094ccfbb78dfab5714106"
+    }
+  },
+  "changed_only": [
+    "src/codec.rs",
+    "src/harmonic_joint.rs",
+    "src/transform.rs"
+  ],
+  "float_review": "Forward branch atceil(Q/2) uses identical original mirrored/edge operands, signs before products and subtraction order. Forward post multiply then2/Nscale and stores unchanged. Inverse coefficient/pre/FFT/post graph unchanged; original mR,eR,mI,eI writeorder and explicit negative imaginary/double negation retained. No FMA/reassociation/zero skips; checked safe accesses, privateview exactchecked canonical index. Public malformed buffers validated beforewrites; no new trust shortcut.",
+  "focused_checks": "Retained release71/debugtransform5/live-monitor15/fmt/default+liveClippy PASS. Original initialtest185vs186 enumerationfailure preserved; testonlycorrection before firstlinkedgate, no productioniteration afterresourceobservations.",
+  "full39_git_working_files_verified": true,
+  "head": "8a2a066bcc6743acec38748c1232b03ad610d06c",
+  "independent_design_sha256": "972d27a90c587888a94886abe01542b58bd99151691ad1448d1db2839b17fa03",
+  "later_authority": "API29448, corpus1472+96derived, quality and CPU NOT_RUN. This approval authorizes no runs/publication; ROOT separate GO and finalsource-bound readiness required. No speed or qualitygain claim.",
+  "lifecycle": "Retained finalsession30986exit0/terminalmarker/postownedcommempty and cleanwriter; author has no permanentperchildPIDjournal, no independentchildtimeline invented.",
+  "linked_owner": "Final MDCT new/forward/inverse spans join full linked assembly. Only bounded row loops, packed32Bstrides/pre+16/post+24/windowfieldloads; no oldfold/unfold symbols or groupclone hierarchy. No fusedMDCTinstructions. SIMDnotmandatory; remaining boundschecks/WindowViewintegerwork may stillcostCPU.",
+  "linked_resources": {
+    "TEXT_added_B": 512,
+    "TEXT_baseline_B": 320252,
+    "TEXT_cap_B": 4096,
+    "TEXT_current_B": 320764,
+    "normal_graphs": {
+      "decoder": {
+        "cap_B": 27232,
+        "children_and_longest_bounded_graph_recomputed": true,
+        "frames": 24,
+        "maximum_path": [
+          [
+            "__RNvMs7_NtCs1fzqdedti6l_6snacka5codecNtB5_7Decoder6decode",
+            25360,
+            1
+          ],
+          [
+            "__RNvMs7_NtCs1fzqdedti6l_6snacka5codecNtB5_7Decoder10synthesize",
+            64,
+            1
+          ],
+          [
+            "__RNvMs5_NtCs1fzqdedti6l_6snacka9transformNtB5_8MdctPlan7inverse",
+            96,
+            1
+          ],
+          [
+            "__RNvMs1_NtCs1fzqdedti6l_6snacka9transformNtB5_7FftPlan5split",
+            144,
+            8
+          ]
+        ],
+        "normal_graph_B": 26672
+      },
+      "encoder": {
+        "cap_B": 59040,
+        "children_and_longest_bounded_graph_recomputed": true,
+        "frames": 52,
+        "maximum_path": [
+          [
+            "__RNvMs5_NtCs1fzqdedti6l_6snacka5codecNtB5_7Encoder12encode_frame",
+            41952,
+            1
+          ],
+          [
+            "__RNvNtCs1fzqdedti6l_6snacka14harmonic_joint7correct",
+            16624,
+            1
+          ]
+        ],
+        "normal_graph_B": 58576
+      }
+    },
+    "scope": "Conservative own normal Rust graph; FFT8 andsort32 bounds atcodec N\u2264960, platform/callers/panic/unwind excluded. Not whole-thread/publicmaximumstack."
+  },
+  "numeric_pool_proof": {
+    "added_numeric_payload_B": 0,
+    "all30_retained_section_payloads_join_actual_libraries": true,
+    "archive_MachO_members": {
+      "baseline": 11,
+      "candidate": 12
+    },
+    "baseline_const_literal_bytes": 62391,
+    "candidate_const_literal_bytes": 62331,
+    "cap_B": 64,
+    "classified_sections_each": 15,
+    "const_pool_difference": "Six exact unchanged pools; one121\u2192157 pool differs solely by36BASCII assert message, independently removed and matched fulloldpool. Allzero chunks counted; no net-sum hiding.",
+    "linked_const": "74704\u219274736 B rawpayloads differ; no rawbyteidentityclaim. Metadata/relocation and alignment changes are not codec numeric lookup tables.",
+    "literal_positive_chunk_additions_B": 0,
+    "removed_literal16_chunks": 6
+  },
+  "parent": "2379d4a25897fba99b293c196fb6d6b8acc6e43b",
+  "precode_math_sha256": "049c7eb73f8442bbc87c6c1194ceef87c1056ae90cf140f9e07161725861c812",
+  "precode_protocol_sha256": "50bd09fb0d02f9f092801851219e5a1d792da9f1c198208707a8903d6aa1db53",
+  "script_sha256": "61b22eaa07631111d1f8f26a839a1d2018330c5ad8f880bf9ff2175fddfad062",
+  "source_review": "Sole MdctRow Vec removes three old persistent Vec owners; exact window gather and reverse indexing. Codec changes only canonical getter call. Production joint code mechanically identical except concrete view type, removal of contiguous ramp slice and exact replacement indices; f64 conversion, recurrence and reduction order unchanged. Complex.multiply/FFT/workspace and validate body exact unchanged. Constructor original validation/window/trig prefix unchanged, then allpre and allpost phases in original order.",
+  "status": "APPROVE_EXACT_SOURCE_MATH_RESOURCE_PRE_DATA_ONLY",
+  "storage_tradeoff": "Persistent data16N unchanged, workspace/FftPlan unchanged; nominal descriptors\u221248 on64bit (not a measured sizeofEncoder/Decoder claim). Temporary originalwindow8N plusrows16N produces24Nconstructorpayload, extra8N\u226430720 atN3840. Constructorheap nonzero; processing heap remains0 source+allocationtest. Actual allocator capacity comparison retained, allocator internal rounding/threadstack excluded.",
+  "window_storage_tests": "Actual Row size32/align4, all106supportedQ/186declaredfull120planpairs allocated capacity upper bounds and allcanonical indexed/ascendingwindowbits checked by retained71releasePASS including added window test. Reference uses frozen original window equations independent of new permutation. Invalid NaN/infinity window fixture modifies mapped canonical slot on actual packed producer; existing joint literal/trigonometric/fullresidual/outputpreservation tests remain. No production flat cache or test branch."
+}

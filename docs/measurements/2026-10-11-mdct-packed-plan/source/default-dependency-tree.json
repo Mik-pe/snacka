@@ -1,0 +1,7 @@
+{
+  "command": "cargo tree --locked --edges normal --no-default-features",
+  "normal_dependency_count": 0,
+  "normalization": "Only root repository absolute path replaced with repository; tree contains no normal dependencies.",
+  "normalized_stdout": "snacka v0.1.0 (repository)\n",
+  "raw_stdout_sha256": "0a1a63dbb417215ab28775e69494c500dabf9b58031e6e83acdfa3c35052e7c9"
+}
