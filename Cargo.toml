@@ -8,7 +8,12 @@ license = "MIT"
 repository = "https://github.com/Mik-pe/snacka"
 keywords = ["audio", "speech", "realtime", "codec", "voip"]
 categories = ["multimedia::audio", "multimedia::encoding"]
-exclude = ["/target-mobile/**"]
+exclude = [
+    "/.github/**",
+    "/docs/measurements/**",
+    "/tools/**",
+    "/target-mobile/**",
+]
 
 [features]
 default = []
