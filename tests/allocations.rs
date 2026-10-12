@@ -9,6 +9,7 @@ use snacka::{
 use std::alloc::{GlobalAlloc, Layout, System};
 use std::cell::Cell;
 use std::hint::black_box;
+use std::time::Duration;
 
 thread_local! {
     static ALLOCATIONS: Cell<Option<usize>> = const { Cell::new(None) };
@@ -48,6 +49,28 @@ unsafe impl GlobalAlloc for Tracked {
 }
 #[global_allocator]
 static ALLOCATOR: Tracked = Tracked;
+
+#[test]
+fn adaptation_construction_feedback_updates_and_timeouts_never_allocate() {
+    use snacka::adaptive::{BitrateController, Feedback};
+    ALLOCATIONS.with(|counter| counter.set(Some(0)));
+    let mut rate = BitrateController::new(24_000, 12_000, 32_000, 39_984, Duration::ZERO).unwrap();
+    for second in 1..=100 {
+        rate.update(
+            Duration::from_secs(second),
+            Feedback {
+                frames: 50,
+                lost: if second < 10 { 5 } else { 0 },
+                rtt: Some(Duration::from_millis(30)),
+            },
+        );
+        rate.set_maximum(24_000).unwrap();
+        black_box(rate.bitrate());
+    }
+    rate.tick(Duration::from_secs(105));
+    let allocations = ALLOCATIONS.with(|counter| counter.replace(None).unwrap());
+    assert_eq!(allocations, 0);
+}
 
 #[test]
 fn steady_state_processing_never_allocates() {

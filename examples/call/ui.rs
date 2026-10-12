@@ -27,6 +27,12 @@ pub struct Dashboard {
     pub registered: bool,
     pub seconds: f64,
     pub bitrate: u32,
+    pub bitrate_limit: u32,
+    pub adaptive: bool,
+    pub wire_bitrate: u32,
+    pub rtt_ms: Option<f64>,
+    pub remote_loss: f64,
+    pub rate_reason: snacka::adaptive::RateReason,
     pub gain: f32,
     pub muted: bool,
     pub aec: bool,
@@ -60,6 +66,12 @@ impl Dashboard {
             registered: false,
             seconds: 0.0,
             bitrate: 24000,
+            bitrate_limit: 32000,
+            adaptive: true,
+            wire_bitrate: 0,
+            rtt_ms: None,
+            remote_loss: 0.0,
+            rate_reason: snacka::adaptive::RateReason::Startup,
             gain: 0.5,
             muted: false,
             aec: true,
@@ -126,7 +138,7 @@ impl Dashboard {
         let rows = Layout::vertical([
             Constraint::Length(4),
             Constraint::Length(7),
-            Constraint::Length(5),
+            Constraint::Length(7),
             Constraint::Length(4),
             Constraint::Min(3),
             Constraint::Length(2),
@@ -172,19 +184,31 @@ impl Dashboard {
         frame.render_widget(
             Paragraph::new(vec![
                 Line::from(format!(
-                    " TX {:>7}    RX {:>7}    {} kb/s",
+                    " {:.1}k {} ≤{}k TX {} RX {}",
+                    self.bitrate as f64 / 1_000.0,
+                    if self.adaptive { "AUTO" } else { "FIXED" },
+                    self.bitrate_limit / 1000,
                     self.tx,
-                    self.rx,
-                    self.bitrate / 1000
+                    self.rx
                 )),
                 Line::from(format!(
                     " PLC {:>6} ({loss:.1}%)  reject/drop {}",
                     self.concealed, self.rejected
                 )),
                 Line::from(format!(
-                    " Jitter {} ms  queue {} ms  gaps {}  drops {}",
-                    self.buffer_ms, self.queue_ms, self.gaps, self.drops
+                    " RTT {} ms TX loss {:.1}% {:?}",
+                    self.rtt_ms
+                        .map_or_else(|| "?".into(), |rtt| format!("{rtt:.0}")),
+                    self.remote_loss,
+                    self.rate_reason
                 )),
+                Line::from(format!(
+                    " Jitter {} ms queue {} ms wire {:.1}k",
+                    self.buffer_ms,
+                    self.queue_ms,
+                    self.wire_bitrate as f64 / 1_000.0
+                )),
+                Line::from(format!(" Audio gaps {} drops {}", self.gaps, self.drops)),
             ])
             .block(panel(" NETWORK / AUDIO HEALTH ")),
             stats[0],
@@ -237,7 +261,7 @@ impl Dashboard {
         frame.render_widget(
             Paragraph::new(vec![
                 Line::from(Span::styled(
-                    " C connection   M mute   ↑↓ volume   ←→ bitrate   A/N/G   Q quit",
+                    " C connection  M mute  ↑↓ volume  ←→ rate  R auto  A/N/G  Q quit",
                     Style::default().fg(GOLD),
                 )),
                 Line::from(Span::styled(
@@ -401,6 +425,12 @@ mod tests {
             let text: String = buffer.content.iter().map(|cell| cell.symbol()).collect();
             assert!(text.contains("CONNECTED"));
             assert!(text.contains("AEC") || text.contains("ECHO CANCEL"));
+            if width >= 64 {
+                assert!(text.contains("AUTO"));
+            }
+            if height >= 34 {
+                assert!(text.contains("RTT"));
+            }
         }
     }
 }

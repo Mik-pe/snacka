@@ -122,7 +122,7 @@ impl Relay {
                 peer.last_seen = now;
                 self.notify(socket)?;
             }
-            transport::AUDIO | transport::BYE => {
+            transport::AUDIO | transport::BYE | transport::PROBE | transport::FEEDBACK => {
                 let Some(peer) = &mut self.peers[index] else {
                     return Ok(());
                 };
@@ -136,8 +136,15 @@ impl Relay {
                 if kind == transport::BYE && body.is_empty() {
                     self.peers[index] = None;
                     self.notify(socket)?;
-                } else if kind == transport::AUDIO
-                    && (9..=8 + snacka::MAX_PACKET_BYTES).contains(&body.len())
+                } else if ((kind == transport::AUDIO
+                    && (9..=8 + snacka::MAX_PACKET_BYTES).contains(&body.len()))
+                    || (kind == transport::PROBE && transport::probe_token(&body).is_some())
+                    || (kind == transport::FEEDBACK
+                        && transport::FeedbackReport::parse(&body).is_some_and(|report| {
+                            self.peers[1 - index]
+                                .as_ref()
+                                .is_some_and(|other| report.recipient == other.session)
+                        })))
                     && let Some(other) = &self.peers[1 - index]
                 {
                     socket.send_to(bytes, other.address)?;
@@ -233,6 +240,47 @@ mod tests {
                 sockets[1 - index].recv(&mut [0; MAX_DATAGRAM]).is_err(),
                 "replay was forwarded"
             );
+        }
+        for index in 0..2 {
+            let report = FeedbackReport {
+                recipient: clients[1 - index].session,
+                serial: 1,
+                probe: 1,
+                frames: 50,
+                lost: 1,
+            };
+            for (kind, body) in [
+                (PROBE, probe_body(1).to_vec()),
+                (FEEDBACK, report.encode().to_vec()),
+            ] {
+                let packet = clients[index].seal(kind, &body).unwrap();
+                relay
+                    .receive(&server, &packet, sockets[index].local_addr().unwrap(), now)
+                    .unwrap();
+                let received = recv(&sockets[1 - index]);
+                assert_eq!(received, packet, "relay changed feedback authentication");
+                relay
+                    .receive(&server, &packet, sockets[index].local_addr().unwrap(), now)
+                    .unwrap();
+                assert!(
+                    sockets[1 - index].recv(&mut [0; MAX_DATAGRAM]).is_err(),
+                    "feedback replay forwarded"
+                );
+            }
+            let invalid = clients[index]
+                .seal(
+                    FEEDBACK,
+                    &FeedbackReport {
+                        recipient: [0; 16],
+                        ..report
+                    }
+                    .encode(),
+                )
+                .unwrap();
+            relay
+                .receive(&server, &invalid, sockets[index].local_addr().unwrap(), now)
+                .unwrap();
+            assert!(sockets[1 - index].recv(&mut [0; MAX_DATAGRAM]).is_err());
         }
         let third = socket();
         let mut intruder = Transport::new(&key, 1).unwrap();

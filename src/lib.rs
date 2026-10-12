@@ -4,6 +4,7 @@
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
 
+pub mod adaptive;
 mod codec;
 mod concealment;
 pub mod entropy;

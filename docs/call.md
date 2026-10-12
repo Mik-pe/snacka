@@ -3,7 +3,8 @@
 The `call` example connects two native clients using Snacka's actual codec and
 encrypted UDP. Its Ratatui dashboard has separate microphone and playback meters,
 remote voice history, device routing, a session log and packet/audio health.
-It defaults to 48 kHz mono, 20 ms frames, 24 kb/s, 60 ms of jitter buffering and
+It defaults to 48 kHz mono, 20 ms frames, adaptive 12–32 kb/s starting at
+24 kb/s, 60 ms of jitter buffering and
 50% playback volume. No audio is saved.
 
 ![Snacka Voice Link dashboard](../assets/snacka-call.png)
@@ -135,7 +136,8 @@ endpoints are reachable (for example, on a LAN or with port forwarding).
 | C | Choose/change destination, IP family, mode, role, key; hang up |
 | M | Mute/unmute outgoing microphone audio |
 | Up / Down | Playback volume, 0–100% |
-| Left / Right | Encoder bitrate, 12–32 kb/s; stream history retained |
+| Left / Right | Adaptive ceiling (or fixed bitrate), 12–32 kb/s; stream history retained |
+| R | Toggle adaptive/fixed bitrate |
 | A | Enable/disable AEC3 echo cancellation |
 | N | Enable/disable noise suppression |
 | G | Enable/disable adaptive digital gain control |
@@ -152,7 +154,11 @@ replaced by the codec's packet-loss concealment; its percentage includes every
 scheduled missing frame, including an outage. Reject/drop counts include malformed,
 unauthenticated, replayed and late packets. Audio gaps and drops count 48 kHz
 samples; the playback queue and jitter target are **not end-to-end latency**.
-There is no round-trip latency measurement in this example.
+The RTT measurement uses authenticated peer probes and includes the reverse path
+and peer processing. Recent remote playout loss controls the local encoder;
+local `PLC` describes the incoming stream. See [adaptive bitrate](adaptive-bitrate.md)
+for thresholds, full UDP/IP/crypto costs and validation. `--bitrate` sets the
+starting target, `--max-bitrate` caps adaptation, and `--fixed-bitrate` disables it.
 
 Use `--list-devices`, `--input INDEX` and `--output INDEX` to select devices:
 

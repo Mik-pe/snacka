@@ -19,6 +19,8 @@ pub struct Connection {
     pub rejected: usize,
     pub sent: usize,
     pub last_contact: Instant,
+    pub feedback: Option<(transport::FeedbackReport, Instant)>,
+    pub probe: Option<u64>,
     replay: ReplayWindow,
     relay_session: Option<Session>,
     relay_replay: ReplayWindow,
@@ -49,6 +51,8 @@ impl Connection {
             rejected: 0,
             sent: 0,
             last_contact: Instant::now(),
+            feedback: None,
+            probe: None,
             replay: ReplayWindow::default(),
             relay_session: None,
             relay_replay: ReplayWindow::default(),
@@ -97,6 +101,8 @@ impl Connection {
             }
         }
         self.peer = peer;
+        self.feedback = None;
+        self.probe = None;
         self.replay = ReplayWindow::default();
         self.changed = true;
         true
@@ -178,6 +184,28 @@ impl Connection {
                     body[8..].to_vec(),
                 )));
             }
+            if kind == transport::PROBE {
+                if let Some(token) = transport::probe_token(&body) {
+                    self.probe = Some(self.probe.map_or(token, |old| old.max(token)));
+                } else {
+                    self.rejected += 1;
+                }
+            }
+            if kind == transport::FEEDBACK {
+                if let Some(report) = transport::FeedbackReport::parse(&body)
+                    .filter(|report| report.recipient == self.transport.session)
+                {
+                    if self
+                        .feedback
+                        .as_ref()
+                        .is_none_or(|(old, _)| report.serial > old.serial)
+                    {
+                        self.feedback = Some((report, now));
+                    }
+                } else {
+                    self.rejected += 1;
+                }
+            }
             if self.direct && kind == transport::BYE && body.is_empty() {
                 self.set_peer(None);
                 self.registered = false;
@@ -247,6 +275,44 @@ mod tests {
                     .is_none()
             );
         }
+        let now = Instant::now();
+        let probe = a
+            .transport
+            .seal(transport::PROBE, &transport::probe_body(42))
+            .unwrap();
+        b.handle(&probe, now).unwrap();
+        assert_eq!(b.probe, Some(42));
+        let report = transport::FeedbackReport {
+            recipient: a.transport.session,
+            serial: 42,
+            probe: 42,
+            frames: 50,
+            lost: 2,
+        };
+        let feedback = b
+            .transport
+            .seal(transport::FEEDBACK, &report.encode())
+            .unwrap();
+        a.handle(&feedback, now).unwrap();
+        assert_eq!(a.feedback.take(), Some((report, now)));
+        a.handle(&feedback, now).unwrap();
+        assert!(
+            a.feedback.is_none(),
+            "replayed feedback escaped authentication"
+        );
+        let wrong = b
+            .transport
+            .seal(
+                transport::FEEDBACK,
+                &transport::FeedbackReport {
+                    recipient: [0; 16],
+                    ..report
+                }
+                .encode(),
+            )
+            .unwrap();
+        a.handle(&wrong, now).unwrap();
+        assert!(a.feedback.is_none(), "wrong recipient affected bitrate");
         let old = a.transport.seal(transport::HELLO, &[]).unwrap();
         a.transport = Transport::new(&key, 1).unwrap();
         a.send(transport::HELLO, &[]).unwrap();
@@ -254,6 +320,10 @@ mod tests {
         b.handle(&bytes[..len], Instant::now()).unwrap();
         assert_eq!(b.peer, Some(a.transport.session));
         b.handle(&old, Instant::now()).unwrap();
+        assert!(
+            b.probe.is_none() && b.feedback.is_none(),
+            "restart retained feedback state"
+        );
         assert_eq!(
             b.peer,
             Some(a.transport.session),

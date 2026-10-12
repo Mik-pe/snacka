@@ -7,6 +7,7 @@ mod editor;
 mod jitter;
 mod processing;
 mod profile;
+mod rate;
 #[path = "../monitor/resample.rs"]
 mod resample;
 #[path = "../call_common/transport.rs"]
@@ -18,6 +19,7 @@ use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
 use editor::{EditAction, Editor};
 use processing::{BLOCK, Processing};
 use profile::{Family, Profile};
+use rate::RateControl;
 use snacka::{Config, Encoder, FRAME_SAMPLES, MAX_PACKET_BYTES, SAMPLE_RATE};
 use std::{
     error::Error,
@@ -47,7 +49,9 @@ Set the same SNACKA_CALL_KEY (64 hex digits) on both clients and any relay.
 The TUI can also accept the room key. IPv4 internet needs port forwarding or a
 relay; direct IPv6 needs global addresses and inbound UDP firewall rules.
   --generate-key     Generate a random room key and exit
-  --bitrate BPS      12000..32000 (default 24000), fixed 20 ms frames
+  --bitrate BPS      Initial codec bitrate 12000..32000 (default 24000)
+  --max-bitrate BPS  Adaptive ceiling 12000..32000 (default 32000)
+  --fixed-bitrate    Disable automatic network adaptation; fixed 20 ms frames
   --buffer-ms MS     Jitter prebuffer 20..200 (default 60)
   --gain GAIN        Playback volume 0..1 (default 0.5)
   --no-aec           Disable echo cancellation (AEC3)
@@ -63,7 +67,7 @@ relay; direct IPv6 needs global addresses and inbound UDP firewall rules.
 
 Keys: M mute; arrows volume/bitrate; A echo cancellation; N noise suppression;
       C connection settings (address, IP family, mode, role, key, hang up);
-      G auto gain; Q, Esc or Ctrl-C hang up. No audio is saved.";
+      G auto gain; R adaptive bitrate; Q, Esc or Ctrl-C hang up. No audio is saved.";
 
 struct Options {
     remote: String,
@@ -72,6 +76,8 @@ struct Options {
     bind: Option<String>,
     role: u8,
     bitrate: u32,
+    max_bitrate: u32,
+    adaptive: bool,
     buffer_ms: u64,
     gain: f32,
     aec: bool,
@@ -92,6 +98,8 @@ fn options(args: impl IntoIterator<Item = String>) -> Result<Option<Options>, Bo
         bind: None,
         role: 0,
         bitrate: 24000,
+        max_bitrate: 32000,
+        adaptive: true,
         buffer_ms: 60,
         gain: 0.5,
         aec: true,
@@ -121,6 +129,7 @@ fn options(args: impl IntoIterator<Item = String>) -> Result<Option<Options>, Bo
             "--no-aec" => options.aec = false,
             "--no-ns" => options.ns = false,
             "--no-agc" => options.agc = false,
+            "--fixed-bitrate" => options.adaptive = false,
             "--no-tui" => options.tui = false,
             "--test-tone" => options.tone = true,
             "--ipv4" | "--ipv6" => {
@@ -133,8 +142,8 @@ fn options(args: impl IntoIterator<Item = String>) -> Result<Option<Options>, Bo
                     Family::Ipv6
                 };
             }
-            "--peer" | "--relay" | "--bind" | "--role" | "--bitrate" | "--buffer-ms" | "--gain"
-            | "--input" | "--output" | "--seconds" => {
+            "--peer" | "--relay" | "--bind" | "--role" | "--bitrate" | "--max-bitrate"
+            | "--buffer-ms" | "--gain" | "--input" | "--output" | "--seconds" => {
                 let value = args
                     .next()
                     .ok_or_else(|| io::Error::other(format!("Missing value for {arg}")))?;
@@ -152,6 +161,7 @@ fn options(args: impl IntoIterator<Item = String>) -> Result<Option<Options>, Bo
                     "--bind" => options.bind = Some(value),
                     "--role" => options.role = value.parse()?,
                     "--bitrate" => options.bitrate = value.parse()?,
+                    "--max-bitrate" => options.max_bitrate = value.parse()?,
                     "--buffer-ms" => options.buffer_ms = value.parse()?,
                     "--gain" => options.gain = value.parse()?,
                     "--input" => options.input = Some(value.parse()?),
@@ -172,6 +182,10 @@ fn options(args: impl IntoIterator<Item = String>) -> Result<Option<Options>, Bo
         .into());
     }
     Config::new(options.bitrate)?;
+    Config::new(options.max_bitrate)?;
+    if options.bitrate > options.max_bitrate {
+        return Err(io::Error::other("--bitrate must not exceed --max-bitrate").into());
+    }
     if !(20..=200).contains(&options.buffer_ms) {
         return Err(io::Error::other("--buffer-ms must be 20..200").into());
     }
@@ -211,6 +225,7 @@ enum Action {
 fn controls(
     state: &mut ui::Dashboard,
     encoder: &mut Encoder,
+    rate: &mut RateControl,
     processing: &mut Processing,
     editor: &mut Option<Editor>,
     profile: &Profile,
@@ -253,15 +268,46 @@ fn controls(
                 KeyCode::Up => state.gain = (state.gain + 0.05).min(1.0),
                 KeyCode::Down => state.gain = (state.gain - 0.05).max(0.0),
                 KeyCode::Left | KeyCode::Right => {
-                    state.bitrate = if key.code == KeyCode::Left {
-                        state.bitrate.saturating_sub(1000).max(12000)
+                    let current = if rate.automatic {
+                        rate.maximum
                     } else {
-                        (state.bitrate + 1000).min(32000)
+                        rate.bitrate()
                     };
+                    let target = if key.code == KeyCode::Left {
+                        current.saturating_sub(1000).max(12000)
+                    } else {
+                        (current + 1000).min(32000)
+                    };
+                    if rate.automatic {
+                        rate.set_maximum(target);
+                    } else {
+                        rate.set_fixed(target, Instant::now());
+                    }
+                    state.bitrate = rate.bitrate();
                     encoder
                         .set_bitrate(state.bitrate)
                         .map_err(io::Error::other)?;
-                    state.log(format!("Encoder: {} kb/s", state.bitrate / 1000));
+                    state.log(format!(
+                        "{}: {} kb/s",
+                        if rate.automatic {
+                            "Bitrate ceiling"
+                        } else {
+                            "Encoder"
+                        },
+                        target / 1000
+                    ));
+                }
+                KeyCode::Char('r' | 'R') => {
+                    if rate.automatic {
+                        rate.set_fixed(rate.bitrate(), Instant::now());
+                    } else {
+                        rate.enable(Instant::now());
+                    }
+                    state.log(if rate.automatic {
+                        "Adaptive bitrate enabled"
+                    } else {
+                        "Fixed bitrate enabled"
+                    });
                 }
                 KeyCode::Char('a' | 'A') => {
                     state.aec = !state.aec;
@@ -311,6 +357,8 @@ fn run(options: Options) -> Result<(), Box<dyn Error>> {
     let mut connection: Option<Connection> = None;
     let mut state = ui::Dashboard::new("NO LINK", "Not bound".into(), "Press C to connect".into());
     state.bitrate = options.bitrate;
+    state.adaptive = options.adaptive;
+    state.bitrate_limit = options.max_bitrate;
     state.buffer_ms = options.buffer_ms;
     state.gain = options.gain;
     state.aec = options.aec;
@@ -328,6 +376,13 @@ fn run(options: Options) -> Result<(), Box<dyn Error>> {
         state.output = "Decode check / no speakers".into();
     }
     let start = Instant::now();
+    let mut rate = RateControl::new(
+        options.bitrate,
+        options.max_bitrate,
+        options.adaptive,
+        false,
+        start,
+    );
     let mut next_hello = start;
     let mut next_tone = start;
     let mut next_ui = start;
@@ -354,6 +409,7 @@ fn run(options: Options) -> Result<(), Box<dyn Error>> {
                 controls(
                     &mut state,
                     &mut encoder,
+                    &mut rate,
                     &mut processing,
                     &mut editor,
                     &profile,
@@ -401,6 +457,10 @@ fn run(options: Options) -> Result<(), Box<dyn Error>> {
                     next_hello = now;
                     next_tone = now;
                     state.reset_link();
+                    rate.reset_link(remote.is_ipv6(), now);
+                    encoder
+                        .set_bitrate(rate.bitrate())
+                        .map_err(io::Error::other)?;
                     let fresh = Connection::new(&key, draft.role, draft.direct, local, remote)?;
                     state.mode = draft.mode(remote).into();
                     state.local = fresh.socket.local_addr()?.to_string();
@@ -443,6 +503,7 @@ fn run(options: Options) -> Result<(), Box<dyn Error>> {
                             let received = connection.handle(&datagram[..length], now)?;
                             if connection.changed {
                                 jitter.reset();
+                                rate.reset_link(connection.socket.peer_addr()?.is_ipv6(), now);
                                 state.log(if connection.peer.is_some() {
                                     "Peer authenticated — voice link established"
                                 } else {
@@ -473,6 +534,41 @@ fn run(options: Options) -> Result<(), Box<dyn Error>> {
                 if connection.timed_out(now) {
                     return Err(io::Error::other("No authenticated response for 10 seconds. Check both addresses, distinct roles, matching keys and inbound UDP firewall rules.").into());
                 }
+                if connection.peer.is_some() {
+                    if let Some((report, received_at)) = connection.feedback.take() {
+                        rate.receive(report, received_at);
+                    }
+                    if let Some(token) = connection.probe.take()
+                        && let Some(body) = rate.reply(
+                            connection.peer.expect("checked peer"),
+                            token,
+                            (jitter.decoded + jitter.concealed) as u64,
+                            jitter.concealed as u64,
+                            now,
+                        )
+                    {
+                        connection.send(transport::FEEDBACK, &body)?;
+                    }
+                    if let Some(body) = rate.probe(now) {
+                        connection.send(transport::PROBE, &body)?;
+                    }
+                    rate.tick(now);
+                    if rate.bitrate() != state.bitrate {
+                        encoder.set_bitrate(rate.bitrate())?;
+                        state.log(format!(
+                            "Bitrate {} b/s • {:?}",
+                            rate.bitrate(),
+                            rate.reason()
+                        ));
+                    }
+                }
+                state.bitrate = rate.bitrate();
+                state.adaptive = rate.automatic;
+                state.bitrate_limit = rate.maximum;
+                state.wire_bitrate = rate.wire_bitrate();
+                state.rtt_ms = rate.rtt.map(|rtt| rtt.as_secs_f64() * 1_000.0);
+                state.remote_loss = rate.loss_percent;
+                state.rate_reason = rate.reason();
                 if connection.registered && audio.is_none() && !options.tone {
                     // Jitter buffering is performed above the audio queue; only one
                     // frame of device prebuffer is needed here.
@@ -630,7 +726,7 @@ fn run(options: Options) -> Result<(), Box<dyn Error>> {
             }
             if terminal.is_none() && now >= next_status {
                 println!(
-                    "{} {} TX={} RX={} decoded={} PLC={} rejected={} peer_peak={:.3}",
+                    "{} {} TX={} RX={} decoded={} PLC={} rejected={} peer_peak={:.3} bitrate={} rate={} wire_bps={} rtt_ms={} remote_loss={:.1}% reason={:?}",
                     state.mode,
                     if state.connected {
                         "connected"
@@ -642,7 +738,15 @@ fn run(options: Options) -> Result<(), Box<dyn Error>> {
                     state.decoded,
                     state.concealed,
                     state.rejected,
-                    state.remote_level
+                    state.remote_level,
+                    state.bitrate,
+                    if state.adaptive { "auto" } else { "fixed" },
+                    state.wire_bitrate,
+                    state
+                        .rtt_ms
+                        .map_or_else(|| "unknown".into(), |rtt| format!("{rtt:.1}")),
+                    state.remote_loss,
+                    state.rate_reason
                 );
                 next_status = now + Duration::from_secs(1);
             }
@@ -681,6 +785,9 @@ mod tests {
         let valid = ["--peer", "[::1]:5001", "--role", "1"];
         let direct = parse(&valid).unwrap().unwrap();
         assert!(direct.direct);
+        assert!(direct.adaptive);
+        assert_eq!(direct.max_bitrate, 32_000);
+        assert!(!parse(&["--fixed-bitrate"]).unwrap().unwrap().adaptive);
         assert_eq!(
             direct.profile().addresses().unwrap().0,
             "[::]:5000".parse().unwrap()
@@ -699,6 +806,9 @@ mod tests {
             vec!["--no-tui"],
             vec!["--peer", "[::1]:5001", "--no-tui"],
             vec!["--ipv4", "--ipv6"],
+            vec!["--max-bitrate", "11999"],
+            vec!["--max-bitrate", "33000"],
+            vec!["--bitrate", "24000", "--max-bitrate", "16000"],
             vec![
                 "--peer",
                 "[::1]:5001",

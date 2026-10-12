@@ -12,10 +12,75 @@ pub const HELLO: u8 = 1;
 pub const AUDIO: u8 = 2;
 pub const BYE: u8 = 3;
 pub const STATUS: u8 = 4;
+pub const PROBE: u8 = 5;
+pub const FEEDBACK: u8 = 6;
+pub const PROBE_BYTES: usize = 9;
+pub const FEEDBACK_BYTES: usize = 49;
+#[allow(dead_code)] // Client rate accounting; not used by the relay binary.
+pub const DATAGRAM_OVERHEAD: u16 = (HEADER + 16) as u16;
 pub const WAITING: u8 = 0;
 pub const CONNECTED: u8 = 1;
 pub const OCCUPIED: u8 = 2;
 pub type Session = [u8; 16];
+
+/// Versioned cumulative receiver counters; scoped to the sender's session.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct FeedbackReport {
+    pub recipient: Session,
+    pub serial: u64,
+    pub probe: u64,
+    pub frames: u64,
+    pub lost: u64,
+}
+
+impl FeedbackReport {
+    #[allow(dead_code)] // Only clients originate feedback.
+    pub fn encode(self) -> [u8; FEEDBACK_BYTES] {
+        let mut bytes = [0; FEEDBACK_BYTES];
+        bytes[0] = 1;
+        bytes[1..17].copy_from_slice(&self.recipient);
+        for (slot, value) in bytes[17..].as_chunks_mut::<8>().0.iter_mut().zip([
+            self.serial,
+            self.probe,
+            self.frames,
+            self.lost,
+        ]) {
+            slot.copy_from_slice(&value.to_be_bytes());
+        }
+        bytes
+    }
+
+    pub fn parse(bytes: &[u8]) -> Option<Self> {
+        if bytes.len() != FEEDBACK_BYTES || bytes[0] != 1 {
+            return None;
+        }
+        let word =
+            |start| u64::from_be_bytes(bytes[start..start + 8].try_into().expect("fixed length"));
+        let report = Self {
+            recipient: bytes[1..17].try_into().ok()?,
+            serial: word(17),
+            probe: word(25),
+            frames: word(33),
+            lost: word(41),
+        };
+        (report.lost <= report.frames).then_some(report)
+    }
+}
+
+#[allow(dead_code)] // Only clients originate probes.
+pub fn probe_body(token: u64) -> [u8; PROBE_BYTES] {
+    let mut bytes = [0; PROBE_BYTES];
+    bytes[0] = 1;
+    bytes[1..].copy_from_slice(&token.to_be_bytes());
+    bytes
+}
+
+pub fn probe_token(bytes: &[u8]) -> Option<u64> {
+    if bytes.len() != PROBE_BYTES || bytes[0] != 1 {
+        return None;
+    }
+    Some(u64::from_be_bytes(bytes[1..].try_into().ok()?))
+}
 
 pub fn random_session() -> io::Result<Session> {
     let mut session = [0; 16];
@@ -180,6 +245,28 @@ pub fn status(message: &Message, recipient: Session) -> Option<(u8, Session)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn feedback_wire_format_rejects_malformed_counts_lengths_and_versions() {
+        let report = FeedbackReport {
+            recipient: [7; 16],
+            serial: 10,
+            probe: 12,
+            frames: 50,
+            lost: 2,
+        };
+        let bytes = report.encode();
+        assert_eq!(FeedbackReport::parse(&bytes), Some(report));
+        for length in 0..FEEDBACK_BYTES {
+            assert!(FeedbackReport::parse(&bytes[..length]).is_none());
+        }
+        let mut unknown = bytes;
+        unknown[0] = 2;
+        assert!(FeedbackReport::parse(&unknown).is_none());
+        assert!(FeedbackReport::parse(&FeedbackReport { lost: 51, ..report }.encode()).is_none());
+        assert_eq!(probe_token(&probe_body(u64::MAX)), Some(u64::MAX));
+        assert!(probe_token(&[0; PROBE_BYTES]).is_none());
+    }
 
     #[test]
     fn authenticates_headers_payload_and_key_and_uses_distinct_nonces() {

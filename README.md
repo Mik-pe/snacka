@@ -14,6 +14,8 @@ production calls. No superiority over established codecs is claimed.
 - 20 ms frames by default; optional 10 ms frames.
 - 12–32 kb/s including four bytes of framing and checksum per packet.
 - Bitrate changes retain stream history; fractional byte budgets remain exact.
+- Allocation-free adaptive bitrate controller; the call example uses encrypted
+  remote playout feedback and RTT, with transport overhead accounted for.
 - Per-packet coded bandwidth of 8/12/24 kHz; PCM stays at 48 kHz.
 - 120 samples (2.5 ms) of transform delay beyond frame buffering.
 - Caller-owned buffers; no allocation during encoding, decoding, concealment,
@@ -90,9 +92,13 @@ port forwarding on both sides; IPv6 needs reachable addresses and inbound UDP
 allowed. A small optional relay supports networks where direct UDP is impractical.
 Press C to choose or change the connection in the TUI, or hang up and reconnect.
 The dashboard shows both voice meters, link health and packet loss; M mutes,
-arrows adjust volume/bitrate, and A/N/G toggle processing. See
+arrows adjust volume/bitrate ceiling, R toggles automatic bitrate, and A/N/G toggle processing. See
 [the call guide](docs/call.md) for complete two-client commands, firewall setup,
 relay mode and device-free IPv4/IPv6 smoke tests.
+Calls start at 24 kb/s and adapt within 12–32 kb/s; `--max-bitrate` sets the
+ceiling and `--fixed-bitrate` disables adaptation. See
+[adaptive bitrate](docs/adaptive-bitrate.md) for the controller API, wire-rate
+budgets, feedback protocol, tests and limits.
 
 Rust 1.99 or newer is required. Plans allocate during construction, before the
 audio callback. Snacka operates on PCM and packet bytes; capture, playback,
