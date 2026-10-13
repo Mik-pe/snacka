@@ -43,22 +43,40 @@ pub struct Model<'a> {
 }
 impl<'a> Model<'a> {
     /// Validate cumulative boundaries once, before using the model in a stream.
-    pub fn new(boundaries: &'a [u16]) -> Result<Self, Error> {
-        if boundaries.len() < 2
-            || boundaries[0] != 0
-            || boundaries.windows(2).any(|pair| pair[0] >= pair[1])
-        {
+    pub const fn new(boundaries: &'a [u16]) -> Result<Self, Error> {
+        if boundaries.len() < 2 || boundaries[0] != 0 {
             return Err(Error::Argument);
+        }
+        let mut index = 1;
+        while index < boundaries.len() {
+            if boundaries[index - 1] >= boundaries[index] {
+                return Err(Error::Argument);
+            }
+            index += 1;
         }
         Ok(Self {
             boundaries,
-            total: u32::from(*boundaries.last().unwrap()),
+            total: boundaries[boundaries.len() - 1] as u32,
         })
     }
 
     /// Number of symbols in this model.
     pub fn symbols(&self) -> usize {
         self.boundaries.len() - 1
+    }
+}
+
+#[cfg(feature = "opus")]
+impl Model<'static> {
+    /// Validate a fixed distribution during constant evaluation.
+    ///
+    /// Keep the result in a `const` or `static` to avoid revalidating it in a
+    /// per-symbol audio path. Invalid normative tables fail to compile.
+    pub(crate) const fn from_static(boundaries: &'static [u16]) -> Self {
+        match Self::new(boundaries) {
+            Ok(model) => model,
+            Err(_) => panic!("invalid static entropy probability model"),
+        }
     }
 }
 
@@ -113,6 +131,22 @@ impl<'a> Decoder<'a> {
         decoder
     }
 
+    /// Exclude trailing bytes before the first raw-bit read, preserving the
+    /// arithmetic interval and its already-buffered lookahead.
+    ///
+    /// Opus hybrid frames use this after decoding the SILK layer to separate
+    /// redundant audio from the CELT raw-bit suffix. Invalid lengths and calls
+    /// after consuming raw bits leave every decoder field unchanged.
+    pub fn shrink(&mut self, length: usize) -> Result<(), Error> {
+        if length > self.frame.len() || self.raw_consumed != 0 || self.raw_available != 0 {
+            return Err(Error::Argument);
+        }
+        self.frame = &self.frame[..length];
+        self.tail = length;
+        self.front = self.front.min(length);
+        Ok(())
+    }
+
     fn normalize(&mut self) {
         while self.range <= NORMALIZE_BELOW {
             let next = if self.front < self.frame.len() {
@@ -130,11 +164,11 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    fn frequency(&self, total: u32) -> u32 {
+    pub(crate) fn frequency(&self, total: u32) -> u32 {
         total - (self.value / (self.range / total) + 1).min(total)
     }
 
-    fn consume(&mut self, low: u32, high: u32, total: u32) {
+    pub(crate) fn consume(&mut self, low: u32, high: u32, total: u32) {
         let unit = self.range / total;
         let upper = unit * (total - high);
         self.value -= upper;
@@ -148,6 +182,27 @@ impl<'a> Decoder<'a> {
 
     /// Decode a symbol using a previously validated cumulative model.
     pub fn symbol(&mut self, model: Model<'_>) -> usize {
+        if model.total == 256 {
+            // RFC 6716 section 4.1.3.3 permits comparing inverse cumulative
+            // thresholds directly. The SILK alphabet's fixed denominator
+            // removes both divisions; its small tables favor a linear scan.
+            let unit = self.range >> 8;
+            let mut index = 0;
+            while unit * (256 - u32::from(model.boundaries[index + 1])) > self.value {
+                index += 1;
+            }
+            let low = u32::from(model.boundaries[index]);
+            let high = u32::from(model.boundaries[index + 1]);
+            let upper = unit * (256 - high);
+            self.value -= upper;
+            self.range = if low == 0 {
+                self.range - upper
+            } else {
+                unit * (high - low)
+            };
+            self.normalize();
+            return index;
+        }
         let frequency = self.frequency(model.total);
         let index = model
             .boundaries
@@ -310,7 +365,7 @@ impl<'a> Encoder<'a> {
         Ok(())
     }
 
-    fn interval(&mut self, low: u32, high: u32, total: u32) -> Result<(), Error> {
+    pub(crate) fn interval(&mut self, low: u32, high: u32, total: u32) -> Result<(), Error> {
         if let Some(error) = self.failure {
             return Err(error);
         }

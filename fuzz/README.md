@@ -5,7 +5,7 @@ argument bounds, small output buffers and mixed-operation entropy round trips.
 The packet target generates valid frames at both durations and mutates their
 payloads while repairing CRC to reach spectral validation. It verifies rejected
 packets leave output untouched and accepted audio stays finite and normalized.
-Both targets cap work per input. The main library remains dependency-free.
+All targets cap work per input. The main library remains dependency-free.
 The packet target primes four received frames before corruption, reaching the
 full pitch-analysis history at both durations. Twelve consecutive losses check
 bounded PCM and exact silence after the fade and overlap drain.
@@ -21,7 +21,16 @@ This compiler is for the external fuzz engine, not a library build dependency.
 ```sh
 cargo +nightly fuzz run packet -- -max_total_time=60 -max_len=1024
 cargo +nightly fuzz run entropy -- -max_total_time=60 -max_len=4096
+cargo +nightly fuzz run opus -- -max_total_time=60 -max_len=4096
 ```
+
+The Opus target checks borrowed framing, arbitrary SILK/Hybrid/CELT packets in
+both output channel counts, and mutated valid fullband CELT packets across frame
+sizes. Accepted output must be finite. Ordinary regression tests separately
+check buffer preservation. The same target also parses arbitrary OpusHead,
+OpusTags and Ogg streams, limiting each input to 32 returned audio packets.
+Every input additionally round-trips one valid Ogg page sequence with varying
+pre-skip and final trimming, exercising the container path behind its checksum.
 
 Longer runs should retain their corpora. Reproduce and minimize failures before
 fixing them, and add the minimal case to ordinary regression tests. A clean short

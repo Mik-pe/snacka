@@ -10,7 +10,7 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
-snacka = { path = ".." }
+snacka = { path = "..", features = ["opus"] }
 
 [[bin]]
 name = "packet"
@@ -28,6 +28,13 @@ bench = false
 
 [profile.release]
 overflow-checks = true
+
+[[bin]]
+name = "opus"
+path = "fuzz_targets/opus.rs"
+test = false
+doc = false
+bench = false
 
 [workspace]
 members = ["."]

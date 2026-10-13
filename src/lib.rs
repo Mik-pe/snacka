@@ -16,5 +16,8 @@ pub use codec::{
 };
 pub mod transform;
 
+#[cfg(feature = "opus")]
+pub mod opus;
+
 mod harmonic;
 mod harmonic_joint;

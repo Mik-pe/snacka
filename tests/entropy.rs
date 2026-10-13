@@ -2,6 +2,33 @@
 use snacka::entropy::{Decoder, Encoder, Error, Model};
 
 #[test]
+fn cropped_raw_suffix_preserves_interval_and_rejects_late_or_expanding_changes() {
+    let mut packet = [0; 12];
+    let mut encoder = Encoder::new(&mut packet[..8]);
+    encoder.bit(false, 3).unwrap();
+    encoder.raw(0xa53, 12).unwrap();
+    encoder.finish_padded().unwrap();
+    packet[8..].copy_from_slice(&[0x42, 0xf1, 0x23, 0x98]);
+    let mut decoder = Decoder::new(&packet);
+    assert!(!decoder.bit(3).unwrap());
+    let interval = (decoder.range(), decoder.tell(), decoder.tell_eighths());
+    assert_eq!(decoder.shrink(13), Err(Error::Argument));
+    decoder.shrink(8).unwrap();
+    assert_eq!(
+        (decoder.range(), decoder.tell(), decoder.tell_eighths()),
+        interval
+    );
+    assert_eq!(decoder.raw(4).unwrap(), 3);
+    let interval = (decoder.range(), decoder.tell(), decoder.tell_eighths());
+    assert_eq!(decoder.shrink(7), Err(Error::Argument));
+    assert_eq!(
+        (decoder.range(), decoder.tell(), decoder.tell_eighths()),
+        interval
+    );
+    assert_eq!(decoder.raw(8).unwrap(), 0xa5);
+}
+
+#[test]
 fn independent_reference_frames_match_every_symbol_and_coder_state() {
     let fixture = include_bytes!("fixtures/entropy-libopus-1.6.1.bin");
     assert_eq!(&fixture[..8], b"SNKENT01");

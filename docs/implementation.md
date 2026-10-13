@@ -1,10 +1,21 @@
 # Development and acceptance
 
-Build a small, modern Rust speech codec with its own bitstream. Implementation
-source must be written independently: do not copy, translate, wrap or vendor
-external codec algorithms. Mathematical descriptions, published research and
-black-box results may inform design. External codecs are test oracles and
-competitors, never a required runtime path or fallback implementation.
+Build a small, modern Rust speech codec with its own bitstream. Native Snacka
+implementation source must be written independently: do not copy, translate,
+wrap or vendor external codec algorithms. Mathematical descriptions,
+published research and black-box results may inform design. External codecs
+are test oracles and competitors, never a required runtime path or fallback
+implementation.
+
+The optional `opus` feature implements a second, standardized bitstream owned
+by Snacka. Its wire behavior follows RFC 6716, including the normative
+specification in Appendix A. Format probability tables and allocation constants
+carry their original notice in [LICENSE-OPUS-DATA](../LICENSE-OPUS-DATA).
+The Rust implementation reuses Snacka's entropy and transform kernels; it adds
+no codec dependency, C/FFI, build script or unsafe Rust. Native format versioning
+and Opus negotiation remain distinct. Completion requires independent
+interoperability evidence for every advertised coding mode, and competitive
+performance requires measurements of complete frames on diverse audio.
 
 ## Current implementation
 

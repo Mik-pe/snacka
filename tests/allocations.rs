@@ -50,6 +50,112 @@ unsafe impl GlobalAlloc for Tracked {
 #[global_allocator]
 static ALLOCATOR: Tracked = Tracked;
 
+#[cfg(feature = "opus")]
+#[test]
+fn opus_processing_reset_and_rate_changes_do_not_allocate() {
+    use snacka::opus::{
+        Bandwidth, CeltConfig, CeltDecoder, CeltEncoder, CeltFrameDuration, Decoder,
+    };
+
+    let durations = [
+        CeltFrameDuration::Ms2_5,
+        CeltFrameDuration::Ms5,
+        CeltFrameDuration::Ms10,
+        CeltFrameDuration::Ms20,
+    ];
+    // Keep this twelve-codec test harness on the heap before tracking begins;
+    // inline aggregate construction exceeds small debug test-thread stacks.
+    let mut encoders: Vec<_> = (0..8)
+        .map(|index| {
+            CeltEncoder::new(
+                CeltConfig::new(
+                    32_000,
+                    durations[index / 2],
+                    index % 2 + 1,
+                    Bandwidth::Fullband,
+                )
+                .unwrap(),
+            )
+        })
+        .collect();
+    let mut celt: Vec<_> = (1..=2)
+        .map(|channels| CeltDecoder::new(channels).unwrap())
+        .collect();
+    let mut universal: Vec<_> = (1..=2)
+        .map(|channels| Decoder::new(channels).unwrap())
+        .collect();
+    let input: [f32; 1920] = std::array::from_fn(|index| (index as f32 * 0.057).sin() * 0.25);
+    let mut packet = [0; 1276];
+    let mut output = [0.0; 11520];
+
+    // Assemble coded SILK packets before counting allocations. The independent
+    // fixture covers all native SILK rates, channels, durations and LBRR.
+    let data = include_bytes!("fixtures/opus-silk-decode.bin");
+    let cases = u32::from_le_bytes(data[8..12].try_into().unwrap()) as usize;
+    let mut packets = Vec::with_capacity(cases);
+    let mut position = 12;
+    for _ in 0..cases {
+        let band = data[position + 2];
+        let duration = data[position + 3];
+        let channels = usize::from(data[position + 4]);
+        let length =
+            u16::from_le_bytes(data[position + 5..position + 7].try_into().unwrap()) as usize;
+        let samples =
+            u16::from_le_bytes(data[position + 7..position + 9].try_into().unwrap()) as usize;
+        let reset = u32::from_le_bytes(data[position + 13..position + 17].try_into().unwrap()) != 0;
+        let duration_code = match duration {
+            10 => 0,
+            20 => 1,
+            40 => 2,
+            60 => 3,
+            _ => unreachable!(),
+        };
+        position += 21;
+        let mut packet = Vec::with_capacity(length + 1);
+        packet.push(((band * 4 + duration_code) << 3) | ((channels as u8 - 1) << 2));
+        packet.extend_from_slice(&data[position..position + length]);
+        packets.push((channels, reset, packet));
+        position += length + samples * channels * 2;
+    }
+    assert_eq!(position, data.len());
+
+    ALLOCATIONS.with(|counter| counter.set(Some(0)));
+    for (index, encoder) in encoders.iter_mut().enumerate() {
+        let channels = index % 2 + 1;
+        for frame in 0..64 {
+            encoder
+                .set_bitrate(if frame & 1 == 0 { 32_000 } else { 48_000 })
+                .unwrap();
+            let length = encoder
+                .encode(
+                    &input[..durations[index / 2].samples() * channels],
+                    &mut packet,
+                )
+                .unwrap();
+            celt[channels - 1]
+                .decode(&packet[..length], &mut output)
+                .unwrap();
+            universal[channels - 1]
+                .decode(&packet[..length], &mut output)
+                .unwrap();
+        }
+        encoder.reset();
+        celt[channels - 1].reset();
+        universal[channels - 1].reset();
+    }
+    for (channels, reset, packet) in &packets {
+        if *reset {
+            universal[*channels - 1].reset();
+        }
+        universal[*channels - 1]
+            .decode(packet, &mut output)
+            .unwrap();
+        black_box(&output);
+    }
+    let allocations = ALLOCATIONS.with(|counter| counter.replace(None).unwrap());
+    assert_eq!(allocations, 0);
+}
+
 #[test]
 fn adaptation_construction_feedback_updates_and_timeouts_never_allocate() {
     use snacka::adaptive::{BitrateController, Feedback};

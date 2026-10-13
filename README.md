@@ -2,13 +2,24 @@
 
 # snacka
 
-An independently implemented, MIT-licensed Rust codec for interactive speech,
-with its own versioned bitstream. Snacka is the codec under development;
-external codecs are measurement competitors and test oracles only.
+Independently implemented Rust audio codecs: Snacka's experimental speech
+bitstream and optional standard Opus support. Enable `opus` for the owned
+SILK/Hybrid/CELT decoder, CELT encoder and Ogg Opus file handling. Both library
+paths have zero dependencies, C, FFI, CMake or unsafe Rust. External codecs are
+measurement competitors and test oracles only.
 
-**Experimental DSP prototype.** It encodes and decodes audio today, but its
+**The native Snacka format is an experimental DSP prototype.** It encodes and decodes audio today, but its
 speech quality and loss concealment need substantial improvement before use in
 production calls. No superiority over established codecs is claimed.
+
+The following describes the native format. For the standard format's API,
+supported modes, interoperability checks and CPU comparisons, see
+[Opus support](docs/opus.md). To convert 48 kHz interleaved little-endian f32 PCM:
+
+```sh
+cargo run --release --features opus --example opus_roundtrip -- \
+  input.f32 output.opus decoded.f32 32000 1 20
+```
 
 - Mono normalized f32 PCM at 48 kHz.
 - 20 ms frames by default; optional 10 ms frames.
@@ -132,5 +143,6 @@ ordering/integrity services and end-to-end latency are not matched.
 
 See [the bitstream](docs/bitstream.md), [development and acceptance](docs/implementation.md),
 [measurements](docs/measurements.md), [signed pulse classes](docs/pulse-classes.md), [harmonic speech experiment](docs/harmonic-speech.md), [joint harmonic fit](docs/harmonic-joint-fit.md), [Swedish recording diagnostics](docs/swedish-diagnostic.md), [harmonic analysis performance](docs/harmonic-analysis.md), [pitch scoring performance](docs/harmonic-pitch.md), [packed MDCT performance](docs/mdct-packed-plan.md), [paired speech CPU probes](docs/cpu.md), [quality evaluation](docs/quality.md), [packet-loss evaluation](docs/loss.md), [fixture provenance](tests/fixtures/README.md)
-and [fuzzing](fuzz/README.md). The implementation license is [MIT](LICENSE).
-External reference source and trained weights are not vendored.
+and [fuzzing](fuzz/README.md). Original implementation code is [MIT](LICENSE);
+normative Opus format data retains its [BSD notices](LICENSE-OPUS-DATA).
+External codec implementations and trained weights are not vendored.

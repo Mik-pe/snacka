@@ -52,3 +52,64 @@ packets emitted by the native encoder at commit
 respectively. Their original checksum bytes are retained. They test rejection
 of the previous experimental packet layout without consuming stream history.
 They contain no external implementation or recorded audio.
+
+## Standard Opus kernels and SILK
+
+The `opus` feature uses additional synthetic observations from external codec
+calls. These are test data, not external implementation source or recorded
+audio. Production code never reads these files. Binary readers in the matching
+Rust tests specify the record layout and check that the whole file is consumed.
+
+| Fixture | Coverage | Generator |
+| --- | --- | --- |
+| `src/opus/testdata/range-libopus-1.6.1.bin` | 32 frames, 3,072 mixed ICDF/Laplace/range/raw operations, exact bytes and coder state | `generate_opus_range_fixtures.py` |
+| `src/opus/testdata/pvq-libopus-1.6.1.bin` | Pulse-vector rank/unrank, dimensions and boundary codebooks, exact integer/range state | `generate_opus_pvq_fixtures.py` |
+| `src/opus/testdata/bands-rfc6716.bin` | 256 band reconstructions, spectral coefficients, masks and coder state | `generate_opus_bands_fixtures.py` |
+| `src/opus/testdata/bands-anticollapse-rfc6716.bin` | Eight transient anti-collapse cases | Same bands generator |
+| `src/opus/testdata/bands-hybrid-libopus-1.6.1.bin` | 24 start-17 hybrid cases, including unequal-width folding, mono/stereo and transients | `generate_opus_hybrid_bands_fixtures.py` |
+| `src/opus/testdata/resampler-response.bin` | 12 complex response frequencies at each of 8/12/16 kHz | `design_opus_resampler.py` |
+| `src/opus/testdata/celt-to-hybrid.opus` | 80-byte raw transition packet from synthetic tones, testing reset after beginning redundancy | `generate_celt_transition.py` |
+| `opus-silk-pulses.bin` | 610 shell/LSB/sign/excitation cases, exact pulses and coder state | `generate_opus_silk_fixtures.py` |
+| `opus-silk-decode.bin` | 456 coded frames with 8/12/16 kHz rates, mono/stereo, 10/20/40/60 ms, coded redundancy and channel changes | `generate_opus_silk_decode_fixtures.py` |
+
+All generators live under `tools/reference/`. The libopus observations use
+version 1.6.1 and its separately installed static archive. Example commands:
+
+```sh
+python3 tools/reference/generate_opus_range_fixtures.py /path/libopus.a
+python3 tools/reference/generate_opus_pvq_fixtures.py /path/libopus.a --verify-native
+python3 tools/reference/generate_opus_silk_fixtures.py /path/libopus.a
+python3 tools/reference/generate_opus_silk_decode_fixtures.py /path/libopus.a
+python3 tools/reference/generate_opus_hybrid_bands_fixtures.py /path/libopus.a
+```
+
+The bands generator uses the separately extracted RFC 6716 Appendix A oracle:
+
+```sh
+python3 tools/reference/generate_opus_bands_fixtures.py /path/opus-rfc6716
+```
+
+The archive is the RFC's normative specification with SHA-1
+`86a927223e73d2476646a1b933fcd3fffb6ecc8c`. No copy is checked into Snacka.
+The generator compiles only external source plus our original call glue into
+a temporary executable. Format constants used by Rust preserve BSD notices
+in `LICENSE-OPUS-DATA`; original algorithm code remains MIT.
+
+The resampler generator requires NumPy and matching external libopus headers
+for development. It fits original model coefficients from observed impulses
+at thirteen amplitudes, then constrains unit DC gain and the standard delay.
+Neither production code nor ordinary tests require NumPy, foreign compilation
+or an installed codec. Its compact fixture stores frequency observations only.
+Use `--output-dir` outside the repository to keep design artifacts separate;
+`--write` explicitly replaces the owned inline model and its fixture.
+
+SILK tests also retain small gain/pitch/stereo/NLSF oracle vectors and output
+digests inline. Energy and allocation differential tools compare states from
+the external normative oracle; no reference source is compiled by Cargo.
+
+The transition generator uses synthetic 180/360/720 Hz tones, eight 20 ms
+music-biased frames at 128 kb/s and a voice-biased frame at 32 kb/s with external
+libopus 1.6.1. The retained packet is raw Opus, not an Ogg container. The public
+decoder regression checks that two different old CELT histories cannot alter
+the new Hybrid highband after redundancy; restoring the former reset condition
+makes this regression fail. No official vector audio is retained.

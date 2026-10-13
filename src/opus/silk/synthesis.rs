@@ -1,0 +1,272 @@
+// SPDX-License-Identifier: MIT
+//! SILK reconstruction equations from RFC 6716 section 4.2.7.9.
+//!
+//! SILK synthesis is explicitly not bit-exact in the specification. This
+//! implementation evaluates those equations with f64 history, preserving the
+//! distinct clamped LTP and unclamped LPC histories across frame boundaries.
+
+use super::{Bandwidth, Error, Frame};
+
+const OUTPUT_HISTORY: usize = 306;
+const LPC_HISTORY: usize = 16;
+const MAX_SAMPLES: usize = 320;
+
+/// Prediction parameters of a fully parsed internal frame.
+#[derive(Clone, Copy)]
+pub(crate) struct Parameters {
+    pub(crate) gains_q16: [i32; 4],
+    pub(crate) lpc_q12: [[i16; 16]; 2],
+    pub(crate) interpolation: u8,
+    pub(crate) voiced: bool,
+    pub(crate) pitch_lags: [usize; 4],
+    pub(crate) ltp_q14: [[i16; 5]; 4],
+    pub(crate) ltp_scale_q14: i16,
+}
+
+/// A channel's bounded, allocation-free SILK synthesis history.
+pub(crate) struct Synthesis {
+    output: [f64; OUTPUT_HISTORY],
+    lpc: [f64; LPC_HISTORY],
+}
+
+impl Synthesis {
+    pub(crate) const fn new() -> Self {
+        Self {
+            output: [0.0; OUTPUT_HISTORY],
+            lpc: [0.0; LPC_HISTORY],
+        }
+    }
+
+    pub(crate) fn reset(&mut self) {
+        self.output.fill(0.0);
+        self.lpc.fill(0.0);
+    }
+
+    pub(crate) fn frame(
+        &mut self,
+        frame: Frame,
+        parameters: &Parameters,
+        excitation_q23: &[i32],
+        output: &mut [f32],
+    ) -> Result<usize, Error> {
+        let samples = frame.samples();
+        if excitation_q23.len() < samples {
+            return Err(Error::Argument);
+        }
+        if output.len() < samples {
+            return Err(Error::Output);
+        }
+        let order = if frame.bandwidth == Bandwidth::Wide {
+            16
+        } else {
+            10
+        };
+        let n = match frame.bandwidth {
+            Bandwidth::Narrow => 40,
+            Bandwidth::Medium => 60,
+            Bandwidth::Wide => 80,
+        };
+        let subframes = samples / n;
+        if parameters.interpolation > 4
+            || parameters.gains_q16[..subframes]
+                .iter()
+                .any(|&gain| !(81_920..=1_686_110_208).contains(&gain))
+            || (parameters.voiced
+                && (parameters.pitch_lags[..subframes]
+                    .iter()
+                    .any(|&lag| !(n * 2 / 5..=n * 18 / 5).contains(&lag))
+                    || parameters.ltp_scale_q14 <= 0))
+        {
+            return Err(Error::Argument);
+        }
+
+        let mut clamped = [0.0; OUTPUT_HISTORY + MAX_SAMPLES];
+        clamped[..OUTPUT_HISTORY].copy_from_slice(&self.output);
+        let mut lpc = [0.0; LPC_HISTORY + MAX_SAMPLES];
+        lpc[..LPC_HISTORY].copy_from_slice(&self.lpc);
+        let mut residual = [0.0; OUTPUT_HISTORY + MAX_SAMPLES];
+
+        for subframe in 0..subframes {
+            let first = subframe * n;
+            let j = OUTPUT_HISTORY + first;
+            let gain = f64::from(parameters.gains_q16[subframe]) / 65_536.0;
+            let coefficients = &parameters.lpc_q12
+                [usize::from(subframe >= 2 || parameters.interpolation == 4)][..order];
+
+            if parameters.voiced {
+                let lag = parameters.pitch_lags[subframe];
+                let interpolate = parameters.interpolation < 4 && subframe >= 2;
+                let out_end = OUTPUT_HISTORY + if interpolate { 2 * n } else { 0 };
+                let scale = if interpolate {
+                    1.0
+                } else {
+                    f64::from(parameters.ltp_scale_q14) / 16_384.0
+                };
+                // Only history predating the active LPC coefficient set uses
+                // the clamped output and the loss-robust LTP scale.
+                for i in j - lag - 2..out_end {
+                    let whitened = clamped[i] - prediction(&clamped, i, coefficients);
+                    residual[i] = whitened.clamp(-1.0, 1.0) * scale / gain;
+                }
+                // Within the current coefficient set, rewhitening uses the
+                // unclamped LPC output, including its prior-frame prefix.
+                for (i, destination) in residual.iter_mut().enumerate().take(j).skip(out_end) {
+                    let position = LPC_HISTORY + i - OUTPUT_HISTORY;
+                    *destination =
+                        (lpc[position] - prediction(&lpc, position, coefficients)) / gain;
+                }
+            }
+
+            for offset in 0..n {
+                let sample = first + offset;
+                let position = j + offset;
+                let mut value = f64::from(excitation_q23[sample]) / 8_388_608.0;
+                if parameters.voiced {
+                    let lag = parameters.pitch_lags[subframe];
+                    for (tap, &coefficient) in parameters.ltp_q14[subframe].iter().enumerate() {
+                        value +=
+                            residual[position - lag + 2 - tap] * f64::from(coefficient) / 16_384.0;
+                    }
+                }
+                residual[position] = value;
+                let lpc_position = LPC_HISTORY + sample;
+                let reconstructed = gain * value + prediction(&lpc, lpc_position, coefficients);
+                lpc[lpc_position] = reconstructed;
+                clamped[position] = reconstructed.clamp(-1.0, 1.0);
+                output[sample] = clamped[position] as f32;
+            }
+        }
+        self.output
+            .copy_from_slice(&clamped[samples..samples + OUTPUT_HISTORY]);
+        self.lpc
+            .copy_from_slice(&lpc[samples..samples + LPC_HISTORY]);
+        Ok(samples)
+    }
+}
+
+fn prediction(history: &[f64], position: usize, coefficients: &[i16]) -> f64 {
+    let mut result = 0.0;
+    for (tap, &coefficient) in coefficients.iter().enumerate() {
+        result += history[position - tap - 1] * f64::from(coefficient) / 4096.0;
+    }
+    result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::opus::silk::FrameDuration;
+
+    fn geometry() -> Frame {
+        Frame {
+            bandwidth: Bandwidth::Narrow,
+            duration: FrameDuration::Ms10,
+        }
+    }
+
+    fn parameters() -> Parameters {
+        Parameters {
+            gains_q16: [81_920; 4],
+            lpc_q12: [[0; 16]; 2],
+            interpolation: 4,
+            voiced: false,
+            pitch_lags: [16; 4],
+            ltp_q14: [[0; 5]; 4],
+            ltp_scale_q14: 15_565,
+        }
+    }
+
+    #[test]
+    fn lpc_feedback_uses_unclamped_history_including_frame_boundary() {
+        let frame = geometry();
+        let mut parameters = parameters();
+        parameters.lpc_q12[1][0] = 2048;
+        let mut synthesis = Synthesis::new();
+        let mut excitation = [0; 80];
+        excitation[79] = 16_777_216;
+        let mut output = [0.0; 80];
+        synthesis
+            .frame(frame, &parameters, &excitation, &mut output)
+            .unwrap();
+        assert_eq!(output[79], 1.0);
+        synthesis
+            .frame(frame, &parameters, &[0; 80], &mut output)
+            .unwrap();
+        assert_eq!(&output[..4], &[1.0, 0.625, 0.3125, 0.15625]);
+        synthesis.reset();
+        synthesis
+            .frame(frame, &parameters, &[0; 80], &mut output)
+            .unwrap();
+        assert_eq!(output, [0.0; 80]);
+    }
+
+    #[test]
+    fn zero_prediction_is_scaled_excitation_for_both_signal_classes() {
+        let frame = geometry();
+        for voiced in [false, true] {
+            let mut parameters = parameters();
+            parameters.voiced = voiced;
+            let mut excitation = [0; 80];
+            excitation[0] = 8_388_608;
+            excitation[1] = -4_194_304;
+            let mut output = [123.0; 81];
+            let samples = Synthesis::new()
+                .frame(frame, &parameters, &excitation, &mut output)
+                .unwrap();
+            assert_eq!(samples, 80);
+            assert_eq!(&output[..3], &[1.0, -0.625, 0.0]);
+            assert_eq!(output[80], 123.0);
+        }
+    }
+
+    #[test]
+    fn nonzero_ltp_repeats_pitch_impulse_with_zero_lpc() {
+        let frame = geometry();
+        let mut parameters = parameters();
+        parameters.voiced = true;
+        for coefficients in &mut parameters.ltp_q14 {
+            coefficients[2] = 8192;
+        }
+        let mut excitation = [0; 80];
+        excitation[0] = 4_194_304;
+        let mut output = [0.0; 80];
+        Synthesis::new()
+            .frame(frame, &parameters, &excitation, &mut output)
+            .unwrap();
+        for (index, &value) in output.iter().enumerate() {
+            let expected = if index % 16 == 0 {
+                0.625 * 0.5f32.powi((index / 16) as i32)
+            } else {
+                0.0
+            };
+            assert_eq!(value, expected);
+        }
+    }
+
+    #[test]
+    fn malformed_geometry_and_short_output_are_transactional() {
+        let frame = geometry();
+        let mut synthesis = Synthesis::new();
+        let mut parameters = parameters();
+        let mut output = [123.0; 80];
+        parameters.voiced = true;
+        parameters.pitch_lags[0] = 0;
+        assert_eq!(
+            synthesis.frame(frame, &parameters, &[0; 80], &mut output),
+            Err(Error::Argument)
+        );
+        assert_eq!(output, [123.0; 80]);
+        parameters.pitch_lags[0] = 16;
+        assert_eq!(
+            synthesis.frame(frame, &parameters, &[0; 79], &mut output),
+            Err(Error::Argument)
+        );
+        assert_eq!(
+            synthesis.frame(frame, &parameters, &[0; 80], &mut output[..79]),
+            Err(Error::Output)
+        );
+        assert_eq!(output, [123.0; 80]);
+        assert_eq!(synthesis.output, [0.0; OUTPUT_HISTORY]);
+        assert_eq!(synthesis.lpc, [0.0; LPC_HISTORY]);
+    }
+}
