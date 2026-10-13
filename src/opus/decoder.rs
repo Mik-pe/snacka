@@ -12,6 +12,16 @@ const MAX_FRAME_SAMPLES: usize = 2880;
 const MAX_INTERNAL_SAMPLES: usize = 960;
 const CROSSLAP: usize = 120;
 
+// Vec's repeated scalar initialization writes straight to heap storage. Turning
+// the resulting slice into a boxed array preserves fixed dimensions without
+// first constructing a large array temporary on the caller's stack.
+fn zeroed_buffer<const N: usize>() -> Box<[f32; N]> {
+    vec![0.0; N]
+        .into_boxed_slice()
+        .try_into()
+        .expect("fixed decoder buffer length")
+}
+
 /// An invalid Opus packet, output buffer or decoded layer.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Error {
@@ -128,22 +138,23 @@ fn silk_duration(samples: usize) -> Result<silk::PacketDuration, Error> {
 /// PCM is normalized interleaved floating point. Mono streams can be duplicated
 /// to stereo output; stereo streams can be averaged to mono. Framing and full output capacity are checked
 /// before changing history. A compressed error can advance part of the packet;
-/// reset after `Corrupt`. Transform plans allocate only during construction;
-/// packet decoding and configuration transitions use fixed working buffers.
+/// reset after `Corrupt`. Construction allocates transform plans and fixed
+/// working memory on the heap. Packet decoding and configuration transitions
+/// reuse that storage without allocating.
 ///
 /// Missing frames use an independent attenuation concealment policy. SILK uses
 /// Snacka's causal resampler, permitted by RFC 6716 §4.2.9. These choices need not
 /// reproduce the reference codec's concealment or resampling sample-for-sample.
 pub struct Decoder {
     channels: usize,
-    silk: SilkDecoder,
-    celt: CeltDecoder,
+    silk: Box<SilkDecoder>,
+    celt: Box<CeltDecoder>,
     resamplers: [Resampler; 2],
     internal_bandwidth: Option<silk::Bandwidth>,
-    silk_pcm: [f32; MAX_INTERNAL_SAMPLES * 2],
-    lowband: [[f32; MAX_FRAME_SAMPLES]; 2],
-    frame: [f32; MAX_FRAME_SAMPLES * 2],
-    redundant: [f32; 2 * CROSSLAP * 2],
+    silk_pcm: Box<[f32; MAX_INTERNAL_SAMPLES * 2]>,
+    lowband: [Box<[f32; MAX_FRAME_SAMPLES]>; 2],
+    frame: Box<[f32; MAX_FRAME_SAMPLES * 2]>,
+    redundant: Box<[f32; 2 * CROSSLAP * 2]>,
     history: [f32; CROSSLAP * 2],
     window: [f32; CROSSLAP],
     previous_mode: Option<Mode>,
@@ -161,14 +172,14 @@ impl Decoder {
         }
         Ok(Self {
             channels,
-            silk: SilkDecoder::new(),
-            celt: CeltDecoder::new(channels).map_err(|_| Error::Argument)?,
+            silk: Box::new(SilkDecoder::new()),
+            celt: Box::new(CeltDecoder::new(channels).map_err(|_| Error::Argument)?),
             resamplers: std::array::from_fn(|_| Resampler::new(silk::Bandwidth::Wide)),
             internal_bandwidth: None,
-            silk_pcm: [0.0; MAX_INTERNAL_SAMPLES * 2],
-            lowband: [[0.0; MAX_FRAME_SAMPLES]; 2],
-            frame: [0.0; MAX_FRAME_SAMPLES * 2],
-            redundant: [0.0; 2 * CROSSLAP * 2],
+            silk_pcm: zeroed_buffer(),
+            lowband: std::array::from_fn(|_| zeroed_buffer()),
+            frame: zeroed_buffer(),
+            redundant: zeroed_buffer(),
             history: [0.0; CROSSLAP * 2],
             window: std::array::from_fn(|sample| {
                 let phase = std::f64::consts::FRAC_PI_2 * (sample as f64 + 0.5) / CROSSLAP as f64;
@@ -283,7 +294,7 @@ impl Decoder {
             },
             silk_duration(samples)?,
             toc.channels(),
-            &mut self.silk_pcm,
+            &mut self.silk_pcm[..],
         )?;
         let ratio = self.resamplers[0].ratio();
         if internal * ratio != samples {

@@ -37,7 +37,10 @@ assert_eq!(decoder.decode(&packet[..length], &mut pcm).unwrap(), 960);
 ```
 
 Prepare codecs before the audio callback. Encoding, decoding, reset and bitrate
-changes use fixed working buffers and do not allocate. `CeltDecoder` offers
+changes use fixed working buffers and do not allocate.
+Large decoder workspaces are allocated once during construction; the duplex
+constructor/processing test also runs on a 1 MiB stack in debug builds.
+`CeltDecoder` offers
 the narrower CELT-only API with identical coded/output channel counts.
 `Packet::parse` borrows the bytes and validates framing without decoding audio.
 A malformed compressed frame can partially advance decoder history: call
@@ -168,6 +171,8 @@ were excluded.
 These streams cover 5,098 packets with varied coded durations and channels.
 The owned decoder remains roughly 1.6–1.8× the reference CPU cost on these
 profiles; decoder performance parity is still a development target.
+These full-decoder timings precede the startup workspace move to boxed memory;
+the audio algorithms are unchanged. CELT-only timings are unaffected.
 The optional [complete-decoder timing tool](../tools/reference/benchmark_opus_decode.rs)
 documents the isolated build, public libopus linkage and repeatable stream
 validation/timing commands.
