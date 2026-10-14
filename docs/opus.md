@@ -177,6 +177,16 @@ native-rate SILK delay bypass; that change leaves CELT arithmetic untouched.
 Exploratory runs can overlap host work; final parity acceptance requires a
 serialized frozen-source repetition and every case to pass, including tails.
 
+A subsequent SILK synthesis change uses f32 histories and four independent
+prediction accumulators. In two alternating before/after runs with reversed
+roles, all 270 tested rate/channel/decode/PLC/FEC-return cases improved at
+paired p50; median CPU ratios were 0.922 and 0.923 against the preceding
+Snacka implementation. These are incremental gains, not libopus parity.
+The stored synthesis histories shrink by 1,288 bytes per coded channel.
+Across all 40,150 official vector packets, final ranges remained exact and
+the published quality scores were unchanged. Maximum additional sample error
+against the f64 version was 3.82e-6 and maximum per-stream RMS error 1.57e-7.
+
 Official RFC 8251 vectors are downloaded independently:
 
 ```sh

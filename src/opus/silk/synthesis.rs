@@ -2,7 +2,7 @@
 //! SILK reconstruction equations from RFC 6716 section 4.2.7.9.
 //!
 //! SILK synthesis is explicitly not bit-exact in the specification. This
-//! implementation evaluates those equations with f64 history, preserving the
+//! implementation evaluates those equations with f32 history, preserving the
 //! distinct clamped LTP and unclamped LPC histories across frame boundaries.
 
 use super::{Bandwidth, Error, Frame};
@@ -25,8 +25,8 @@ pub(crate) struct Parameters {
 
 /// A channel's bounded, allocation-free SILK synthesis history.
 pub(crate) struct Synthesis {
-    output: [f64; OUTPUT_HISTORY],
-    lpc: [f64; LPC_HISTORY],
+    output: [f32; OUTPUT_HISTORY],
+    lpc: [f32; LPC_HISTORY],
 }
 
 impl Synthesis {
@@ -89,8 +89,8 @@ impl Synthesis {
             let coefficients = &previous.lpc_q12[1][..order];
             let mut energy = 0.0;
             for position in order..OUTPUT_HISTORY {
-                let residual =
-                    self.output[position] - prediction(&self.output, position, coefficients);
+                let residual = f64::from(self.output[position])
+                    - prediction(&self.output, position, coefficients);
                 energy += residual * residual;
             }
             let gain = f64::from(previous.gains_q16[last]) / 65_536.0;
@@ -200,7 +200,7 @@ impl Synthesis {
         // once instead of multiplying by its scale at every history tap.
         let coefficient_sets = parameters
             .lpc_q12
-            .map(|values| values.map(|value| f64::from(value) / 4096.0));
+            .map(|values| values.map(|value| f32::from(value) / 4096.0));
 
         let mut clamped = [0.0; OUTPUT_HISTORY + MAX_SAMPLES];
         clamped[..OUTPUT_HISTORY].copy_from_slice(&self.output);
@@ -214,10 +214,10 @@ impl Synthesis {
             let subframe = absolute / n;
             let width = (n - absolute % n).min(samples - first);
             let j = OUTPUT_HISTORY + first;
-            let gain = f64::from(parameters.gains_q16[subframe]) / 65_536.0;
+            let gain = parameters.gains_q16[subframe] as f32 / 65_536.0;
             let coefficients =
                 &coefficient_sets[usize::from(subframe >= 2 || parameters.interpolation == 4)];
-            let ltp = parameters.ltp_q14[subframe].map(|value| f64::from(value) / 16_384.0);
+            let ltp = parameters.ltp_q14[subframe].map(|value| f32::from(value) / 16_384.0);
 
             if parameters.voiced {
                 let lag = parameters.pitch_lags[subframe];
@@ -231,7 +231,7 @@ impl Synthesis {
                 let scale = if interpolate {
                     1.0
                 } else {
-                    f64::from(parameters.ltp_scale_q14) / 16_384.0
+                    f32::from(parameters.ltp_scale_q14) / 16_384.0
                 };
                 // Only history predating the active LPC coefficient set uses
                 // the clamped output and the loss-robust LTP scale.
@@ -253,7 +253,7 @@ impl Synthesis {
             for offset in 0..width {
                 let sample = first + offset;
                 let position = j + offset;
-                let mut value = f64::from(excitation_q23[origin + sample]) / 8_388_608.0;
+                let mut value = excitation_q23[origin + sample] as f32 / 8_388_608.0;
                 if parameters.voiced {
                     let lag = parameters.pitch_lags[subframe];
                     for (tap, &coefficient) in ltp.iter().enumerate() {
@@ -266,7 +266,7 @@ impl Synthesis {
                     gain * value + prediction_scaled::<ORDER>(&lpc, lpc_position, coefficients);
                 lpc[lpc_position] = reconstructed;
                 clamped[position] = reconstructed.clamp(-1.0, 1.0);
-                output[sample] = clamped[position] as f32;
+                output[sample] = clamped[position];
             }
             first += width;
         }
@@ -280,22 +280,25 @@ impl Synthesis {
 
 #[inline]
 fn prediction_scaled<const ORDER: usize>(
-    history: &[f64],
+    history: &[f32],
     position: usize,
-    coefficients: &[f64; 16],
-) -> f64 {
+    coefficients: &[f32; 16],
+) -> f32 {
     let past = &history[position - ORDER..position];
-    let mut result = 0.0;
+    // Independent accumulators shorten the recurrent dependency chain. The
+    // Q12 coefficients are exactly representable in f32; accumulation retains
+    // f32 precision, matching the PCM and the stored synthesis history.
+    let mut partial = [0.0; 4];
     for (tap, &coefficient) in coefficients[..ORDER].iter().enumerate() {
-        result += past[ORDER - tap - 1] * coefficient;
+        partial[tap % 4] += past[ORDER - tap - 1] * coefficient;
     }
-    result
+    partial[0] + partial[1] + partial[2] + partial[3]
 }
 
-fn prediction(history: &[f64], position: usize, coefficients: &[i16]) -> f64 {
+fn prediction(history: &[f32], position: usize, coefficients: &[i16]) -> f64 {
     let mut result = 0.0;
     for (tap, &coefficient) in coefficients.iter().enumerate() {
-        result += history[position - tap - 1] * f64::from(coefficient) / 4096.0;
+        result += f64::from(history[position - tap - 1]) * f64::from(coefficient) / 4096.0;
     }
     result
 }
@@ -457,7 +460,14 @@ mod tests {
         for (index, &sample) in output[..20].iter().enumerate() {
             assert!((f64::from(sample) - 0.625 * pole.powi(index as i32 + 1)).abs() < 1e-8);
         }
-        assert!((synthesis.lpc[LPC_HISTORY - 1] - 0.625 * pole.powi(20)).abs() < 1e-15);
+        // Preserve every recurrent f32 rounding, including the history
+        // handed to the next frame. The closed-form f64 result above checks
+        // the defining decay separately.
+        let mut expected_history = 0.625f32;
+        for _ in 0..20 {
+            expected_history *= pole as f32;
+        }
+        assert_eq!(synthesis.lpc[LPC_HISTORY - 1], expected_history);
         assert_eq!(seed, 0, "voiced extrapolation consumes no noise generator");
     }
 
