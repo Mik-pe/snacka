@@ -64,6 +64,43 @@ and documented delay using the [CPU](cpu.md) and
 [quality](reference-quality.md) methods. Native results do not close the
 standard Opus target, and a faster native codec still needs quality validation.
 
+## Quality goal
+
+Make Snacka sound at least as good as libopus while meeting the performance
+goal. Both targets must pass together; reduce measured cost without degrading
+quality, packet meaning, numerical bounds or allocation-free processing.
+
+Compare the same PCM with matched complete packet byte budgets, actual coded
+bandwidth, channels, frame duration and documented algorithmic delay. Match FEC,
+DTX and loss schedules where those services are supported. Report native-format
+and standard Opus results separately, including their framing/service overhead.
+
+For each declared speech condition, require STOI and ESTOI at least equal to the
+reference and speech-band log-spectral distance no greater than the reference.
+Publish per-clip regressions and paired confidence intervals alongside each
+condition's results. Uncertain comparisons keep the goal open; improvements in
+one bitrate, speaker group or noise condition cannot hide a failing condition.
+Use perceptual audio metrics appropriate to music and transient material rather
+than applying speech intelligibility scores to them.
+
+Confirm objective results with randomized blind paired listening on independent,
+reproducibly licensed held-out audio. Cover clean/noisy speech, different voices
+and languages including Swedish, overlapping talkers, music/transients, isolated
+losses, burst loss and recovery. Freeze evaluation conditions before tuning and
+keep evaluation inputs separate from development inputs. Listening must support
+no worse quality in every declared condition before claiming parity.
+
+Owned Opus decoding must also retain exact ordinary entropy intervals, official
+vector conformance and finite output; target the recommended score of 90 or
+higher for every official vector, in addition to the mandatory nonnegative
+score. These checks validate decoding and do not establish encoder or PLC quality.
+Exact baseline packet/PCM traces remain the gate for output-preserving CPU
+changes. Output-changing experiments need fresh quality evidence before adoption.
+Current native quality gaps are recorded in the
+[matched reference](reference-quality.md); standard Opus evidence and CPU gaps
+are in [Opus support](opus.md). Neither quality nor full CPU parity is claimed
+complete.
+
 ## Current implementation
 
 A working DSP baseline encodes 48 kHz mono audio into native packets at

@@ -549,10 +549,26 @@ const COEFFICIENTS: [[f32; TAPS]; 3] = [
 ];
 // END GENERATED MODEL
 
+// Conversion from f32 to f64 is exact. Prepare the immutable coefficients
+// once during compilation instead of converting all 177 taps at every output.
+static WIDE_COEFFICIENTS: [[f64; TAPS]; 3] = {
+    let mut result = [[0.0; TAPS]; 3];
+    let mut band = 0;
+    while band < 3 {
+        let mut tap = 0;
+        while tap < TAPS {
+            result[band][tap] = COEFFICIENTS[band][tap] as f64;
+            tap += 1;
+        }
+        band += 1;
+    }
+    result
+};
+
 /// Fixed-history 48 kHz to native SILK-rate encoder downsampler.
 /// Coefficients are owned mathematical data, generated without a codec oracle.
 pub(crate) struct Downsampler {
-    coefficients: &'static [f32; TAPS],
+    coefficients: &'static [f64; TAPS],
     history: [f32; HISTORY],
     cursor: usize,
     factor: usize,
@@ -566,7 +582,7 @@ impl Downsampler {
             Bandwidth::Wide => (2, 3),
         };
         Self {
-            coefficients: &COEFFICIENTS[index],
+            coefficients: &WIDE_COEFFICIENTS[index],
             history: [0.0; HISTORY],
             cursor: 0,
             factor,
@@ -642,17 +658,17 @@ impl Downsampler {
 
 // Four independent sums avoid a dependency chain across every FIR tap. Both
 // ring slices contain at least as many samples as their coefficient slice.
-fn dot_reverse(history: &[f32], coefficients: &[f32], partial: &mut [f64; 4]) {
+fn dot_reverse(history: &[f32], coefficients: &[f64], partial: &mut [f64; 4]) {
     let mut values = history.iter().rev();
     let (groups, tail) = coefficients.as_chunks::<4>();
     for group in groups {
-        partial[0] += f64::from(*values.next().unwrap()) * f64::from(group[0]);
-        partial[1] += f64::from(*values.next().unwrap()) * f64::from(group[1]);
-        partial[2] += f64::from(*values.next().unwrap()) * f64::from(group[2]);
-        partial[3] += f64::from(*values.next().unwrap()) * f64::from(group[3]);
+        partial[0] += f64::from(*values.next().unwrap()) * group[0];
+        partial[1] += f64::from(*values.next().unwrap()) * group[1];
+        partial[2] += f64::from(*values.next().unwrap()) * group[2];
+        partial[3] += f64::from(*values.next().unwrap()) * group[3];
     }
     for (&coefficient, &value) in tail.iter().zip(values) {
-        partial[0] += f64::from(value) * f64::from(coefficient);
+        partial[0] += f64::from(value) * coefficient;
     }
 }
 
@@ -662,7 +678,10 @@ mod tests {
 
     #[test]
     fn literal_convolution_and_irregular_chunks_have_identical_history() {
-        for bandwidth in [Bandwidth::Narrow, Bandwidth::Medium, Bandwidth::Wide] {
+        for (bandwidth, coefficients) in [Bandwidth::Narrow, Bandwidth::Medium, Bandwidth::Wide]
+            .into_iter()
+            .zip(&COEFFICIENTS)
+        {
             let mut plan = Downsampler::new(bandwidth);
             let factor = plan.ratio();
             let input: Vec<f32> = (0..factor * 751)
@@ -672,7 +691,9 @@ mod tests {
             plan.process(&input, &mut output).unwrap();
             for (index, &sample) in output.iter().enumerate() {
                 let at = factor * index;
-                let wanted = plan.coefficients[..TAPS.min(at + 1)]
+                // Use the original mathematical f32 model, independently of
+                // the cached f64 representation used by processing.
+                let wanted = coefficients[..TAPS.min(at + 1)]
                     .iter()
                     .enumerate()
                     .map(|(lag, &coefficient)| f64::from(coefficient) * f64::from(input[at - lag]))
@@ -707,12 +728,12 @@ mod tests {
             (Bandwidth::Wide, 33.888),
         ] {
             let plan = Downsampler::new(bandwidth);
-            let mass = plan.coefficients.iter().map(|&v| f64::from(v)).sum::<f64>();
+            let mass = plan.coefficients.iter().sum::<f64>();
             let moment = plan
                 .coefficients
                 .iter()
                 .enumerate()
-                .map(|(i, &v)| i as f64 * f64::from(v))
+                .map(|(i, &v)| i as f64 * v)
                 .sum::<f64>()
                 / mass;
             assert!((mass - 1.0).abs() < 2e-7);
@@ -725,10 +746,7 @@ mod tests {
                         .enumerate()
                         .fold((0.0, 0.0), |(r, j), (i, &value)| {
                             let angle = 2.0 * std::f64::consts::PI * frequency * i as f64;
-                            (
-                                r + f64::from(value) * angle.cos(),
-                                j + f64::from(value) * angle.sin(),
-                            )
+                            (r + value * angle.cos(), j + value * angle.sin())
                         });
                 real.hypot(imaginary)
             };
@@ -738,7 +756,7 @@ mod tests {
                 plan.coefficients
                     .iter()
                     .map(|value| value.abs())
-                    .sum::<f32>()
+                    .sum::<f64>()
                     < 3.0
             );
         }

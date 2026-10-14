@@ -95,12 +95,18 @@ pub(super) fn analyze(
     for (destination, &source) in output[PREFIX..].iter_mut().zip(samples) {
         *destination = f64::from(source);
     }
+    // Q12 scaling is a power of two. Prepare the bounded predictor once,
+    // retaining each residual's original tap order.
+    let mut scaled = [0.0; 16];
+    for (destination, &coefficient) in scaled.iter_mut().zip(coefficients) {
+        *destination = f64::from(coefficient) / 4096.0;
+    }
     let mut residual = [0.0; PREFIX + MAX_SAMPLES];
     for index in coefficients.len()..PREFIX + samples.len() {
-        let prediction = coefficients
+        let prediction = scaled[..coefficients.len()]
             .iter()
             .enumerate()
-            .map(|(tap, &value)| output[index - tap - 1] * f64::from(value) / 4096.0)
+            .map(|(tap, &value)| output[index - tap - 1] * value)
             .sum::<f64>();
         residual[index] = output[index] - prediction;
     }
@@ -113,32 +119,30 @@ pub(super) fn analyze(
     if energy < 1e-12 {
         return Pitch::NONE;
     }
-    let score = |lag: usize| {
-        let mut cross = 0.0;
-        let mut previous = 1e-18;
-        // A decimated correlation search selects the region; refinement below
-        // uses the same bounded calculation around that region.
-        for index in (PREFIX..PREFIX + samples.len()).step_by(2) {
-            cross += residual[index] * residual[index - lag];
-            previous += residual[index - lag] * residual[index - lag];
-        }
-        if cross <= 0.0 {
-            return 0.0;
-        }
-        cross * cross / (previous * energy * 0.5) - lag as f64 * 0.000_02
-    };
     let mut lag = minimum;
     let mut best = 0.0;
-    for candidate in (minimum..=maximum).step_by(4) {
-        let value = score(candidate);
+    let mut candidate = minimum;
+    while candidate + 12 <= maximum {
+        let values = pitch_scores::<4>(&residual, samples.len(), energy, candidate);
+        for (lane, value) in values.into_iter().enumerate() {
+            if value > best {
+                best = value;
+                lag = candidate + lane * 4;
+            }
+        }
+        candidate += 16;
+    }
+    while candidate <= maximum {
+        let value = pitch_scores::<1>(&residual, samples.len(), energy, candidate)[0];
         if value > best {
             best = value;
             lag = candidate;
         }
+        candidate += 4;
     }
     let center = lag;
     for candidate in center.saturating_sub(4).max(minimum)..=(center + 4).min(maximum) {
-        let value = score(candidate);
+        let value = pitch_scores::<1>(&residual, samples.len(), energy, candidate)[0];
         if value > best {
             best = value;
             lag = candidate;
@@ -230,11 +234,72 @@ pub(super) fn analyze(
     choice
 }
 
+fn pitch_scores<const LANES: usize>(
+    residual: &[f64; PREFIX + MAX_SAMPLES],
+    samples: usize,
+    energy: f64,
+    lag: usize,
+) -> [f64; LANES] {
+    // Adjacent coarse lags share the current residual. Each lane keeps the
+    // scalar search's ascending sample order, including its energy floor.
+    let mut cross = [0.0; LANES];
+    let mut previous = [1e-18; LANES];
+    for index in (PREFIX..PREFIX + samples).step_by(2) {
+        let current = residual[index];
+        for lane in 0..LANES {
+            let past = residual[index - lag - lane * 4];
+            cross[lane] += current * past;
+            previous[lane] += past * past;
+        }
+    }
+    std::array::from_fn(|lane| {
+        if cross[lane] <= 0.0 {
+            0.0
+        } else {
+            cross[lane] * cross[lane] / (previous[lane] * energy * 0.5)
+                - (lag + lane * 4) as f64 * 0.000_02
+        }
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::super::SignalType;
     use super::super::frame::{ChannelMetadata, CodingMode};
     use super::*;
+
+    #[test]
+    fn batched_pitch_scores_match_independent_scalar_correlations() {
+        let residual: [f64; PREFIX + MAX_SAMPLES] = std::array::from_fn(|i| match i % 7 {
+            0 => -0.0,
+            1 => 0.0,
+            _ => ((i * 37 % 103) as f64 - 51.0) / 64.0,
+        });
+        for samples in [80, 120, 160, 240, 320] {
+            let energy = residual[PREFIX..PREFIX + samples]
+                .iter()
+                .map(|x| x * x)
+                .sum::<f64>();
+            for lag in (16..=276).step_by(4) {
+                let actual = pitch_scores::<4>(&residual, samples, energy, lag);
+                for (lane, value) in actual.into_iter().enumerate() {
+                    let candidate = lag + lane * 4;
+                    let mut cross = 0.0;
+                    let mut previous = 1e-18;
+                    for index in (PREFIX..PREFIX + samples).step_by(2) {
+                        cross += residual[index] * residual[index - candidate];
+                        previous += residual[index - candidate] * residual[index - candidate];
+                    }
+                    let expected = if cross <= 0.0 {
+                        0.0
+                    } else {
+                        cross * cross / (previous * energy * 0.5) - candidate as f64 * 0.000_02
+                    };
+                    assert_eq!(value.to_bits(), expected.to_bits());
+                }
+            }
+        }
+    }
 
     #[test]
     fn transmitted_pitch_filters_match_canonical_decoder() {

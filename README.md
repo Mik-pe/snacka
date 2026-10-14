@@ -34,6 +34,12 @@ the latest measurements include slower decoder cases. See the
 [acceptance criteria and optimization priorities](docs/implementation.md#performance-goal)
 and [current evidence](docs/opus.md#verification-and-performance-target).
 
+The quality goal is **audio at least as good as libopus** at matched packet
+budgets, bandwidth, channels, frame duration and comparable delay, including
+noise and packet loss. Acceptance requires held-out perceptual measurements and
+blind listening; interoperability and throughput alone do not meet it. See the
+[quality acceptance criteria](docs/implementation.md#quality-goal).
+
 ## Native Snacka format
 
 - Mono normalized f32 PCM at 48 kHz.

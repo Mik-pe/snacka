@@ -293,6 +293,62 @@ requires the full timed matrix and rejects quick, validation-only and filtered
 runs. Remaining work prioritizes CELT decoding/PLC, below-native-rate SILK
 filtering, Hybrid encoding and all encoder tails.
 
+### Encoder optimization on x86-64, 2026-10-14
+
+The follow-up caches the owned encoder FIR's exact f32-to-f64 coefficient
+conversions at compile time and scales the Q12 pitch predictor once per analysis.
+Four coarse pitch candidates share residual reads while retaining each
+candidate's scalar sum order and the original tie-breaking order. Filter taps,
+delay, packet budgets and stream workspace sizes are unchanged; read-only
+coefficient storage grows by 2,124 bytes. Processing remains safe Rust and
+allocation-free. These are encoder changes; decoder timings above were not
+remeasured.
+
+Compare against the pushed `bca7700` on the same x86-64 host and release flags
+described above. All 88 encoder geometries run three times, reversing executable
+order on the middle repetition, with 1,000 alternating Snacka/libopus batches
+per case per executable. Each batch lasts at least 200 microseconds after
+warmup. Input is generated changing voiced PCM; construction, validation and I/O
+are excluded. Ratios describe batch-average throughput. Each case's time change
+is the median of three libopus-normalized current/baseline p50 comparisons;
+the table reports medians across that mode's cases.
+
+| Encoder mode | Cases | Baseline p50/libopus | Current p50/libopus | Median p50 time change |
+| --- | ---: | ---: | ---: | ---: |
+| SILK | 24 | 0.629 | 0.594 | -6.03% |
+| Hybrid | 16 | 1.108 | 1.045 | -5.69% |
+| CELT | 48 | 0.584 | 0.586 | +0.44% |
+
+All 40 SILK/Hybrid case medians improve, by 3.92–7.35%. CELT does not use the
+changed paths: its case changes range from -1.37% to +2.68%, with 37 of 48
+medians increasing. This control variation limits claims about small changes on
+the uncontrolled VM. All 16 Hybrid cases remain slower than libopus at p50;
+73 of 88 cases exceed it at one or more of the separately aggregated p50/p95/p99
+ratios. **Full performance parity remains unmet.** Equal packet budgets alone
+do not establish equal audio quality, and the
+[quality goal](implementation.md#quality-goal) remains open.
+
+The independent before/after trace probe covers all 88 geometries with voiced,
+seeded noise, transient and silent input: 352 streams, 96 packets each. All
+33,792 packets retain matching packet and decoded-PCM fingerprints. Hashing
+runs outside timed loops. This preserves tested baseline output; it is not new
+listening or perceptual-quality evidence. All 283 debug tests and 298 release
+tests including public libopus reference checks pass, as do Opus clippy and
+transform-plan reproduction. The new coarse-pitch test compares batched scores
+bit-for-bit with independent scalar correlations.
+
+The [88-case summary](measurements/2026-10-14-x86_64-opus-encoder-followup/summary.csv)
+includes each repetition's minimum/maximum change and aggregated percentiles.
+The [source manifest](measurements/2026-10-14-x86_64-opus-encoder-followup/source.json)
+binds unchanged source, benchmark binaries, reference library, raw CSVs, trace
+evidence and probe; it records build/run commands and verification commands.
+The [recorded driver](measurements/2026-10-14-x86_64-opus-encoder-followup/recorded-run.py)
+preserves the exact aggregation and host paths. Adapt its checkout, binary,
+reference and output paths to repeat the comparison. Compile the same
+[trace probe](measurements/2026-10-14-x86_64-opus-encoder-followup/trace-probe.rs)
+against each library and run `MODE BANDWIDTH FRAME_MS CHANNELS 96 0 SIGNAL`
+for each geometry and signal to reproduce the output checks.
+
 Official RFC 8251 vectors are downloaded independently:
 
 ```sh
