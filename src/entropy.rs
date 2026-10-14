@@ -291,6 +291,24 @@ impl<'a> Decoder<'a> {
         index
     }
 
+    // SILK's binary models have an already validated denominator of 256.
+    // Return symbol one; symbol zero retains the interval division remainder.
+    #[cfg(feature = "opus")]
+    #[inline]
+    pub(crate) fn binary_256(&mut self, zero_frequency: u16) -> bool {
+        debug_assert!((1..256).contains(&zero_frequency));
+        let upper = (self.range >> 8) * (256 - u32::from(zero_frequency));
+        let one = self.value < upper;
+        if one {
+            self.range = upper;
+        } else {
+            self.value -= upper;
+            self.range -= upper;
+        }
+        self.normalize();
+        one
+    }
+
     /// Decode a bit whose probability of being one is `2^-log_probability`.
     ///
     /// Supported logarithms are 1 through 16. Invalid arguments leave state intact.
@@ -616,5 +634,57 @@ impl<'a> Encoder<'a> {
             self.output[self.front + extra - 1] |= self.raw_buffer as u8;
         }
         Ok(length)
+    }
+}
+
+#[cfg(all(test, feature = "opus"))]
+mod binary_tests {
+    use super::*;
+
+    #[test]
+    fn binary_256_matches_models_with_raw_bits_and_zero_extension() {
+        let bytes: [u8; 31] = std::array::from_fn(|n| (n as u8).wrapping_mul(73).wrapping_add(51));
+        for length in 0..=bytes.len() {
+            for weight in 1..256 {
+                let boundaries = [0, weight, 256];
+                let model = Model::new(&boundaries).unwrap();
+                let mut ordinary = Decoder::new(&bytes[..length]);
+                let mut binary = Decoder::new(&bytes[..length]);
+                for index in 0..512 {
+                    assert_eq!(
+                        ordinary.symbol(model),
+                        usize::from(binary.binary_256(weight))
+                    );
+                    if index % 7 == 0 {
+                        let bits = (index % 32 + 1) as u32;
+                        assert_eq!(ordinary.raw(bits), binary.raw(bits));
+                    }
+                    assert_eq!(
+                        (
+                            ordinary.front,
+                            ordinary.carry,
+                            ordinary.range,
+                            ordinary.value,
+                            ordinary.total_bits,
+                            ordinary.tail,
+                            ordinary.raw_buffer,
+                            ordinary.raw_available,
+                            ordinary.raw_consumed
+                        ),
+                        (
+                            binary.front,
+                            binary.carry,
+                            binary.range,
+                            binary.value,
+                            binary.total_bits,
+                            binary.tail,
+                            binary.raw_buffer,
+                            binary.raw_available,
+                            binary.raw_consumed
+                        ),
+                    );
+                }
+            }
+        }
     }
 }

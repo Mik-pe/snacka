@@ -8,7 +8,8 @@ use crate::entropy::{Decoder, Model};
 const MAX_SAMPLES: usize = 320;
 const MAX_BLOCKS: usize = MAX_SAMPLES / 16;
 const SEED: Model<'static> = Model::from_static(&[0, 64, 128, 192, 256]);
-pub(super) const LSB: Model<'static> = Model::from_static(&[0, 136, 256]);
+const LSB_ZERO_WEIGHT: u16 = 136;
+pub(super) const LSB: Model<'static> = Model::from_static(&[0, LSB_ZERO_WEIGHT, 256]);
 
 const fn cumulative<const N: usize, const M: usize>(weights: &[u16; N]) -> [u16; M] {
     assert!(M == N + 1);
@@ -191,7 +192,7 @@ pub fn decode_pulses(
         if bits != 0 {
             for magnitude in block {
                 for _ in 0..bits {
-                    *magnitude = *magnitude * 2 + decoder.symbol(LSB) as i16;
+                    *magnitude = *magnitude * 2 + i16::from(decoder.binary_256(LSB_ZERO_WEIGHT));
                 }
             }
         }
@@ -202,9 +203,9 @@ pub fn decode_pulses(
         .iter_mut()
         .zip(&counts[..blocks])
     {
-        let model = SIGN[kind.sign_table()][usize::from(count.min(6))];
+        let weight = NEGATIVE_WEIGHTS[kind.sign_table()][usize::from(count.min(6))];
         for magnitude in block {
-            if *magnitude != 0 && decoder.symbol(model) == 0 {
+            if *magnitude != 0 && !decoder.binary_256(weight) {
                 *magnitude = -*magnitude;
             }
         }
