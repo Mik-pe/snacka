@@ -3,9 +3,15 @@
 //!
 //! Plans hold immutable coefficients. Callers own input, output and MDCT scratch
 //! buffers, allowing plans to be shared between streams without locking. All
-//! trigonometry and allocation happens during construction.
+//! allocation happens during construction. Common Opus plans copy coefficients
+//! derived from these same equations ahead of time; other plans evaluate their
+//! trigonometry during construction.
 
 use std::fmt;
+
+#[cfg(feature = "opus")]
+#[path = "transform/precomputed.rs"]
+mod precomputed;
 
 /// Invalid transform dimensions or sample values.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -104,6 +110,10 @@ impl FftPlan {
     pub fn new(length: usize) -> Result<Self, Error> {
         if !(1..=1_920).contains(&length) {
             return Err(Error::Length);
+        }
+        #[cfg(feature = "opus")]
+        if let Some(plan) = precomputed::fft(length) {
+            return Ok(plan);
         }
         let mut size = length;
         let mut stages = Vec::new();
@@ -419,7 +429,7 @@ impl MdctWorkspace {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 struct MdctRow {
     window: [f32; 4],
     pre: Complex,
@@ -497,6 +507,10 @@ impl MdctPlan {
             || !(coefficients - overlap).is_multiple_of(2)
         {
             return Err(Error::Length);
+        }
+        #[cfg(feature = "opus")]
+        if let Some(plan) = precomputed::mdct(coefficients, overlap) {
+            return Ok(plan);
         }
         let fft = FftPlan::new(coefficients / 2)?;
         let padding = (coefficients - overlap) / 2;
@@ -673,6 +687,7 @@ impl MdctPlan {
         Ok(())
     }
 
+    #[cfg_attr(feature = "opus", inline(always))]
     fn inverse_inner(&self, input: &[f32], output: &mut [f32], workspace: &mut MdctWorkspace) {
         let n = self.coefficients;
         for (index, (sample, row)) in workspace.input.iter_mut().zip(&self.rows).enumerate() {
@@ -749,6 +764,41 @@ impl MdctPlan {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(feature = "opus")]
+    #[test]
+    fn precomputed_opus_plans_match_defining_rotations() {
+        for n in [120, 240, 480, 960] {
+            let plan = MdctPlan::new(n, 120).unwrap();
+            assert_eq!(plan.coefficients(), n);
+            let close = |a: Complex, b: Complex| {
+                assert!((a.real - b.real).abs() <= 2.0 * f32::EPSILON);
+                assert!((a.imaginary - b.imaginary).abs() <= 2.0 * f32::EPSILON);
+            };
+            for (index, row) in plan.rows.iter().enumerate() {
+                close(
+                    row.pre,
+                    Complex::phase(-std::f64::consts::PI * index as f64 / n as f64),
+                );
+                close(
+                    row.post,
+                    Complex::phase(-std::f64::consts::PI * (index as f64 + 0.25) / n as f64),
+                );
+            }
+            for stage in &plan.fft.stages {
+                for (index, row) in stage.twiddles.iter().enumerate() {
+                    for (tap, &value) in row.iter().enumerate().take(stage.radix - 1) {
+                        let angle =
+                            -std::f64::consts::TAU * (index * (tap + 1)) as f64 / stage.size as f64;
+                        close(value, Complex::phase(angle));
+                    }
+                }
+            }
+        }
+        assert!(precomputed::fft(48).is_none());
+        assert!(precomputed::mdct(120, 60).is_none());
+        assert!(precomputed::mdct(144, 120).is_none());
+    }
 
     #[test]
     fn packed_windows_preserve_literal_bits_and_allocated_storage() {

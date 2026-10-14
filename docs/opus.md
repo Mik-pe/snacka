@@ -187,6 +187,16 @@ Across all 40,150 official vector packets, final ranges remained exact and
 the published quality scores were unchanged. Maximum additional sample error
 against the f64 version was 3.82e-6 and maximum per-stream RMS error 1.57e-7.
 
+Opus FFT/MDCT plans copy precomputed coefficients from Snacka's own dynamic
+mathematics. There is no lazy global initialization or runtime trigonometry for
+these standard sizes. `python3 tools/generate_transform_plans.py --check`
+reproduces the constants on the generating toolchain/platform; independent
+transform tests check the defining equations and all other sizes retain their
+dynamic constructors. Ten alternating, warm-allocator `Decoder::new` plus drop
+cases (both output channel counts and all five output rates) measured 2.4–2.8x
+faster at p50 on the same M5. This measures initialization against the preceding
+Snacka implementation, separately from packet processing and libopus parity.
+
 Official RFC 8251 vectors are downloaded independently:
 
 ```sh
