@@ -83,6 +83,7 @@ impl Model<'static> {
 const NORMALIZE_BELOW: u32 = 1 << 23;
 const INTERVAL_MASK: u32 = (1 << 31) - 1;
 
+#[inline]
 fn tell_fractional(total_bits: u64, range: u32) -> u64 {
     let integer = 32 - range.leading_zeros();
     let mut fraction = 0;
@@ -164,12 +165,83 @@ impl<'a> Decoder<'a> {
         }
     }
 
+    #[cfg(all(test, feature = "opus"))]
+    #[inline]
     pub(crate) fn frequency(&self, total: u32) -> u32 {
-        total - (self.value / (self.range / total) + 1).min(total)
+        self.frequency_with_unit(total, self.range / total)
     }
 
+    /// Select and consume one custom Opus probability interval using one unit.
+    /// Invalid intervals leave decoder state intact.
+    #[cfg(feature = "opus")]
+    #[inline]
+    pub(crate) fn inverse_interval<T>(
+        &mut self,
+        total: u32,
+        locate: impl FnOnce(u32, u32) -> (T, u32, u32),
+    ) -> Result<T, Error> {
+        if total == 0 || total > 65_535 {
+            return Err(Error::Argument);
+        }
+        let unit = self.range / total;
+        let (symbol, low, high) = locate(self.value, unit);
+        if low >= high || high > total {
+            return Err(Error::Argument);
+        }
+        // The first interval includes the division remainder. Checking its
+        // inverse thresholds also avoids dividing the value a second time.
+        if self.value < unit * (total - high) || (low != 0 && self.value >= unit * (total - low)) {
+            return Err(Error::Corrupt);
+        }
+        self.consume_with_unit(low, high, total, unit);
+        Ok(symbol)
+    }
+
+    #[inline]
+    fn frequency_with_unit(&self, total: u32, unit: u32) -> u32 {
+        total - (self.value / unit + 1).min(total)
+    }
+
+    #[cfg(all(test, feature = "opus"))]
+    #[inline]
     pub(crate) fn consume(&mut self, low: u32, high: u32, total: u32) {
         let unit = self.range / total;
+        self.consume_with_unit(low, high, total, unit);
+    }
+
+    /// Decode an already validated inverse-CDF model for the Opus wrapper.
+    #[cfg(feature = "opus")]
+    #[inline]
+    pub(crate) fn inverse_symbol(&mut self, table: &[u8], bits: u32) -> usize {
+        let unit = self.range >> bits;
+        if table.len() <= 16 {
+            let mut previous = self.range;
+            for (symbol, &tail) in table.iter().enumerate() {
+                let upper = unit * u32::from(tail);
+                if upper <= self.value {
+                    self.value -= upper;
+                    self.range = previous - upper;
+                    self.normalize();
+                    return symbol;
+                }
+                previous = upper;
+            }
+            unreachable!("validated inverse cumulative table ends at zero");
+        }
+        let total = 1 << bits;
+        let symbol = table.partition_point(|&tail| unit * u32::from(tail) > self.value);
+        let low = if symbol == 0 {
+            0
+        } else {
+            total - u32::from(table[symbol - 1])
+        };
+        let high = total - u32::from(table[symbol]);
+        self.consume_with_unit(low, high, total, unit);
+        symbol
+    }
+
+    #[inline(always)]
+    fn consume_with_unit(&mut self, low: u32, high: u32, total: u32, unit: u32) {
         let upper = unit * (total - high);
         self.value -= upper;
         self.range = if low == 0 {
@@ -181,6 +253,7 @@ impl<'a> Decoder<'a> {
     }
 
     /// Decode a symbol using a previously validated cumulative model.
+    #[inline]
     pub fn symbol(&mut self, model: Model<'_>) -> usize {
         if model.total == 256 {
             // RFC 6716 section 4.1.3.3 permits comparing inverse cumulative
@@ -188,30 +261,32 @@ impl<'a> Decoder<'a> {
             // removes both divisions; its small tables favor a linear scan.
             let unit = self.range >> 8;
             let mut index = 0;
-            while unit * (256 - u32::from(model.boundaries[index + 1])) > self.value {
+            // Keep the preceding inverse boundary, including the interval's
+            // division remainder for symbol zero. Their difference is exactly
+            // the selected interval width, without a second multiplication.
+            let mut previous = self.range;
+            loop {
+                let upper = unit * (256 - u32::from(model.boundaries[index + 1]));
+                if upper <= self.value {
+                    self.value -= upper;
+                    self.range = previous - upper;
+                    self.normalize();
+                    return index;
+                }
+                previous = upper;
                 index += 1;
             }
-            let low = u32::from(model.boundaries[index]);
-            let high = u32::from(model.boundaries[index + 1]);
-            let upper = unit * (256 - high);
-            self.value -= upper;
-            self.range = if low == 0 {
-                self.range - upper
-            } else {
-                unit * (high - low)
-            };
-            self.normalize();
-            return index;
         }
-        let frequency = self.frequency(model.total);
-        let index = model
-            .boundaries
-            .partition_point(|&boundary| u32::from(boundary) <= frequency)
-            - 1;
-        self.consume(
+        let unit = self.range / model.total;
+        // Searching inverse thresholds also avoids value/unit for arbitrary
+        // totals. Large alphabets retain a logarithmic search.
+        let index = model.boundaries[1..]
+            .partition_point(|&high| unit * (model.total - u32::from(high)) > self.value);
+        self.consume_with_unit(
             u32::from(model.boundaries[index]),
             u32::from(model.boundaries[index + 1]),
             model.total,
+            unit,
         );
         index
     }
@@ -219,6 +294,7 @@ impl<'a> Decoder<'a> {
     /// Decode a bit whose probability of being one is `2^-log_probability`.
     ///
     /// Supported logarithms are 1 through 16. Invalid arguments leave state intact.
+    #[inline]
     pub fn bit(&mut self, log_probability: u32) -> Result<bool, Error> {
         if !(1..=16).contains(&log_probability) {
             return Err(Error::Argument);
@@ -238,6 +314,7 @@ impl<'a> Decoder<'a> {
     /// Decode up to 32 raw bits from the frame's suffix, least significant bit first.
     ///
     /// Invalid arguments and truncated reads leave state intact.
+    #[inline]
     pub fn raw(&mut self, count: u32) -> Result<u32, Error> {
         if count > 32 {
             return Err(Error::Argument);
@@ -265,6 +342,7 @@ impl<'a> Decoder<'a> {
     }
 
     /// Decode an equiprobable integer from zero up to `total - 1`.
+    #[inline]
     pub fn uniform(&mut self, total: u32) -> Result<u32, Error> {
         if total == 0 {
             return Err(Error::Argument);
@@ -274,8 +352,12 @@ impl<'a> Decoder<'a> {
         }
         let low_bits = (32 - (total - 1).leading_zeros()).saturating_sub(8);
         let high_total = ((total - 1) >> low_bits) + 1;
-        let high = self.frequency(high_total);
-        self.consume(high, high + 1, high_total);
+        let unit = self.range / high_total;
+        let high = self.frequency_with_unit(high_total, unit);
+        self.consume_with_unit(high, high + 1, high_total, unit);
+        if low_bits == 0 {
+            return Ok(high);
+        }
         let value = (high << low_bits) | self.raw(low_bits)?;
         if value >= total {
             Err(Error::Corrupt)
@@ -365,6 +447,17 @@ impl<'a> Encoder<'a> {
         Ok(())
     }
 
+    #[cold]
+    fn normalize_after_output_failure(&mut self) {
+        // Output failure is terminal, but public interval and bit counters
+        // remain readable. Complete arithmetic normalization without writes.
+        while self.range <= NORMALIZE_BELOW {
+            self.low = (self.low << 8) & INTERVAL_MASK;
+            self.range <<= 8;
+            self.total_bits += 8;
+        }
+    }
+
     pub(crate) fn interval(&mut self, low: u32, high: u32, total: u32) -> Result<(), Error> {
         if let Some(error) = self.failure {
             return Err(error);
@@ -377,7 +470,10 @@ impl<'a> Encoder<'a> {
             self.range = unit * (high - low);
         }
         while self.range <= NORMALIZE_BELOW {
-            self.emit(self.low >> 23)?;
+            if let Err(error) = self.emit(self.low >> 23) {
+                self.normalize_after_output_failure();
+                return Err(error);
+            }
             self.low = (self.low << 8) & INTERVAL_MASK;
             self.range <<= 8;
             self.total_bits += 8;

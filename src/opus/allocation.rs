@@ -83,7 +83,7 @@ const PULSE_INDEX: [i16; 105] = [
     387,
 ];
 
-const PULSE_COSTS: [u8; 392] = [
+static PULSE_COSTS: [u8; 392] = [
     40, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
     7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 40, 15, 23, 28, 31, 34, 36, 38, 39, 41, 42, 43, 44, 45, 46, 47,
     47, 49, 50, 51, 52, 53, 54, 55, 55, 57, 58, 59, 60, 61, 62, 63, 63, 65, 66, 67, 68, 69, 70, 71,
@@ -145,11 +145,12 @@ impl AllocationConfig {
         self.channels as i32 * 8
     }
 
-    fn caps(self) -> [i32; BANDS] {
-        let row = (usize::from(self.lm) * 2 + self.channels - 1) * BANDS;
-        std::array::from_fn(|band| {
-            (i32::from(CAPS[row + band]) + 64) * self.channels as i32 * self.bins(band) / 4
-        })
+    fn mode_curves(self) -> &'static ModeCurves {
+        &MODE_CURVES[usize::from(self.lm) * 2 + self.channels - 1]
+    }
+
+    fn caps(self) -> &'static [i32; BANDS] {
+        &self.mode_curves().caps
     }
 }
 
@@ -340,19 +341,65 @@ pub(crate) fn encode_side_info(
     )
 }
 
+// All mode geometry and unadjusted quality costs depend only on LM and
+// channel count. Build them once as immutable Rust data, without lazy state
+// or allocation in any frame callback.
+#[derive(Clone, Copy)]
+struct ModeCurves {
+    base: [[i32; BANDS]; STATIC_ALLOCATION.len()],
+    threshold: [i32; BANDS],
+    caps: [i32; BANDS],
+}
+
+static MODE_CURVES: [ModeCurves; 8] = mode_curves();
+
+const fn mode_curves() -> [ModeCurves; 8] {
+    let mut modes = [ModeCurves {
+        base: [[0; BANDS]; STATIC_ALLOCATION.len()],
+        threshold: [0; BANDS],
+        caps: [0; BANDS],
+    }; 8];
+    let mut mode = 0;
+    while mode < 8 {
+        let lm = mode / 2;
+        let channels = (mode % 2 + 1) as i32;
+        let mut band = 0;
+        while band < BANDS {
+            let bins = ((BAND_EDGES[band + 1] - BAND_EDGES[band]) << lm) as i32;
+            let threshold = bins * 3 / 2;
+            modes[mode].threshold[band] = if threshold > channels * 8 {
+                threshold
+            } else {
+                channels * 8
+            };
+            modes[mode].caps[band] = (CAPS[mode * BANDS + band] as i32 + 64) * channels * bins / 4;
+            let mut quality = 0;
+            while quality < STATIC_ALLOCATION.len() {
+                modes[mode].base[quality][band] =
+                    channels * bins * STATIC_ALLOCATION[quality][band] as i32 / 4;
+                quality += 1;
+            }
+            band += 1;
+        }
+        mode += 1;
+    }
+    modes
+}
+
 /// A pair of adjacent quality curves after trim and boost adjustments.
 struct Curves {
     low: [i32; BANDS],
     step: [i32; BANDS],
-    threshold: [i32; BANDS],
-    caps: [i32; BANDS],
+    threshold: &'static [i32; BANDS],
+    caps: &'static [i32; BANDS],
     skip_boundary: usize,
 }
 
 impl Curves {
     fn new(config: AllocationConfig, info: &AllocationSideInfo, total: i32) -> Self {
-        let caps = config.caps();
-        let threshold = std::array::from_fn(|band| (config.bins(band) * 3 / 2).max(config.floor()));
+        let mode = config.mode_curves();
+        let caps = &mode.caps;
+        let threshold = &mode.threshold;
         let trim: [i32; BANDS] = std::array::from_fn(|band| {
             if !(config.start..config.end).contains(&band) {
                 return 0;
@@ -363,22 +410,15 @@ impl Curves {
                 * config.bins(band)
                 * (config.end - band - 1) as i32
                 * 8;
-            tilt.div_euclid(64)
+            (tilt >> 6)
                 - if config.bins(band) == 1 {
                     config.floor()
                 } else {
                     0
                 }
         });
-        let adjusted = |band: usize, quality: usize| {
-            let base = if quality < STATIC_ALLOCATION.len() {
-                config.channels as i32
-                    * config.bins(band)
-                    * i32::from(STATIC_ALLOCATION[quality][band])
-                    / 4
-            } else {
-                caps[band]
-            };
+        let adjusted = |row: &[i32; BANDS], band: usize| {
+            let base = row[band];
             if base == 0 {
                 0
             } else {
@@ -390,18 +430,20 @@ impl Curves {
         let mut limit = STATIC_ALLOCATION.len();
         while first_over < limit {
             let candidate = first_over + (limit - first_over) / 2;
-            let values = std::array::from_fn(|band| {
-                adjusted(band, candidate) + info.boost_eighth_bits[band]
-            });
-            if threshold_total(config, &values, &threshold, &caps) <= total {
+            let row = &mode.base[candidate];
+            let values =
+                std::array::from_fn(|band| adjusted(row, band) + info.boost_eighth_bits[band]);
+            if threshold_total(config, &values, threshold, caps) <= total {
                 first_over = candidate + 1;
             } else {
                 limit = candidate;
             }
         }
         let quality = first_over - 1;
+        let lower = &mode.base[quality];
+        let upper = mode.base.get(first_over).unwrap_or(caps);
         let low = std::array::from_fn(|band| {
-            adjusted(band, quality)
+            adjusted(lower, band)
                 + if quality == 0 {
                     0
                 } else {
@@ -409,7 +451,7 @@ impl Curves {
                 }
         });
         let step = std::array::from_fn(|band| {
-            (adjusted(band, first_over) + info.boost_eighth_bits[band] - low[band]).max(0)
+            (adjusted(upper, band) + info.boost_eighth_bits[band] - low[band]).max(0)
         });
         let skip_boundary = (config.start..config.end)
             .rfind(|&band| info.boost_eighth_bits[band] > 0)
@@ -431,19 +473,37 @@ impl Curves {
             let candidate = fraction + step;
             let values =
                 std::array::from_fn(|band| self.low[band] + self.step[band] * candidate / 64);
-            if threshold_total(config, &values, &self.threshold, &self.caps) <= total {
+            if threshold_total(config, &values, self.threshold, self.caps) <= total {
                 fraction = candidate;
             }
         }
         let mut values =
             std::array::from_fn(|band| self.low[band] + self.step[band] * fraction / 64);
-        threshold_projection(config, &mut values, &self.threshold, &self.caps);
+        threshold_projection(config, &mut values, self.threshold, self.caps);
         values
     }
 }
 
 /// Below the last shape-coded band, all lower bands may use their full budget.
 /// Above it, retain at most one fine-energy bit per channel.
+#[inline]
+fn projected_band(
+    value: i32,
+    threshold: i32,
+    cap: i32,
+    floor: i32,
+    shape_started: &mut bool,
+) -> i32 {
+    *shape_started |= value >= threshold;
+    if *shape_started {
+        value.min(cap)
+    } else if value >= floor {
+        floor.min(cap)
+    } else {
+        0
+    }
+}
+
 fn threshold_projection(
     config: AllocationConfig,
     values: &mut [i32; BANDS],
@@ -451,16 +511,15 @@ fn threshold_projection(
     caps: &[i32; BANDS],
 ) {
     let mut shape_started = false;
+    let floor = config.floor();
     for band in (config.start..config.end).rev() {
-        let value = values[band];
-        shape_started |= value >= threshold[band];
-        values[band] = if shape_started {
-            value.min(caps[band])
-        } else if value >= config.floor() {
-            config.floor().min(caps[band])
-        } else {
-            0
-        };
+        values[band] = projected_band(
+            values[band],
+            threshold[band],
+            caps[band],
+            floor,
+            &mut shape_started,
+        );
     }
     values[..config.start].fill(0);
     values[config.end..].fill(0);
@@ -472,9 +531,21 @@ fn threshold_total(
     threshold: &[i32; BANDS],
     caps: &[i32; BANDS],
 ) -> i32 {
-    let mut projected = *values;
-    threshold_projection(config, &mut projected, threshold, caps);
-    projected.iter().sum()
+    // Quality search needs only the total. Evaluate the same projection in
+    // place in the accumulator, avoiding a copied and zeroed 21-band array.
+    let mut total = 0;
+    let mut shape_started = false;
+    let floor = config.floor();
+    for band in (config.start..config.end).rev() {
+        total += projected_band(
+            values[band],
+            threshold[band],
+            caps[band],
+            floor,
+            &mut shape_started,
+        );
+    }
+    total
 }
 
 struct Reservations {
@@ -639,7 +710,7 @@ fn allocation(
         dual_stereo,
         balance_eighth_bits: 0,
     };
-    separate_energy(config, &curves.caps, &mut plan);
+    separate_energy(config, curves.caps, &mut plan);
     Ok(plan)
 }
 
@@ -757,24 +828,136 @@ pub(crate) fn encode_allocation(
     )
 }
 
-fn pulse_cache(band: usize, lm: i8) -> Result<&'static [u8], Error> {
-    if band >= BANDS || !(-1..=3).contains(&lm) {
-        return Err(Error::Argument);
+// Derived from our exact nearest-cost search at compile time. The standard
+// has 23 distinct rows. Each reaches its final count by budget 256 (asserted
+// below), so higher budgets can saturate there. Repeated-cost ties stay unchanged.
+#[derive(Clone, Copy)]
+struct PulseRow {
+    costs: &'static [u8],
+    nearest: [u8; 257],
+}
+
+const fn nearest_index(costs: &[u8], budget_eighths: i32) -> u8 {
+    let target = budget_eighths - 1;
+    let mut lower = 0usize;
+    let mut upper = costs[0] as usize;
+    while upper - lower > 1 {
+        let middle = lower + (upper - lower).div_ceil(2);
+        if costs[middle] as i32 >= target {
+            upper = middle;
+        } else {
+            lower = middle;
+        }
     }
-    let offset = PULSE_INDEX[(lm + 1) as usize * BANDS + band];
-    if offset < 0 {
-        return Err(Error::Argument);
+    let lower_cost = if lower == 0 { -1 } else { costs[lower] as i32 };
+    let upper_cost = costs[upper] as i32;
+    if target - lower_cost <= upper_cost - target {
+        lower as u8
+    } else {
+        upper as u8
     }
-    let table = &PULSE_COSTS[offset as usize..];
-    Ok(&table[..=usize::from(table[0])])
+}
+
+const fn pulse_rows() -> ([PulseRow; 23], [u8; 105]) {
+    let mut rows = [PulseRow {
+        costs: &[],
+        nearest: [0; 257],
+    }; 23];
+    let mut geometry = [u8::MAX; 105];
+    let mut offset = 0;
+    let mut row = 0;
+    while offset < PULSE_COSTS.len() {
+        let costs = PULSE_COSTS.split_at(offset).1;
+        let costs = costs.split_at(costs[0] as usize + 1).0;
+        rows[row].costs = costs;
+        let mut budget = 0;
+        while budget <= 256 {
+            rows[row].nearest[budget] = nearest_index(costs, budget as i32);
+            budget += 1;
+        }
+        assert!(rows[row].nearest[256] == costs[0]);
+        let mut i = 0;
+        while i < PULSE_INDEX.len() {
+            if PULSE_INDEX[i] == offset as i16 {
+                geometry[i] = row as u8;
+            }
+            i += 1;
+        }
+        offset += costs.len();
+        row += 1;
+    }
+    assert!(row == rows.len());
+    (rows, geometry)
+}
+
+static PULSE_ROWS: ([PulseRow; 23], [u8; 105]) = pulse_rows();
+
+/// One validated immutable band/size cache, shared by split, selection and
+/// budget correction rather than looking up and checking its row repeatedly.
+pub(crate) struct PulseCache {
+    row: &'static PulseRow,
+}
+
+pub(crate) struct PulseSelection {
+    pub(crate) index: u8,
+    pub(crate) eighth_bits: i32,
+}
+
+impl PulseCache {
+    #[inline]
+    pub(crate) fn new(band: usize, lm: i8) -> Result<Self, Error> {
+        if band >= BANDS || !(-1..=3).contains(&lm) {
+            return Err(Error::Argument);
+        }
+        let row = PULSE_ROWS.1[(lm + 1) as usize * BANDS + band];
+        Ok(Self {
+            row: PULSE_ROWS.0.get(usize::from(row)).ok_or(Error::Argument)?,
+        })
+    }
+
+    #[inline]
+    pub(crate) fn maximum_bits(&self) -> i32 {
+        i32::from(*self.row.costs.last().expect("nonempty pulse cache")) + 1
+    }
+
+    #[inline]
+    pub(crate) fn cost(&self, index: u8) -> Result<i32, Error> {
+        if index == 0 {
+            return Ok(0);
+        }
+        self.row
+            .costs
+            .get(usize::from(index))
+            .map(|&cost| i32::from(cost) + 1)
+            .ok_or(Error::Argument)
+    }
+
+    /// Nearest supported pulse count, with downward ties. Return its cost from
+    /// the immutable row, so the band coder does not repeat the nearest search.
+    #[inline]
+    pub(crate) fn nearest(&self, budget_eighths: i32) -> Result<PulseSelection, Error> {
+        if budget_eighths < 0 {
+            return Err(Error::Argument);
+        }
+        let index = self.row.nearest[budget_eighths.min(256) as usize];
+        Ok(PulseSelection {
+            index,
+            eighth_bits: if index == 0 {
+                0
+            } else {
+                i32::from(self.row.costs[usize::from(index)]) + 1
+            },
+        })
+    }
 }
 
 pub(crate) fn band_log2_eighths(band: usize) -> Result<i32, Error> {
     BAND_LOG2_EIGHTHS.get(band).copied().ok_or(Error::Argument)
 }
 
+#[cfg(test)]
 pub(crate) fn max_pulse_index(band: usize, lm: i8) -> Result<u8, Error> {
-    pulse_cache(band, lm).map(|table| table[0])
+    PulseCache::new(band, lm).map(|cache| cache.row.costs[0])
 }
 
 pub(crate) fn pulses_from_index(index: u8) -> Result<u32, Error> {
@@ -788,54 +971,64 @@ pub(crate) fn pulses_from_index(index: u8) -> Result<u32, Error> {
     })
 }
 
+#[cfg(test)]
 pub(crate) fn pulse_bits(band: usize, lm: i8, index: u8) -> Result<i32, Error> {
-    let cache = pulse_cache(band, lm)?;
-    if index > cache[0] {
-        return Err(Error::Argument);
-    }
-    Ok(if index == 0 {
-        0
-    } else {
-        i32::from(cache[usize::from(index)]) + 1
-    })
+    PulseCache::new(band, lm)?.cost(index)
 }
 
 /// Nearest supported PVQ pulse count, with downward ties. Budget enforcement
 /// against the frame remainder happens in the band coder after this selection.
+#[cfg(test)]
 pub(crate) fn pulse_index(band: usize, lm: i8, budget_eighths: i32) -> Result<u8, Error> {
-    let cache = pulse_cache(band, lm)?;
-    if budget_eighths < 0 {
-        return Err(Error::Argument);
-    }
-    // Locate the first nonzero cache entry at or above the target. Cache values
-    // are one eighth-bit below the conservative codebook cost.
-    let target = budget_eighths - 1;
-    let mut lower = 0usize;
-    let mut upper = usize::from(cache[0]);
-    while upper - lower > 1 {
-        let middle = lower + (upper - lower).div_ceil(2);
-        if i32::from(cache[middle]) >= target {
-            upper = middle;
-        } else {
-            lower = middle;
-        }
-    }
-    let lower_cost = if lower == 0 {
-        -1
-    } else {
-        i32::from(cache[lower])
-    };
-    let upper_cost = i32::from(cache[upper]);
-    Ok(if target - lower_cost <= upper_cost - target {
-        lower
-    } else {
-        upper
-    } as u8)
+    PulseCache::new(band, lm)?
+        .nearest(budget_eighths)
+        .map(|selected| selected.index)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn nearest_cache_preserves_all_choices_and_repeated_cost_ties() {
+        for lm in -1..=3 {
+            for band in 0..BANDS {
+                let offset = PULSE_INDEX[(lm + 1) as usize * BANDS + band];
+                if offset < 0 {
+                    assert!(PulseCache::new(band, lm).is_err());
+                    continue;
+                }
+                let costs = &PULSE_COSTS[offset as usize..];
+                let costs = &costs[..=usize::from(costs[0])];
+                let cache = PulseCache::new(band, lm).unwrap();
+                for budget in (0..=257).chain([MAX_FRAME_EIGHTHS, i32::MAX]) {
+                    // Independent exhaustive nearest-distance oracle. A tie
+                    // between distinct costs takes the lower one; repeated
+                    // costs take their last index only when below the budget.
+                    let mut expected_index = 0;
+                    let mut expected_cost = 0;
+                    let mut distance = budget;
+                    for (index, &stored) in costs.iter().enumerate().skip(1) {
+                        let cost = i32::from(stored) + 1;
+                        let candidate = (budget - cost).abs();
+                        if candidate < distance
+                            || (candidate == distance && cost == expected_cost && cost < budget)
+                        {
+                            expected_index = index as u8;
+                            expected_cost = cost;
+                            distance = candidate;
+                        }
+                    }
+                    let selected = cache.nearest(budget).unwrap();
+                    assert_eq!(
+                        selected.index, expected_index,
+                        "band {band}, lm {lm}, budget {budget}"
+                    );
+                    assert_eq!(selected.eighth_bits, expected_cost);
+                }
+            }
+        }
+    }
 
     fn preferences(config: AllocationConfig) -> AllocationPreferences {
         AllocationPreferences {

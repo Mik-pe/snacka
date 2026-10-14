@@ -8,11 +8,19 @@ use super::bands::{self, CollapseFrame, ShapeFrame, ShapeSettings, ShapeWorkspac
 use super::energy::{self, BAND_MEANS, BandEnergies, EnergyState, FrameConfig};
 use super::flags;
 use super::packet::{Bandwidth, MAX_FRAME_BYTES, Mode, Packet, PacketError};
+use super::plc::{LOOKAHEAD as LOSS_LOOKAHEAD, LossPredictor};
 use super::range;
 use super::transform::{Analysis, MAX_FRAME, PostFilterParams, Synthesis};
 
 const RATE_DENOMINATOR: u64 = 48_000 * 8;
 const MAX_PACKET_BYTES: usize = MAX_FRAME_BYTES + 1;
+
+fn loss_buffer<const N: usize>() -> Box<[f32; N]> {
+    vec![0.0; N]
+        .into_boxed_slice()
+        .try_into()
+        .expect("fixed loss history")
+}
 
 /// Invalid configuration, PCM, packet framing, or compressed CELT contents.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -197,6 +205,18 @@ impl Default for CeltConfig {
     }
 }
 
+fn validate_encoder_pcm(input: &[f32], samples: usize, channels: usize) -> Result<(), Error> {
+    if input.len() != samples * channels
+        || input
+            .iter()
+            .any(|sample| !sample.is_finite() || !(-1.0..=1.0).contains(sample))
+    {
+        Err(Error::Input)
+    } else {
+        Ok(())
+    }
+}
+
 fn end_band(bandwidth: Bandwidth) -> usize {
     match bandwidth {
         Bandwidth::Narrowband => 13,
@@ -295,24 +315,74 @@ impl CeltEncoder {
     pub fn encode(&mut self, input: &[f32], output: &mut [u8]) -> Result<usize, Error> {
         let samples = self.config.duration.samples();
         let channels = self.config.channels;
-        if input.len() != samples * channels
-            || input
-                .iter()
-                .any(|sample| !sample.is_finite() || !(-1.0..=1.0).contains(sample))
-        {
-            return Err(Error::Input);
-        }
+        validate_encoder_pcm(input, samples, channels)?;
         let numerator = self.rate_remainder + u64::from(self.config.bitrate) * samples as u64;
         let length = (numerator / RATE_DENOMINATOR) as usize;
         if output.len() < length {
             return Err(Error::Output);
         }
-        let lm = self.config.duration.lm();
-        let end = end_band(self.config.bandwidth);
-        let bits = (length - 1) * 8;
-        let eighth_bits = (length - 1) as i32 * 64;
-        let energy_config = FrameConfig::new(0, end, channels, usize::from(lm), bits as u32)?;
-        let allocation_config = AllocationConfig::new(0, end, lm, channels)?;
+        output[0] = self.config.toc();
+        let mut encoder = range::Encoder::new(&mut output[1..length]);
+        self.encode_layer_inner(
+            input,
+            &mut encoder,
+            CeltLayer {
+                samples,
+                coded_channels: channels,
+                lm: self.config.duration.lm(),
+                start: 0,
+                end: end_band(self.config.bandwidth),
+                packet_bytes: length - 1,
+            },
+        )?;
+        encoder.finish_padded()?;
+        self.rate_remainder = numerator % RATE_DENOMINATOR;
+        Ok(length)
+    }
+
+    /// Append a CELT layer to the enclosing codec's entropy interval.
+    /// The caller supplies complete payload capacity and terminates the coder.
+    pub(crate) fn encode_layer(
+        &mut self,
+        input: &[f32],
+        encoder: &mut range::Encoder<'_>,
+        layer: CeltLayer,
+    ) -> Result<(), Error> {
+        layer.validate()?;
+        validate_encoder_pcm(input, layer.samples, layer.coded_channels)?;
+        if layer.start != 0 && encoder.tell() <= 1 {
+            return Err(Error::Argument);
+        }
+        self.encode_layer_inner(input, encoder, layer)
+    }
+
+    fn encode_layer_inner(
+        &mut self,
+        input: &[f32],
+        encoder: &mut range::Encoder<'_>,
+        layer: CeltLayer,
+    ) -> Result<(), Error> {
+        let CeltLayer {
+            samples,
+            coded_channels: channels,
+            lm,
+            start,
+            end,
+            packet_bytes,
+        } = layer;
+        let bits = packet_bytes * 8;
+        if encoder.tell() >= bits as u64 {
+            return Err(Error::Corrupt);
+        }
+        let eighth_bits = packet_bytes as i32 * 64;
+        let energy_config = FrameConfig::new(start, end, channels, usize::from(lm), bits as u32)?;
+        let allocation_config = AllocationConfig::new(start, end, lm, channels)?;
+        if channels == 1 {
+            let [first, second] = &mut self.energy.energies;
+            for (left, &right) in first.iter_mut().zip(second.iter()) {
+                *left = left.max(right);
+            }
+        }
         let mut target = [[0.0; BANDS]; 2];
         self.amplitudes = [[0.0; BANDS]; 2];
         for channel in 0..channels {
@@ -324,7 +394,7 @@ impl CeltEncoder {
                 &mut self.spectrum[channel][..samples],
                 false,
             )?;
-            for band in 0..end {
+            for band in start..end {
                 let begin = BAND_EDGES[band] << lm;
                 let finish = BAND_EDGES[band + 1] << lm;
                 let coefficients = &mut self.spectrum[channel][begin..finish];
@@ -341,20 +411,26 @@ impl CeltEncoder {
                     }
                 }
             }
+            self.spectrum[channel][..BAND_EDGES[start] << lm].fill(0.0);
             self.spectrum[channel][BAND_EDGES[end] << lm..samples].fill(0.0);
         }
-        output[0] = self.config.toc();
-        let mut encoder = range::Encoder::new(&mut output[1..length]);
-        flags::encode_header(&mut encoder, lm, bits, false)?;
-        let intra =
-            energy::encode_intra(&mut encoder, energy_config, self.frames.is_multiple_of(64))?;
+        if channels == 1 {
+            let [first, second] = &mut self.analysis;
+            second.copy_history_from(first);
+        }
+        if start == 0 {
+            flags::encode_header(encoder, lm, bits, false)?;
+        } else if lm > 0 && encoder.tell() as usize + 3 <= bits {
+            encoder.bit(false, 3)?;
+        }
+        let intra = energy::encode_intra(encoder, energy_config, self.frames.is_multiple_of(64))?;
         self.energy
-            .encode_coarse(&mut encoder, energy_config, intra, &target)?;
+            .encode_coarse(encoder, energy_config, intra, &target)?;
         let tf = flags::encode_tf(
-            &mut encoder,
+            encoder,
             lm,
             false,
-            0,
+            start,
             end,
             bits,
             &flags::TfChoices {
@@ -362,14 +438,9 @@ impl CeltEncoder {
                 selection: false,
             },
         )?;
-        let spread = flags::encode_spread(&mut encoder, bits, 2)?;
-        let side = allocation::encode_side_info(
-            allocation_config,
-            &mut encoder,
-            eighth_bits,
-            &[0; BANDS],
-            5,
-        )?;
+        let spread = flags::encode_spread(encoder, bits, 2)?;
+        let side =
+            allocation::encode_side_info(allocation_config, encoder, eighth_bits, &[0; BANDS], 5)?;
         let budget = allocation::available_budget(
             allocation_config,
             eighth_bits,
@@ -380,25 +451,25 @@ impl CeltEncoder {
             allocation_config,
             &side,
             budget.remaining_eighth_bits,
-            &mut encoder,
+            encoder,
             AllocationPreferences {
-                previous_coded_bands: self.previous_coded_bands,
+                previous_coded_bands: self.previous_coded_bands.clamp(start + 1, end),
                 intensity: end,
                 dual_stereo: false,
             },
         )?;
         self.energy
-            .encode_fine(&mut encoder, energy_config, &plan.fine_energy_bits, &target)?;
+            .encode_fine(encoder, energy_config, &plan.fine_energy_bits, &target)?;
         let settings = ShapeSettings {
             lm,
-            start: 0,
+            start,
             end,
             transient: false,
             spread,
             total_eighth_bits: eighth_bits,
         };
         bands::encode_shapes(
-            &mut encoder,
+            encoder,
             settings,
             shape_frame(
                 &mut self.spectrum,
@@ -412,21 +483,25 @@ impl CeltEncoder {
         )?;
         let remaining = (bits as u64).saturating_sub(encoder.tell()) as u32;
         self.energy.encode_final(
-            &mut encoder,
+            encoder,
             energy_config,
             &plan.fine_energy_bits,
             &plan.fine_priority,
             remaining,
             &target,
         )?;
-        let final_range = encoder.range();
-        encoder.finish_padded()?;
-        self.final_range = final_range;
-        self.shapes.seed = final_range;
+        self.final_range = encoder.range();
+        self.shapes.seed = self.final_range;
         self.previous_coded_bands = plan.coded_bands;
         self.frames = self.frames.wrapping_add(1);
-        self.rate_remainder = numerator % RATE_DENOMINATOR;
-        Ok(length)
+        if channels == 1 {
+            self.energy.energies[1] = self.energy.energies[0];
+        }
+        for energies in &mut self.energy.energies {
+            energies[..start].fill(0.0);
+            energies[end..].fill(0.0);
+        }
+        Ok(())
     }
 
     /// Clear prediction, transform overlap, fractional rate accounting and range.
@@ -440,6 +515,40 @@ impl CeltEncoder {
         self.frames = 0;
         self.previous_coded_bands = end_band(self.config.bandwidth);
         self.final_range = 0;
+    }
+
+    /// Encode an independent five-millisecond transition payload without TOC.
+    /// The caller chooses its complete byte capacity and appends it to an LP
+    /// frame, whose interval is XORed with the returned redundant interval.
+    pub(crate) fn encode_redundant(
+        &mut self,
+        input: &[f32],
+        channels: usize,
+        bandwidth: Bandwidth,
+        payload: &mut [u8],
+    ) -> Result<u32, Error> {
+        if !(1..=2).contains(&channels) || !(2..=MAX_FRAME_BYTES).contains(&payload.len()) {
+            return Err(Error::Argument);
+        }
+        let bandwidth = if bandwidth == Bandwidth::Mediumband {
+            Bandwidth::Wideband
+        } else {
+            bandwidth
+        };
+        let layer = CeltLayer {
+            samples: 240,
+            coded_channels: channels,
+            lm: 1,
+            start: 0,
+            end: end_band(bandwidth),
+            packet_bytes: payload.len(),
+        };
+        validate_encoder_pcm(input, layer.samples, channels)?;
+        let mut encoder = range::Encoder::new(payload);
+        self.encode_layer(input, &mut encoder, layer)?;
+        let interval = encoder.range();
+        encoder.finish_padded()?;
+        Ok(interval)
     }
 
     /// Update bitrate without discarding audio or prediction history.
@@ -466,6 +575,7 @@ impl CeltEncoder {
 /// nothing. SILK and Hybrid configurations return `UnsupportedMode`.
 pub struct CeltDecoder {
     channels: usize,
+    output_downsample: usize,
     synthesis: [Synthesis; 2],
     pcm: [[f32; MAX_FRAME]; 2],
     spectrum: [[f32; MAX_FRAME]; 2],
@@ -474,6 +584,10 @@ pub struct CeltDecoder {
     previous: BandEnergies,
     older: BandEnergies,
     shapes: ShapeWorkspace,
+    loss: LossPredictor,
+    prediction: [Box<[f32; MAX_FRAME + LOSS_LOOKAHEAD]>; 2],
+    last_start: usize,
+    last_end: usize,
     final_range: u32,
 }
 
@@ -483,8 +597,11 @@ impl CeltDecoder {
         if !(1..=2).contains(&channels) {
             return Err(Error::Argument);
         }
+        let mut shapes = ShapeWorkspace::new();
+        shapes.phase_inversion = channels == 2;
         Ok(Self {
             channels,
+            output_downsample: 1,
             synthesis: std::array::from_fn(|_| Synthesis::new()),
             pcm: [[0.0; MAX_FRAME]; 2],
             spectrum: [[0.0; MAX_FRAME]; 2],
@@ -492,14 +609,18 @@ impl CeltDecoder {
             energy: EnergyState::new(),
             previous: [[-28.0; BANDS]; 2],
             older: [[-28.0; BANDS]; 2],
-            shapes: ShapeWorkspace::new(),
+            shapes,
+            loss: LossPredictor::new(),
+            prediction: std::array::from_fn(|_| loss_buffer()),
+            last_start: 0,
+            last_end: BANDS,
             final_range: 0,
         })
     }
 
     /// Decode a raw single-stream Opus packet and return samples per channel.
     /// The output slice must fit every frame, and trailing capacity is untouched.
-    /// Empty compressed frames require concealment and return `Corrupt`.
+    /// Empty or one-byte compressed frames invoke packet-loss concealment.
     /// A compressed error can advance decoder history; reset after `Corrupt`
     /// before continuing with another packet.
     pub fn decode(&mut self, packet: &[u8], output: &mut [f32]) -> Result<usize, Error> {
@@ -520,14 +641,10 @@ impl CeltDecoder {
         for (index, frame) in packet.frames().enumerate() {
             self.decode_frame(frame, samples, lm, end)?;
             let offset = index * samples * self.channels;
-            for (sample, destination) in output[offset..offset + samples * self.channels]
-                .chunks_exact_mut(self.channels)
-                .enumerate()
-            {
-                for (channel, value) in destination.iter_mut().enumerate() {
-                    *value = self.pcm[channel][sample];
-                }
-            }
+            self.write_pcm(
+                samples,
+                &mut output[offset..offset + samples * self.channels],
+            );
         }
         Ok(total)
     }
@@ -539,8 +656,8 @@ impl CeltDecoder {
         lm: u8,
         end: usize,
     ) -> Result<(), Error> {
-        if frame.is_empty() {
-            return Err(Error::Corrupt);
+        if frame.len() <= 1 {
+            return self.conceal_inner(samples, 0, end);
         }
         let mut decoder = range::Decoder::new(frame);
         self.decode_layer_inner(
@@ -569,15 +686,25 @@ impl CeltDecoder {
             return Err(Error::Output);
         }
         self.decode_layer_inner(decoder, layer)?;
-        for (sample, destination) in output[..layer.samples * self.channels]
-            .chunks_exact_mut(self.channels)
-            .enumerate()
-        {
-            for (channel, value) in destination.iter_mut().enumerate() {
-                *value = self.pcm[channel][sample];
-            }
-        }
+        self.write_pcm(layer.samples, output);
         Ok(layer.samples)
+    }
+
+    fn write_pcm(&self, samples: usize, output: &mut [f32]) {
+        match self.channels {
+            1 => output[..samples].copy_from_slice(&self.pcm[0][..samples]),
+            2 => {
+                for (destination, (&left, &right)) in output[..2 * samples]
+                    .as_chunks_mut::<2>()
+                    .0
+                    .iter_mut()
+                    .zip(self.pcm[0][..samples].iter().zip(&self.pcm[1][..samples]))
+                {
+                    *destination = [left, right];
+                }
+            }
+            _ => unreachable!("validated output channel count"),
+        }
     }
 
     fn decode_layer_inner(
@@ -605,7 +732,9 @@ impl CeltDecoder {
             }
         }
         let header = flags::decode_header_with_start(decoder, lm, start, bits)?;
-        self.spectrum = [[0.0; MAX_FRAME]; 2];
+        for spectrum in &mut self.spectrum[..channels] {
+            spectrum[..samples].fill(0.0);
+        }
         if header.silence {
             self.energy.energies = [[-28.0; BANDS]; 2];
         } else {
@@ -696,7 +825,8 @@ impl CeltDecoder {
         if channels == 1 {
             self.energy.energies[1] = self.energy.energies[0];
             if self.channels == 2 {
-                self.spectrum[1] = self.spectrum[0];
+                let [first, second] = &mut self.spectrum;
+                second[..samples].copy_from_slice(&first[..samples]);
             }
         } else if self.channels == 1 {
             let [first, second] = &mut self.spectrum;
@@ -704,17 +834,27 @@ impl CeltDecoder {
                 *left = 0.5 * (*left + right);
             }
         }
+        let zero_spectrum =
+            header.silence || BAND_EDGES[start] << lm >= samples / self.output_downsample;
         for channel in 0..self.channels {
-            self.synthesis[channel].inverse(
-                &self.spectrum[channel][..samples],
-                &mut self.pcm[channel][..samples],
-                header.transient,
-                if header.silence {
-                    PostFilterParams::DISABLED
-                } else {
-                    header.filter
-                },
-            )?;
+            // Discard frequencies that cannot be represented by the enclosing
+            // decoder's output rate before sampling its synthesis waveform.
+            self.spectrum[channel][samples / self.output_downsample..samples].fill(0.0);
+            let filter = if header.silence {
+                PostFilterParams::DISABLED
+            } else {
+                header.filter
+            };
+            if zero_spectrum {
+                self.synthesis[channel].inverse_zero(&mut self.pcm[channel][..samples], filter)?;
+            } else {
+                self.synthesis[channel].inverse(
+                    &self.spectrum[channel][..samples],
+                    &mut self.pcm[channel][..samples],
+                    header.transient,
+                    filter,
+                )?;
+            }
             if self.pcm[channel][..samples]
                 .iter()
                 .any(|sample| !sample.is_finite())
@@ -742,6 +882,121 @@ impl CeltDecoder {
         }
         self.final_range = decoder.range();
         self.shapes.seed = self.final_range;
+        self.last_start = start;
+        self.last_end = end;
+        self.loss.observe(&self.pcm, samples, self.channels, true);
+        Ok(())
+    }
+
+    /// Conceal a missing interval at 48 kHz and return samples per channel.
+    /// The interval must be a positive 2.5 ms multiple, at most 120 ms.
+    /// History advances just as it does when decoding an ordinary packet.
+    pub fn conceal(&mut self, samples: usize, output: &mut [f32]) -> Result<usize, Error> {
+        self.conceal_interval(samples, self.last_start, self.last_end, output)
+    }
+
+    pub(crate) fn conceal_interval(
+        &mut self,
+        samples: usize,
+        start: usize,
+        end: usize,
+        output: &mut [f32],
+    ) -> Result<usize, Error> {
+        if samples == 0 || samples > 5760 || !samples.is_multiple_of(120) {
+            return Err(Error::Argument);
+        }
+        if start >= end || end > BANDS {
+            return Err(Error::Argument);
+        }
+        if output.len() < samples * self.channels {
+            return Err(Error::Output);
+        }
+        let mut completed = 0;
+        while completed < samples {
+            let remaining = samples - completed;
+            let frame = [960, 480, 240, 120]
+                .into_iter()
+                .find(|&n| n <= remaining)
+                .unwrap();
+            self.conceal_layer(
+                frame,
+                start,
+                end,
+                &mut output[completed * self.channels..(completed + frame) * self.channels],
+            )?;
+            completed += frame;
+        }
+        Ok(samples)
+    }
+
+    pub(crate) fn set_output_downsample(&mut self, factor: usize) {
+        debug_assert!([1, 2, 3, 4, 6].contains(&factor));
+        self.output_downsample = factor;
+    }
+
+    /// Permit opposite phase in intensity-coded high-frequency stereo bands.
+    /// The default is enabled for stereo output and disabled for mono output.
+    /// Disabling phase inversion preserves high-frequency energy when downmixing.
+    /// This changes synthesis policy without changing coded symbols or history.
+    pub fn set_phase_inversion(&mut self, enabled: bool) {
+        self.shapes.phase_inversion = enabled;
+    }
+
+    /// Whether intensity stereo can reconstruct opposite channel phases.
+    pub const fn phase_inversion(&self) -> bool {
+        self.shapes.phase_inversion
+    }
+
+    pub(crate) fn conceal_layer(
+        &mut self,
+        samples: usize,
+        start: usize,
+        end: usize,
+        output: &mut [f32],
+    ) -> Result<usize, Error> {
+        if ![120, 240, 480, 960].contains(&samples) || start >= end || end > BANDS {
+            return Err(Error::Argument);
+        }
+        if output.len() < samples * self.channels {
+            return Err(Error::Output);
+        }
+        self.conceal_inner(samples, start, end)?;
+        self.write_pcm(samples, output);
+        Ok(samples)
+    }
+
+    fn conceal_inner(&mut self, samples: usize, start: usize, end: usize) -> Result<(), Error> {
+        let lm = (samples / 120).trailing_zeros();
+        if BAND_EDGES[start] << lm >= samples / self.output_downsample {
+            // No active CELT frequency can reach this output rate. Discharge
+            // prior overlap without inventing audible out-of-band PLC noise.
+            for channel in 0..self.channels {
+                self.synthesis[channel].inverse_zero(
+                    &mut self.pcm[channel][..samples],
+                    PostFilterParams::DISABLED,
+                )?;
+            }
+        } else {
+            self.loss
+                .predict(samples, self.channels, start == 0, &mut self.prediction);
+            for channel in 0..self.channels {
+                self.synthesis[channel].conceal(
+                    &self.prediction[channel][..samples + LOSS_LOOKAHEAD],
+                    &mut self.pcm[channel][..samples],
+                )?;
+            }
+        }
+        self.loss.observe(&self.pcm, samples, self.channels, false);
+        if self.loss.periodicity() < 0.6 || self.loss.elapsed() > 1920 {
+            for energies in &mut self.energy.energies {
+                for energy in &mut energies[start..end] {
+                    *energy = (*energy - 0.3 * samples as f32 / 960.0).max(-28.0);
+                }
+            }
+        }
+        self.last_start = start;
+        self.last_end = end;
+        self.final_range = 0;
         Ok(())
     }
 
@@ -754,6 +1009,9 @@ impl CeltDecoder {
         self.previous = [[-28.0; BANDS]; 2];
         self.older = [[-28.0; BANDS]; 2];
         self.shapes.seed = 0;
+        self.loss.reset();
+        self.last_start = 0;
+        self.last_end = BANDS;
         self.final_range = 0;
     }
 
@@ -766,6 +1024,202 @@ impl CeltDecoder {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn inaudible_hybrid_losses_discharge_overlap_without_new_noise() {
+        for downsample in [3, 4, 6] {
+            for channels in 1..=2 {
+                let mut encoder = CeltEncoder::new(
+                    CeltConfig::new(
+                        96_000,
+                        CeltFrameDuration::Ms5,
+                        channels,
+                        Bandwidth::Narrowband,
+                    )
+                    .unwrap(),
+                );
+                let mut actual = CeltDecoder::new(channels).unwrap();
+                let mut expected = CeltDecoder::new(channels).unwrap();
+                actual.set_output_downsample(downsample);
+                expected.set_output_downsample(downsample);
+                let mut input = [0.0; 480];
+                let mut packet = [0; 1276];
+                let mut actual_pcm = [0.0; 1920];
+                let mut expected_pcm = [0.0; 1920];
+                for frame in 0..4 {
+                    for sample in 0..240 {
+                        for channel in 0..channels {
+                            input[sample * channels + channel] = 0.2
+                                * ((frame * 240 + sample) as f32
+                                    * std::f32::consts::TAU
+                                    * (180.0 + channel as f32 * 93.0)
+                                    / 48_000.0)
+                                    .sin();
+                        }
+                    }
+                    let length = encoder
+                        .encode(&input[..240 * channels], &mut packet)
+                        .unwrap();
+                    actual.decode(&packet[..length], &mut actual_pcm).unwrap();
+                    expected
+                        .decode(&packet[..length], &mut expected_pcm)
+                        .unwrap();
+                }
+                let mut elapsed = 0;
+                for (lm, samples) in [(0, 120), (1, 240), (2, 480), (3, 960)] {
+                    actual
+                        .conceal_layer(samples, 17, 21, &mut actual_pcm)
+                        .unwrap();
+                    let mut silence = range::Decoder::new(&[0xff, 0xfe]);
+                    expected
+                        .decode_layer(
+                            &mut silence,
+                            CeltLayer {
+                                samples,
+                                coded_channels: channels,
+                                lm,
+                                start: 0,
+                                end: 21,
+                                packet_bytes: 2,
+                            },
+                            &mut expected_pcm,
+                        )
+                        .unwrap();
+                    assert_eq!(
+                        actual_pcm[..samples * channels],
+                        expected_pcm[..samples * channels]
+                    );
+                    elapsed += samples;
+                    assert_eq!(actual.loss.elapsed(), elapsed);
+                    assert_eq!(actual.final_range(), 0);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn inactive_spectrum_storage_cannot_leak_across_geometry_or_channel_changes() {
+        let mut control = CeltDecoder::new(2).unwrap();
+        let mut poisoned = CeltDecoder::new(2).unwrap();
+        let durations = [
+            CeltFrameDuration::Ms20,
+            CeltFrameDuration::Ms2_5,
+            CeltFrameDuration::Ms10,
+            CeltFrameDuration::Ms5,
+        ];
+        let bands = [
+            Bandwidth::Fullband,
+            Bandwidth::Narrowband,
+            Bandwidth::Wideband,
+            Bandwidth::Superwideband,
+        ];
+        let mut input = [0.0; 1920];
+        let mut expected = [0.0; 1920];
+        let mut actual = [0.0; 1920];
+        let mut packet = [0; 1276];
+        for transition in 0..32 {
+            let duration = durations[transition % 4];
+            let channels = transition / 2 % 2 + 1;
+            let bandwidth = bands[(transition / 3) % 4];
+            let config = CeltConfig::new(32_000, duration, channels, bandwidth).unwrap();
+            let mut encoder = CeltEncoder::new(config);
+            let samples = duration.samples();
+            for (sample, value) in input[..samples * channels].iter_mut().enumerate() {
+                *value = 0.2 * (sample as f32 * 0.023 + transition as f32 * 0.1).sin();
+            }
+            let length = encoder
+                .encode(&input[..samples * channels], &mut packet)
+                .unwrap();
+            let payload = &packet[1..length];
+            let layer = CeltLayer {
+                samples,
+                coded_channels: channels,
+                lm: duration.lm(),
+                start: 0,
+                end: end_band(bandwidth),
+                packet_bytes: payload.len(),
+            };
+            for spectrum in &mut poisoned.spectrum {
+                spectrum.fill(f32::NAN);
+            }
+            control
+                .decode_layer(&mut range::Decoder::new(payload), layer, &mut expected)
+                .unwrap();
+            poisoned
+                .decode_layer(&mut range::Decoder::new(payload), layer, &mut actual)
+                .unwrap();
+            assert_eq!(&actual[..samples * 2], &expected[..samples * 2]);
+            assert!(
+                actual[..samples * 2]
+                    .iter()
+                    .all(|sample| sample.is_finite())
+            );
+            assert_eq!(poisoned.final_range(), control.final_range());
+        }
+    }
+
+    #[test]
+    fn hybrid_layers_append_to_an_existing_interval_and_preserve_energy_history() {
+        for channels in 1..=2 {
+            for lm in 2..=3 {
+                for end in [19, 21] {
+                    let samples = 120 << lm;
+                    let mut encoder = CeltEncoder::new(CeltConfig::default());
+                    let mut decoder = CeltDecoder::new(channels).unwrap();
+                    let mut input = [0.0; 1920];
+                    let mut output = [0.0; 1920];
+                    let mut packet = [0; 160];
+                    let layer = CeltLayer {
+                        samples,
+                        coded_channels: channels,
+                        lm,
+                        start: 17,
+                        end,
+                        packet_bytes: packet.len(),
+                    };
+                    for frame in 0..4 {
+                        for sample in 0..samples {
+                            for channel in 0..channels {
+                                let time = (frame * samples + sample) as f32 / 48_000.0;
+                                input[sample * channels + channel] = 0.2
+                                    * (std::f32::consts::TAU
+                                        * (10_200 + channel * 500) as f32
+                                        * time)
+                                        .sin();
+                            }
+                        }
+                        let mut enc = range::Encoder::new(&mut packet);
+                        enc.uniform(100 + frame as u32, 1000).unwrap();
+                        encoder
+                            .encode_layer(&input[..samples * channels], &mut enc, layer)
+                            .unwrap();
+                        let interval = enc.range();
+                        enc.finish_padded().unwrap();
+                        let mut dec = range::Decoder::new(&packet);
+                        assert_eq!(dec.uniform(1000).unwrap(), 100 + frame as u32);
+                        decoder.decode_layer(&mut dec, layer, &mut output).unwrap();
+                        assert_eq!(dec.range(), interval);
+                        assert_eq!(decoder.final_range(), encoder.final_range());
+                        for channel in 0..channels {
+                            for band in 17..end {
+                                assert!(
+                                    (encoder.energy.energies[channel][band]
+                                        - decoder.energy.energies[channel][band])
+                                        .abs()
+                                        < 1e-5
+                                );
+                            }
+                        }
+                        assert!(
+                            output[..samples * channels]
+                                .iter()
+                                .all(|sample| sample.is_finite())
+                        );
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn all_frame_durations_channels_bandwidths_and_rates_roundtrip() {

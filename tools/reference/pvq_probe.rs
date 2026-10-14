@@ -39,11 +39,12 @@ fn main() {
         let book = pvq::Codebook::new(n, k).unwrap();
         assert_eq!(book.total(), numbers[0], "case {case}: N={n}, K={k}");
         assert_eq!(book.index_of(&expected[..n]).unwrap(), numbers[1]);
-        book.vector_at(numbers[1], &mut output[..n]).unwrap();
+        book.vector_at_with_norm(numbers[1], &mut output[..n])
+            .unwrap();
         assert_eq!(output[..n], expected[..n]);
         let mut decoder = entropy::Decoder::new(packet);
         let index = decoder.uniform(book.total()).unwrap();
-        book.vector_at(index, &mut output[..n]).unwrap();
+        book.vector_at_with_norm(index, &mut output[..n]).unwrap();
         assert_eq!(output[..n], expected[..n]);
         assert_eq!(decoder.range(), numbers[2]);
         assert_eq!(decoder.tell(), u64::from(numbers[3]));

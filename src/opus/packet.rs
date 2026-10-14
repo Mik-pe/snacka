@@ -3,8 +3,8 @@
 //!
 //! Parsing validates the complete packet before exposing any frames. It checks
 //! framing, lengths, padding and duration, but does not validate entropy-coded
-//! frame contents. This is ordinary single-stream framing; Ogg containers,
-//! multistream framing and the self-delimiting extension are separate layers.
+//! frame contents. Ordinary framing and the self-delimiting variant from
+//! Appendix B share the same borrowed frame representation.
 
 use std::fmt;
 use std::iter::FusedIterator;
@@ -267,6 +267,84 @@ impl<'a> Packet<'a> {
             toc,
             vbr,
         })
+    }
+
+    /// Validate one Appendix B self-delimiting packet at the start of `bytes`.
+    ///
+    /// Returns its metadata and consumed byte count, leaving subsequent stream
+    /// packets untouched. The transport must select this framing explicitly:
+    /// it cannot be auto-detected. [`Self::bytes`] includes the extra frame-size
+    /// header, so use its parsed frames or repacketize before ordinary decoding.
+    pub fn parse_self_delimited(bytes: &'a [u8]) -> Result<(Self, usize), PacketError> {
+        let toc = Toc::from_byte(*bytes.first().ok_or(PacketError::Empty)?);
+        let mut start = 1;
+        let mut padding = 0usize;
+        let (count, vbr) = match toc.frame_code() {
+            0 => (1, false),
+            1 => (2, false),
+            2 => (2, true),
+            _ => {
+                let control = *bytes.get(start).ok_or(PacketError::Truncated)?;
+                start += 1;
+                let count = usize::from(control & 0x3f);
+                if count == 0 || count > MAX_FRAMES {
+                    return Err(PacketError::InvalidFrameCount);
+                }
+                if count * toc.frame_samples_48khz() > MAX_PACKET_SAMPLES_48KHZ {
+                    return Err(PacketError::InvalidDuration);
+                }
+                if control & 0x40 != 0 {
+                    loop {
+                        let value = *bytes.get(start).ok_or(PacketError::InvalidPadding)?;
+                        start += 1;
+                        let additional = usize::from(value) - usize::from(value == 255);
+                        padding = padding
+                            .checked_add(additional)
+                            .filter(|&count| count <= bytes.len() - start)
+                            .ok_or(PacketError::InvalidPadding)?;
+                        if value != 255 {
+                            break;
+                        }
+                    }
+                }
+                (count, control & 0x80 != 0)
+            }
+        };
+        let mut lengths = [0; MAX_FRAMES];
+        if vbr {
+            for length in &mut lengths[..count - 1] {
+                *length = read_length(bytes, &mut start, bytes.len())?;
+            }
+        }
+        let last = read_length(bytes, &mut start, bytes.len())?;
+        if vbr {
+            lengths[count - 1] = last;
+        } else {
+            lengths[..count].fill(last);
+        }
+        let size = lengths[..count]
+            .iter()
+            .map(|&length| usize::from(length))
+            .sum::<usize>();
+        let end = start
+            .checked_add(size)
+            .ok_or(PacketError::InvalidFrameLength)?;
+        let consumed = end
+            .checked_add(padding)
+            .filter(|&size| size <= bytes.len())
+            .ok_or(PacketError::InvalidFrameLength)?;
+        Ok((
+            Self {
+                bytes: &bytes[..consumed],
+                payload: &bytes[start..end],
+                lengths,
+                count,
+                padding,
+                toc,
+                vbr,
+            },
+            consumed,
+        ))
     }
 
     /// The original packet, including all framing and trailing padding.

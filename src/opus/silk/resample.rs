@@ -16,8 +16,11 @@
 
 use super::{Bandwidth, Error};
 
-const HISTORY: usize = 32;
+const HISTORY: usize = 64;
 const TAPS: usize = 14;
+const FILTER_TAPS: usize = 48;
+const MAX_OUTPUT_FILTER: usize = 97;
+const TAIL_SAMPLES: usize = 96;
 const SAMPLE_LIMIT: f32 = f32::MAX / 16.0;
 const STATE_LIMIT: f64 = f32::MAX as f64 * 8.0;
 
@@ -257,12 +260,72 @@ const NUMERATORS: [[[f64; 14]; 6]; 3] = [
 ];
 // END GENERATED MODEL
 
+/// Composition of the owned interpolation numerator and an output low-pass.
+/// The stable feedback denominator remains shared with normal interpolation.
+pub(crate) struct FilterPlan {
+    factor: usize,
+    step: usize,
+    taps: usize,
+    numerators: [[f64; FILTER_TAPS]; 6],
+}
+
+impl FilterPlan {
+    pub(crate) fn new(
+        bandwidth: Bandwidth,
+        rate: u32,
+        coefficients: &[f32],
+    ) -> Result<Self, Error> {
+        let (factor, family) = match bandwidth {
+            Bandwidth::Narrow => (6, 0),
+            Bandwidth::Medium => (4, 1),
+            Bandwidth::Wide => (3, 2),
+        };
+        let step = match rate {
+            8_000 => 6,
+            12_000 => 4,
+            _ => return Err(Error::Argument),
+        };
+        if step <= factor
+            || coefficients.is_empty()
+            || coefficients.len() > MAX_OUTPUT_FILTER
+            || coefficients.iter().any(|value| !value.is_finite())
+            || coefficients
+                .iter()
+                .map(|&value| f64::from(value).abs())
+                .sum::<f64>()
+                > 4.0
+        {
+            return Err(Error::Argument);
+        }
+        let taps = TAPS + (coefficients.len() - 1).div_ceil(factor);
+        let mut numerators = [[0.0; FILTER_TAPS]; 6];
+        for (phase, destination) in numerators[..factor].iter_mut().enumerate() {
+            for (tap, &coefficient) in coefficients.iter().enumerate() {
+                let source_phase = (phase + factor - tap % factor) % factor;
+                let shift = (tap + factor - 1 - phase) / factor;
+                for (lag, &value) in NUMERATORS[family][source_phase].iter().enumerate() {
+                    destination[shift + lag] += f64::from(coefficient) * value;
+                }
+            }
+        }
+        Ok(Self {
+            factor,
+            step,
+            taps,
+            numerators,
+        })
+    }
+}
+
 pub(crate) struct Resampler {
     factor: usize,
     delay: usize,
     numerators: &'static [[f64; TAPS]; 6],
-    history: [f64; HISTORY],
+    // Mirrored halves make each fourteen-sample window contiguous. This
+    // removes ring-wrap branches from every phase without changing tap order.
+    history: [f64; 2 * HISTORY],
     cursor: usize,
+    clock: usize,
 }
 
 impl Resampler {
@@ -276,8 +339,9 @@ impl Resampler {
             factor,
             delay,
             numerators: &NUMERATORS[family],
-            history: [0.0; HISTORY],
+            history: [0.0; 2 * HISTORY],
             cursor: 0,
+            clock: 0,
         }
     }
 
@@ -289,59 +353,216 @@ impl Resampler {
         self.factor
     }
 
+    /// Reconstruct the chronological 48 kHz tail needed to prime an output
+    /// filter after direct native-domain filtering. This consumes no history.
+    pub(crate) fn tail_48k(&self, output: &mut [f32]) -> Result<(), Error> {
+        if output.len() > TAIL_SAMPLES {
+            return Err(Error::Output);
+        }
+        self.validate(&[])?;
+        let length = output.len();
+        for (index, destination) in output.iter_mut().enumerate() {
+            let back = length - 1 - index;
+            let phase = self.factor - 1 - back % self.factor;
+            let begin = self.cursor + HISTORY - 1 - self.delay - back / self.factor;
+            let mut sum = 0.0;
+            for (&value, &coefficient) in self.history[begin + 1 - TAPS..=begin]
+                .iter()
+                .rev()
+                .zip(&self.numerators[phase])
+            {
+                sum += value * coefficient;
+            }
+            *destination = sum as f32;
+        }
+        Ok(())
+    }
+
+    /// Filter below the native SILK rate without constructing unused 48 kHz
+    /// samples. The immutable plan is built once from the owned filter taps.
+    pub(crate) fn process_filtered(
+        &mut self,
+        input: &[f32],
+        output: &mut [f32],
+        plan: &FilterPlan,
+    ) -> Result<(), Error> {
+        if plan.factor != self.factor {
+            return Err(Error::Argument);
+        }
+        let span = input.len().checked_mul(self.factor).ok_or(Error::Output)?;
+        if self.output_count(span, plan.step) != output.len() {
+            return Err(Error::Output);
+        }
+        self.validate(input)?;
+        match (self.factor, plan.step) {
+            (3, 4) => self.run_filtered::<3, 4>(input, output, plan),
+            (3, 6) => self.run_filtered::<3, 6>(input, output, plan),
+            (4, 6) => self.run_filtered::<4, 6>(input, output, plan),
+            _ => unreachable!("validated below-native filter geometry"),
+        }
+        self.clock = (self.clock + span % 12) % 12;
+        Ok(())
+    }
+
     /// Produce exactly `input.len() * ratio()` samples. Invalid lengths or
     /// numeric inputs leave both output and streaming history unchanged.
     pub(crate) fn process(&mut self, input: &[f32], output: &mut [f32]) -> Result<(), Error> {
-        if input.len().checked_mul(self.factor) != Some(output.len()) {
+        self.process_rate(input, output, 48_000)
+    }
+
+    /// Evaluate only phases needed at a standard output rate at or above the
+    /// native SILK rate. The global 48 kHz sample clock carries across chunks
+    /// and rate changes; history matches full-rate interpolation exactly.
+    pub(crate) fn process_rate(
+        &mut self,
+        input: &[f32],
+        output: &mut [f32],
+        rate: u32,
+    ) -> Result<(), Error> {
+        let step = match rate {
+            8_000 => 6,
+            12_000 => 4,
+            16_000 => 3,
+            24_000 => 2,
+            48_000 => 1,
+            _ => return Err(Error::Argument),
+        };
+        if step > self.factor {
+            return Err(Error::Argument);
+        }
+        let span = input.len().checked_mul(self.factor).ok_or(Error::Output)?;
+        if self.output_count(span, step) != output.len() {
             return Err(Error::Output);
         }
+        self.validate(input)?;
+        // All poles are real, negative and below 0.848 in magnitude. The
+        // feedback transfer has l1 gain <25.64, and every complete phase has
+        // l1 gain <3.12. SAMPLE_LIMIT therefore bounds states well inside f64
+        // and output inside f32, even for alternating maximum-domain samples.
+        match (self.factor, step) {
+            (3, 1) => self.run::<3>(input, output),
+            (4, 1) => self.run::<4>(input, output),
+            (6, 1) => self.run::<6>(input, output),
+            (3, 2) => self.run_rate::<3, 2>(input, output),
+            (3, 3) => self.run_rate::<3, 3>(input, output),
+            (4, 2) => self.run_rate::<4, 2>(input, output),
+            (4, 3) => self.run_rate::<4, 3>(input, output),
+            (4, 4) => self.run_rate::<4, 4>(input, output),
+            (6, 2) => self.run_rate::<6, 2>(input, output),
+            (6, 3) => self.run_rate::<6, 3>(input, output),
+            (6, 4) => self.run_rate::<6, 4>(input, output),
+            (6, 6) => self.run_rate::<6, 6>(input, output),
+            _ => unreachable!("constructor supports only SILK sampling rates"),
+        }
+        // All standard rate divisors divide twelve, so this bounded clock
+        // preserves absolute sample phase even when the output rate changes.
+        self.clock = (self.clock + span % 12) % 12;
+        debug_assert!(output.iter().all(|sample| sample.is_finite()));
+        Ok(())
+    }
+
+    fn output_count(&self, span: usize, step: usize) -> usize {
+        let first = (step - self.clock % step) % step;
+        if first < span {
+            1 + (span - 1 - first) / step
+        } else {
+            0
+        }
+    }
+
+    fn validate(&self, input: &[f32]) -> Result<(), Error> {
         if input
             .iter()
             .any(|sample| !sample.is_finite() || sample.abs() > SAMPLE_LIMIT)
-            || self
-                .history
+            || self.history[..HISTORY]
                 .iter()
                 .any(|sample| !sample.is_finite() || sample.abs() > STATE_LIMIT)
         {
             return Err(Error::Argument);
         }
-        // All poles are real, negative and below 0.848 in magnitude. The
-        // feedback transfer has l1 gain <25.64, and every complete phase has
-        // l1 gain <3.12. SAMPLE_LIMIT therefore bounds states well inside f64
-        // and output inside f32, even for alternating maximum-domain samples.
-        match self.factor {
-            3 => self.run::<3>(input, output),
-            4 => self.run::<4>(input, output),
-            6 => self.run::<6>(input, output),
-            _ => unreachable!("constructor supports only SILK sampling rates"),
-        }
-        debug_assert!(output.iter().all(|sample| sample.is_finite()));
         Ok(())
+    }
+
+    fn run_filtered<const PHASES: usize, const STEP: usize>(
+        &mut self,
+        input: &[f32],
+        output: &mut [f32],
+        plan: &FilterPlan,
+    ) {
+        let mut clock = self.clock % STEP;
+        let mut destination = 0;
+        for &sample in input {
+            let mut filtered = f64::from(sample);
+            for (lag, &coefficient) in FEEDBACK.iter().enumerate() {
+                filtered -= coefficient * self.history[self.cursor + HISTORY - 1 - lag];
+            }
+            self.history[self.cursor] = filtered;
+            self.history[self.cursor + HISTORY] = filtered;
+            let begin = self.cursor + HISTORY - self.delay;
+            let past = &self.history[begin + 1 - plan.taps..=begin];
+            let first = if clock == 0 { 0 } else { STEP - clock };
+            for phase in (first..PHASES).step_by(STEP) {
+                let mut sum = 0.0;
+                for (&past, &coefficient) in
+                    past.iter().rev().zip(&plan.numerators[phase][..plan.taps])
+                {
+                    sum += past * coefficient;
+                }
+                output[destination] = sum as f32;
+                destination += 1;
+            }
+            clock = (clock + PHASES) % STEP;
+            self.cursor = (self.cursor + 1) & (HISTORY - 1);
+        }
+        debug_assert_eq!(destination, output.len());
+    }
+
+    fn run_rate<const PHASES: usize, const STEP: usize>(
+        &mut self,
+        input: &[f32],
+        output: &mut [f32],
+    ) {
+        let mut clock = self.clock % STEP;
+        let mut destination = 0;
+        for &sample in input {
+            let mut filtered = f64::from(sample);
+            for (lag, &coefficient) in FEEDBACK.iter().enumerate() {
+                filtered -= coefficient * self.history[self.cursor + HISTORY - 1 - lag];
+            }
+            self.history[self.cursor] = filtered;
+            self.history[self.cursor + HISTORY] = filtered;
+            let begin = self.cursor + HISTORY - self.delay;
+            let past = &self.history[begin + 1 - TAPS..=begin];
+            let first = if clock == 0 { 0 } else { STEP - clock };
+            for phase in (first..PHASES).step_by(STEP) {
+                let mut sum = 0.0;
+                for (&past, &coefficient) in past.iter().rev().zip(&self.numerators[phase]) {
+                    sum += past * coefficient;
+                }
+                output[destination] = sum as f32;
+                destination += 1;
+            }
+            clock = (clock + PHASES) % STEP;
+            self.cursor = (self.cursor + 1) & (HISTORY - 1);
+        }
+        debug_assert_eq!(destination, output.len());
     }
 
     fn run<const PHASES: usize>(&mut self, input: &[f32], output: &mut [f32]) {
         for (&sample, block) in input.iter().zip(output.as_chunks_mut::<PHASES>().0) {
             let mut filtered = f64::from(sample);
             for (lag, &coefficient) in FEEDBACK.iter().enumerate() {
-                filtered -=
-                    coefficient * self.history[(self.cursor + HISTORY - 1 - lag) & (HISTORY - 1)];
+                filtered -= coefficient * self.history[self.cursor + HISTORY - 1 - lag];
             }
             self.history[self.cursor] = filtered;
+            self.history[self.cursor + HISTORY] = filtered;
             let mut sums = [0.0f64; PHASES];
-            let begin = (self.cursor + HISTORY - self.delay) & (HISTORY - 1);
-            let head = TAPS.min(begin + 1);
-            for (lag, &past) in self.history[..=begin].iter().rev().take(head).enumerate() {
-                for (phase, sum) in sums.iter_mut().enumerate() {
-                    *sum += past * self.numerators[phase][lag];
-                }
-            }
-            for (extra, &past) in self.history[begin + 1..]
+            let begin = self.cursor + HISTORY - self.delay;
+            for (lag, &past) in self.history[begin + 1 - TAPS..=begin]
                 .iter()
                 .rev()
-                .take(TAPS - head)
                 .enumerate()
             {
-                let lag = head + extra;
                 for (phase, sum) in sums.iter_mut().enumerate() {
                     *sum += past * self.numerators[phase][lag];
                 }
@@ -422,6 +643,181 @@ mod tests {
             assert_eq!(split.history, plan.history);
             assert_eq!(split.cursor, plan.cursor);
         }
+    }
+
+    #[test]
+    fn selected_rates_are_exact_full_rate_phases_across_chunks_and_rate_changes() {
+        let input: Vec<f32> = (0..512)
+            .map(|i| ((i * 73 % 103) as f32 - 51.0) / 64.0)
+            .collect();
+        for (bandwidth, factor, _) in CASES {
+            let mut reference = Resampler::new(bandwidth);
+            let mut full = vec![0.0; input.len() * factor];
+            reference.process(&input, &mut full).unwrap();
+            for rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
+                if rate < 48_000 / factor as u32 {
+                    continue;
+                }
+                let step = 48_000 / rate as usize;
+                let mut selected = Resampler::new(bandwidth);
+                let mut offset = 0;
+                for width in [1, 31, 2, 57, 3, 67, 11, 5, 101, 7, 43, 184] {
+                    let begin = offset * factor;
+                    let end = (offset + width) * factor;
+                    let expected: Vec<_> = (begin..end)
+                        .filter(|index| index.is_multiple_of(step))
+                        .map(|index| full[index])
+                        .collect();
+                    let mut output = vec![0.0; expected.len()];
+                    selected
+                        .process_rate(&input[offset..offset + width], &mut output, rate)
+                        .unwrap();
+                    assert_eq!(output, expected, "{bandwidth:?}, {rate}, {offset}");
+                    offset += width;
+                }
+                assert_eq!(offset, input.len());
+                assert_eq!(selected.history, reference.history);
+                assert_eq!(selected.cursor, reference.cursor);
+                assert_eq!(selected.clock, reference.clock);
+            }
+
+            let mut selected = Resampler::new(bandwidth);
+            let mut offset = 0;
+            for (width, rate) in [
+                (1, 48_000),
+                (5, 24_000),
+                (7, 48_000 / factor as u32),
+                (9, 48_000),
+            ] {
+                let step = 48_000 / rate as usize;
+                let begin = offset * factor;
+                let end = (offset + width) * factor;
+                let expected: Vec<_> = (begin..end)
+                    .filter(|index| index.is_multiple_of(step))
+                    .map(|index| full[index])
+                    .collect();
+                let mut output = vec![0.0; expected.len()];
+                selected
+                    .process_rate(&input[offset..offset + width], &mut output, rate)
+                    .unwrap();
+                assert_eq!(output, expected);
+                offset += width;
+            }
+            let before = (selected.history, selected.cursor, selected.clock);
+            let mut output = [123.0];
+            assert_eq!(
+                selected.process_rate(&[0.0], &mut output, 44_100),
+                Err(Error::Argument)
+            );
+            assert_eq!(
+                selected.process_rate(&[0.0], &mut output, 48_000),
+                Err(Error::Output)
+            );
+            let mut full_output = vec![123.0; factor];
+            assert_eq!(
+                selected.process_rate(&[f32::NAN], &mut full_output, 48_000),
+                Err(Error::Argument)
+            );
+            assert_eq!((selected.history, selected.cursor, selected.clock), before);
+            assert_eq!(output, [123.0]);
+            assert!(full_output.iter().all(|&sample| sample == 123.0));
+        }
+    }
+
+    fn low_pass(rate: u32) -> [f32; MAX_OUTPUT_FILTER] {
+        let mut taps = [0.0; MAX_OUTPUT_FILTER];
+        let cutoff = 0.45 * f64::from(rate) / 48_000.0;
+        let middle = (MAX_OUTPUT_FILTER - 1) as f64 * 0.5;
+        for (index, tap) in taps.iter_mut().enumerate() {
+            let position = index as f64 - middle;
+            let phase = std::f64::consts::TAU * index as f64 / (MAX_OUTPUT_FILTER - 1) as f64;
+            let window = 0.42 - 0.5 * phase.cos() + 0.08 * (2.0 * phase).cos();
+            let sinc = if position == 0.0 {
+                2.0 * cutoff
+            } else {
+                (std::f64::consts::TAU * cutoff * position).sin()
+                    / (std::f64::consts::PI * position)
+            };
+            *tap = (window * sinc) as f32;
+        }
+        let gain = taps.iter().sum::<f32>();
+        for tap in &mut taps {
+            *tap /= gain;
+        }
+        taps
+    }
+
+    #[test]
+    fn fused_filters_match_the_literal_owned_chain_and_reconstruct_transition_tails() {
+        let input: Vec<f32> = (0..512)
+            .map(|i| ((i * 73 % 103) as f32 - 51.0) / 64.0)
+            .collect();
+        for (bandwidth, factor, _) in CASES {
+            for rate in [8_000, 12_000] {
+                if rate >= 48_000 / factor as u32 {
+                    continue;
+                }
+                let coefficients = low_pass(rate);
+                let plan = FilterPlan::new(bandwidth, rate, &coefficients).unwrap();
+                let mut reference = Resampler::new(bandwidth);
+                let mut full = vec![0.0; input.len() * factor];
+                reference.process(&input, &mut full).unwrap();
+                let step = 48_000 / rate as usize;
+                let mut selected = Resampler::new(bandwidth);
+                let mut offset = 0;
+                let mut maximum_error = 0.0f32;
+                for width in [1, 31, 2, 57, 3, 67, 11, 5, 101, 7, 43, 184] {
+                    let begin = offset * factor;
+                    let end = (offset + width) * factor;
+                    let expected: Vec<f32> = (begin..end)
+                        .filter(|index| index.is_multiple_of(step))
+                        .map(|index| {
+                            coefficients[..MAX_OUTPUT_FILTER.min(index + 1)]
+                                .iter()
+                                .enumerate()
+                                .map(|(lag, &tap)| f64::from(tap) * f64::from(full[index - lag]))
+                                .sum::<f64>() as f32
+                        })
+                        .collect();
+                    let mut output = vec![0.0; expected.len()];
+                    selected
+                        .process_filtered(&input[offset..offset + width], &mut output, &plan)
+                        .unwrap();
+                    for (&actual, &expected) in output.iter().zip(&expected) {
+                        maximum_error = maximum_error.max((actual - expected).abs());
+                    }
+                    offset += width;
+                }
+                // Composition removes the intermediate f32 quantization. Its
+                // error stays below that original output-filter precision.
+                assert!(
+                    maximum_error < 2e-7,
+                    "{bandwidth:?}, {rate}: {maximum_error}"
+                );
+                assert_eq!(selected.history, reference.history);
+                assert_eq!(selected.cursor, reference.cursor);
+                assert_eq!(selected.clock, reference.clock);
+                let mut tail = [123.0; TAIL_SAMPLES];
+                selected.tail_48k(&mut tail).unwrap();
+                assert_eq!(tail, full[full.len() - TAIL_SAMPLES..]);
+                assert_eq!(selected.history[..HISTORY], selected.history[HISTORY..]);
+
+                let before = (selected.history, selected.cursor, selected.clock);
+                assert_eq!(
+                    selected.process_filtered(&[0.0; 12], &mut [], &plan),
+                    Err(Error::Output)
+                );
+                let mut too_long = [123.0; TAIL_SAMPLES + 1];
+                assert_eq!(selected.tail_48k(&mut too_long), Err(Error::Output));
+                assert_eq!(too_long, [123.0; TAIL_SAMPLES + 1]);
+                assert_eq!((selected.history, selected.cursor, selected.clock), before);
+            }
+        }
+        assert!(FilterPlan::new(Bandwidth::Narrow, 8_000, &[1.0]).is_err());
+        assert!(FilterPlan::new(Bandwidth::Wide, 8_000, &[]).is_err());
+        assert!(FilterPlan::new(Bandwidth::Wide, 8_000, &[f32::NAN]).is_err());
+        assert!(FilterPlan::new(Bandwidth::Wide, 8_000, &[4.001]).is_err());
+        assert!(FilterPlan::new(Bandwidth::Wide, 8_000, &[0.0; 98]).is_err());
     }
 
     #[test]

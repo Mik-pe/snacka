@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 #![cfg(feature = "opus")]
 
-use snacka::opus::{Bandwidth, CeltConfig, CeltEncoder, CeltFrameDuration, Decoder};
+use snacka::opus::multistream::{ChannelMapping, MultistreamDecoder};
+use snacka::opus::{
+    Application, Bandwidth, CeltConfig, CeltEncoder, CeltFrameDuration, Decoder, Encoder,
+    EncoderConfig, FrameDuration, Mode,
+};
 
 #[test]
 fn duplex_codec_construction_and_processing_fit_a_one_mebibyte_stack() {
@@ -36,6 +40,50 @@ fn duplex_codec_construction_and_processing_fit_a_one_mebibyte_stack() {
                 encoder.reset();
                 decoder.reset();
             }
+        })
+        .unwrap()
+        .join()
+        .unwrap();
+}
+
+#[test]
+fn public_opus_construction_and_reset_fit_a_one_mib_thread() {
+    std::thread::Builder::new()
+        .name("opus-one-mib-stack".to_owned())
+        .stack_size(1024 * 1024)
+        .spawn(|| {
+            for channels in [1, 2] {
+                for rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
+                    let mut decoder = Decoder::with_sample_rate(channels, rate).unwrap();
+                    decoder.reset();
+                    std::hint::black_box(decoder);
+                }
+                for (mode, bandwidth) in [
+                    (Mode::Silk, Bandwidth::Wideband),
+                    (Mode::Hybrid, Bandwidth::Fullband),
+                    (Mode::Celt, Bandwidth::Fullband),
+                ] {
+                    let config = EncoderConfig::new(
+                        64_000,
+                        channels,
+                        FrameDuration::Ms60,
+                        bandwidth,
+                        Application::Voice,
+                    )
+                    .unwrap()
+                    .with_mode(mode)
+                    .unwrap();
+                    let mut encoder = Encoder::new(config).unwrap();
+                    encoder.reset();
+                    std::hint::black_box(encoder);
+                }
+            }
+            // The maximum public stream/output counts also exercise the
+            // constructor's temporary values and reset path on this stack.
+            let mapping = ChannelMapping::new(255, 0, &[0; 255]).unwrap();
+            let mut mapped = MultistreamDecoder::new(mapping).unwrap();
+            mapped.reset();
+            std::hint::black_box(mapped);
         })
         .unwrap()
         .join()

@@ -54,7 +54,10 @@ static ALLOCATOR: Tracked = Tracked;
 #[test]
 fn opus_processing_reset_and_rate_changes_do_not_allocate() {
     use snacka::opus::{
-        Bandwidth, CeltConfig, CeltDecoder, CeltEncoder, CeltFrameDuration, Decoder,
+        Bandwidth, CeltConfig, CeltDecoder, CeltEncoder, CeltFrameDuration, Decoder, Recovery,
+        multistream::{ChannelMapping, MultistreamDecoder, MultistreamPacket},
+        ogg::{OggDecoder, OpusHead, OpusIdentification},
+        projection::ProjectionMapping,
     };
 
     let durations = [
@@ -84,8 +87,45 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
     let mut universal: Vec<_> = (1..=2)
         .map(|channels| Decoder::new(channels).unwrap())
         .collect();
+    let output_rates = [8_000u32, 12_000, 16_000, 24_000, 48_000];
+    let mut mobile: Vec<_> = output_rates
+        .into_iter()
+        .flat_map(|rate| {
+            (1..=2).map(move |channels| Decoder::with_sample_rate(channels, rate).unwrap())
+        })
+        .collect();
+    let mapping = ChannelMapping::new(2, 1, &[2, 0, 1, 255, 0]).unwrap();
+    let mut mapped: Vec<_> = output_rates
+        .into_iter()
+        .map(|rate| MultistreamDecoder::with_sample_rate(mapping, rate).unwrap())
+        .collect();
+    let mut mapped_output = vec![0.0; 28_800];
+    let projection = ProjectionMapping::new(
+        2,
+        1,
+        4,
+        vec![
+            32_767, 0, 0, 8192, 0, 32_767, 0, -8192, 0, 0, 32_767, 16_384,
+        ],
+    )
+    .unwrap();
+    let identification = OpusIdentification::projected(
+        OpusHead {
+            channels: 4,
+            pre_skip: 120,
+            input_sample_rate: 48_000,
+            output_gain_q8: 0,
+        },
+        projection,
+    )
+    .unwrap();
+    let mut projected: Vec<_> = output_rates
+        .into_iter()
+        .map(|rate| OggDecoder::with_sample_rate(&identification, rate).unwrap())
+        .collect();
     let input: [f32; 1920] = std::array::from_fn(|index| (index as f32 * 0.057).sin() * 0.25);
     let mut packet = [0; 1276];
+    let mut transport = [0; 2554];
     let mut output = [0.0; 11520];
 
     // Assemble coded SILK packets before counting allocations. The independent
@@ -118,8 +158,30 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
         position += length + samples * channels * 2;
     }
     assert_eq!(position, data.len());
+    let mapped_packets: Vec<_> = packets
+        .iter()
+        .map(|(_, reset, packet)| {
+            let mut transport = Vec::with_capacity(packet.len() * 2 + 2);
+            transport.push(packet[0]);
+            let length = packet.len() - 1;
+            if length < 252 {
+                transport.push(length as u8);
+            } else {
+                let first = 252 + length % 4;
+                transport.push(first as u8);
+                transport.push(((length - first) / 4) as u8);
+            }
+            transport.extend_from_slice(&packet[1..]);
+            transport.extend_from_slice(packet);
+            (*reset, transport)
+        })
+        .collect();
 
     ALLOCATIONS.with(|counter| counter.set(Some(0)));
+    let mut actual_recovery = false;
+    let mut actual_mapped_recovery = false;
+    let mut actual_partial_recovery = false;
+    let mut actual_projected_recovery = false;
     for (index, encoder) in encoders.iter_mut().enumerate() {
         let channels = index % 2 + 1;
         for frame in 0..64 {
@@ -142,6 +204,9 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
         encoder.reset();
         celt[channels - 1].reset();
         universal[channels - 1].reset();
+        celt[channels - 1]
+            .conceal(durations[index / 2].samples(), &mut output)
+            .unwrap();
     }
     for (channels, reset, packet) in &packets {
         if *reset {
@@ -151,9 +216,259 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
             .decode(packet, &mut output)
             .unwrap();
         black_box(&output);
+        for (decoder, rate) in mobile
+            .iter_mut()
+            .zip(output_rates.into_iter().flat_map(|rate| [rate; 2]))
+        {
+            if *reset {
+                decoder.reset();
+            }
+            let samples = decoder.decode(packet, &mut output).unwrap();
+            // Exercise exact 2.5 ms partial LP prediction and both actual LBRR
+            // recovery and absent-redundancy fallback without new storage.
+            decoder.conceal(rate as usize / 400, &mut output).unwrap();
+            actual_recovery |=
+                decoder.recover(packet, samples, &mut output).unwrap() == Recovery::Fec;
+            actual_partial_recovery |= decoder
+                .recover(packet, rate as usize * 3 / 400, &mut output)
+                .unwrap()
+                == Recovery::Fec;
+            decoder.decode(packet, &mut output).unwrap();
+            black_box(&output);
+        }
+    }
+    for ((reset, packet), (_, _, ordinary)) in mapped_packets.iter().zip(&packets) {
+        let length = MultistreamPacket::write(&[ordinary, ordinary], &mut transport).unwrap();
+        assert_eq!(&transport[..length], packet);
+        let packed = MultistreamPacket::parse(&transport[..length], 2).unwrap();
+        assert_eq!(packed.streams(), 2);
+        for (decoder, rate) in mapped.iter_mut().zip(output_rates) {
+            if *reset {
+                decoder.reset();
+            }
+            let samples = decoder.decode(packet, &mut mapped_output).unwrap();
+            decoder
+                .conceal(rate as usize / 400, &mut mapped_output)
+                .unwrap();
+            actual_mapped_recovery |= decoder
+                .recover(packet, samples, &mut mapped_output)
+                .unwrap()
+                == Recovery::Fec;
+            decoder.decode(packet, &mut mapped_output).unwrap();
+            assert!(
+                mapped_output[..samples * 5]
+                    .as_chunks::<5>()
+                    .0
+                    .iter()
+                    .all(|sample| sample[3] == 0.0)
+            );
+            black_box(&mapped_output);
+        }
+        for (decoder, rate) in projected.iter_mut().zip(output_rates) {
+            if *reset {
+                decoder.reset();
+            }
+            let samples = decoder.decode(packet, &mut mapped_output).unwrap();
+            decoder
+                .conceal(rate as usize / 400, &mut mapped_output)
+                .unwrap();
+            actual_projected_recovery |= decoder
+                .recover(packet, samples, &mut mapped_output)
+                .unwrap()
+                == Recovery::Fec;
+            decoder
+                .recover(packet, rate as usize * 3 / 400, &mut mapped_output)
+                .unwrap();
+            decoder.decode(packet, &mut mapped_output).unwrap();
+            assert!(
+                mapped_output[..samples * 4]
+                    .iter()
+                    .all(|sample| sample.is_finite())
+            );
+            black_box(&mapped_output);
+        }
     }
     let allocations = ALLOCATIONS.with(|counter| counter.replace(None).unwrap());
     assert_eq!(allocations, 0);
+    assert!(
+        actual_recovery,
+        "allocation gate must execute real in-band FEC"
+    );
+    assert!(
+        actual_mapped_recovery,
+        "mapped allocation gate must execute real in-band FEC"
+    );
+    assert!(
+        actual_partial_recovery,
+        "allocation gate must execute a true partial redundancy tail"
+    );
+    assert!(
+        actual_projected_recovery,
+        "Ogg projection allocation gate must execute real in-band FEC"
+    );
+}
+
+#[cfg(feature = "opus")]
+#[test]
+fn opus_call_controls_and_generated_redundancy_do_not_allocate() {
+    use snacka::opus::{
+        Application, Bandwidth, Decoder, Encoder, EncoderConfig, FrameDuration, RateControl,
+        Recovery,
+    };
+
+    let speech: Vec<_> = (1..=2)
+        .map(|channels| {
+            EncoderConfig::new(
+                96_000 * channels as u32,
+                channels,
+                FrameDuration::Ms20,
+                Bandwidth::Wideband,
+                Application::Voice,
+            )
+            .unwrap()
+            .with_fec(true)
+            .unwrap()
+            .with_dtx(true)
+            .unwrap()
+        })
+        .collect();
+    let audio: Vec<_> = (1..=2)
+        .map(|channels| {
+            EncoderConfig::new(
+                96_000 * channels as u32,
+                channels,
+                FrameDuration::Ms20,
+                Bandwidth::Fullband,
+                Application::Audio,
+            )
+            .unwrap()
+            .with_rate_control(RateControl::Constant)
+        })
+        .collect();
+    let hybrid: Vec<_> = (1..=2)
+        .map(|channels| {
+            EncoderConfig::new(
+                96_000 * channels as u32,
+                channels,
+                FrameDuration::Ms40,
+                Bandwidth::Superwideband,
+                Application::Voice,
+            )
+            .unwrap()
+            .with_rate_control(RateControl::Constant)
+            .with_fec(true)
+            .unwrap()
+        })
+        .collect();
+    let mut encoders: Vec<_> = speech
+        .iter()
+        .copied()
+        .map(|config| Encoder::new(config).unwrap())
+        .collect();
+    let mut decoders: Vec<_> = (1..=2)
+        .map(|channels| Decoder::new(channels).unwrap())
+        .collect();
+    let mut input = [0.0f32; 5760];
+    let silence = [0.0f32; 1920];
+    let mut output = [0.0f32; 11520];
+    let mut packet = [0u8; 4096];
+
+    ALLOCATIONS.with(|counter| counter.set(Some(0)));
+    let mut generated_fec = false;
+    let mut suppressed = false;
+    let mut refreshed = false;
+    let mut beginning = false;
+    let mut ending = false;
+    for (index, (encoder, decoder)) in encoders.iter_mut().zip(&mut decoders).enumerate() {
+        let channels = index + 1;
+        for frame in 0..20 {
+            for sample in 0..960 {
+                for channel in 0..channels {
+                    input[sample * channels + channel] = 0.15
+                        * ((frame * 960 + sample) as f32
+                            * std::f32::consts::TAU
+                            * (180.0 + channel as f32 * 40.0)
+                            / 48_000.0)
+                            .sin();
+                }
+            }
+            let length = encoder
+                .encode(&input[..960 * channels], &mut packet)
+                .unwrap();
+            if encoder.has_fec() {
+                generated_fec |= decoder
+                    .recover(&packet[..length], 960, &mut output)
+                    .unwrap()
+                    == Recovery::Fec;
+            }
+            assert_eq!(decoder.decode(&packet[..length], &mut output).unwrap(), 960);
+            assert_eq!(decoder.final_range(), encoder.final_range());
+        }
+        for frame in 0..40 {
+            let length = encoder
+                .encode(&silence[..960 * channels], &mut packet)
+                .unwrap();
+            suppressed |= encoder.was_dtx();
+            refreshed |= frame >= 10 && !encoder.was_dtx();
+            assert_eq!(decoder.decode(&packet[..length], &mut output).unwrap(), 960);
+            assert_eq!(decoder.final_range(), encoder.final_range());
+        }
+        let length = encoder
+            .encode(&input[..960 * channels], &mut packet)
+            .unwrap();
+        assert!(!encoder.was_dtx());
+        decoder.decode(&packet[..length], &mut output).unwrap();
+        assert_eq!(decoder.final_range(), encoder.final_range());
+
+        for lp in [speech[index], hybrid[index]] {
+            encoder.reconfigure(audio[index]).unwrap();
+            let length = encoder
+                .encode(&input[..960 * channels], &mut packet)
+                .unwrap();
+            decoder.decode(&packet[..length], &mut output).unwrap();
+            assert_eq!(decoder.final_range(), encoder.final_range());
+            encoder.reconfigure(lp).unwrap();
+            for frame in 0..3 {
+                if frame == 2 {
+                    encoder.prepare_reconfigure(audio[index]).unwrap();
+                }
+                let samples = encoder.config().duration().samples();
+                let length = encoder
+                    .encode(&input[..samples * channels], &mut packet)
+                    .unwrap();
+                beginning |= frame == 0 && encoder.has_transition_redundancy();
+                ending |= frame == 2 && encoder.has_transition_redundancy();
+                assert_eq!(
+                    decoder.decode(&packet[..length], &mut output).unwrap(),
+                    samples
+                );
+                assert_eq!(decoder.final_range(), encoder.final_range());
+            }
+            assert_eq!(encoder.config(), audio[index]);
+            let length = encoder
+                .encode(&input[..960 * channels], &mut packet)
+                .unwrap();
+            decoder.decode(&packet[..length], &mut output).unwrap();
+            assert_eq!(decoder.final_range(), encoder.final_range());
+        }
+        encoder.reset();
+        decoder.reset();
+        black_box(&output);
+    }
+    let allocations = ALLOCATIONS.with(|counter| counter.replace(None).unwrap());
+    assert_eq!(allocations, 0);
+    assert!(
+        generated_fec,
+        "generated LBRR must reach allocation tracking"
+    );
+    assert!(
+        suppressed && refreshed,
+        "DTX suppression and refresh must both run"
+    );
+    assert!(
+        beginning && ending,
+        "both transition redundancy positions must run"
+    );
 }
 
 #[test]

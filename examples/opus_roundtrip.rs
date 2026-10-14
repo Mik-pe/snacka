@@ -8,15 +8,19 @@
 //! are 2.5, 5, 10 or 20 ms; defaults are 32,000 bits/s, mono and 20 ms. Audio is
 //! encoded by Snacka's CELT encoder. Container trimming preserves input length;
 //! audio compression is lossy, so output samples are not bit-identical to input.
+//! Mapped decoding preserves the header's channel order (Vorbis for family 1,
+//! ACN/SN3D plus optional stereo for families 2/3).
+//! Chained files preserve every stream's trimming and gain. Raw output requires
+//! the same output channel count in each chain.
 
-use snacka::opus::ogg::{OggReader, OggWriter, OpusHead, OpusTags};
-use snacka::opus::{
-    Bandwidth, CeltConfig, CeltEncoder, CeltFrameDuration, Decoder as AudioDecoder,
-};
+#[cfg(test)]
+use snacka::opus::ogg::OggReader;
+use snacka::opus::ogg::{OggChainEvent, OggChainReader, OggDecoder, OggWriter, OpusHead, OpusTags};
+use snacka::opus::{Bandwidth, CeltConfig, CeltEncoder, CeltFrameDuration};
 use std::error::Error;
 use std::ffi::{OsStr, OsString};
 use std::fs::{self, File};
-use std::io::{self, BufReader, BufWriter, Read, Write};
+use std::io::{self, BufWriter, Read, Write};
 use std::path::{Path, PathBuf};
 
 type Result<T> = std::result::Result<T, Box<dyn Error>>;
@@ -25,7 +29,7 @@ const SAMPLE_RATE: u32 = 48_000;
 const PRE_SKIP: u16 = 120;
 const SERIAL: u32 = 0x534e_4b41;
 const MAX_PACKET_BYTES: usize = snacka::opus::packet::MAX_FRAME_BYTES + 1;
-const MAX_DECODED_SAMPLES: usize = snacka::opus::packet::MAX_PACKET_SAMPLES_48KHZ * 2;
+const MAX_SAMPLES_PER_CHANNEL: usize = snacka::opus::packet::MAX_PACKET_SAMPLES_48KHZ;
 
 const USAGE: &str = "usage:
   opus_roundtrip input.f32 output.opus decoded.f32 [bitrate] [channels] [frame_ms]
@@ -174,14 +178,15 @@ fn decode<R: Read, W: Write>(source: R, sink: W) -> Result<(W, DecodingStats)> {
     decode_reader(OggReader::new(source)?, sink)
 }
 
+#[cfg(test)]
 fn decode_reader<R: Read, W: Write>(
     mut reader: OggReader<R>,
     mut sink: W,
 ) -> Result<(W, DecodingStats)> {
     let channels = usize::from(reader.head().channels);
     let gain = reader.head().gain_factor();
-    let mut decoder = AudioDecoder::new(channels)?;
-    let mut output = [0.0f32; MAX_DECODED_SAMPLES];
+    let mut decoder = OggDecoder::new(reader.identification())?;
+    let mut output = vec![0.0f32; MAX_SAMPLES_PER_CHANNEL * channels];
     let mut samples = 0;
     let mut packets = 0;
     while let Some(packet) = reader.next_packet()? {
@@ -210,6 +215,64 @@ fn decode_reader<R: Read, W: Write>(
         DecodingStats {
             samples,
             channels,
+            packets,
+        },
+    ))
+}
+
+fn decode_chain_reader<R: Read, W: Write>(
+    mut reader: OggChainReader<R>,
+    mut sink: W,
+) -> Result<(W, DecodingStats)> {
+    let mut channels = None;
+    let mut decoder = None;
+    let mut gain = 1.0;
+    let mut output = Vec::new();
+    let mut samples = 0;
+    let mut packets = 0;
+    while let Some(event) = reader.next_event()? {
+        match event {
+            OggChainEvent::Stream(stream) => {
+                let count = usize::from(stream.identification.head.channels);
+                if channels.is_some_and(|previous| previous != count) {
+                    return Err(invalid(
+                        "raw PCM output requires the same channel count in each chain",
+                    ));
+                }
+                channels = Some(count);
+                gain = stream.identification.head.gain_factor();
+                decoder = Some(OggDecoder::new(&stream.identification)?);
+                output.resize(MAX_SAMPLES_PER_CHANNEL * count, 0.0);
+            }
+            OggChainEvent::Packet(packet) => {
+                let channels = channels.ok_or_else(|| invalid("audio precedes stream headers"))?;
+                let count = decoder
+                    .as_mut()
+                    .ok_or_else(|| invalid("audio precedes decoder construction"))?
+                    .decode(&packet.data, &mut output)?;
+                if count != packet.samples_48khz || packet.keep.end > count {
+                    return Err(invalid(
+                        "decoded packet duration differs from container framing",
+                    ));
+                }
+                for &sample in &output[packet.keep.start * channels..packet.keep.end * channels] {
+                    let value = sample * gain;
+                    if !value.is_finite() {
+                        return Err(invalid("decoder produced non-finite PCM"));
+                    }
+                    sink.write_all(&value.to_le_bytes())?;
+                }
+                samples += packet.keep.len();
+                packets += 1;
+            }
+        }
+    }
+    sink.flush()?;
+    Ok((
+        sink,
+        DecodingStats {
+            samples,
+            channels: channels.ok_or_else(|| invalid("no Opus stream"))?,
             packets,
         },
     ))
@@ -251,10 +314,10 @@ fn encode_file(input: &Path, output: &Path, config: CeltConfig) -> Result<Encodi
 }
 
 fn decode_file(input: &Path, output: &Path) -> Result<DecodingStats> {
-    let source = BufReader::new(File::open(input)?);
+    let source = File::open(input)?;
     // Validate mandatory headers before creating the requested output file.
-    let reader = OggReader::new(source)?;
-    let (_, stats) = decode_reader(reader, BufWriter::new(File::create(output)?))?;
+    let reader = OggChainReader::new(source)?;
+    let (_, stats) = decode_chain_reader(reader, BufWriter::new(File::create(output)?))?;
     Ok(stats)
 }
 
@@ -382,5 +445,57 @@ mod tests {
         assert!(run(&[OsString::from("decode")]).is_err());
         assert!(run(&[OsString::from("encode")]).is_err());
         assert!(decode(Cursor::new(Vec::<u8>::new()), Vec::new()).is_err());
+    }
+
+    #[test]
+    fn chained_decode_applies_each_streams_skip_gain_and_independent_history() {
+        let mut encoder = CeltEncoder::new(CeltConfig::default());
+        let mut packet = [0; MAX_PACKET_BYTES];
+        let length = encoder.encode(&[0.15; 960], &mut packet).unwrap();
+        let mut containers = Vec::new();
+        let mut expected = Vec::new();
+        for (serial, pre_skip, kept, gain) in [(17, 120, 300, 0), (18, 312, 100, 6 * 256)] {
+            let head = OpusHead {
+                channels: 1,
+                pre_skip,
+                input_sample_rate: SAMPLE_RATE,
+                output_gain_q8: gain,
+            };
+            let mut writer =
+                OggWriter::new(Vec::new(), serial, head, &OpusTags::default()).unwrap();
+            writer.write_packet(&packet[..length]).unwrap();
+            let container = writer.finish(kept).unwrap();
+            let (decoded, _) = decode(Cursor::new(&container), Vec::new()).unwrap();
+            expected.extend(decoded);
+            containers.extend(container);
+        }
+        let (decoded, stats) = decode_chain_reader(
+            OggChainReader::new(Cursor::new(&containers)).unwrap(),
+            Vec::new(),
+        )
+        .unwrap();
+        assert_eq!(decoded, expected);
+        assert_eq!((stats.samples, stats.channels, stats.packets), (400, 1, 2));
+        let mut writer = OggWriter::new(
+            Vec::new(),
+            19,
+            OpusHead {
+                channels: 2,
+                pre_skip: 0,
+                input_sample_rate: SAMPLE_RATE,
+                output_gain_q8: 0,
+            },
+            &OpusTags::default(),
+        )
+        .unwrap();
+        writer.write_packet(&[0x94]).unwrap();
+        containers.extend(writer.finish(480).unwrap());
+        assert!(
+            decode_chain_reader(
+                OggChainReader::new(Cursor::new(containers)).unwrap(),
+                Vec::new()
+            )
+            .is_err()
+        );
     }
 }

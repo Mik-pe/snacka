@@ -88,14 +88,15 @@ impl Complex {
 struct Stage {
     size: usize,
     radix: usize,
-    step: usize,
+    // One contiguous row per butterfly. Unused legs contain zero; the first
+    // row's unity factors are skipped by the separate leading butterfly.
+    twiddles: Vec<[Complex; 4]>,
 }
 
 /// An immutable FFT plan for lengths factorizable into 2, 3 and 5, up to 1,920.
 #[derive(Debug)]
 pub struct FftPlan {
     length: usize,
-    roots: Vec<Complex>,
     stages: Vec<Stage>,
 }
 impl FftPlan {
@@ -107,25 +108,35 @@ impl FftPlan {
         let mut size = length;
         let mut stages = Vec::new();
         while size > 1 {
-            let radix = [2, 3, 5]
+            let radix = [4, 2, 3, 5]
                 .into_iter()
                 .find(|radix| size.is_multiple_of(*radix))
                 .ok_or(Error::Length)?;
             stages.push(Stage {
                 size,
                 radix,
-                step: length / size,
+                twiddles: Vec::new(),
             });
             size /= radix;
         }
-        let roots = (0..length)
+        let roots: Vec<_> = (0..length)
             .map(|index| Complex::phase(-std::f64::consts::TAU * index as f64 / length as f64))
             .collect();
-        Ok(Self {
-            length,
-            roots,
-            stages,
-        })
+        for stage in &mut stages {
+            let step = length / stage.size;
+            stage.twiddles = (0..stage.size / stage.radix)
+                .map(|index| {
+                    std::array::from_fn(|leg| {
+                        if leg + 1 < stage.radix {
+                            roots[(leg + 1) * index * step]
+                        } else {
+                            Complex::ZERO
+                        }
+                    })
+                })
+                .collect();
+        }
+        Ok(Self { length, stages })
     }
 
     /// Number of complex samples transformed by this plan.
@@ -138,29 +149,50 @@ impl FftPlan {
         false
     }
 
-    fn root(&self, index: usize, inverse: bool) -> Complex {
-        let mut root = self.roots[index];
-        if inverse {
-            root.imaginary = -root.imaginary;
-        }
-        root
-    }
-
-    fn twiddle(&self, sample: Complex, index: usize, inverse: bool) -> Complex {
-        if index == 0 {
-            sample
-        } else {
-            sample.multiply(self.root(index, inverse))
+    fn twiddle<const INVERSE: bool>(sample: Complex, root: Option<Complex>) -> Complex {
+        match root {
+            None => sample,
+            Some(mut root) => {
+                if INVERSE {
+                    root.imaginary = -root.imaginary;
+                }
+                sample.multiply(root)
+            }
         }
     }
 
-    fn split(
+    #[inline]
+    fn butterfly_five<const INVERSE: bool>(samples: [Complex; 5]) -> [Complex; 5] {
+        let [a, b, c, d, e] = samples;
+        let outer = b.add(e);
+        let inner = c.add(d);
+        let outer_difference = b.sub(e);
+        let inner_difference = c.sub(d);
+        let first_value = a.add(outer.scale(0.309_017)).add(inner.scale(-0.809_017));
+        let second_value = a.add(outer.scale(-0.809_017)).add(inner.scale(0.309_017));
+        let first_rotation = outer_difference
+            .scale(0.951_056_54)
+            .add(inner_difference.scale(0.587_785_24))
+            .rotate(INVERSE);
+        let second_rotation = outer_difference
+            .scale(0.587_785_24)
+            .sub(inner_difference.scale(0.951_056_54))
+            .rotate(INVERSE);
+        [
+            a.add(outer).add(inner),
+            first_value.add(first_rotation),
+            second_value.add(second_rotation),
+            second_value.sub(second_rotation),
+            first_value.sub(first_rotation),
+        ]
+    }
+
+    fn split<const INVERSE: bool>(
         &self,
         input: &[Complex],
         stride: usize,
         output: &mut [Complex],
         depth: usize,
-        inverse: bool,
     ) {
         if output.len() == 1 {
             output[0] = input[0];
@@ -168,77 +200,171 @@ impl FftPlan {
         }
         let stage = &self.stages[depth];
         let width = stage.size / stage.radix;
+        // CELT's factorizations end with a five-point unity butterfly. Its
+        // samples can go directly to registers without the general stage's
+        // split slices, twiddle rows and empty trailing iterator.
+        if width == 1 && stage.radix == 5 {
+            let samples = std::array::from_fn(|index| input[index * stride]);
+            *output.first_chunk_mut::<5>().expect("FFT leaf width") =
+                Self::butterfly_five::<INVERSE>(samples);
+            return;
+        }
         if width == 1 {
             for (index, sample) in output.iter_mut().enumerate() {
                 *sample = input[index * stride];
             }
         } else {
             for (index, group) in output.chunks_exact_mut(width).enumerate() {
-                self.split(
+                self.split::<INVERSE>(
                     &input[index * stride..],
                     stride * stage.radix,
                     group,
                     depth + 1,
-                    inverse,
                 );
             }
         }
-        for index in 0..width {
-            let a = output[index];
-            let b = self.twiddle(output[width + index], index * stage.step, inverse);
-            match stage.radix {
-                2 => {
-                    output[index] = a.add(b);
-                    output[width + index] = a.sub(b);
+        match stage.radix {
+            2 => {
+                let (first, second) = output.split_at_mut(width);
+                let apply = |first: &mut Complex,
+                             second: &mut Complex,
+                             rotations: Option<&[Complex; 4]>| {
+                    let a = *first;
+                    let b = Self::twiddle::<INVERSE>(*second, rotations.map(|row| row[0]));
+                    *first = a.add(b);
+                    *second = a.sub(b);
+                };
+                let (first_start, first) = first.split_first_mut().expect("FFT stage width");
+                let (second_start, second) = second.split_first_mut().expect("FFT stage width");
+                apply(first_start, second_start, None);
+                for ((first, second), rotations) in
+                    first.iter_mut().zip(second).zip(&stage.twiddles[1..])
+                {
+                    apply(first, second, Some(rotations));
                 }
-                3 => {
-                    let c =
-                        self.twiddle(output[2 * width + index], 2 * index * stage.step, inverse);
+            }
+            3 => {
+                let (first, rest) = output.split_at_mut(width);
+                let (second, third) = rest.split_at_mut(width);
+                let apply = |first: &mut Complex,
+                             second: &mut Complex,
+                             third: &mut Complex,
+                             rotations: Option<&[Complex; 4]>| {
+                    let a = *first;
+                    let b = Self::twiddle::<INVERSE>(*second, rotations.map(|row| row[0]));
+                    let c = Self::twiddle::<INVERSE>(*third, rotations.map(|row| row[1]));
                     let sum = b.add(c);
                     let center = a.sub(sum.scale(0.5));
-                    let rotation = b.sub(c).scale(0.866_025_4).rotate(inverse);
-                    output[index] = a.add(sum);
-                    output[width + index] = center.add(rotation);
-                    output[2 * width + index] = center.sub(rotation);
+                    let rotation = b.sub(c).scale(0.866_025_4).rotate(INVERSE);
+                    *first = a.add(sum);
+                    *second = center.add(rotation);
+                    *third = center.sub(rotation);
+                };
+                let (first_start, first) = first.split_first_mut().expect("FFT stage width");
+                let (second_start, second) = second.split_first_mut().expect("FFT stage width");
+                let (third_start, third) = third.split_first_mut().expect("FFT stage width");
+                apply(first_start, second_start, third_start, None);
+                for (((first, second), third), rotations) in first
+                    .iter_mut()
+                    .zip(second)
+                    .zip(third)
+                    .zip(&stage.twiddles[1..])
+                {
+                    apply(first, second, third, Some(rotations));
                 }
-                5 => {
-                    let c =
-                        self.twiddle(output[2 * width + index], 2 * index * stage.step, inverse);
-                    let d =
-                        self.twiddle(output[3 * width + index], 3 * index * stage.step, inverse);
-                    let e =
-                        self.twiddle(output[4 * width + index], 4 * index * stage.step, inverse);
-                    let outer = b.add(e);
-                    let inner = c.add(d);
-                    let outer_difference = b.sub(e);
-                    let inner_difference = c.sub(d);
-                    let first = a.add(outer.scale(0.309_017)).add(inner.scale(-0.809_017));
-                    let second = a.add(outer.scale(-0.809_017)).add(inner.scale(0.309_017));
-                    let first_rotation = outer_difference
-                        .scale(0.951_056_54)
-                        .add(inner_difference.scale(0.587_785_24))
-                        .rotate(inverse);
-                    let second_rotation = outer_difference
-                        .scale(0.587_785_24)
-                        .sub(inner_difference.scale(0.951_056_54))
-                        .rotate(inverse);
-                    output[index] = a.add(outer).add(inner);
-                    output[width + index] = first.add(first_rotation);
-                    output[2 * width + index] = second.add(second_rotation);
-                    output[3 * width + index] = second.sub(second_rotation);
-                    output[4 * width + index] = first.sub(first_rotation);
-                }
-                _ => unreachable!(),
             }
+            4 => {
+                let (first, rest) = output.split_at_mut(width);
+                let (second, rest) = rest.split_at_mut(width);
+                let (third, fourth) = rest.split_at_mut(width);
+                let apply = |first: &mut Complex,
+                             second: &mut Complex,
+                             third: &mut Complex,
+                             fourth: &mut Complex,
+                             rotations: Option<&[Complex; 4]>| {
+                    let a = *first;
+                    let b = Self::twiddle::<INVERSE>(*second, rotations.map(|row| row[0]));
+                    let c = Self::twiddle::<INVERSE>(*third, rotations.map(|row| row[1]));
+                    let d = Self::twiddle::<INVERSE>(*fourth, rotations.map(|row| row[2]));
+                    let even = a.add(c);
+                    let difference = a.sub(c);
+                    let odd = b.add(d);
+                    let rotation = b.sub(d).rotate(INVERSE);
+                    *first = even.add(odd);
+                    *second = difference.add(rotation);
+                    *third = even.sub(odd);
+                    *fourth = difference.sub(rotation);
+                };
+                let (first_start, first) = first.split_first_mut().expect("FFT stage width");
+                let (second_start, second) = second.split_first_mut().expect("FFT stage width");
+                let (third_start, third) = third.split_first_mut().expect("FFT stage width");
+                let (fourth_start, fourth) = fourth.split_first_mut().expect("FFT stage width");
+                apply(first_start, second_start, third_start, fourth_start, None);
+                for ((((first, second), third), fourth), rotations) in first
+                    .iter_mut()
+                    .zip(second)
+                    .zip(third)
+                    .zip(fourth)
+                    .zip(&stage.twiddles[1..])
+                {
+                    apply(first, second, third, fourth, Some(rotations));
+                }
+            }
+            5 => {
+                let (first, rest) = output.split_at_mut(width);
+                let (second, rest) = rest.split_at_mut(width);
+                let (third, rest) = rest.split_at_mut(width);
+                let (fourth, fifth) = rest.split_at_mut(width);
+                let apply = |first: &mut Complex,
+                             second: &mut Complex,
+                             third: &mut Complex,
+                             fourth: &mut Complex,
+                             fifth: &mut Complex,
+                             rotations: Option<&[Complex; 4]>| {
+                    let a = *first;
+                    let b = Self::twiddle::<INVERSE>(*second, rotations.map(|row| row[0]));
+                    let c = Self::twiddle::<INVERSE>(*third, rotations.map(|row| row[1]));
+                    let d = Self::twiddle::<INVERSE>(*fourth, rotations.map(|row| row[2]));
+                    let e = Self::twiddle::<INVERSE>(*fifth, rotations.map(|row| row[3]));
+                    [*first, *second, *third, *fourth, *fifth] =
+                        Self::butterfly_five::<INVERSE>([a, b, c, d, e]);
+                };
+                let (first_start, first) = first.split_first_mut().expect("FFT stage width");
+                let (second_start, second) = second.split_first_mut().expect("FFT stage width");
+                let (third_start, third) = third.split_first_mut().expect("FFT stage width");
+                let (fourth_start, fourth) = fourth.split_first_mut().expect("FFT stage width");
+                let (fifth_start, fifth) = fifth.split_first_mut().expect("FFT stage width");
+                apply(
+                    first_start,
+                    second_start,
+                    third_start,
+                    fourth_start,
+                    fifth_start,
+                    None,
+                );
+                for (((((first, second), third), fourth), fifth), rotations) in first
+                    .iter_mut()
+                    .zip(second)
+                    .zip(third)
+                    .zip(fourth)
+                    .zip(fifth)
+                    .zip(&stage.twiddles[1..])
+                {
+                    apply(first, second, third, fourth, fifth, Some(rotations));
+                }
+            }
+            _ => unreachable!(),
         }
     }
 
     fn run(&self, input: &[Complex], output: &mut [Complex], inverse: bool) {
-        self.split(input, 1, output, 0, inverse);
         if inverse {
+            self.split::<true>(input, 1, output, 0);
             for sample in output {
                 *sample = sample.scale(1.0 / self.length as f32);
             }
+        } else {
+            self.split::<false>(input, 1, output, 0);
         }
     }
 
@@ -441,6 +567,25 @@ impl MdctPlan {
         workspace: &MdctWorkspace,
         inverse: bool,
     ) -> Result<(), Error> {
+        self.validate_dimensions(input, output, workspace, inverse)?;
+        let n = self.coefficients;
+        let limit = f32::MAX / (16 * n) as f32;
+        if input
+            .iter()
+            .any(|sample| !sample.is_finite() || sample.abs() > limit)
+        {
+            return Err(Error::Sample);
+        }
+        Ok(())
+    }
+
+    fn validate_dimensions(
+        &self,
+        input: &[f32],
+        output: &[f32],
+        workspace: &MdctWorkspace,
+        inverse: bool,
+    ) -> Result<(), Error> {
         let n = self.coefficients;
         let (input_length, output_length) = if inverse { (n, 2 * n) } else { (2 * n, n) };
         if input.len() != input_length
@@ -449,13 +594,6 @@ impl MdctPlan {
             || workspace.output.len() != n / 2
         {
             return Err(Error::Length);
-        }
-        let limit = f32::MAX / (16 * n) as f32;
-        if input
-            .iter()
-            .any(|sample| !sample.is_finite() || sample.abs() > limit)
-        {
-            return Err(Error::Sample);
         }
         Ok(())
     }
@@ -512,6 +650,30 @@ impl MdctPlan {
         workspace: &mut MdctWorkspace,
     ) -> Result<(), Error> {
         self.validate(input, output, workspace, true)?;
+        self.inverse_inner(input, output, workspace);
+        Ok(())
+    }
+
+    /// Internal path after the caller has checked all coefficients against
+    /// `f32::MAX / (16 * coefficients)`. Buffer/workspace checks remain here.
+    #[cfg(feature = "opus")]
+    pub(crate) fn inverse_finite(
+        &self,
+        input: &[f32],
+        output: &mut [f32],
+        workspace: &mut MdctWorkspace,
+    ) -> Result<(), Error> {
+        self.validate_dimensions(input, output, workspace, true)?;
+        debug_assert!(
+            input
+                .iter()
+                .all(|sample| { sample.abs() <= f32::MAX / (16 * self.coefficients) as f32 })
+        );
+        self.inverse_inner(input, output, workspace);
+        Ok(())
+    }
+
+    fn inverse_inner(&self, input: &[f32], output: &mut [f32], workspace: &mut MdctWorkspace) {
         let n = self.coefficients;
         for (index, (sample, row)) in workspace.input.iter_mut().zip(&self.rows).enumerate() {
             *sample = Complex {
@@ -523,6 +685,46 @@ impl MdctPlan {
         self.fft.run(&workspace.input, &mut workspace.output, false);
         let q = n / 2;
         let boundary = q.div_ceil(2);
+        if q.is_multiple_of(2) {
+            let (low, rest) = output.split_at_mut(q);
+            let (lower_middle, rest) = rest.split_at_mut(q);
+            let (upper_middle, high) = rest.split_at_mut(q);
+            let (low, _) = low.as_chunks_mut::<2>();
+            let (lower_middle, _) = lower_middle.as_chunks_mut::<2>();
+            let (upper_middle, _) = upper_middle.as_chunks_mut::<2>();
+            let (high, _) = high.as_chunks_mut::<2>();
+            for (((((&sample, row), low), lower), upper), high) in workspace.output[..boundary]
+                .iter()
+                .zip(&self.rows[..boundary])
+                .zip(low.iter_mut().rev())
+                .zip(lower_middle.iter_mut())
+                .zip(upper_middle.iter_mut().rev())
+                .zip(high.iter_mut())
+            {
+                let value = sample.multiply(row.post);
+                let imaginary_value = -value.imaginary;
+                upper[1] = -value.real * row.window[0];
+                high[0] = -value.real * row.window[1];
+                lower[0] = -imaginary_value * row.window[2];
+                low[1] = imaginary_value * row.window[3];
+            }
+            for (((((&sample, row), low), lower), upper), high) in workspace.output[boundary..]
+                .iter()
+                .zip(&self.rows[boundary..])
+                .zip(low.iter_mut())
+                .zip(lower_middle.iter_mut().rev())
+                .zip(upper_middle.iter_mut())
+                .zip(high.iter_mut().rev())
+            {
+                let value = sample.multiply(row.post);
+                let imaginary_value = -value.imaginary;
+                lower[1] = -value.real * row.window[0];
+                low[0] = value.real * row.window[1];
+                upper[0] = -imaginary_value * row.window[2];
+                high[1] = -imaginary_value * row.window[3];
+            }
+            return;
+        }
         for (index, (&sample, row)) in workspace.output.iter().zip(&self.rows).enumerate() {
             let value = sample.multiply(row.post);
             let real = 2 * index;
@@ -541,7 +743,6 @@ impl MdctPlan {
                 output[3 * q + imaginary] = -imaginary_value * row.window[3];
             }
         }
-        Ok(())
     }
 }
 

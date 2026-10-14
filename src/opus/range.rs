@@ -18,6 +18,7 @@ const LAPLACE_TAIL_RESERVE: u32 = 32;
 pub(crate) struct Icdf<'a> {
     table: &'a [u8],
     total: u32,
+    bits: u32,
 }
 
 impl<'a> Icdf<'a> {
@@ -32,7 +33,7 @@ impl<'a> Icdf<'a> {
         {
             return Err(Error::Argument);
         }
-        Ok(Self { table, total })
+        Ok(Self { table, total, bits })
     }
 
     fn interval(self, symbol: usize) -> Result<(u32, u32), Error> {
@@ -108,6 +109,7 @@ impl Laplace {
         (actual, low, low + frequency)
     }
 
+    #[cfg(test)]
     fn locate(self, frequency_value: u32) -> (i32, u32, u32) {
         if frequency_value < self.zero {
             return (0, 0, self.zero);
@@ -126,6 +128,38 @@ impl Laplace {
             low += 2 * extra;
         }
         let positive = frequency_value >= low + frequency;
+        if positive {
+            low += frequency;
+        }
+        let actual = if positive {
+            magnitude as i32
+        } else {
+            -(magnitude as i32)
+        };
+        (actual, low, low + frequency)
+    }
+
+    fn locate_inverse(self, value: u32, unit: u32) -> (i32, u32, u32) {
+        if value >= unit * (LAPLACE_TOTAL - self.zero) {
+            return (0, 0, self.zero);
+        }
+        let mut magnitude = 1u32;
+        let mut low = self.zero;
+        let mut frequency = self.first();
+        // Replacing each frequency comparison with its inverse threshold
+        // avoids value/unit for the common geometric part of this alphabet.
+        while frequency > 1 && value < unit * (LAPLACE_TOTAL - low - 2 * frequency) {
+            low += 2 * frequency;
+            magnitude += 1;
+            frequency = self.next(frequency);
+        }
+        if frequency == 1 {
+            let frequency_value = LAPLACE_TOTAL - (value / unit + 1).min(LAPLACE_TOTAL);
+            let extra = (frequency_value - low) / 2;
+            magnitude += extra;
+            low += 2 * extra;
+        }
+        let positive = value < unit * (LAPLACE_TOTAL - low - frequency);
         if positive {
             low += frequency;
         }
@@ -195,6 +229,9 @@ impl<'a> Encoder<'a> {
     pub(crate) fn finish_padded(self) -> Result<usize, Error> {
         self.coder.finish_padded()
     }
+    pub(crate) fn finish(self) -> Result<usize, Error> {
+        self.coder.finish()
+    }
 }
 
 pub(crate) struct Decoder<'a> {
@@ -218,6 +255,7 @@ impl<'a> Decoder<'a> {
         self.coder.uniform(total)
     }
 
+    #[cfg(test)]
     pub(crate) fn frequency(&self, total: u32) -> Result<u32, Error> {
         if total == 0 || total > 65_535 {
             return Err(Error::Argument);
@@ -225,6 +263,7 @@ impl<'a> Decoder<'a> {
         Ok(self.coder.frequency(total))
     }
 
+    #[cfg(test)]
     pub(crate) fn update(&mut self, low: u32, high: u32, total: u32) -> Result<(), Error> {
         if total == 0 || total > 65_535 || low >= high || high > total {
             return Err(Error::Argument);
@@ -237,28 +276,34 @@ impl<'a> Decoder<'a> {
         Ok(())
     }
 
+    /// Locate a custom model's symbol and consume its interval without
+    /// recomputing the range unit. The closure receives its cumulative bin.
+    pub(crate) fn mapped_interval<T>(
+        &mut self,
+        total: u32,
+        locate: impl FnOnce(u32) -> (T, u32, u32),
+    ) -> Result<T, Error> {
+        self.coder.inverse_interval(total, |value, unit| {
+            locate(total - (value / unit + 1).min(total))
+        })
+    }
+
     pub(crate) fn icdf(&mut self, table: &[u8], bits: u32) -> Result<usize, Error> {
         Ok(self.symbol(Icdf::new(table, bits)?))
     }
 
     pub(crate) fn symbol(&mut self, model: Icdf<'_>) -> usize {
-        let frequency = self.coder.frequency(model.total);
-        let symbol = model
-            .table
-            .partition_point(|&tail| frequency >= model.total - u32::from(tail));
-        // Model validation guarantees that a nonempty interval covers frequency.
-        let (low, high) = model
-            .interval(symbol)
-            .expect("validated ICDF covers the interval");
-        self.coder.consume(low, high, model.total);
-        symbol
+        // Comparing inverse thresholds selects exactly the same interval as
+        // frequency(), while avoiding the value/unit division and reloading
+        // the model's cumulative boundaries during its canonical update.
+        self.coder.inverse_symbol(model.table, model.bits)
     }
 
     pub(crate) fn laplace(&mut self, zero: u32, decay: u32) -> Result<i32, Error> {
         let model = Laplace::new(zero, decay)?;
-        let (value, low, high) = model.locate(self.coder.frequency(LAPLACE_TOTAL));
-        self.coder.consume(low, high, LAPLACE_TOTAL);
-        Ok(value)
+        self.coder.inverse_interval(LAPLACE_TOTAL, |inverse, unit| {
+            model.locate_inverse(inverse, unit)
+        })
     }
 
     pub(crate) fn range(&self) -> u32 {
@@ -308,6 +353,116 @@ mod tests {
         (&[7, 4, 2, 0], 3),
         (&[0], 1),
     ];
+
+    #[test]
+    fn mapped_intervals_match_frequency_update_and_preserve_invalid_state() {
+        let mut packet = [0; 128];
+        let mut seed = 0x9876_5432u32;
+        for byte in &mut packet {
+            seed = seed.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+            *byte = (seed >> 24) as u8;
+        }
+        let mut baseline = Decoder::new(&packet);
+        let mut mapped = Decoder::new(&packet);
+        for _ in 0..256 {
+            for total in [2, 3, 17, 255, 256, 32768, 65535] {
+                let frequency = baseline.frequency(total).unwrap();
+                let width = 1 + total / 13;
+                let low = frequency / width * width;
+                let high = (low + width).min(total);
+                baseline.update(low, high, total).unwrap();
+                let symbol = mapped
+                    .mapped_interval(total, |selected| {
+                        assert_eq!(selected, frequency);
+                        (selected / width, low, high)
+                    })
+                    .unwrap();
+                assert_eq!(symbol, frequency / width);
+                assert_eq!(
+                    (mapped.range(), mapped.tell(), mapped.tell_frac()),
+                    (baseline.range(), baseline.tell(), baseline.tell_frac())
+                );
+            }
+            assert_eq!(mapped.bit(3).unwrap(), baseline.bit(3).unwrap());
+        }
+        let mut decoder = Decoder::new(&packet);
+        let initial = (decoder.range(), decoder.tell_frac());
+        for total in [0, 65536, u32::MAX] {
+            assert_eq!(
+                decoder.mapped_interval(total, |_| panic!("invalid total reached model")),
+                Err::<(), _>(Error::Argument)
+            );
+        }
+        for (low, high) in [(1, 1), (2, 1), (0, 18)] {
+            assert_eq!(
+                decoder.mapped_interval(17, |_| ((), low, high)),
+                Err(Error::Argument)
+            );
+        }
+        let frequency = decoder.frequency(17).unwrap();
+        let wrong = (frequency + 1) % 17;
+        assert_eq!(
+            decoder.mapped_interval(17, |_| ((), wrong, wrong + 1)),
+            Err(Error::Corrupt)
+        );
+        assert_eq!((decoder.range(), decoder.tell_frac()), initial);
+    }
+
+    #[test]
+    fn inverse_tables_match_all_denominators_and_large_alphabets() {
+        let mut packet = [0; 128];
+        let mut seed = 0x1234_6789u32;
+        for byte in &mut packet {
+            seed = seed.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+            *byte = (seed >> 24) as u8;
+        }
+        for bits in 1..=8 {
+            let total = 1 << bits;
+            let table: Vec<_> = (0..total)
+                .map(|symbol| (total - symbol - 1) as u8)
+                .collect();
+            let model = Icdf::new(&table, bits).unwrap();
+            let mut baseline = Decoder::new(&packet);
+            let mut inverse = Decoder::new(&packet);
+            for _ in 0..1024 {
+                let expected = baseline.frequency(total).unwrap();
+                baseline.update(expected, expected + 1, total).unwrap();
+                assert_eq!(inverse.symbol(model), expected as usize);
+                assert_eq!(
+                    (inverse.range(), inverse.tell(), inverse.tell_frac()),
+                    (baseline.range(), baseline.tell(), baseline.tell_frac())
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn inverse_laplace_matches_every_cumulative_bin_and_remainder() {
+        for (zero, decay) in [
+            (10000, 10000),
+            (6000, 12000),
+            (256, 16300),
+            (10000, 0),
+            (30000, 1000),
+            (1, 16384),
+            (32736, 0),
+            (32736, 16384),
+            (1, 0),
+        ] {
+            let model = Laplace::new(zero, decay).unwrap();
+            for range in [8_388_609u32, 16_777_947, 268_435_456, 2_147_483_647] {
+                let unit = range / LAPLACE_TOTAL;
+                for frequency in 0..LAPLACE_TOTAL {
+                    let expected = model.locate(frequency);
+                    let lower = (LAPLACE_TOTAL - frequency - 1) * unit;
+                    for inverse in [lower, lower + unit - 1] {
+                        assert_eq!(model.locate_inverse(inverse, unit), expected);
+                    }
+                }
+                assert_eq!(model.locate_inverse(range - 1, unit), model.locate(0));
+            }
+        }
+    }
 
     #[test]
     fn independent_icdf_laplace_reference_matches_packets_and_every_state() {

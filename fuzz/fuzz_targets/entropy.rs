@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 #![no_main]
 use libfuzzer_sys::fuzz_target;
-use snacka::entropy::{Decoder, Encoder, Model};
+use snacka::entropy::{Decoder, Encoder, Error, Model};
 
 fuzz_target!(|bytes: &[u8]| {
     let model = Model::new(&[0, 1, 2, 256]).unwrap();
@@ -39,7 +39,11 @@ fuzz_target!(|bytes: &[u8]| {
             _ => encoder.uniform(value % u32::MAX, u32::MAX).unwrap(),
         }
     }
-    let length = if bytes.first().copied().unwrap_or(0) & 1 == 0 { encoder.finish().unwrap() } else { encoder.finish_padded().unwrap() };
+    let length = if bytes.first().copied().unwrap_or(0) & 1 == 0 {
+        encoder.finish().unwrap()
+    } else {
+        encoder.finish_padded().unwrap()
+    };
     let mut decoder = Decoder::new(&packet[..length]);
     for event in bytes.chunks(5).take(128) {
         let mut value_bytes = [0; 4];
@@ -56,8 +60,31 @@ fuzz_target!(|bytes: &[u8]| {
     let capacity = bytes.first().copied().unwrap_or(0) as usize % 65;
     let mut short_packet = [0; 64];
     let mut short_encoder = Encoder::new(&mut short_packet[..capacity]);
+    let narrow = Model::new(&[0, 1, 65_535]).unwrap();
     for &value in bytes.iter().take(128) {
-        if short_encoder.uniform(u32::from(value), 256).is_err() {
+        let result = match value % 4 {
+            0 => short_encoder.uniform(u32::from(value), 256),
+            1 => short_encoder.symbol(0, narrow),
+            2 => short_encoder.bit(value & 4 != 0, 16),
+            _ => short_encoder.raw(u32::from(value), 8),
+        };
+        let counters = (
+            short_encoder.range(),
+            short_encoder.tell(),
+            short_encoder.tell_eighths(),
+        );
+        assert!(counters.0 > 1 << 23);
+        if result.is_err() {
+            assert_eq!(result, Err(Error::Output));
+            assert_eq!(short_encoder.bit(false, 1), Err(Error::Output));
+            assert_eq!(
+                (
+                    short_encoder.range(),
+                    short_encoder.tell(),
+                    short_encoder.tell_eighths(),
+                ),
+                counters
+            );
             break;
         }
     }

@@ -177,13 +177,14 @@ def main():
     for count in channels:
         for vector in vectors:
             decoded = destination / f"{vector.stem}-{count}ch.dec"
-            run = subprocess.run([str(probe), str(vector), str(decoded), str(count)], text=True, capture_output=True)
+            run = subprocess.run([str(probe), str(vector), str(decoded), str(count), args.reference_set], text=True, capture_output=True)
             try:
                 result = json.loads(run.stdout)
             except json.JSONDecodeError:
                 result = {"input": str(vector), "channels": count, "complete": False,
                           "probe_error": (run.stderr + run.stdout).strip()}
-            result["decode_passed"] = run.returncode == 0
+            result["decode_passed"] = (run.returncode == 0 and
+                                       result.get("phase_inversion") == (args.reference_set == "normal"))
             result["reference_set"] = args.reference_set
             with vector.open("rb") as source:
                 result["vector_sha256"] = hashlib.file_digest(source, "sha256").hexdigest()

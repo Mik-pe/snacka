@@ -183,7 +183,17 @@ impl Codebook {
     }
 
     /// Recover a signed pulse vector from its RFC 6716 CWRS index.
-    pub fn vector_at(&self, mut index: u32, output: &mut [i16]) -> Result<(), Error> {
+    #[cfg(test)]
+    pub fn vector_at(&self, index: u32, output: &mut [i16]) -> Result<(), Error> {
+        self.vector_at_with_norm(index, output).map(|_| ())
+    }
+
+    /// Recover a pulse vector and its exact squared norm in one pass.
+    pub(crate) fn vector_at_with_norm(
+        &self,
+        mut index: u32,
+        output: &mut [i16],
+    ) -> Result<u32, Error> {
         if output.len() != self.dimensions || index >= self.total {
             return Err(Error::Argument);
         }
@@ -193,10 +203,12 @@ impl Codebook {
             } else {
                 -(self.pulses as i16)
             };
-            return Ok(());
+            return Ok((self.pulses * self.pulses) as u32);
         }
         let mut k = self.pulses;
-        for (j, value) in output.iter_mut().enumerate() {
+        let mut norm = 0;
+        let mut j = 0;
+        while j < self.dimensions {
             let n = self.dimensions - j;
             if k <= 1 {
                 let tail = &mut output[j..];
@@ -211,7 +223,11 @@ impl Codebook {
                     };
                     tail[position] = pulse;
                 }
-                return Ok(());
+                return Ok(norm + k as u32);
+            }
+            if n == 1 {
+                output[j] = if index == 0 { k as i16 } else { -(k as i16) };
+                return Ok(norm + (k * k) as u32);
             }
             if n == 2 {
                 // V(2,K)=4K. The positive-first half has 2K+1
@@ -225,15 +241,42 @@ impl Codebook {
                     -1
                 };
                 let remaining = index.div_ceil(2) as usize;
-                *value = sign * (k - remaining) as i16;
+                output[j] = sign * (k - remaining) as i16;
                 output[j + 1] = if index > 0 && index.is_multiple_of(2) {
                     -(remaining as i16)
                 } else {
                     remaining as i16
                 };
-                return Ok(());
+                let magnitude = k - remaining;
+                return Ok(norm + (magnitude * magnitude + remaining * remaining) as u32);
             }
-            let mut threshold = u(n, k + 1);
+            let positive_half = u(n, k + 1);
+            let zero_threshold = u(n, k);
+            if n > 8 * k && index >= zero_threshold && index < positive_half {
+                // A leading zero maps i to i-U(N,K). From the recurrence,
+                // V(N,K)-V(N-1,K)=2U(N,K), so the centered index
+                // 2*i-V(N,K) stays unchanged across an entire zero run.
+                // Locate its first nonzero dimension in logarithmic time.
+                let centered = 2 * i64::from(index) - i64::from(positive_half + zero_threshold);
+                let target = centered.unsigned_abs() + u64::from(centered >= 0);
+                let mut low = 1;
+                let mut high = n - 1;
+                while low < high {
+                    let middle = (low + high) / 2;
+                    if u64::from(v(middle, k)) >= target {
+                        high = middle;
+                    } else {
+                        low = middle + 1;
+                    }
+                }
+                let zeros = n - low;
+                output[j..j + zeros].fill(0);
+                index = ((centered + i64::from(v(low, k))) / 2) as u32;
+                j += zeros;
+                continue;
+            }
+            let value = &mut output[j];
+            let mut threshold = positive_half;
             let sign = if index < threshold {
                 1
             } else {
@@ -244,7 +287,7 @@ impl Codebook {
             // Rearranging the U recurrence collapses RFC step 3 to
             // U(n,k), and each subtraction in step 4 to U(n,k-1).
             // This removes two table accesses per dimension.
-            threshold = u(n, k);
+            threshold = zero_threshold;
             if threshold > index && k > 16 {
                 if n == 3 {
                     // U(3,K)=2K²-2K+1, with U(3,0)=0. Its exact
@@ -277,11 +320,13 @@ impl Codebook {
                 }
             }
             *value = sign * (initial - k) as i16;
+            norm += ((initial - k) * (initial - k)) as u32;
             index -= threshold;
+            j += 1;
         }
         debug_assert_eq!(k, 0);
         debug_assert_eq!(index, 0);
-        Ok(())
+        Ok(norm)
     }
 
     /// Encode one vector with Opus's uniform integer entropy coding.
@@ -402,6 +447,7 @@ pub fn normalize(vector: &mut [f32], gain: f32) -> Result<(), Error> {
 }
 
 /// Reconstruct a pulse vector at the requested L2 norm.
+#[cfg(test)]
 pub fn synthesize(pulses: &[i16], gain: f32, output: &mut [f32]) -> Result<(), Error> {
     if !(1..=MAX_DIMENSIONS).contains(&pulses.len()) || output.len() != pulses.len() {
         return Err(Error::Argument);
@@ -413,6 +459,32 @@ pub fn synthesize(pulses: &[i16], gain: f32, output: &mut [f32]) -> Result<(), E
         *value = f32::from(pulse);
     }
     normalize(output, gain)
+}
+
+/// Reconstruct a unit pulse vector with an already established exact norm.
+///
+/// The norm comes from [`quantize`] or [`Codebook::vector_at_with_norm`].
+/// Every i16 coefficient converts exactly to f32, so retaining the integer
+/// norm produces the same f64 scale and final f32 samples as float normalization.
+pub(crate) fn synthesize_unit(pulses: &[i16], norm: u32, output: &mut [f32]) -> Result<(), Error> {
+    if !(1..=MAX_DIMENSIONS).contains(&pulses.len()) || output.len() != pulses.len() {
+        return Err(Error::Argument);
+    }
+    if norm == 0 {
+        output.fill(0.0);
+        return Ok(());
+    }
+    if norm == 1 {
+        for (&pulse, value) in pulses.iter().zip(output.iter_mut()) {
+            *value = f32::from(pulse);
+        }
+        return Ok(());
+    }
+    let scale = 1.0 / f64::from(norm).sqrt();
+    for (&pulse, value) in pulses.iter().zip(output.iter_mut()) {
+        *value = (f64::from(pulse) * scale) as f32;
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -482,6 +554,59 @@ mod tests {
                 for index in [0, book.total() / 2, book.total() - 1] {
                     book.vector_at(index, &mut output[..n]).unwrap();
                     assert_eq!(book.index_of(&output[..n]).unwrap(), index);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn sparse_zero_runs_preserve_every_codeword_and_exact_norm() {
+        let mut output = [0; MAX_DIMENSIONS];
+        for (n, k) in [(17, 2), (33, 3), (65, 2), (176, 2)] {
+            let book = Codebook::new(n, k).unwrap();
+            for index in 0..book.total() {
+                let norm = book.vector_at_with_norm(index, &mut output[..n]).unwrap();
+                assert_eq!(book.index_of(&output[..n]).unwrap(), index, "n={n}, k={k}");
+                assert_eq!(
+                    output[..n]
+                        .iter()
+                        .map(|v| usize::from(v.unsigned_abs()))
+                        .sum::<usize>(),
+                    k
+                );
+                assert_eq!(
+                    norm,
+                    output[..n]
+                        .iter()
+                        .map(|&v| (i32::from(v) * i32::from(v)) as u32)
+                        .sum()
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn single_pass_norm_synthesis_preserves_exact_pcm() {
+        let mut pulses = [0; MAX_DIMENSIONS];
+        let mut reference = [0.0; MAX_DIMENSIONS];
+        let mut direct = [0.0; MAX_DIMENSIONS];
+        for n in 1..=MAX_DIMENSIONS {
+            for k in 0..=MAX_PULSES {
+                let Ok(book) = Codebook::new(n, k) else {
+                    continue;
+                };
+                for index in [0, book.total() / 3, book.total() - 1] {
+                    let norm = book.vector_at_with_norm(index, &mut pulses[..n]).unwrap();
+                    assert_eq!(
+                        norm,
+                        pulses[..n]
+                            .iter()
+                            .map(|&p| (i32::from(p) * i32::from(p)) as u32)
+                            .sum()
+                    );
+                    synthesize(&pulses[..n], 1.0, &mut reference[..n]).unwrap();
+                    synthesize_unit(&pulses[..n], norm, &mut direct[..n]).unwrap();
+                    assert_eq!(direct[..n], reference[..n]);
                 }
             }
         }

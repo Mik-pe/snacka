@@ -1,34 +1,57 @@
 # Owned Opus support
 
-Enable `opus` for standard Opus packet and Ogg Opus file support. The feature
-adds no dependencies. Production code is safe Rust owned by Snacka, sharing
-the native FFT/MDCT and entropy engines. There is no external codec
-implementation, build script, C, FFI or CMake in the library build.
+Enable `opus` for standard Opus packets and Ogg Opus files. The feature adds no
+dependencies. Snacka owns the safe Rust encoder and decoder, sharing its native
+entropy and FFT/MDCT kernels. Production builds require no external codec,
+C, FFI, CMake or build script.
 
-## API and supported formats
+## Codec and packet APIs
 
-`snacka::opus::Decoder` reads ordinary single-stream SILK, Hybrid and CELT
-packets into normalized interleaved f32 PCM at 48 kHz. Construct it with one
-or two output channels. Float output is finite but can exceed ±1 through
-ringing or gain; clip or limit it when converting to integer PCM. It duplicates
-coded mono to stereo or averages coded
-stereo to mono, preserving layer history through coded channel and mode changes.
-Packet framing supports CBR/VBR, padding, multiple frames and the standard
-120 ms packet limit. Allocate up to 5,760 output samples per channel.
+`Encoder` writes SILK, Hybrid and CELT from normalized interleaved f32 PCM at
+48 kHz. `EncoderConfig` selects channels, bitrate, bandwidth, duration,
+application, rate policy, in-band FEC and DTX. Voice mode chooses SILK or Hybrid;
+audio and low-delay preferences choose CELT. An explicit mode is available.
+Invalid mode/bandwidth/duration combinations are rejected during configuration.
 
-`CeltEncoder` writes standard CELT packets at 48 kHz, with one or two channels,
-2.5/5/10/20 ms frames, and narrowband/wideband/superwideband/fullband bandwidth.
-`CeltConfig` validates rates from 6–512 kb/s against the selected duration's
-3–1,276-byte packet bounds. The bitrate includes the TOC byte; fractional byte
-budgets carry between packets. `set_bitrate` preserves history. The encoder
-currently selects CELT only; it does not contain a SILK encoder, adaptive
-application selection, DTX or an in-band FEC encoder.
+The encoder supports one or two channels and 2.5/5/10/20/40/60 ms packet
+choices, with SILK/Hybrid starting at 10 ms. It analyzes LPC/NLSF and voiced
+pitch/LTP prediction, quantizes excitation and codes the standard entropy
+models. Hybrid combines its SILK lowband and CELT highband in the same range
+coder. Constant rate pads the complete packet; variable rate compacts the
+payload within the configured budget. Fractional byte budgets carry across
+packets.
+
+`reconfigure` applies validated changes immediately. `prepare_reconfigure`
+queues a change after the next packet, permitting end transition redundancy
+before an LP-to-CELT switch. A CELT-to-LP switch can carry beginning redundancy.
+`has_transition_redundancy` reports what was actually emitted. Immediate
+changes and small budgets can omit transition redundancy; decoding still
+handles the mode change.
+
+`with_fec(true)` enables previous-audio SILK redundancy in SILK/Hybrid packets.
+The encoder keeps a coarse independently quantized shadow of eligible speech;
+`has_fec` reports actual emission. Changes in frame geometry and timeline gaps
+clear incompatible cached redundancy. CELT has no SILK LBRR and rejects that
+configuration.
+
+`with_dtx(true)` enables conservative quiet admission, a 200 ms hangover and
+coded inactive refreshes approximately every 400 ms. It emits valid empty
+frames with the configured duration between refreshes. `was_dtx` permits an
+application to omit their transmission while advancing its sample clock. This
+selector conservatively preserves sounds above its quiet floor; it does not
+claim the reference codec's voice-activity classification.
+
+`Decoder` reads every standard single-stream SILK/Hybrid/CELT TOC geometry into
+one or two fixed output channels. `with_sample_rate` selects 8/12/16/24/48 kHz.
+Coded channel and mode changes retain the appropriate history. Mono output
+normally disables intensity phase inversion, matching common mobile decoder
+behavior; `set_phase_inversion` explicitly controls that preference.
 
 ```rust
-use snacka::opus::{CeltConfig, CeltEncoder, Decoder};
+use snacka::opus::{Decoder, Encoder, EncoderConfig};
 
-let config = CeltConfig::default(); // 32 kb/s, mono, 20 ms, fullband
-let mut encoder = CeltEncoder::new(config);
+let config = EncoderConfig::default().with_fec(true).unwrap();
+let mut encoder = Encoder::new(config).unwrap();
 let mut decoder = Decoder::new(config.channels()).unwrap();
 let mut packet = [0; 1276];
 let mut pcm = [0.0; 960];
@@ -36,19 +59,67 @@ let length = encoder.encode(&[0.0; 960], &mut packet).unwrap();
 assert_eq!(decoder.decode(&packet[..length], &mut pcm).unwrap(), 960);
 ```
 
-Prepare codecs before the audio callback. Encoding, decoding, reset and bitrate
-changes use fixed working buffers and do not allocate.
-Large decoder workspaces are allocated once during construction; the duplex
-constructor/processing test also runs on a 1 MiB stack in debug builds.
-`CeltDecoder` offers
-the narrower CELT-only API with identical coded/output channel counts.
-`Packet::parse` borrows the bytes and validates framing without decoding audio.
-A malformed compressed frame can partially advance decoder history: call
-`reset` after `DecodeError::Corrupt`. Framing and output capacity errors are
-checked before history changes.
+Prepare codecs before an audio callback. Construction allocates the fixed
+workspaces; processing, recovery, reset and configuration changes do not
+allocate. The small-stack regression includes duplex codecs, all output rates
+and mapped streams on a 1 MiB stack. `CeltEncoder`/`CeltDecoder` retain narrower
+CELT-only APIs.
 
-The encoder's transform delay is 120 samples per channel. Raw packet users
-must handle start delay and end padding. The file example handles both:
+Output floats remain finite but may exceed ±1 through ringing or gain. Limit
+or clip when converting to integer PCM. The encoder's own group delay is 120
+samples at 48 kHz, exposed by `algorithmic_delay_samples`; raw users handle
+start delay and end padding. This is separate from packet buffering and
+transport jitter.
+
+`Packet::parse` inspects borrowed ordinary framing without allocating.
+Self-delimited parsing and `Repacketizer` support CBR/VBR, padding, arbitrary
+valid frame groupings and the full 120 ms packet limit. Parallel encoders and
+self-delimited packet composition can produce multistream transport without
+requiring a C-style multistream encoder API. `ChannelMapping`,
+`MultistreamDecoder` and `ProjectionDecoder` decode mapped channels and signed
+Q15 Ambisonics demixing matrices, including channel aliases and silence.
+
+A malformed compressed frame can advance some history. Reset after a corrupt
+content error. Packet framing, configuration and output-capacity errors are
+checked before history changes. The APIs are native Rust contracts; they do
+not mirror the foreign codec's controls or instrumentation.
+
+## Loss recovery and calls
+
+`conceal(missing_samples, output)` predicts missing audio from existing LPC/LTP
+or CELT pitch/spectral history. Requested duration is per output channel and
+must use the standard 2.5 ms clock, up to 120 ms. Recovery advances the codec
+clock and overlap history rather than replaying a cached frame.
+
+For in-band recovery, retain the following packet and call
+`recover(next_packet, missing_samples, lost_output)`. Then call `decode` on that
+same packet for its current audio. `Recovery::Fec` reports recovered SILK LBRR;
+`Recovery::Concealed` reports prediction where redundancy is absent. Shortened
+losses can select the appropriate tail of coded redundancy. `final_range`
+after recovery reports the consumed owned entropy prefix; a foreign decoder's
+PLC RNG instrumentation need not be identical. Ordinary packet intervals are
+checked independently against the reference.
+
+The [RTP call guide](opus-calls.md) describes 48 kHz timestamps, SDP, bounded
+jitter buffering and a std-only UDP peer example. Its optional reference test
+exercises both directions against public libopus, including reordered packets,
+duplicates, sequence/timestamp wraps, actual FEC and quiet-to-voice DTX. Phone
+audio routing, Swift/Kotlin bindings and WebRTC session setup belong to the
+application integration; physical mobiles have not been exercised here.
+
+## Ogg Opus
+
+`ogg` implements CRCs, continuation pages, sequence/granule validation, tags,
+header gain, pre-skip and final trimming. `OpusIdentification` carries mapping
+families 0/1/2/3/255. `OggDecoder` chooses mapped or projection decoding.
+`OggReader` handles one logical stream; `OggChainReader` reports sequential
+streams, and `OggDemuxReader` routes interleaved streams independently, including
+opaque packets from other codecs. `OggWriter` writes mapped/projection headers
+and continued audio packets.
+
+Default audio limits cover the largest legal 255-stream packet. `OggLimits`
+allows explicit application bounds, separate from metadata limits. Container
+operations allocate and belong outside an audio callback.
 
 ```sh
 cargo run --release --features opus --example opus_roundtrip -- \
@@ -57,25 +128,19 @@ cargo run --release --features opus --example opus_roundtrip -- \
   decode existing.opus output.f32
 ```
 
-Input/output PCM is interleaved little-endian f32 at 48 kHz. The reader/writer
-in `opus::ogg` supports one logical stream with mapping family 0, mono/stereo,
-CRC checks, continued packets, tags, gain, pre-skip and final granule trimming.
-It rejects multiplexing, chaining and surround mappings. Container operations
-allocate and belong outside the callback.
+The file tool uses interleaved little-endian f32 PCM at 48 kHz, applies gain,
+and handles start delay, end trimming and mapped channel output.
 
-The decoder consumes SILK's coded redundancy when present but exposes no FEC
-recovery API. Empty/one-byte compressed frames use a simple independent fade;
-there is no reference-quality packet-loss concealment claim. Empty complete
-packets are framing errors. The SILK resampler uses an owned stable rational
-filter with the delays specified in RFC 6716 Table 54. Its PCM is approximate,
-as permitted by the standard; CELT reference comparisons are much tighter.
+## Verification and performance target
 
-## Verification and performance
+The objective is full standard wire support and CPU time no greater than
+libopus across encoding, decoding and loss recovery. The APIs need not map
+one-to-one. Performance parity remains an active target; the current
+implementation has measured slower cases and does not claim completion.
 
-Normal feature tests use synthetic checked-in oracle observations; they do
-not require a foreign library. Optional development tools use separately
-installed libopus or the RFC's external reference executable. They contain
-call glue rather than a second production codec implementation.
+Normal tests use synthetic checked-in oracle observations and independent
+mathematical checks. Development-only tools load a separately installed
+libopus; neither foreign codec source nor recorded speech is vendored.
 
 ```sh
 cargo test --locked --features opus
@@ -83,19 +148,36 @@ cargo test --locked --release --features opus
 cargo clippy --locked --all-targets --features opus -- -D warnings
 cargo bench --locked --bench opus --features opus
 RUSTFLAGS="-L /path/to/lib" cargo test --locked --release \
-  --features opus,reference-tests --test opus_reference
+  --features opus,reference-tests --test opus_reference --test opus_calls_reference
 RUSTFLAGS="-L /path/to/lib" cargo bench --locked --bench opus \
   --features opus,reference-tests
 ```
 
-The benchmark compares complete equal-size packets with external libopus
-restricted-lowdelay CBR at complexity 10. Its percentiles summarize calibrated
-batch-average throughput, not individual callback latency. The default covers
-24 matched channel/rate/duration/input cases; `--full` covers 72. Supply real
-48 kHz f32 PCM with `--input FILE --input-channels N`. CPU results do not
-establish equivalent encoder speech quality.
+Matched-packet decoder benchmarks feed the same packet sequence to both codecs,
+alternate their order and report paired batch-throughput p50/p95/p99. Generic
+encoder benchmarks check actual wire mode and byte budgets on identical PCM.
+Their CPU results do not establish equivalent encoder or concealment quality.
+The broader decoder matrix covers 1,080 mode/bandwidth/duration/channel/rate
+and decode/PLC/FEC-return cases. Its functional validation passed; final timing
+must bind to the measured source snapshot.
 
-The official RFC 8251 decoder vectors are intentionally downloaded separately:
+A serialized, frozen-source encoder run on Apple M5/macOS 27 against libopus
+1.6.1 on 2026-10-14 covered 88 matched mode/bandwidth/duration/channel cases.
+All 88 paired p50 CPU ratios were below 1.0. Median ratios by mode were 0.405
+for SILK, 0.824 for Hybrid and 0.470 for CELT. Nine cases still exceeded the
+reference at paired p95 or p99. These measurements use changing generated
+voiced PCM at equal packet byte budgets; they do not establish equal encoder
+quality or completion of the performance target.
+
+The retained 24-case CELT matched-packet run on Apple M5/macOS 27 against
+libopus 1.6.1 measured a median paired p50 ratio of 1.009, with cases from
+0.892 to 1.337; 12 cases were at or below the reference. The earlier
+same-packet baseline median was 1.619. This snapshot precedes the separate
+native-rate SILK delay bypass; that change leaves CELT arithmetic untouched.
+Exploratory runs can overlap host work; final parity acceptance requires a
+serialized frozen-source repetition and every case to pass, including tails.
+
+Official RFC 8251 vectors are downloaded independently:
 
 ```sh
 python3 tools/reference/check_opus_vectors.py /path/opus_newvectors \
@@ -103,101 +185,37 @@ python3 tools/reference/check_opus_vectors.py /path/opus_newvectors \
   --output-dir /tmp/snacka-opus-vectors
 ```
 
-The runner checks every packet's final arithmetic interval and the published
-PCM metric for all twelve vectors, in both output channel counts. It verifies
-the published vector and reference hashes before decoding. It never
-loosens the official comparator. RFC 6716 requires a nonnegative PCM quality
-score and recommends exceeding 90 at 48 kHz; the score measures decoder
-agreement and is not a speech listening score.
+The checker validates published reference hashes, each packet's final interval
+and the unchanged published PCM metric. It selects phase inversion consistently
+with the normal or no-phase reference set. All 24 normal-reference runs passed
+on 2026-10-13: 40,150 packets, exact final ranges, no clipped/non-finite output,
+quality scores 68.0–99.9. Every vector meets the required nonnegative score;
+some remain below the recommended 90. These measure decoder agreement rather
+than speech listening quality. The owned SILK resampler is an independent stable
+rational filter using the standard timing model; its PCM is approximate.
 
-On 2026-10-13, the complete normal reference set passed all 24 runs at 48 kHz:
-40,150 packets, exact final intervals, no clipped/non-finite output. Decoder
-agreement scores were 68.0–99.9, meeting the required threshold for every
-vector; several remain below the recommended 90. The lower scores leave room
-to improve SILK synthesis/resampling agreement.
-
-| Vector | Mono output | Stereo output |
-| --- | ---: | ---: |
-| 01 | 98.4 | 99.9 |
-| 02 | 91.1 | 89.9 |
-| 03 | 88.6 | 88.7 |
-| 04 | 85.8 | 86.0 |
-| 05 | 77.3 | 77.6 |
-| 06 | 68.0 | 68.3 |
-| 07 | 98.1 | 99.8 |
-| 08 | 95.5 | 94.6 |
-| 09 | 97.4 | 93.7 |
-| 10 | 96.7 | 87.9 |
-| 11 | 98.4 | 99.8 |
-| 12 | 88.8 | 88.8 |
-
-On the same date, three paired CPU repetitions on Apple M5/macOS 27.0/aarch64
-against libopus 1.6.1 produced the following CELT throughput measurements.
-The 24-case matrix spans four durations, both channel counts and
-voiced/noise/transient signals at balanced 24/64/96 kb/s budgets. Reference
-encoder complexity is 10; Snacka uses fixed coding decisions. Both codecs'
-complete raw packet lengths, including TOC, match in every case.
-
-| Input and operation | Snacka / libopus CPU time |
-| --- | ---: |
-| Balanced 24 cases, encoding | 0.681× median; 0.447–0.960× across cases |
-| Balanced 24 cases, decoding | 1.723× median; 1.239–2.038× across cases |
-| Real voice, 20 ms mono, 32 kb/s, encoding | 23.68 / 49.73 µs; paired ratio 0.481× |
-| Same real voice, decoding | 14.40 / 10.86 µs; paired ratio 1.274× |
-
-Each decoder consumes its own encoder's equal-byte packets. The real voice
-input contains 512 frames of LibriSpeech test-clean `61-70968-0011`, with
-[corpus attribution and license](reference-quality.md#corpus-and-scoring). Its 48 kHz
-f32 input SHA-256 is
-`f65345be877b5790088e2d53ee5c004bad90a20d3fb17fcc5f291961daed5b8e`.
-Codec order alternated between repetitions, with 128 warmups and 1,000
-calibrated batches per measurement. Existing background work was preserved;
-these were paired host measurements with contention, not exclusive CPU runs.
-Encoding is competitive on these profiles; decoding still costs more CPU than
-libopus. Equal packet budgets and lower CPU do not prove equal speech quality.
-
-Complete 48 kHz stereo decoding of the same cached official packets was also
-measured in three paired repetitions, after checking every duration and final
-interval. Eight full-stream warmups preceded 31 timed passes per repetition;
-public reset was timed, while initialization, file IO and interval inspection
-were excluded.
-
-| Stream | Snacka / libopus mean µs per packet | Median paired CPU ratio |
-| --- | ---: | ---: |
-| Vector 02, SILK | 12.40 / 7.72 | 1.626× |
-| Vector 05, Hybrid | 23.53 / 13.03 | 1.806× |
-| Vector 06, Hybrid | 24.51 / 14.64 | 1.674× |
-
-These streams cover 5,098 packets with varied coded durations and channels.
-The owned decoder remains roughly 1.6–1.8× the reference CPU cost on these
-profiles; decoder performance parity is still a development target.
-These full-decoder timings precede the startup workspace move to boxed memory;
-the audio algorithms are unchanged. CELT-only timings are unaffected.
-The optional [complete-decoder timing tool](../tools/reference/benchmark_opus_decode.rs)
-documents the isolated build, public libopus linkage and repeatable stream
-validation/timing commands.
-
-Kernel oracles cover packet framing, mixed entropy operations, integer
-allocation, PVQ vectors, energy, band reconstruction and SILK gain/pitch/NLSF
-decoding. The separate public libopus test covers both encoding directions,
-mono/stereo, frame durations, bandwidths and coding transitions. See
-[fixture provenance](../tests/fixtures/README.md) and [fuzzing](../fuzz/README.md).
-Mobile target compilation and allocation checks are build/runtime evidence;
-physical-device audio and perceptual encoder acceptance remain separate work.
+Additional native checks cover 23,405 packet comparisons and 450 loss/FEC
+intervals, including 1,280 strict CELT PCM/channel/rate comparisons,
+packed/padded 120 ms packets, FEC, DTX, mode changes, surround and Ambisonics.
+Owned SILK encoding has a 1,200-packet public native decoder proof across all
+24 native geometries. FEC and resumed DTX have separate long-signal regression
+gates. See [fixture provenance](../tests/fixtures/README.md),
+[fuzzing](../fuzz/README.md) and [call evidence](opus-calls.md).
 
 ## Ownership and licensing
 
-The Rust algorithms and resampler model are independently implemented under
-MIT. Mandatory probability tables, allocation curves and other normative
-format constants originate in [RFC 6716](https://www.rfc-editor.org/rfc/rfc6716),
-including its reference data. Their BSD attribution is retained in
-[`LICENSE-OPUS-DATA`](../LICENSE-OPUS-DATA) and marked in affected source files.
-Corrections in [RFC 8251](https://datatracker.ietf.org/doc/html/rfc8251),
-including Hybrid folding, are exercised through the updated official vectors.
-The package declares `MIT AND BSD-3-Clause` to preserve both sets of notices.
+The Rust algorithms and generated filter models are independently implemented
+under MIT. Mandatory format tables and allocation constants from
+[RFC 6716](https://www.rfc-editor.org/rfc/rfc6716), including normative Appendix A
+data, retain their BSD notice in [LICENSE-OPUS-DATA](../LICENSE-OPUS-DATA).
+[RFC 8251](https://datatracker.ietf.org/doc/html/rfc8251) corrections and
+[RFC 8486](https://datatracker.ietf.org/doc/html/rfc8486) Ambisonics mappings are
+covered by their wire tests. The package declares `MIT AND BSD-3-Clause`.
 
-External implementation source and recorded audio are not vendored. Reference
-tools and their compiler/NumPy requirements are development-only and excluded
-from the published crate. `design_opus_resampler.py` regenerates the owned
-model from observed impulse responses and mathematical constraints; it reads
-no reference coefficient tables or algorithm bodies.
+Reference tools and compiler requirements are excluded from the published
+crate. `design_opus_resampler.py` derives the decoder model from permitted
+black-box observations and mathematical constraints; `design_opus_downsampler.py`
+generates the encoder's causal FIR from windowed-sinc mathematics. Neither reads
+external algorithm bodies or coefficient tables. Experimental draft extensions
+such as DRED can retain their padding bytes for interoperability; neural DRED
+reconstruction is not implemented or advertised as part of this RFC core.

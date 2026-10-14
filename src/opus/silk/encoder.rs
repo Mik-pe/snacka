@@ -1,0 +1,658 @@
+// SPDX-License-Identifier: MIT
+//! An independently analyzed, owned SILK encoder layer.
+
+use super::analysis::{Spectrum, broaden, spectrum as analyze_spectrum};
+use super::frame::{encode_gain_symbol, encode_zero_stereo};
+use super::lpc::encode_nlsf_indices;
+use super::pitch::{Pitch, analyze as analyze_pitch};
+use super::quantize::{History, Parameters as Quantization, quantize};
+use super::redundancy::{RedundancyCache, encode_header};
+use super::{
+    Bandwidth, Frame, FrameDuration, FrameType, NlsfIndices, PacketDuration, QuantizationOffset,
+    SignalType, encode_pulses, estimate_pulse_bits,
+};
+use crate::entropy::{Encoder as RangeEncoder, Error, Model};
+
+const MAX_SAMPLES: usize = 320;
+const MAX_CODED_FRAMES: usize = 6;
+const SEED: Model<'static> = Model::from_static(&[0, 64, 128, 192, 256]);
+const INACTIVE: Model<'static> = Model::from_static(&[0, 26, 256]);
+const ACTIVE: Model<'static> = Model::from_static(&[0, 24, 98, 246, 256]);
+
+#[derive(Clone, Copy)]
+pub(super) struct CodedFrame {
+    pub(super) kind: FrameType,
+    pub(super) spectrum: Spectrum,
+    pub(super) gains: [u8; 4],
+    pub(super) gain_index: i32,
+    pub(super) pulses: [i16; MAX_SAMPLES],
+    pub(super) conditional: bool,
+    pub(super) previous_voiced: bool,
+    pub(super) independent_scale: bool,
+    pub(super) pitch: Pitch,
+    pub(super) coded: bool,
+}
+
+impl CodedFrame {
+    pub(super) const EMPTY: Self = Self {
+        kind: FrameType {
+            signal: SignalType::Inactive,
+            offset: QuantizationOffset::Low,
+        },
+        spectrum: Spectrum {
+            indices: NlsfIndices {
+                first: 0,
+                residual: [0; 16],
+                interpolation: 4,
+            },
+            lpc_q12: [0; 16],
+            order: 10,
+        },
+        gains: [0; 4],
+        gain_index: 0,
+        pulses: [0; MAX_SAMPLES],
+        conditional: false,
+        previous_voiced: false,
+        independent_scale: true,
+        pitch: Pitch::NONE,
+        coded: false,
+    };
+}
+
+/// Statistics from a completely encoded SILK layer.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct EncodingStatistics {
+    /// Number of meaningful native-rate samples per channel.
+    pub samples: usize,
+    /// Entropy bits consumed by this layer, rounded up from eighth bits.
+    pub bits: u64,
+    /// Mean squared quantization error in the coded mid/side representation.
+    pub quantization_error: f64,
+    /// Whether this layer actually includes previous-packet redundancy.
+    pub redundancy: bool,
+}
+
+/// Native-rate mono/stereo SILK encoder with owned analysis and quantization.
+///
+/// Analysis, codebook search and causal scalar quantization use bounded scratch
+/// and no heap allocation. It selects voiced, unvoiced or inactive frames,
+/// transmitting spectral prediction, pitch filters and quantized excitation.
+pub struct SilkEncoder {
+    history: [History; 2],
+    bandwidth: Option<Bandwidth>,
+    channels: u8,
+    fec: bool,
+    redundancy: RedundancyCache,
+}
+
+impl Default for SilkEncoder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl SilkEncoder {
+    /// Construct an encoder with empty predictor and gain history.
+    pub const fn new() -> Self {
+        Self {
+            history: [History::new(); 2],
+            bandwidth: None,
+            channels: 0,
+            fec: false,
+            redundancy: RedundancyCache::new(),
+        }
+    }
+
+    /// Reset stream prediction and gain history.
+    pub fn reset(&mut self) {
+        let fec = self.fec;
+        *self = Self::new();
+        self.fec = fec;
+    }
+
+    /// Enable causal previous-packet LBRR when the packet budget permits it.
+    pub fn set_fec(&mut self, enabled: bool) {
+        if self.fec != enabled {
+            self.redundancy.reset();
+        }
+        self.fec = enabled;
+    }
+
+    /// Encode one SILK layer into an existing Opus entropy frame.
+    ///
+    /// Input is normalized native-rate mono or interleaved left/right PCM.
+    /// Its length must exactly match the internal frame grouping and channel
+    /// count. `target_bits` bounds the estimated complete layer cost; if even
+    /// the coarsest quantizer cannot fit, failure occurs before emitting bits.
+    /// The caller owns range-coder termination, Opus framing and resampling.
+    /// Encoder history commits only after the layer has been emitted fully.
+    /// An output error can partially advance the caller's range encoder.
+    pub fn encode_layer(
+        &mut self,
+        encoder: &mut RangeEncoder<'_>,
+        frame: Frame,
+        duration: PacketDuration,
+        channels: u8,
+        pcm: &[f32],
+        target_bits: u32,
+    ) -> Result<EncodingStatistics, Error> {
+        if !(1..=2).contains(&channels)
+            || (frame.duration == FrameDuration::Ms10) != (duration == PacketDuration::Ms10)
+            || pcm.len() != frame.samples() * duration.frames() * usize::from(channels)
+            || pcm
+                .iter()
+                .any(|sample| !sample.is_finite() || !(-1.0..=1.0).contains(sample))
+            || target_bits == 0
+        {
+            return Err(Error::Argument);
+        }
+        let intervals = duration.frames();
+        let samples = frame.samples();
+        let channel_count = usize::from(channels);
+        let mut history = if self.bandwidth == Some(frame.bandwidth) {
+            self.history
+        } else {
+            [History::new(); 2]
+        };
+        if self.channels != channels {
+            history[1] = History::new();
+        }
+        let mut activity = [[false; 3]; 2];
+        let mut side_coded = [false; 3];
+        let mut coded_frames = intervals;
+        let mut mono = [0.0; MAX_SAMPLES];
+        for interval in 0..intervals {
+            for (channel, active) in activity.iter_mut().enumerate().take(channel_count) {
+                extract(pcm, channels, samples, interval, channel, &mut mono);
+                let energy = mono[..samples]
+                    .iter()
+                    .map(|&value| f64::from(value).powi(2))
+                    .sum::<f64>();
+                active[interval] = energy > samples as f64 * 1e-10;
+                if channel == 1 {
+                    side_coded[interval] = active[interval];
+                    coded_frames += usize::from(side_coded[interval]);
+                }
+            }
+        }
+        let header_cost = channel_count * (intervals + 1);
+        let stereo_cost = if channels == 2 { intervals * 12 } else { 0 };
+        let cost = target_bits as usize;
+        if cost <= header_cost + stereo_cost {
+            return Err(Error::Output);
+        }
+        let mut redundancy = self
+            .redundancy
+            .for_packet(frame, duration, channels, self.fec)?;
+        let redundancy_cost = if let Some(plan) = &redundancy {
+            plan.estimate_bits()? + 8.0
+        } else {
+            0.0
+        };
+        // Low-rate packets may not have room for a prior packet's LBRR. The
+        // regular stream takes priority and the statistics report omission.
+        let redundancy_cost = if redundancy_cost < target_bits as f32 * 0.55 {
+            redundancy_cost
+        } else {
+            redundancy = None;
+            0.0
+        };
+        let per_frame = (((cost - header_cost - stereo_cost) as f32 - redundancy_cost)
+            / coded_frames as f32
+            - 2.0)
+            .max(0.0);
+        let mut stages = [CodedFrame::EMPTY; MAX_CODED_FRAMES];
+        let mut redundant_stages = [CodedFrame::EMPTY; MAX_CODED_FRAMES];
+        let mut redundant_history = history;
+        let redundant_budget =
+            (target_bits as f32 * 0.45 - stereo_cost as f32 - 12.0).max(0.0) / coded_frames as f32;
+        let mut distortion = 0.0;
+        let mut previous_coded = [false; 2];
+        for interval in 0..intervals {
+            for channel in 0..channel_count {
+                if channel == 1 && !side_coded[interval] {
+                    history[1] = History::new();
+                    redundant_history[1] = History::new();
+                    previous_coded[1] = false;
+                    continue;
+                }
+                extract(pcm, channels, samples, interval, channel, &mut mono);
+                let mut kind = FrameType {
+                    signal: if activity[channel][interval] {
+                        SignalType::Unvoiced
+                    } else {
+                        SignalType::Inactive
+                    },
+                    offset: QuantizationOffset::Low,
+                };
+                let spectrum = analyze_spectrum(&mono[..samples], frame.bandwidth);
+                let pitch = if kind.signal == SignalType::Inactive {
+                    Pitch::NONE
+                } else {
+                    analyze_pitch(
+                        &mono[..samples],
+                        frame,
+                        &spectrum.lpc_q12[..spectrum.order],
+                        &history[channel],
+                    )
+                };
+                if pitch.lag != 0 {
+                    kind.signal = SignalType::Voiced;
+                }
+                let conditional = interval > 0 && previous_coded[channel];
+                let mut parameters = StageParameters {
+                    frame,
+                    kind,
+                    spectrum,
+                    pitch,
+                    previous: history[channel],
+                    conditional,
+                    independent_scale: interval == 0,
+                };
+                let mut best = choose_stage(&mono[..samples], parameters, per_frame);
+                if best.is_none() {
+                    // A highly peaked short-term model can have a pulse-rate
+                    // floor even at the largest gain. Retry a broad spectrum
+                    // before declaring that the packet budget cannot fit.
+                    parameters.pitch = Pitch::NONE;
+                    parameters.kind.signal = if kind.signal == SignalType::Inactive {
+                        SignalType::Inactive
+                    } else {
+                        SignalType::Unvoiced
+                    };
+                    for chirp in [0.95, 0.9, 0.8] {
+                        parameters.spectrum = broaden(spectrum, frame.bandwidth, chirp);
+                        best = choose_stage(&mono[..samples], parameters, per_frame);
+                        if best.is_some() {
+                            break;
+                        }
+                    }
+                    if best.is_none() {
+                        parameters.spectrum =
+                            analyze_spectrum(&[0.0; MAX_SAMPLES][..samples], frame.bandwidth);
+                        best = choose_stage(&mono[..samples], parameters, per_frame);
+                    }
+                }
+                let Some((stage, committed, error)) = best else {
+                    return Err(Error::Output);
+                };
+                if self.fec && kind.signal != SignalType::Inactive {
+                    let conditional =
+                        interval > 0 && redundant_stages[(interval - 1) * 2 + channel].coded;
+                    if let Some((coarse, committed, _)) = choose_stage(
+                        &mono[..samples],
+                        // Redundancy must tolerate an imperfect loss-recovered
+                        // prefix. Its short-term model carries speech without
+                        // propagating prior reconstruction errors through LTP.
+                        StageParameters {
+                            kind: FrameType {
+                                signal: SignalType::Unvoiced,
+                                ..kind
+                            },
+                            pitch: Pitch::NONE,
+                            previous: redundant_history[channel],
+                            conditional,
+                            independent_scale: !conditional,
+                            ..parameters
+                        },
+                        redundant_budget,
+                    ) {
+                        redundant_stages[interval * 2 + channel] = coarse;
+                        redundant_history[channel] = committed;
+                    }
+                }
+                history[channel] = committed;
+                distortion += error;
+                stages[interval * 2 + channel] = stage;
+                previous_coded[channel] = true;
+            }
+        }
+        let before = encoder.tell_eighths();
+        encode_header(encoder, duration, channels, &activity, redundancy.as_ref())?;
+        if let Some(plan) = &redundancy {
+            plan.encode_frames(encoder)?;
+        }
+        for interval in 0..intervals {
+            if channels == 2 {
+                encode_zero_stereo(
+                    encoder,
+                    if activity[1][interval] {
+                        None
+                    } else {
+                        Some(!side_coded[interval])
+                    },
+                )?;
+            }
+            for channel in 0..channel_count {
+                let stage = &stages[interval * 2 + channel];
+                if stage.coded {
+                    encode_frame(encoder, frame, stage)?;
+                }
+            }
+        }
+        let consumed = encoder.tell_eighths() - before;
+        self.history = history;
+        self.bandwidth = Some(frame.bandwidth);
+        self.channels = channels;
+        if self.fec {
+            self.redundancy
+                .remember(frame, duration, channels, &redundant_stages, activity)?;
+        }
+        Ok(EncodingStatistics {
+            samples: samples * intervals,
+            bits: consumed.div_ceil(8),
+            quantization_error: distortion / (samples * coded_frames) as f64,
+            redundancy: redundancy.is_some(),
+        })
+    }
+}
+
+#[derive(Clone, Copy)]
+struct StageParameters {
+    frame: Frame,
+    kind: FrameType,
+    spectrum: Spectrum,
+    pitch: Pitch,
+    previous: History,
+    conditional: bool,
+    independent_scale: bool,
+}
+
+fn choose_stage(
+    samples: &[f32],
+    parameters: StageParameters,
+    budget: f32,
+) -> Option<(CodedFrame, History, f64)> {
+    let mut best = None;
+    let mut lower = 0;
+    let mut upper = 63;
+    while lower <= upper {
+        let gain = (lower + upper) / 2;
+        let candidate = quantize(
+            samples,
+            Quantization {
+                frame: parameters.frame,
+                kind: parameters.kind,
+                coefficients: &parameters.spectrum.lpc_q12[..parameters.spectrum.order],
+                previous: parameters.previous,
+                requested_gain: gain,
+                conditional: parameters.conditional,
+                seed: 0,
+                pitch: parameters.pitch,
+            },
+        );
+        let stage = CodedFrame {
+            kind: parameters.kind,
+            spectrum: parameters.spectrum,
+            gains: candidate.gain_symbols,
+            gain_index: candidate.gain_index,
+            pulses: candidate.pulses,
+            conditional: parameters.conditional,
+            previous_voiced: parameters.previous.voiced,
+            independent_scale: parameters.independent_scale,
+            pitch: parameters.pitch,
+            coded: true,
+        };
+        if estimated_cost(parameters.frame, &stage).unwrap_or(f32::INFINITY) <= budget {
+            best = Some((stage, candidate.history, candidate.distortion));
+            upper = gain - 1;
+        } else {
+            lower = gain + 1;
+        }
+    }
+    best
+}
+
+fn extract(
+    pcm: &[f32],
+    channels: u8,
+    samples: usize,
+    interval: usize,
+    channel: usize,
+    output: &mut [f32],
+) {
+    let start = interval * samples * usize::from(channels);
+    for (index, destination) in output[..samples].iter_mut().enumerate() {
+        *destination = if channels == 1 {
+            pcm[start + index]
+        } else {
+            let left = pcm[start + index * 2];
+            let right = pcm[start + index * 2 + 1];
+            if channel == 0 {
+                0.5 * (left + right)
+            } else {
+                0.5 * (left - right)
+            }
+        };
+    }
+}
+
+fn encode_metadata(
+    encoder: &mut RangeEncoder<'_>,
+    frame: Frame,
+    stage: &CodedFrame,
+) -> Result<(), Error> {
+    encoder.symbol(
+        usize::from(stage.kind.offset == QuantizationOffset::High)
+            + if stage.kind.signal == SignalType::Voiced {
+                2
+            } else {
+                0
+            },
+        if stage.kind.signal == SignalType::Inactive {
+            INACTIVE
+        } else {
+            ACTIVE
+        },
+    )?;
+    let subframes = if frame.duration == FrameDuration::Ms10 {
+        2
+    } else {
+        4
+    };
+    for subframe in 0..subframes {
+        encode_gain_symbol(
+            encoder,
+            stage.kind.signal,
+            stage.gains[subframe],
+            subframe == 0 && !stage.conditional,
+        )?;
+    }
+    encode_nlsf_indices(encoder, frame, stage.kind.signal, stage.spectrum.indices)?;
+    stage.pitch.encode(
+        encoder,
+        frame,
+        stage.conditional,
+        stage.previous_voiced,
+        stage.independent_scale,
+    )?;
+    encoder.symbol(0, SEED)
+}
+
+pub(super) fn encode_frame(
+    encoder: &mut RangeEncoder<'_>,
+    frame: Frame,
+    stage: &CodedFrame,
+) -> Result<(), Error> {
+    encode_metadata(encoder, frame, stage)?;
+    encode_pulses(
+        encoder,
+        frame,
+        stage.kind,
+        &stage.pulses[..frame.coded_samples()],
+    )
+}
+
+pub(super) fn estimated_cost(frame: Frame, stage: &CodedFrame) -> Result<f32, Error> {
+    let mut scratch = [0; 1024];
+    let mut encoder = RangeEncoder::new(&mut scratch);
+    encode_metadata(&mut encoder, frame, stage)?;
+    let metadata = encoder.tell_eighths() as f32 / 8.0;
+    Ok(metadata + estimate_pulse_bits(frame, stage.kind, &stage.pulses[..frame.coded_samples()])?)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::opus::silk::SilkDecoder;
+
+    #[test]
+    fn real_audio_encodes_all_rates_durations_and_channels_with_exact_ranges() {
+        for bandwidth in [Bandwidth::Narrow, Bandwidth::Medium, Bandwidth::Wide] {
+            for (duration, milliseconds) in [
+                (PacketDuration::Ms10, 10),
+                (PacketDuration::Ms20, 20),
+                (PacketDuration::Ms40, 40),
+                (PacketDuration::Ms60, 60),
+            ] {
+                let frame = Frame {
+                    bandwidth,
+                    duration: if milliseconds == 10 {
+                        FrameDuration::Ms10
+                    } else {
+                        FrameDuration::Ms20
+                    },
+                };
+                let sample_rate = match bandwidth {
+                    Bandwidth::Narrow => 8000,
+                    Bandwidth::Medium => 12000,
+                    Bandwidth::Wide => 16000,
+                };
+                for channels in 1..=2 {
+                    let mut owned = SilkEncoder::new();
+                    let mut decoded = SilkDecoder::new();
+                    let total = frame.samples() * duration.frames();
+                    let mut signal = [0.0; 1920];
+                    let mut output = [0.0; 1920];
+                    let mut previous = [0.0; 2];
+                    let mut error = 0.0;
+                    let mut energy = 0.0;
+                    for packet in 0..4 {
+                        for index in 0..total {
+                            let time = (packet * total + index) as f32 / sample_rate as f32;
+                            for channel in 0..usize::from(channels) {
+                                signal[index * usize::from(channels) + channel] = 0.18
+                                    * ((time
+                                        * 2.0
+                                        * std::f32::consts::PI
+                                        * (180.0 + channel as f32 * 30.0))
+                                        .sin()
+                                        + 0.25 * (time * 2.0 * std::f32::consts::PI * 540.0).sin());
+                            }
+                        }
+                        let mut bytes = [0; 4096];
+                        let mut encoder = RangeEncoder::new(&mut bytes);
+                        let budget = 24 * milliseconds * u32::from(channels);
+                        let statistics = owned
+                            .encode_layer(
+                                &mut encoder,
+                                frame,
+                                duration,
+                                channels,
+                                &signal[..total * usize::from(channels)],
+                                budget,
+                            )
+                            .unwrap_or_else(|error| panic!("{bandwidth:?}/{milliseconds}ms/{channels}ch packet{packet}: {error}"));
+                        assert_eq!(statistics.samples, total);
+                        assert!(statistics.bits <= u64::from(budget));
+                        let final_range = encoder.range();
+                        let length = encoder.finish().unwrap();
+                        let mut decoder = crate::entropy::Decoder::new(&bytes[..length]);
+                        assert_eq!(
+                            decoded
+                                .decode(&mut decoder, frame, duration, channels, &mut output)
+                                .unwrap(),
+                            total
+                        );
+                        assert_eq!(decoder.range(), final_range);
+                        for index in 0..total {
+                            for (channel, previous) in
+                                previous.iter_mut().enumerate().take(usize::from(channels))
+                            {
+                                let sample = index * usize::from(channels) + channel;
+                                let difference = f64::from(output[sample] - *previous);
+                                error += difference * difference;
+                                energy += f64::from(*previous).powi(2);
+                                *previous = signal[sample];
+                            }
+                        }
+                    }
+                    let snr = 10.0 * (energy / error).log10();
+                    assert!(
+                        snr > 20.0,
+                        "{bandwidth:?}/{milliseconds}ms/{channels}ch SNR={snr}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn uncoded_side_frames_reset_history_before_reappearing_in_same_packet() {
+        let frame = Frame {
+            bandwidth: Bandwidth::Wide,
+            duration: FrameDuration::Ms20,
+        };
+        let mut owned = SilkEncoder::new();
+        let mut decoded = SilkDecoder::new();
+        let mut signal = [0.0; 1920];
+        for (index, sample) in signal.as_chunks_mut::<2>().0.iter_mut().enumerate() {
+            let middle = 0.15 * (index as f32 * 0.1).sin();
+            let side = if (320..640).contains(&index) {
+                0.0
+            } else {
+                0.05 * (index as f32 * 0.07).cos()
+            };
+            sample[0] = middle + side;
+            sample[1] = middle - side;
+        }
+        let mut bytes = [0; 4096];
+        let mut encoder = RangeEncoder::new(&mut bytes);
+        owned
+            .encode_layer(&mut encoder, frame, PacketDuration::Ms60, 2, &signal, 2880)
+            .unwrap();
+        let range = encoder.range();
+        let length = encoder.finish().unwrap();
+        let mut decoder = crate::entropy::Decoder::new(&bytes[..length]);
+        decoded
+            .decode(
+                &mut decoder,
+                frame,
+                PacketDuration::Ms60,
+                2,
+                &mut [0.0; 1920],
+            )
+            .unwrap();
+        assert_eq!(range, decoder.range());
+    }
+
+    #[test]
+    fn invalid_input_and_unfit_budget_do_not_emit_or_commit_history() {
+        let frame = Frame {
+            bandwidth: Bandwidth::Narrow,
+            duration: FrameDuration::Ms10,
+        };
+        let mut owned = SilkEncoder::new();
+        let mut bytes = [0; 512];
+        let mut entropy = RangeEncoder::new(&mut bytes);
+        let state = (entropy.range(), entropy.tell_eighths());
+        assert_eq!(
+            owned.encode_layer(
+                &mut entropy,
+                frame,
+                PacketDuration::Ms10,
+                1,
+                &[f32::NAN; 80],
+                240
+            ),
+            Err(Error::Argument)
+        );
+        assert_eq!(
+            owned.encode_layer(&mut entropy, frame, PacketDuration::Ms10, 1, &[0.0; 80], 1),
+            Err(Error::Output)
+        );
+        assert_eq!((entropy.range(), entropy.tell_eighths()), state);
+        assert_eq!(owned.bandwidth, None);
+        assert_eq!(owned.history[0].gain, None);
+    }
+}

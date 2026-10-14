@@ -87,6 +87,7 @@ fn decode(
     input: &Path,
     output: &Path,
     channels: usize,
+    phase_inversion: bool,
 ) -> Result<bool, Box<dyn std::error::Error>> {
     if output.exists() && input.canonicalize()? == output.canonicalize()? {
         return Err("input and output must be different files".into());
@@ -94,6 +95,9 @@ fn decode(
     let mut reader = BufReader::new(File::open(input)?);
     let mut writer = BufWriter::new(File::create(output)?);
     let mut decoder = Decoder::new(channels)?;
+    // Official normal and `m.dec` references select this policy explicitly;
+    // Decoder's mono default instead follows the energy-preserving C API.
+    decoder.set_phase_inversion(phase_inversion);
     let mut packet = vec![0; MAX_PACKET_BYTES];
     let mut pcm = vec![0.0; MAX_SAMPLES * channels];
     let mut encoded = vec![0; MAX_SAMPLES * channels * 2];
@@ -188,7 +192,7 @@ fn decode(
     writer.flush()?;
     let first = first.unwrap_or_else(|| "null".into());
     println!(
-        "{{\"input\":{},\"output\":{},\"sample_rate\":48000,\"channels\":{channels},\"packets\":{packets},\"samples_per_channel\":{samples},\"complete\":{complete},\"range_mismatches\":{mismatches},\"peak\":{peak},\"clipped_samples\":{overshoots},\"conversion\":\"round_ties_even_clamp_i16\",\"first_failure\":{first}}}",
+        "{{\"input\":{},\"output\":{},\"sample_rate\":48000,\"channels\":{channels},\"phase_inversion\":{phase_inversion},\"packets\":{packets},\"samples_per_channel\":{samples},\"complete\":{complete},\"range_mismatches\":{mismatches},\"peak\":{peak},\"clipped_samples\":{overshoots},\"conversion\":\"round_ties_even_clamp_i16\",\"first_failure\":{first}}}",
         json_string(&input.to_string_lossy()),
         json_string(&output.to_string_lossy())
     );
@@ -197,8 +201,8 @@ fn decode(
 
 fn main() -> ExitCode {
     let arguments: Vec<_> = env::args_os().collect();
-    if arguments.len() != 4 {
-        eprintln!("usage: opus_vectors INPUT.bit OUTPUT.dec CHANNELS(1|2)");
+    if !(4..=5).contains(&arguments.len()) {
+        eprintln!("usage: opus_vectors INPUT.bit OUTPUT.dec CHANNELS(1|2) [normal|no-phase]");
         return ExitCode::FAILURE;
     }
     let channels = arguments[3]
@@ -208,10 +212,22 @@ fn main() -> ExitCode {
         eprintln!("channels must be 1 or 2");
         return ExitCode::FAILURE;
     };
+    let phase_inversion = match arguments
+        .get(4)
+        .map_or(Some("normal"), |value| value.to_str())
+    {
+        Some("normal") => true,
+        Some("no-phase") => false,
+        _ => {
+            eprintln!("reference set must be normal or no-phase");
+            return ExitCode::FAILURE;
+        }
+    };
     match decode(
         &PathBuf::from(&arguments[1]),
         &PathBuf::from(&arguments[2]),
         channels,
+        phase_inversion,
     ) {
         Ok(true) => ExitCode::SUCCESS,
         Ok(false) => ExitCode::FAILURE,

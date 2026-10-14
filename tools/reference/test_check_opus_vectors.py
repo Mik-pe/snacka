@@ -3,8 +3,11 @@
 
 import hashlib
 import importlib.util
+import io
+import json
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -79,6 +82,39 @@ class OfficialSuiteIntegrity(unittest.TestCase):
         (self.directory / "testvector13m.dec").write_bytes(b"unexpected")
         with self.assertRaisesRegex(ValueError, "extra=.*testvector13m.dec"):
             VECTORS.verify_vectors(self.directory, "no-phase")
+
+    def test_runner_selects_matching_phase_policy_for_every_reference(self):
+        for variant in ("normal", "no-phase"):
+            destination = self.directory / variant
+            arguments = ["check_opus_vectors.py", str(self.directory),
+                         "--opus-compare", "/unused/opus_compare", "--probe", "/unused/probe",
+                         "--output-dir", str(destination), "--reference-set", variant]
+            response = SimpleNamespace(returncode=0, stderr="", stdout=json.dumps({
+                "complete": True, "phase_inversion": variant == "normal",
+            }))
+            with mock.patch.object(VECTORS.sys, "argv", arguments), \
+                    mock.patch.object(VECTORS.sys, "stdout", io.StringIO()), \
+                    mock.patch.object(VECTORS.subprocess, "run", return_value=response) as run, \
+                    mock.patch.object(VECTORS, "compare", return_value={"passed": True, "quality": 99}):
+                self.assertEqual(VECTORS.main(), 0)
+            self.assertEqual(len(run.call_args_list), 24)
+            self.assertTrue(all(call.args[0][-1] == variant for call in run.call_args_list))
+            self.assertTrue(json.loads((destination / "summary.json").read_text())["passed"])
+
+    def test_runner_rejects_probe_with_wrong_phase_policy(self):
+        destination = self.directory / "mismatch"
+        arguments = ["check_opus_vectors.py", str(self.directory),
+                     "--opus-compare", "/unused/opus_compare", "--probe", "/unused/probe",
+                     "--output-dir", str(destination)]
+        response = SimpleNamespace(returncode=0, stderr="", stdout=json.dumps({
+            "complete": True, "phase_inversion": False,
+        }))
+        with mock.patch.object(VECTORS.sys, "argv", arguments), \
+                mock.patch.object(VECTORS.sys, "stdout", io.StringIO()), \
+                mock.patch.object(VECTORS.subprocess, "run", return_value=response), \
+                mock.patch.object(VECTORS, "compare", return_value={"passed": True, "quality": 99}):
+            self.assertEqual(VECTORS.main(), 1)
+        self.assertFalse(json.loads((destination / "summary.json").read_text())["passed"])
 
 
 if __name__ == "__main__":

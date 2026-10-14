@@ -209,12 +209,44 @@ fn delta_gain(previous: i32, delta: i32) -> i32 {
     (2 * delta - 16).max(previous + delta - 4).clamp(0, 63)
 }
 
-fn gain_q16(index: i32) -> i32 {
+pub(super) fn gain_q16(index: i32) -> i32 {
     let logarithm = ((0x1d_1c71_i64 * i64::from(index)) >> 16) as i32 + 2090;
     let fraction = logarithm & 127;
     let integral = 1i32 << (logarithm >> 7);
     let correction = ((-174 * fraction * (128 - fraction)) >> 16) + fraction;
     integral + correction * (integral >> 7)
+}
+
+pub(super) fn encode_gain_symbol(
+    encoder: &mut crate::entropy::Encoder<'_>,
+    signal: SignalType,
+    value: u8,
+    independent: bool,
+) -> Result<(), crate::entropy::Error> {
+    if (independent && value > 63) || (!independent && value > 40) {
+        return Err(crate::entropy::Error::Argument);
+    }
+    if independent {
+        encoder.symbol(usize::from(value / 8), GAIN[signal_index(signal)])?;
+        encoder.symbol(usize::from(value % 8), UNIFORM8)
+    } else {
+        encoder.symbol(usize::from(value), DELTA_GAIN)
+    }
+}
+
+pub(super) fn encode_zero_stereo(
+    encoder: &mut crate::entropy::Encoder<'_>,
+    mid_only: Option<bool>,
+) -> Result<(), crate::entropy::Error> {
+    encoder.symbol(12, STEREO_JOINT)?;
+    for _ in 0..2 {
+        encoder.symbol(1, UNIFORM3)?;
+        encoder.symbol(2, UNIFORM5)?;
+    }
+    if let Some(mid_only) = mid_only {
+        encoder.symbol(usize::from(mid_only), MID_ONLY)?;
+    }
+    Ok(())
 }
 
 /// Stereo weights and the optional omission of the side channel.

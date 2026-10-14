@@ -36,20 +36,36 @@ pub(crate) struct ShapeFrame<'a> {
 /// Persistent caller-owned scratch; no heap activity in shape coding.
 pub(crate) struct ShapeWorkspace {
     normal: [[f32; MAX_COEFFICIENTS]; 2],
+    fold_inputs: [[f32; MAX_BAND]; 2],
+    band: BandScratch,
     pulses: [i16; MAX_BAND],
     pub(crate) collapse_masks: [[u8; BANDS]; 2],
     pub(crate) seed: u32,
+    /// Apply coded intensity-stereo inversion. Mono output can disable this
+    /// phase policy while consuming exactly the same arithmetic symbols.
+    pub(crate) phase_inversion: bool,
 }
 
 impl ShapeWorkspace {
     pub(crate) const fn new() -> Self {
         Self {
             normal: [[0.0; MAX_COEFFICIENTS]; 2],
+            fold_inputs: [[0.0; MAX_BAND]; 2],
+            band: BandScratch {
+                folded: [0.0; MAX_BAND],
+                reordered: [0.0; MAX_BAND],
+            },
             pulses: [0; MAX_BAND],
             collapse_masks: [[0; BANDS]; 2],
             seed: 0,
+            phase_inversion: true,
         }
     }
+}
+
+struct BandScratch {
+    folded: [f32; MAX_BAND],
+    reordered: [f32; MAX_BAND],
 }
 
 fn pulse_error(error: pvq::Error) -> Error {
@@ -157,9 +173,9 @@ impl ShapeCoder for range::Encoder<'_> {
         scratch: &mut [i16],
     ) -> Result<(), Error> {
         let book = pvq::Codebook::new(values.len(), count).map_err(pulse_error)?;
-        pvq::quantize(values, count, scratch).map_err(pulse_error)?;
+        let norm = pvq::quantize(values, count, scratch).map_err(pulse_error)?;
         self.uniform(book.index_of(scratch).map_err(pulse_error)?, book.total())?;
-        pvq::synthesize(scratch, 1.0, values).map_err(pulse_error)
+        pvq::synthesize_unit(scratch, norm, values).map_err(pulse_error)
     }
 }
 
@@ -180,11 +196,11 @@ impl ShapeCoder for range::Decoder<'_> {
         if matches!(model, AngleModel::Uniform) {
             return self.uniform(levels + 1);
         }
-        let total = model.total(levels);
-        let value = model.locate(self.frequency(total)?, levels);
-        let (low, high) = model.interval(value, levels);
-        self.update(low, high, total)?;
-        Ok(value)
+        self.mapped_interval(model.total(levels), |frequency| {
+            let value = model.locate(frequency, levels);
+            let (low, high) = model.interval(value, levels);
+            (value, low, high)
+        })
     }
     fn vector(
         &mut self,
@@ -193,9 +209,10 @@ impl ShapeCoder for range::Decoder<'_> {
         scratch: &mut [i16],
     ) -> Result<(), Error> {
         let book = pvq::Codebook::new(values.len(), count).map_err(pulse_error)?;
-        book.vector_at(self.uniform(book.total())?, scratch)
+        let norm = book
+            .vector_at_with_norm(self.uniform(book.total())?, scratch)
             .map_err(pulse_error)?;
-        pvq::synthesize(scratch, 1.0, values).map_err(pulse_error)
+        pvq::synthesize_unit(scratch, norm, values).map_err(pulse_error)
     }
 }
 
@@ -204,6 +221,7 @@ struct Context<'a, C> {
     pulses: &'a mut [i16; MAX_BAND],
     seed: &'a mut u32,
     remaining: i32,
+    phase_inversion: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -353,18 +371,55 @@ fn split_gain<C: ShapeCoder>(
 
 /// The normative pair sweep rotates overlapping pairs across the whole block.
 fn rotation(values: &mut [f32], stride: usize, c: f32, s: f32) {
-    let pair = |values: &mut [f32], i: usize| {
-        let a = values[i];
-        let b = values[i + stride];
-        values[i] = c * a - s * b;
-        values[i + stride] = s * a + c * b;
-    };
-    for i in 0..values.len() - stride {
-        pair(values, i);
+    if values.len() <= stride {
+        return;
     }
-    if let Some(last) = values.len().checked_sub(2 * stride + 1) {
-        for i in (0..=last).rev() {
-            pair(values, i);
+    let length = values.len();
+    if stride == 1 {
+        // Carry the overlapping endpoint through each iterator. This retains
+        // the serial recurrence while eliminating per-pair index checks.
+        let mut forward = values.iter_mut();
+        let mut previous = forward.next().expect("nonempty rotation");
+        for next in forward {
+            let a = *previous;
+            let b = *next;
+            *previous = c * a - s * b;
+            *next = s * a + c * b;
+            previous = next;
+        }
+        let mut backward = values[..length - 1].iter_mut().rev();
+        let mut previous = backward.next().expect("two rotation points");
+        for next in backward {
+            let a = *next;
+            let b = *previous;
+            *next = c * a - s * b;
+            *previous = s * a + c * b;
+            previous = next;
+        }
+    } else {
+        // Distinct residue lanes never interact. Group their simultaneous
+        // pairs into disjoint chunks, allowing the compiler to vectorize them.
+        let mut forward = values.chunks_mut(stride);
+        let mut previous = forward.next().expect("nonempty rotation");
+        for next in forward {
+            for (a, b) in previous.iter_mut().zip(next.iter_mut()) {
+                let first = *a;
+                let second = *b;
+                *a = c * first - s * second;
+                *b = s * first + c * second;
+            }
+            previous = next;
+        }
+        let mut backward = values[..length - stride].rchunks_mut(stride);
+        let mut previous = backward.next().expect("nonempty rotation suffix");
+        for next in backward {
+            for (a, b) in next.iter_mut().rev().zip(previous.iter_mut().rev()) {
+                let first = *a;
+                let second = *b;
+                *a = c * first - s * second;
+                *b = s * first + c * second;
+            }
+            previous = next;
         }
     }
 }
@@ -457,8 +512,8 @@ fn partition<C: ShapeCoder>(
         values[0] = if sign { -1.0 } else { 1.0 };
         return Ok(1);
     }
-    let maximum = allocation::max_pulse_index(spec.band, spec.lm)?;
-    let maximum_bits = allocation::pulse_bits(spec.band, spec.lm, maximum)?;
+    let cache = allocation::PulseCache::new(spec.band, spec.lm)?;
+    let maximum_bits = cache.maximum_bits();
     if spec.lm >= 0 && values.len() > 2 && bits > maximum_bits + 11 {
         let original_blocks = spec.blocks;
         let half = values.len() / 2;
@@ -542,11 +597,12 @@ fn partition<C: ShapeCoder>(
         };
         return Ok(left_mask | (right_mask << (original_blocks / 2)));
     }
-    let mut index = allocation::pulse_index(spec.band, spec.lm, bits)?;
-    let mut used = allocation::pulse_bits(spec.band, spec.lm, index)?;
+    let selected = cache.nearest(bits)?;
+    let mut index = selected.index;
+    let mut used = selected.eighth_bits;
     while used > context.remaining && index > 0 {
         index -= 1;
-        used = allocation::pulse_bits(spec.band, spec.lm, index)?;
+        used = cache.cost(index)?;
     }
     context.remaining -= used;
     if index == 0 {
@@ -598,13 +654,19 @@ fn unpaired_mask(mask: u16) -> u16 {
     unpaired
 }
 
-fn reorder(values: &mut [f32], width: usize, blocks: usize, sequency: bool, to_time: bool) {
+fn reorder(
+    values: &mut [f32],
+    width: usize,
+    blocks: usize,
+    sequency: bool,
+    to_time: bool,
+    result: &mut [f32; MAX_BAND],
+) {
     // Walsh-Hadamard sequency ordering from RFC 6716 Appendix A bands.c.
     const SEQUENCY: [usize; 30] = [
         1, 0, 3, 0, 2, 1, 7, 0, 4, 3, 6, 1, 5, 2, 15, 0, 8, 7, 12, 3, 11, 4, 14, 1, 9, 6, 13, 2,
         10, 5,
     ];
-    let mut result = [0.0; MAX_BAND];
     for block in 0..blocks {
         let ordered = if sequency {
             SEQUENCY[blocks - 2 + block]
@@ -632,13 +694,20 @@ fn mono_band<C: ShapeCoder>(
     bits: i32,
     fold: Option<&[f32]>,
     tf: i8,
+    scratch: &mut BandScratch,
 ) -> Result<u16, Error> {
-    if values.len() == 1 {
+    // A single long block with unchanged TF resolution has no permutation or
+    // Haar work. Partition reads folding input without mutating it, so borrow
+    // the source directly instead of copying it to transform scratch.
+    if values.len() == 1 || (spec.blocks == 1 && tf == 0) {
         return partition(context, spec, values, bits, fold);
     }
     let original_blocks = spec.blocks;
     let long = original_blocks == 1;
-    let mut fold_storage = [0.0; MAX_BAND];
+    let BandScratch {
+        folded: fold_storage,
+        reordered,
+    } = scratch;
     let mut fold = fold.map(|input| {
         fold_storage[..input.len()].copy_from_slice(input);
         &mut fold_storage[..input.len()]
@@ -675,15 +744,36 @@ fn mono_band<C: ShapeCoder>(
     let reorder_blocks = resolution_blocks << recombine;
     if resolution_blocks > 1 {
         if context.coder.encoding() {
-            reorder(values, width >> recombine, reorder_blocks, long, true);
+            reorder(
+                values,
+                width >> recombine,
+                reorder_blocks,
+                long,
+                true,
+                reordered,
+            );
         }
         if let Some(fold) = fold.as_deref_mut() {
-            reorder(fold, width >> recombine, reorder_blocks, long, true);
+            reorder(
+                fold,
+                width >> recombine,
+                reorder_blocks,
+                long,
+                true,
+                reordered,
+            );
         }
     }
     let mut mask = partition(context, spec, values, bits, fold.as_deref())?;
     if resolution_blocks > 1 {
-        reorder(values, width >> recombine, reorder_blocks, long, false);
+        reorder(
+            values,
+            width >> recombine,
+            reorder_blocks,
+            long,
+            false,
+            reordered,
+        );
     }
     for _ in 0..divide {
         spec.blocks /= 2;
@@ -737,6 +827,7 @@ struct StereoBand<'a> {
     intensity: bool,
     amplitudes: [f32; 2],
     fold_output: &'a mut [f32],
+    scratch: &'a mut BandScratch,
 }
 
 fn stereo_band<C: ShapeCoder>(
@@ -753,6 +844,7 @@ fn stereo_band<C: ShapeCoder>(
         intensity,
         amplitudes,
         fold_output,
+        scratch,
     } = stereo;
     if left.len() == 1 {
         let first = partition(context, spec, left, bits, fold)?;
@@ -781,6 +873,9 @@ fn stereo_band<C: ShapeCoder>(
         }
         if bits > 16 && context.remaining > 16 {
             inverse = context.coder.bit(inverse, 2)?;
+        }
+        if !context.coder.encoding() && !context.phase_inversion {
+            inverse = false;
         }
     }
     let mut gain = split_gain(
@@ -838,13 +933,13 @@ fn stereo_band<C: ShapeCoder>(
             1.0
         };
         let mask = if gain.angle > 8192 {
-            let mask = mono_band(context, spec, right, bits - side_bits, fold, tf)?;
+            let mask = mono_band(context, spec, right, bits - side_bits, fold, tf, scratch)?;
             save_fold(right, fold_output);
             left[0] = -sign * right[1];
             left[1] = sign * right[0];
             mask
         } else {
-            let mask = mono_band(context, spec, left, bits - side_bits, fold, tf)?;
+            let mask = mono_band(context, spec, left, bits - side_bits, fold, tf, scratch)?;
             save_fold(left, fold_output);
             right[0] = -sign * left[1];
             right[1] = sign * left[0];
@@ -877,19 +972,19 @@ fn stereo_band<C: ShapeCoder>(
     };
     let before = context.remaining;
     let mask = if mid_bits >= side_bits {
-        let first = mono_band(context, mid_spec, left, mid_bits, fold, tf)?;
+        let first = mono_band(context, mid_spec, left, mid_bits, fold, tf, scratch)?;
         let unused = mid_bits - (before - context.remaining);
         if unused > 24 && gain.angle != 0 {
             side_bits += unused - 24;
         }
-        first | mono_band(context, side_spec, right, side_bits, None, tf)?
+        first | mono_band(context, side_spec, right, side_bits, None, tf, scratch)?
     } else {
-        let second = mono_band(context, side_spec, right, side_bits, None, tf)?;
+        let second = mono_band(context, side_spec, right, side_bits, None, tf, scratch)?;
         let unused = side_bits - (before - context.remaining);
         if unused > 24 && gain.angle != 16384 {
             mid_bits += unused - 24;
         }
-        second | mono_band(context, mid_spec, left, mid_bits, fold, tf)?
+        second | mono_band(context, mid_spec, left, mid_bits, fold, tf, scratch)?
     };
     save_fold(left, fold_output);
     stereo_merge(left, right, gain.mid);
@@ -952,13 +1047,17 @@ fn shapes<C: ShapeCoder>(
     let mut update_lowband = true;
     let mut dual_stereo = frame.allocation.dual_stereo;
     workspace.collapse_masks = [[0; BANDS]; 2];
-    workspace.normal = [[0.0; MAX_COEFFICIENTS]; 2];
+    // Folding sources come only from bands already reconstructed in this
+    // frame, plus the explicit first-band extension below. Retaining old
+    // scratch bytes avoids clearing 6.4 KiB without introducing prediction.
     let mut context = Context {
         coder,
         pulses: &mut workspace.pulses,
         seed: &mut workspace.seed,
+        phase_inversion: workspace.phase_inversion,
         remaining: 0,
     };
+    let folds = &mut workspace.fold_inputs;
     for band in settings.start..settings.end {
         let begin = multiplier * BAND_EDGES[band];
         let end = multiplier * BAND_EDGES[band + 1];
@@ -1002,7 +1101,6 @@ fn shapes<C: ShapeCoder>(
             }
         }
         let mut fill = [block_mask(blocks); 2];
-        let mut folds = [[0.0; MAX_BAND]; 2];
         let source = if lowband_offset != 0
             && (settings.spread != 3 || blocks > 1 || frame.tf[band] < 0)
         {
@@ -1046,6 +1144,7 @@ fn shapes<C: ShapeCoder>(
                     bits / 2,
                     left_fold,
                     frame.tf[band],
+                    &mut workspace.band,
                 )?;
                 let second = mono_band(
                     &mut context,
@@ -1057,6 +1156,7 @@ fn shapes<C: ShapeCoder>(
                     bits / 2,
                     source.then_some(&folds[1][..n]),
                     frame.tf[band],
+                    &mut workspace.band,
                 )?;
                 (first, second)
             } else {
@@ -1075,13 +1175,22 @@ fn shapes<C: ShapeCoder>(
                         intensity: band >= frame.allocation.intensity,
                         amplitudes: [frame.energies[0][band], frame.energies[1][band]],
                         fold_output: &mut workspace.normal[0][begin..end],
+                        scratch: &mut workspace.band,
                     },
                 )?;
                 (mask, mask)
             }
         } else {
             (
-                mono_band(&mut context, spec, left, bits, left_fold, frame.tf[band])?,
+                mono_band(
+                    &mut context,
+                    spec,
+                    left,
+                    bits,
+                    left_fold,
+                    frame.tf[band],
+                    &mut workspace.band,
+                )?,
                 0,
             )
         };
@@ -1216,6 +1325,18 @@ pub(crate) fn anti_collapse(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn poisoned_workspace(seed: u32) -> ShapeWorkspace {
+        let mut workspace = ShapeWorkspace::new();
+        workspace.seed = seed;
+        // The retained scratch is never an inter-frame predictor. NaNs expose
+        // any source region read before current-frame reconstruction writes it.
+        workspace.normal = [[f32::NAN; MAX_COEFFICIENTS]; 2];
+        workspace.fold_inputs = [[f32::NAN; MAX_BAND]; 2];
+        workspace.band.folded = [f32::NAN; MAX_BAND];
+        workspace.band.reordered = [f32::NAN; MAX_BAND];
+        workspace
+    }
 
     fn plan(bits: i32, stereo: bool, intensity: usize, dual: bool) -> AllocationPlan {
         let _ = stereo;
@@ -1401,6 +1522,99 @@ mod tests {
     }
 
     #[test]
+    fn mono_phase_policy_consumes_inversion_without_cancelling_intensity() {
+        let lm = 2;
+        let mut left = [0.0; 960];
+        spectra(&mut left, lm, 0.8);
+        let mut right = left.map(|value| -value);
+        let settings = ShapeSettings {
+            lm,
+            start: 0,
+            end: BANDS,
+            transient: false,
+            spread: 2,
+            total_eighth_bits: 4000 * 64,
+        };
+        let energies = [[1.0; BANDS]; 2];
+        let allocation = plan(72, true, 0, false);
+        let tf = [0; BANDS];
+        let mut packet = [0; 4000];
+        let mut encoder = range::Encoder::new(&mut packet);
+        encode_shapes(
+            &mut encoder,
+            settings,
+            ShapeFrame {
+                left: &mut left,
+                right: Some(&mut right),
+                energies: &energies,
+                tf: &tf,
+                allocation: &allocation,
+            },
+            &mut ShapeWorkspace::new(),
+        )
+        .unwrap();
+        let expected_state = (encoder.range(), encoder.tell_frac());
+        encoder.finish_padded().unwrap();
+        for phase_inversion in [true, false] {
+            let mut restored = [[0.0; 960]; 2];
+            let mut workspace = poisoned_workspace(0);
+            workspace.phase_inversion = phase_inversion;
+            let mut decoder = range::Decoder::new(&packet);
+            let [restored_left, restored_right] = &mut restored;
+            decode_shapes(
+                &mut decoder,
+                settings,
+                ShapeFrame {
+                    left: restored_left,
+                    right: Some(restored_right),
+                    energies: &energies,
+                    tf: &tf,
+                    allocation: &allocation,
+                },
+                &mut workspace,
+            )
+            .unwrap();
+            assert_eq!((decoder.range(), decoder.tell_frac()), expected_state);
+            assert_eq!(restored[0], left);
+            for (&a, &b) in restored[0].iter().zip(&restored[1]) {
+                assert_eq!(b, if phase_inversion { -a } else { a });
+            }
+            assert_eq!(workspace.seed, 0);
+        }
+    }
+
+    #[test]
+    fn rotation_chunk_lanes_preserve_each_ordered_pair() {
+        for length in 1..=MAX_BAND {
+            for stride in 1..=length {
+                for (cosine, sine) in [(0.980_066_6, 0.198_669_33), (0.707_106_77, -0.707_106_77)] {
+                    let mut expected = [0.0; MAX_BAND];
+                    for (index, value) in expected[..length].iter_mut().enumerate() {
+                        *value = ((index * 71 % 97) as f32 - 46.0) / 37.0;
+                    }
+                    let mut actual = expected;
+                    let pair = |values: &mut [f32], index: usize| {
+                        let a = values[index];
+                        let b = values[index + stride];
+                        values[index] = cosine * a - sine * b;
+                        values[index + stride] = sine * a + cosine * b;
+                    };
+                    for index in 0..length - stride {
+                        pair(&mut expected[..length], index);
+                    }
+                    if let Some(last) = length.checked_sub(2 * stride + 1) {
+                        for index in (0..=last).rev() {
+                            pair(&mut expected[..length], index);
+                        }
+                    }
+                    rotation(&mut actual[..length], stride, cosine, sine);
+                    assert_eq!(actual, expected, "length={length} stride={stride}");
+                }
+            }
+        }
+    }
+
+    #[test]
     fn normative_shape_decoder_oracle() {
         let mut bytes = include_bytes!("testdata/bands-rfc6716.bin").as_slice();
         let word = |bytes: &mut &[u8]| {
@@ -1464,7 +1678,7 @@ mod tests {
                 total_eighth_bits: 4000 * 64,
             };
             let energies = [[1.0; BANDS]; 2];
-            let mut workspace = ShapeWorkspace::new();
+            let mut workspace = poisoned_workspace(0);
             let mut values = [[0.0; 960]; 2];
             let [left, right] = &mut values;
             let mut decoder = range::Decoder::new(&packet);
@@ -1638,8 +1852,7 @@ mod tests {
             };
             let amplitudes = [[1.0; BANDS]; 2];
             let tf = [0; BANDS];
-            let mut workspace = ShapeWorkspace::new();
-            workspace.seed = 0xc0dec0de;
+            let mut workspace = poisoned_workspace(0xc0dec0de);
             let mut values = [[0.0; 960]; 2];
             let [left, right] = &mut values;
             let mut decoder = range::Decoder::new(&packet);

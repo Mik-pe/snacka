@@ -16,6 +16,12 @@ no codec dependency, C/FFI, build script or unsafe Rust. Native format versionin
 and Opus negotiation remain distinct. Completion requires independent
 interoperability evidence for every advertised coding mode, and competitive
 performance requires measurements of complete frames on diverse audio.
+The Opus performance goal is CPU time at most equal to libopus for each matched
+encoding, decoding and loss-recovery case, including paired throughput percentiles.
+The test matrix compares actual wire modes and identical decoder packets;
+aggregate medians alone do not close the goal. Current evidence and remaining
+gaps live in [Opus support](opus.md). The Rust API may compose format operations
+differently from the reference API.
 
 ## Current implementation
 

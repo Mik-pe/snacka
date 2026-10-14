@@ -4,7 +4,7 @@
 
 Independently implemented Rust audio codecs: Snacka's experimental speech
 bitstream and optional standard Opus support. Enable `opus` for the owned
-SILK/Hybrid/CELT decoder, CELT encoder and Ogg Opus file handling. Both library
+SILK/Hybrid/CELT encoder and decoder, packet recovery and Ogg Opus file handling. Both library
 paths have zero dependencies, C, FFI, CMake or unsafe Rust. External codecs are
 measurement competitors and test oracles only.
 
@@ -20,6 +20,9 @@ supported modes, interoperability checks and CPU comparisons, see
 cargo run --release --features opus --example opus_roundtrip -- \
   input.f32 output.opus decoded.f32 32000 1 20
 ```
+
+The [Opus RTP example](docs/opus-calls.md) exchanges standard Opus packets with
+other clients and handles reordering, duplicates, loss and in-band recovery.
 
 - Mono normalized f32 PCM at 48 kHz.
 - 20 ms frames by default; optional 10 ms frames.

@@ -198,6 +198,44 @@ fn buffer_exhaustion_is_terminal() {
 }
 
 #[test]
+fn arithmetic_output_failure_preserves_readable_normalized_counters() {
+    let medium = Model::new(&[0, 257, 65_535]).unwrap();
+    let narrow = Model::new(&[0, 1, 65_535]).unwrap();
+    let mut reference_packet = [0; 16];
+    let mut reference = Encoder::new(&mut reference_packet);
+    reference.uniform(0, 256).unwrap();
+    reference.symbol(0, medium).unwrap();
+    reference.symbol(0, narrow).unwrap();
+    let expected = (
+        reference.range(),
+        reference.tell(),
+        reference.tell_eighths(),
+    );
+
+    // Capacity zero fails before either required normalization byte; capacity
+    // one fails between the two. Both must complete the same arithmetic state.
+    for capacity in 0..=1 {
+        let mut packet = [0; 1];
+        let mut encoder = Encoder::new(&mut packet[..capacity]);
+        encoder.uniform(0, 256).unwrap();
+        encoder.symbol(0, medium).unwrap();
+        assert_eq!(encoder.symbol(0, narrow), Err(Error::Output));
+        assert_eq!(
+            (encoder.range(), encoder.tell(), encoder.tell_eighths()),
+            expected
+        );
+        assert!(encoder.range() > 1 << 23);
+        assert_eq!(encoder.bit(false, 1), Err(Error::Output));
+        assert_eq!(encoder.raw(0, 0), Err(Error::Output));
+        assert_eq!(
+            (encoder.range(), encoder.tell(), encoder.tell_eighths()),
+            expected
+        );
+        assert_eq!(encoder.finish(), Err(Error::Output));
+    }
+}
+
+#[test]
 fn models_reject_zero_width_and_unsorted_intervals() {
     for boundaries in [&[][..], &[0][..], &[1, 2][..], &[0, 0][..], &[0, 3, 2][..]] {
         assert!(Model::new(boundaries).is_err());

@@ -110,7 +110,7 @@ impl PostFilterParams {
 }
 
 /// Five-tap pitch comb with sample-wise interpolation of feedback history.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct CombFilter {
     history: [f32; HISTORY],
     cursor: usize,
@@ -210,6 +210,16 @@ impl Analysis {
         self.previous.fill(0.0);
         self.emphasis = 0.0;
         self.filter.reset();
+    }
+
+    /// Synchronize a channel that shared mono PCM without repeating its FFT.
+    /// Plans and scratch belong to the destination; only stream history moves.
+    pub(crate) fn copy_history_from(&mut self, other: &Self) {
+        self.previous.copy_from_slice(&other.previous);
+        self.emphasis = other.emphasis;
+        self.filter.history.copy_from_slice(&other.filter.history);
+        self.filter.cursor = other.filter.cursor;
+        self.filter.previous = other.filter.previous;
     }
 
     pub(crate) fn forward(
@@ -315,6 +325,9 @@ pub(crate) struct Synthesis {
     emphasis: f32,
     filter: CombFilter,
     pending_filter: PostFilterParams,
+    // Only construction/reset establishes this invariant. A normal transform
+    // or prediction clears it, even if its samples happen to be zero.
+    zero_history: bool,
 }
 
 impl Synthesis {
@@ -325,6 +338,7 @@ impl Synthesis {
             emphasis: 0.0,
             filter: CombFilter::new(),
             pending_filter: PostFilterParams::DISABLED,
+            zero_history: true,
         }
     }
 
@@ -333,6 +347,51 @@ impl Synthesis {
         self.emphasis = 0.0;
         self.filter.reset();
         self.pending_filter = PostFilterParams::DISABLED;
+        self.zero_history = true;
+    }
+
+    /// Emit a predicted PCM frame and prepare its lapped synthesis history.
+    /// The prediction includes the following 120 samples of look-ahead. Only
+    /// the requested output frame advances emphasis and pitch-filter history.
+    pub(crate) fn conceal(&mut self, predicted: &[f32], output: &mut [f32]) -> Result<(), Error> {
+        let n = output.len();
+        frame_index(n)?;
+        if predicted.len() != n + OVERLAP {
+            return Err(Error::Length);
+        }
+        if predicted
+            .iter()
+            .any(|sample| !sample.is_finite() || sample.abs() > SAMPLE_LIMIT)
+        {
+            return Err(Error::Sample);
+        }
+        self.zero_history = false;
+        let (frame, future) = predicted.split_at(n);
+        let (raw, tail) = self.transform.block.split_at_mut(n);
+        for (&sample, residual) in frame.iter().zip(&mut *raw) {
+            *residual = sample - PRE_EMPHASIS * self.emphasis;
+            self.emphasis = sample;
+        }
+        self.filter.process(raw, self.pending_filter, true);
+
+        // Convert the look-ahead to the MDCT domain without advancing the
+        // audible stream. The right-hand MDCT alias is symmetric; windowing
+        // this sum produces the tail that the following inverse block needs.
+        let mut future_filter = self.filter.clone();
+        let mut emphasis = self.emphasis;
+        for (&sample, residual) in future.iter().zip(&mut tail[..OVERLAP]) {
+            *residual = sample - PRE_EMPHASIS * emphasis;
+            emphasis = sample;
+        }
+        future_filter.process(&mut tail[..OVERLAP], self.pending_filter, true);
+        let window = self.transform.plans[0].window_view();
+        for (index, overlap) in self.overlap.iter_mut().enumerate() {
+            let falling = window[OVERLAP + index];
+            let rising = window[index];
+            *overlap = falling * (falling * tail[index] + rising * tail[OVERLAP - 1 - index]);
+        }
+        output.copy_from_slice(frame);
+        Ok(())
     }
 
     pub(crate) fn inverse(
@@ -345,6 +404,39 @@ impl Synthesis {
         let index = validate(input, output)?;
         parameters.validate()?;
         self.transform(input, output, transient, index)?;
+        self.post_process(output, parameters);
+        Ok(())
+    }
+
+    /// Synthesize a frame whose spectrum is identically zero. Existing overlap,
+    /// pitch feedback and emphasis still advance exactly as an inverse frame.
+    pub(crate) fn inverse_zero(
+        &mut self,
+        output: &mut [f32],
+        parameters: PostFilterParams,
+    ) -> Result<(), Error> {
+        frame_index(output.len())?;
+        parameters.validate()?;
+        output.fill(0.0);
+        if self.zero_history {
+            // Zero feedback and emphasis remain zero. Preserve the delayed
+            // parameter schedule without copying or filtering these samples.
+            self.filter.cursor = (self.filter.cursor + output.len()) & (HISTORY - 1);
+            self.filter.previous = if output.len() == OVERLAP {
+                self.pending_filter
+            } else {
+                parameters
+            };
+            self.pending_filter = parameters;
+            return Ok(());
+        }
+        output[..OVERLAP].copy_from_slice(&self.overlap);
+        self.overlap.fill(0.0);
+        self.post_process(output, parameters);
+        Ok(())
+    }
+
+    fn post_process(&mut self, output: &mut [f32], parameters: PostFilterParams) {
         // The first short block belongs to the previous frame's look-ahead.
         // At 2.5 ms the whole frame is that block: incoming parameters become
         // active on the next call. Larger frames then transition to the current
@@ -356,10 +448,18 @@ impl Synthesis {
         }
         self.pending_filter = parameters;
         for sample in output {
-            *sample += PRE_EMPHASIS * self.emphasis;
+            // Use fusion only where the target guarantees a hardware FMA;
+            // generic targets retain the multiply/add recurrence.
+            #[cfg(any(target_arch = "aarch64", target_feature = "fma"))]
+            {
+                *sample = PRE_EMPHASIS.mul_add(self.emphasis, *sample);
+            }
+            #[cfg(not(any(target_arch = "aarch64", target_feature = "fma")))]
+            {
+                *sample += PRE_EMPHASIS * self.emphasis;
+            }
             self.emphasis = *sample;
         }
-        Ok(())
     }
 
     /// Inverse transform only, leaving pitch filtering and de-emphasis to caller.
@@ -383,13 +483,15 @@ impl Synthesis {
         index: usize,
     ) -> Result<(), Error> {
         let n = input.len();
+        // validate() checked every coefficient against SAMPLE_LIMIT, which is
+        // at most one eighth of these MDCT plans' numeric input limit.
         if transient && n > OVERLAP {
             let count = n / OVERLAP;
             for (time, chunk) in output.as_chunks_mut::<OVERLAP>().0.iter_mut().enumerate() {
                 for (frequency, coefficient) in self.transform.short.iter_mut().enumerate() {
                     *coefficient = input[frequency * count + time];
                 }
-                self.transform.plans[0].inverse(
+                self.transform.plans[0].inverse_finite(
                     &self.transform.short,
                     &mut self.transform.block[..2 * OVERLAP],
                     &mut self.transform.scratch[0],
@@ -406,7 +508,7 @@ impl Synthesis {
             }
         } else {
             let padding = (n - OVERLAP) / 2;
-            self.transform.plans[index].inverse(
+            self.transform.plans[index].inverse_finite(
                 input,
                 &mut self.transform.block[..2 * n],
                 &mut self.transform.scratch[index],
@@ -418,6 +520,7 @@ impl Synthesis {
             self.overlap
                 .copy_from_slice(&self.transform.block[padding + n..padding + n + OVERLAP]);
         }
+        self.zero_history = false;
         Ok(())
     }
 }
@@ -449,6 +552,90 @@ mod tests {
             let phase =
                 std::f64::consts::FRAC_PI_2 * ((reflected - padding) as f64 + 0.5) / OVERLAP as f64;
             (std::f64::consts::FRAC_PI_2 * phase.sin().powi(2)).sin()
+        }
+    }
+
+    #[test]
+    fn initial_zero_history_fastpath_matches_full_zero_scheduling() {
+        let mut fast = Synthesis::new();
+        let mut reference = Synthesis::new();
+        reference.zero_history = false;
+        let mut fast_output = [0.0; MAX_FRAME];
+        let mut reference_output = [0.0; MAX_FRAME];
+        let mut random = 0x6716_8251u32;
+        for frame in 0..80 {
+            random = random.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+            let n = [120, 240, 480, 960][(random >> 30) as usize];
+            let parameters = PostFilterParams::new(
+                15 + ((random >> 2) % 1_008) as usize,
+                f32::from(((random >> 16) % 9) as u8) * 0.09375,
+                ((random >> 24) % 3) as usize,
+            )
+            .unwrap();
+            fast.inverse_zero(&mut fast_output[..n], parameters)
+                .unwrap();
+            reference
+                .inverse_zero(&mut reference_output[..n], parameters)
+                .unwrap();
+            assert_eq!(fast_output[..n], reference_output[..n]);
+            assert_eq!(fast.filter.cursor, reference.filter.cursor);
+            assert_eq!(fast.filter.previous, reference.filter.previous);
+            assert_eq!(fast.pending_filter, reference.pending_filter);
+            if frame % 4 == 3 {
+                let coefficients = signal(n);
+                fast.inverse(
+                    &coefficients,
+                    &mut fast_output[..n],
+                    random & 1 != 0,
+                    parameters,
+                )
+                .unwrap();
+                reference
+                    .inverse(
+                        &coefficients,
+                        &mut reference_output[..n],
+                        random & 1 != 0,
+                        parameters,
+                    )
+                    .unwrap();
+                assert_eq!(fast_output[..n], reference_output[..n]);
+                fast.reset();
+                reference.reset();
+                reference.zero_history = false;
+            }
+        }
+    }
+
+    #[test]
+    fn copied_analysis_history_preserves_future_coefficients() {
+        let mut left = Analysis::new();
+        let mut right = Analysis::new();
+        let samples = signal(4 * MAX_FRAME);
+        let active = PostFilterParams::new(127, 0.5625, 1).unwrap();
+        let mut left_output = [0.0; MAX_FRAME];
+        let mut right_output = [0.0; MAX_FRAME];
+        left.forward_with_filter(&samples[..960], &mut left_output, false, active)
+            .unwrap();
+        right
+            .forward_with_filter(&samples[960..1920], &mut right_output, true, active)
+            .unwrap();
+        right.copy_history_from(&left);
+        // Scratch differs on purpose and must not participate in stream state.
+        right.filtered.fill(f32::NAN);
+        right.transform.block.fill(f32::NAN);
+        right.transform.short.fill(f32::NAN);
+        for (n, transient, parameters) in [
+            (480, true, active),
+            (120, false, PostFilterParams::DISABLED),
+            (960, false, PostFilterParams::new(151, 0.375, 2).unwrap()),
+            (240, true, active),
+        ] {
+            left.forward_with_filter(&samples[..n], &mut left_output[..n], transient, parameters)
+                .unwrap();
+            right
+                .forward_with_filter(&samples[..n], &mut right_output[..n], transient, parameters)
+                .unwrap();
+            assert_eq!(left_output[..n], right_output[..n]);
         }
     }
 
@@ -586,6 +773,141 @@ mod tests {
                 "{expected} versus {actual}"
             );
         }
+    }
+
+    #[test]
+    fn exact_prediction_preserves_lapped_and_filter_history_across_losses() {
+        let frames = [
+            (960, false),
+            (480, true),
+            (120, false),
+            (240, true),
+            (960, true),
+            (480, false),
+        ];
+        let length = frames.iter().map(|&(n, _)| n).sum::<usize>();
+        let source = signal(length + OVERLAP);
+        for parameters in [
+            PostFilterParams::DISABLED,
+            PostFilterParams::new(127, 0.5625, 2).unwrap(),
+        ] {
+            let mut analysis = Analysis::new();
+            let mut continuous = Synthesis::new();
+            let mut predicted = Synthesis::new();
+            let mut coefficients = [0.0; MAX_FRAME];
+            let mut expected = [0.0; MAX_FRAME];
+            let mut actual = [0.0; MAX_FRAME];
+            let mut position = 0;
+            for (frame, (n, transient)) in frames.into_iter().enumerate() {
+                analysis
+                    .forward_with_filter(
+                        &source[position..position + n],
+                        &mut coefficients[..n],
+                        transient,
+                        parameters,
+                    )
+                    .unwrap();
+                continuous
+                    .inverse(
+                        &coefficients[..n],
+                        &mut expected[..n],
+                        transient,
+                        parameters,
+                    )
+                    .unwrap();
+                if matches!(frame, 1 | 2 | 4) {
+                    predicted
+                        .conceal(&source[position - OVERLAP..position + n], &mut actual[..n])
+                        .unwrap();
+                } else {
+                    predicted
+                        .inverse(&coefficients[..n], &mut actual[..n], transient, parameters)
+                        .unwrap();
+                }
+                for (&reference, &sample) in expected[..n].iter().zip(&actual[..n]) {
+                    assert!(
+                        (reference - sample).abs() < 6e-6,
+                        "prediction recovery {frame}/{n}: {reference} versus {sample}"
+                    );
+                }
+                position += n;
+            }
+            let mut untouched = [4.0; OVERLAP];
+            let saved_overlap = predicted.overlap;
+            let saved_emphasis = predicted.emphasis;
+            assert_eq!(
+                predicted.conceal(&[0.0; OVERLAP], &mut untouched),
+                Err(Error::Length)
+            );
+            let mut invalid = [0.0; 2 * OVERLAP];
+            invalid[OVERLAP] = f32::NAN;
+            assert_eq!(
+                predicted.conceal(&invalid, &mut untouched),
+                Err(Error::Sample)
+            );
+            assert_eq!(untouched, [4.0; OVERLAP]);
+            assert_eq!(predicted.overlap, saved_overlap);
+            assert_eq!(predicted.emphasis, saved_emphasis);
+        }
+    }
+
+    #[test]
+    fn zero_synthesis_matches_full_inverse_and_preserves_recovery_history() {
+        let coefficients = signal(MAX_FRAME);
+        let mut regular = Synthesis::new();
+        let mut zero = Synthesis::new();
+        let mut expected = [0.0; MAX_FRAME];
+        let mut actual = [0.0; MAX_FRAME];
+        let zeros = [0.0; MAX_FRAME];
+        for transient in [false, true] {
+            for n in [120, 240, 480, 960] {
+                let priming = PostFilterParams::new(127, 0.5625, 2).unwrap();
+                regular
+                    .inverse(&coefficients[..n], &mut expected[..n], transient, priming)
+                    .unwrap();
+                zero.inverse(&coefficients[..n], &mut actual[..n], transient, priming)
+                    .unwrap();
+                for parameters in [
+                    PostFilterParams::new(15, 0.75, 0).unwrap(),
+                    PostFilterParams::DISABLED,
+                    PostFilterParams::new(1022, 0.375, 1).unwrap(),
+                ] {
+                    regular
+                        .inverse(&zeros[..n], &mut expected[..n], transient, parameters)
+                        .unwrap();
+                    zero.inverse_zero(&mut actual[..n], parameters).unwrap();
+                    assert_eq!(&expected[..n], &actual[..n], "zero frame {n}/{transient}");
+                }
+                regular
+                    .inverse(&coefficients[..n], &mut expected[..n], transient, priming)
+                    .unwrap();
+                zero.inverse(&coefficients[..n], &mut actual[..n], transient, priming)
+                    .unwrap();
+                assert_eq!(
+                    &expected[..n],
+                    &actual[..n],
+                    "zero recovery {n}/{transient}"
+                );
+            }
+        }
+        let mut invalid = [4.0; OVERLAP + 1];
+        assert_eq!(
+            zero.inverse_zero(&mut invalid, PostFilterParams::DISABLED),
+            Err(Error::Length)
+        );
+        assert_eq!(invalid, [4.0; OVERLAP + 1]);
+        let mut unchanged = [4.0; OVERLAP];
+        assert_eq!(
+            zero.inverse_zero(
+                &mut unchanged,
+                PostFilterParams {
+                    period: 1,
+                    ..PostFilterParams::DISABLED
+                },
+            ),
+            Err(Error::Length)
+        );
+        assert_eq!(unchanged, [4.0; OVERLAP]);
     }
 
     #[test]

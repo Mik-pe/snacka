@@ -8,7 +8,7 @@ use crate::entropy::{Decoder, Model};
 const MAX_SAMPLES: usize = 320;
 const MAX_BLOCKS: usize = MAX_SAMPLES / 16;
 const SEED: Model<'static> = Model::from_static(&[0, 64, 128, 192, 256]);
-const LSB: Model<'static> = Model::from_static(&[0, 136, 256]);
+pub(super) const LSB: Model<'static> = Model::from_static(&[0, 136, 256]);
 
 const fn cumulative<const N: usize, const M: usize>(weights: &[u16; N]) -> [u16; M] {
     assert!(M == N + 1);
@@ -24,7 +24,7 @@ const fn cumulative<const N: usize, const M: usize>(weights: &[u16; N]) -> [u16;
 
 static RATE_BOUNDARIES: [[u16; 10]; 2] =
     [cumulative(&RATE_WEIGHTS[0]), cumulative(&RATE_WEIGHTS[1])];
-const RATE: [Model<'static>; 2] = [
+pub(super) const RATE: [Model<'static>; 2] = [
     Model::from_static(&RATE_BOUNDARIES[0]),
     Model::from_static(&RATE_BOUNDARIES[1]),
 ];
@@ -49,7 +49,7 @@ const fn count_models() -> [Model<'static>; 11] {
     }
     models
 }
-const COUNT: [Model<'static>; 11] = count_models();
+pub(super) const COUNT: [Model<'static>; 11] = count_models();
 
 const fn shell_boundaries() -> [[[u16; 18]; 16]; 4] {
     let mut tables = [[[0; 18]; 16]; 4];
@@ -79,7 +79,7 @@ const fn shell_models() -> [[Model<'static>; 16]; 4] {
     }
     models
 }
-const SHELL: [[Model<'static>; 16]; 4] = shell_models();
+pub(super) const SHELL: [[Model<'static>; 16]; 4] = shell_models();
 
 const fn sign_boundaries() -> [[[u16; 3]; 7]; 6] {
     let mut tables = [[[0; 3]; 7]; 6];
@@ -108,7 +108,7 @@ const fn sign_models() -> [[Model<'static>; 7]; 6] {
     }
     models
 }
-const SIGN: [[Model<'static>; 7]; 6] = sign_models();
+pub(super) const SIGN: [[Model<'static>; 7]; 6] = sign_models();
 
 #[inline]
 fn shell<const LEVEL: usize>(decoder: &mut Decoder<'_>, output: &mut [i16], pulses: usize) {

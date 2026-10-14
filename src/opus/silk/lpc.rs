@@ -62,6 +62,47 @@ pub fn decode_nlsf_indices(
     }
 }
 
+/// Emit the inverse spectral symbols using the canonical decoder models.
+pub(super) fn encode_nlsf_indices(
+    encoder: &mut crate::entropy::Encoder<'_>,
+    frame: Frame,
+    signal: SignalType,
+    indices: NlsfIndices,
+) -> Result<(), crate::entropy::Error> {
+    let length = order(frame.bandwidth);
+    if indices.first > 31
+        || indices.interpolation > 4
+        || indices.residual[..length]
+            .iter()
+            .any(|residual| !(-10..=10).contains(residual))
+    {
+        return Err(crate::entropy::Error::Argument);
+    }
+    let wide = usize::from(frame.bandwidth == Bandwidth::Wide);
+    let voiced = usize::from(signal == SignalType::Voiced);
+    let first = usize::from(indices.first);
+    encoder.symbol(first, STAGE_ONE[wide][voiced])?;
+    let selection: &[u8] = if wide != 0 {
+        &WB_SELECT[first]
+    } else {
+        &NB_SELECT[first]
+    };
+    for (&residual, &model) in indices.residual.iter().zip(selection) {
+        let base = residual.clamp(-4, 4);
+        encoder.symbol(
+            (base + 4) as usize,
+            STAGE_TWO[wide * 8 + usize::from(model)],
+        )?;
+        if base.abs() == 4 {
+            encoder.symbol((residual.abs() - 4) as usize, EXTENSION)?;
+        }
+    }
+    if frame.duration == FrameDuration::Ms20 {
+        encoder.symbol(usize::from(indices.interpolation), INTERPOLATION)?;
+    }
+    Ok(())
+}
+
 /// Reconstruct and stabilize Q15 normalized spectral frequencies.
 ///
 /// Output contains exactly 10 NB/MB or 16 WB coefficients. Invalid arguments
@@ -156,6 +197,60 @@ const fn spectral_weights<const N: usize>(codebook: &[[u8; N]; 32]) -> [[u16; N]
 
 const NB_LSF_WEIGHTS: [[u16; 10]; 32] = spectral_weights(&NB_CODEBOOK);
 const WB_LSF_WEIGHTS: [[u16; 16]; 32] = spectral_weights(&WB_CODEBOOK);
+
+pub(super) struct NlsfQuantizationParameters {
+    pub(super) centers_q15: [i16; MAX_ORDER],
+    pub(super) weights_q9: [u16; MAX_ORDER],
+    pub(super) prediction_q8: [u8; MAX_ORDER],
+    pub(super) step_q16: i32,
+}
+
+/// Owned small parameters for the inverse spectral quantizer. The canonical
+/// codebooks and decoder weights stay private to this module.
+pub(super) fn nlsf_quantization_parameters(
+    first: u8,
+    bandwidth: Bandwidth,
+) -> Result<NlsfQuantizationParameters, Error> {
+    if first > 31 {
+        return Err(Error::Argument);
+    }
+    let first = usize::from(first);
+    let wide = bandwidth == Bandwidth::Wide;
+    let codebook: &[u8] = if wide {
+        &WB_CODEBOOK[first]
+    } else {
+        &NB_CODEBOOK[first]
+    };
+    let prediction: &[u8] = if wide {
+        &WB_PREDICT[first]
+    } else {
+        &NB_PREDICT[first]
+    };
+    let weights: &[[u8; 2]] = if wide {
+        &WB_PRED_WEIGHTS
+    } else {
+        &NB_PRED_WEIGHTS
+    };
+    let spectral_weights: &[u16] = if wide {
+        &WB_LSF_WEIGHTS[first]
+    } else {
+        &NB_LSF_WEIGHTS[first]
+    };
+    let mut parameters = NlsfQuantizationParameters {
+        centers_q15: [0; MAX_ORDER],
+        weights_q9: [0; MAX_ORDER],
+        prediction_q8: [0; MAX_ORDER],
+        step_q16: if wide { 9830 } else { 11796 },
+    };
+    for index in 0..codebook.len() {
+        parameters.centers_q15[index] = i16::from(codebook[index]) << 7;
+        parameters.weights_q9[index] = spectral_weights[index];
+        if index + 1 < codebook.len() {
+            parameters.prediction_q8[index] = weights[index][usize::from(prediction[index])];
+        }
+    }
+    Ok(parameters)
+}
 
 fn spacings(bandwidth: Bandwidth) -> &'static [i16] {
     if bandwidth == Bandwidth::Wide {

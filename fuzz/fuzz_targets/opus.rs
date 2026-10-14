@@ -2,11 +2,69 @@
 #![no_main]
 
 use libfuzzer_sys::fuzz_target;
-use snacka::opus::ogg::{OggReader, OggWriter, OpusHead, OpusTags};
+use snacka::opus::multistream::MultistreamPacket;
+use snacka::opus::ogg::{
+    OggChainEvent, OggChainReader, OggDemuxEvent, OggDemuxReader, OggPacket, OggReader, OggWriter,
+    OpusHead, OpusIdentification, OpusTags,
+};
 use snacka::opus::{
     Bandwidth, CeltConfig, CeltDecoder, CeltEncoder, CeltFrameDuration, Decoder, Packet,
 };
 use std::io::Cursor;
+
+fn check_packet(packet: &OggPacket, streams: u8) {
+    assert!(packet.keep.start <= packet.keep.end);
+    assert!(packet.keep.end <= packet.samples_48khz);
+    assert!(MultistreamPacket::parse(&packet.data, streams).is_ok());
+}
+
+fn check_chain(bytes: &[u8]) -> usize {
+    let mut packets = 0;
+    if let Ok(mut reader) = OggChainReader::new(Cursor::new(bytes)) {
+        let mut streams = None;
+        for _ in 0..32 {
+            match reader.next_event() {
+                Ok(Some(OggChainEvent::Stream(stream))) => {
+                    streams = Some(stream.identification.channel_mapping.streams());
+                }
+                Ok(Some(OggChainEvent::Packet(packet))) => {
+                    check_packet(&packet, streams.expect("stream precedes its packets"));
+                    packets += 1;
+                }
+                _ => break,
+            }
+        }
+    }
+    packets
+}
+
+fn check_demux(bytes: &[u8]) -> usize {
+    let mut reader = OggDemuxReader::new(Cursor::new(bytes));
+    let mut layouts = [(0u32, 0u8); 32];
+    let mut known = 0;
+    let mut packets = 0;
+    for _ in 0..32 {
+        match reader.next_event() {
+            Ok(Some(OggDemuxEvent::Stream { serial, stream })) => {
+                assert!(!layouts[..known].iter().any(|layout| layout.0 == serial));
+                layouts[known] = (serial, stream.identification.channel_mapping.streams());
+                known += 1;
+            }
+            Ok(Some(OggDemuxEvent::Packet { serial, packet })) => {
+                let streams = layouts[..known]
+                    .iter()
+                    .find(|layout| layout.0 == serial)
+                    .expect("stream precedes its packets")
+                    .1;
+                check_packet(&packet, streams);
+                packets += 1;
+            }
+            Ok(Some(OggDemuxEvent::Opaque { .. })) => {}
+            _ => break,
+        }
+    }
+    packets
+}
 
 fuzz_target!(|bytes: &[u8]| {
     // Test framing and reach the entropy decoder with arbitrary valid framing.
@@ -15,18 +73,20 @@ fuzz_target!(|bytes: &[u8]| {
         let gain = head.gain_factor();
         assert!(gain.is_finite() && gain > 0.0);
     }
+    let _ = OpusIdentification::parse(bytes);
     let _ = OpusTags::parse(bytes);
     if let Ok(mut reader) = OggReader::new(Cursor::new(bytes)) {
+        let streams = reader.mapping().streams();
         // Bound work even if the input contains many valid short Ogg packets.
         for _ in 0..32 {
             let Ok(Some(packet)) = reader.next_packet() else {
                 break;
             };
-            assert!(packet.keep.start <= packet.keep.end);
-            assert!(packet.keep.end <= packet.samples_48khz);
-            assert!(Packet::parse(&packet.data).is_ok());
+            check_packet(&packet, streams);
         }
     }
+    check_chain(bytes);
+    check_demux(bytes);
     let mut output = [0.0; 5760 * 2];
     for channels in [1, 2] {
         let mut universal = Decoder::new(channels).unwrap();
@@ -111,10 +171,16 @@ fuzz_target!(|bytes: &[u8]| {
         OggWriter::new(Vec::new(), u32::from(first), head, &OpusTags::default()).unwrap();
     writer.write_packet(&packet[..length]).unwrap();
     let file = writer.finish((duration.samples() - skip) as u64).unwrap();
-    let mut reader = OggReader::new(Cursor::new(file)).unwrap();
+    let mut reader = OggReader::new(Cursor::new(file.as_slice())).unwrap();
     let parsed = reader.next_packet().unwrap().unwrap();
     assert_eq!(parsed.data, packet[..length]);
     assert_eq!(parsed.keep, skip..duration.samples());
     assert!(parsed.end_of_stream);
     assert!(reader.next_packet().unwrap().is_none());
+    let mut writer =
+        OggWriter::new(file, u32::from(first) + 1, head, &OpusTags::default()).unwrap();
+    writer.write_packet(&packet[..length]).unwrap();
+    let chain = writer.finish((duration.samples() - skip) as u64).unwrap();
+    assert_eq!(check_chain(&chain), 2);
+    assert_eq!(check_demux(&chain), 2);
 });

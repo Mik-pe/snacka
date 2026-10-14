@@ -7,11 +7,19 @@
 //! information and excitation are exposed separately from the non-bit-exact
 //! prediction synthesis specified by section 4.2.7.9.
 
+mod analysis;
 mod decoder;
+mod downsample;
+mod encode_pulses;
+mod encoder;
 mod excitation;
 mod frame;
 mod frame_tables;
 mod lpc;
+pub(crate) mod native_delay;
+mod pitch;
+mod quantize;
+mod redundancy;
 pub(crate) mod resample;
 mod synthesis;
 mod tables;
@@ -19,6 +27,9 @@ mod tables;
 use crate::entropy::{Decoder, Model};
 
 pub use decoder::SilkDecoder;
+pub(crate) use downsample::Downsampler;
+pub use encode_pulses::{encode_pulses, estimate_pulse_bits};
+pub use encoder::{EncodingStatistics, SilkEncoder};
 pub use excitation::{decode_excitation, decode_pulses, reconstruct_excitation};
 pub use lpc::{
     LpcCoefficients, NlsfIndices, NlsfState, decode_nlsf_indices, interpolate_nlsf,

@@ -15,7 +15,9 @@ fn noise(length: usize) -> Vec<f32> {
 
 #[test]
 fn mixed_radix_fft_matches_independent_double_precision_dft() {
-    for length in [1, 2, 3, 5, 6, 15, 60, 120, 240, 480] {
+    for length in [
+        1, 2, 3, 4, 5, 6, 8, 15, 16, 32, 60, 64, 120, 240, 256, 480, 1280, 1920,
+    ] {
         let input: Vec<_> = noise(2 * length)
             .as_chunks::<2>()
             .0
