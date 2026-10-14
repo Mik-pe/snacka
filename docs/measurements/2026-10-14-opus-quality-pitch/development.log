@@ -1,0 +1,17 @@
+evaluated cen1-fash-b.wav: 18 cases
+evaluated cen2-fash-b.wav: 36 cases
+evaluated cen1-fbbh-b.wav: 54 cases
+evaluated cen2-fbbh-b.wav: 72 cases
+evaluated cen1-fclc-b.wav: 90 cases
+evaluated cen2-fclc-b.wav: 108 cases
+evaluated cen1-fejs-b.wav: 126 cases
+evaluated cen2-fejs-b.wav: 144 cases
+evaluated cen1-fcaw-b.wav: 162 cases
+evaluated cen2-fcaw-b.wav: 180 cases
+evaluated cen1-fjlp-b.wav: 198 cases
+evaluated cen2-fjlp-b.wav: 216 cases
+evaluated cen1-fvap-b.wav: 234 cases
+evaluated cen2-fvap-b.wav: 252 cases
+evaluated cen1-marh-b.wav: 270 cases
+evaluated cen2-marh-b.wav: 288 cases
+Objective parity: 0/18 conditions; full quality goal remains open.

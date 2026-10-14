@@ -1,0 +1,9 @@
+evaluated cen1-mdms2-b.wav: 18 cases
+evaluated cen2-mdms2-b.wav: 36 cases
+evaluated cen1-menk-b.wav: 54 cases
+evaluated cen2-menk-b.wav: 72 cases
+evaluated cen1-miry-b.wav: 90 cases
+evaluated cen2-miry-b.wav: 108 cases
+evaluated cen1-mjgm-b.wav: 126 cases
+evaluated cen2-mjgm-b.wav: 144 cases
+Objective parity: 0/18 conditions; full quality goal remains open.

@@ -302,6 +302,36 @@ impl SilkEncoder {
                             best = Some(candidate);
                             parameters = alternative;
                         }
+                        if kind.signal != SignalType::Inactive && per_frame <= samples as f32 * 1.5
+                        {
+                            // A broad envelope can still benefit from pitch.
+                            // Permit weaker coarse correlation here; the full
+                            // voiced stage must fit and improve reconstruction.
+                            let pitch = super::pitch::analyze_with_threshold(
+                                &mono[..samples],
+                                frame,
+                                &alternative.spectrum.lpc_q12[..alternative.spectrum.order],
+                                &history[channel],
+                                0.15,
+                            );
+                            if pitch.lag != 0 {
+                                let voiced = StageParameters {
+                                    pitch,
+                                    kind: FrameType {
+                                        signal: SignalType::Voiced,
+                                        ..kind
+                                    },
+                                    ..alternative
+                                };
+                                if let Some(candidate) =
+                                    choose_stage(&mono[..samples], voiced, per_frame)
+                                    && candidate.2 < best.as_ref().unwrap().2
+                                {
+                                    best = Some(candidate);
+                                    parameters = voiced;
+                                }
+                            }
+                        }
                     }
                 }
                 let Some((stage, committed, error)) = best else {

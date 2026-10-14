@@ -491,6 +491,67 @@ LD_LIBRARY_PATH=/path/to/libopus/build taskset -c 0 BENCH_BINARY \
   --encoder-case silk WB 20 1 12000 --input speech.f32 --frames 256
 ```
 
+### Broad-predictor pitch follow-up, 2026-10-14
+
+The follow-up compares voiced and unvoiced versions of the broader predictor
+at low budgets. A separate pitch search permits a 0.15 coarse-correlation score,
+while ordinary analysis retains 0.42. The voiced candidate is used only if its
+complete stage fits and has lower reconstruction error. The existing strict
+tap-sum contraction bound remains active. Syntax, nominal delay and storage are
+unchanged; this deliberately spends more encoder work to improve low-rate speech.
+
+The baseline is `fdc18d0`. The
+[follow-up source manifest](measurements/2026-10-14-opus-quality-pitch/source.json)
+binds the measurements and verification. Previously observed 16 clips from eight
+speakers become [development regressions](measurements/2026-10-14-opus-quality-pitch/development.csv),
+covering 288 conditions. Select four new, previously unused official AN4 test
+speakers in sorted order: mdms2, menk, miry and mjgm, with the first two `cen`
+utterances each. The algorithm is frozen before inspecting their results and is
+not tuned afterward. The [input manifest](measurements/2026-10-14-opus-quality-pitch/an4-manifest.json)
+and [fetcher](measurements/2026-10-14-opus-quality-pitch/fetch-corpus.py) preserve
+selection, hashes and licensing. The scoring, reference controls and delay
+limitations above apply unchanged.
+
+Across all eight new clips and both 10/20 ms durations, clean WB means are:
+
+| kb/s | Baseline STOI | Current STOI | Libopus STOI | Baseline ESTOI | Current ESTOI | Libopus ESTOI |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 12 | 0.84816 | 0.88064 | 0.94963 | 0.63091 | 0.71445 | 0.87880 |
+| 24 | 0.96026 | 0.96268 | 0.99284 | 0.89442 | 0.89868 | 0.97832 |
+| 32 | 0.98131 | 0.98131 | 0.99641 | 0.95129 | 0.95129 | 0.98891 |
+
+At clean 12 kb/s, LSD falls from 13.77657 to 12.55132 dB; the reference remains
+6.20927 dB. The [144-case evaluation](measurements/2026-10-14-opus-quality-pitch/evaluation.csv)
+has mean STOI changes +0.01163/+0.00841/+0.00452 for clean/noise20/noise10 when
+pooling all bitrates and durations. Twelve STOI, fourteen ESTOI, two LSD and four
+waveform-SNR cases regress individually. All 48 higher-budget 32 kb/s packet/PCM
+fingerprints are identical to the baseline. Per-condition
+[paired intervals](measurements/2026-10-14-opus-quality-pitch/evaluation-before-after.json)
+and all regressions remain visible.
+
+The separate [Hybrid run](measurements/2026-10-14-opus-quality-pitch/hybrid.csv)
+contains 48 cases; mean STOI/ESTOI changes are +0.00193/+0.00236 and LSD -0.08488 dB.
+Clean [isolated](measurements/2026-10-14-opus-quality-pitch/isolated.csv) and
+[burst](measurements/2026-10-14-opus-quality-pitch/burst.csv) loss runs add 48 cases
+each, with mean STOI changes +0.00999/+0.00264. All received-packet entropy
+intervals, complete byte budgets, sample counts and finite-output checks pass.
+These are development gains rather than reference or listening acceptance.
+
+The [CPU follow-up](measurements/2026-10-14-opus-quality-pitch/cpu/summary.csv)
+uses new utterances cen1-mdms2-b and cen1-mjgm-b with the same 14-case, three-repeat
+method above. WB 12 kb/s p50 processing costs rise 12.40% and 18.28% over `fdc18d0`;
+current/libopus ratios remain 0.858 and 0.765. Thirteen of fourteen p50 ratios are
+below libopus; one Hybrid case is 1.042, and eleven cases exceed the reference at
+one or more reported percentiles. These are different utterances from the first
+CPU run, so their percentages cannot be combined with its gains.
+
+All 287 debug and 302 release/reference tests, clippy and transform reproduction
+pass. A new relaxed-pitch check covers silence, valid lag bounds and contractive
+filters. **The quality and full CPU goals remain open:** all 36 new reference
+objective conditions fail at least one confidence gate. The previously prepared
+blind package evaluates `fdc18d0`; no human ratings have yet been supplied.
+Subsequent tuning requires further independent evaluation material.
+
 Official RFC 8251 vectors are downloaded independently:
 
 ```sh

@@ -90,6 +90,17 @@ pub(super) fn analyze(
     coefficients: &[i16],
     history: &History,
 ) -> Pitch {
+    analyze_with_threshold(samples, frame, coefficients, history, 0.42)
+}
+
+pub(super) fn analyze_with_threshold(
+    samples: &[f32],
+    frame: Frame,
+    coefficients: &[i16],
+    history: &History,
+    threshold: f64,
+) -> Pitch {
+    debug_assert!(threshold.is_finite() && (0.0..=1.0).contains(&threshold));
     let mut output = [0.0; PREFIX + MAX_SAMPLES];
     output[..PREFIX].copy_from_slice(&history.output);
     for (destination, &source) in output[PREFIX..].iter_mut().zip(samples) {
@@ -148,7 +159,7 @@ pub(super) fn analyze(
             lag = candidate;
         }
     }
-    if best < 0.42 {
+    if best < threshold {
         return Pitch::NONE;
     }
     let width = 5 * rate_khz(frame.bandwidth);
@@ -267,6 +278,49 @@ mod tests {
     use super::super::SignalType;
     use super::super::frame::{ChannelMetadata, CodingMode};
     use super::*;
+
+    #[test]
+    fn relaxed_pitch_search_keeps_filters_contractive_and_silence_unvoiced() {
+        for bandwidth in [Bandwidth::Narrow, Bandwidth::Medium, Bandwidth::Wide] {
+            let frame = Frame {
+                bandwidth,
+                duration: super::super::FrameDuration::Ms20,
+            };
+            let order = if bandwidth == Bandwidth::Wide { 16 } else { 10 };
+            let mut samples = [0.0; MAX_SAMPLES];
+            let length = frame.samples();
+            assert_eq!(
+                analyze_with_threshold(
+                    &samples[..length],
+                    frame,
+                    &[0; 16][..order],
+                    &History::new(),
+                    0.15
+                )
+                .lag,
+                0
+            );
+            for (i, sample) in samples[..length].iter_mut().enumerate() {
+                *sample =
+                    0.1 * (i as f32 * 0.071).sin() + 0.07 * ((i * 37 % 101) as f32 / 50.0 - 1.0);
+            }
+            let pitch = analyze_with_threshold(
+                &samples[..length],
+                frame,
+                &[0; 16][..order],
+                &History::new(),
+                0.15,
+            );
+            if pitch.lag != 0 {
+                assert!((2 * rate_khz(bandwidth)..=18 * rate_khz(bandwidth)).contains(&pitch.lag));
+                for taps in pitch.taps {
+                    assert!(
+                        taps.into_iter().map(i32::from).map(i32::abs).sum::<i32>() <= 120 * 128
+                    );
+                }
+            }
+        }
+    }
 
     #[test]
     fn batched_pitch_scores_match_independent_scalar_correlations() {

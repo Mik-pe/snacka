@@ -1,0 +1,3 @@
+codec,operation,sample_rate,channels,frame_ms,requested_bitrate,packet_bitrate,packet_bytes,wire_mode,bandwidth,signal,complexity,batch_frames,batches,p50_batch_ns_per_frame,p95_batch_ns_per_frame,p99_batch_ns_per_frame,paired_encode_ratio_p50,paired_encode_ratio_p95,paired_encode_ratio_p99
+snacka,encode,48000,1,20,24000,24000,60,silk,wideband,file,fixed,2,1000,172013.00,351716.50,669654.00,0.571377,1.105073,1.784300
+libopus,encode,48000,1,20,24000,24000,60,silk,wideband,file,10,2,1000,326620.00,434423.50,506875.00,0.571377,1.105073,1.784300
