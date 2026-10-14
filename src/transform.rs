@@ -209,7 +209,9 @@ impl FftPlan {
             return;
         }
         let stage = &self.stages[depth];
-        let width = stage.size / stage.radix;
+        // Construction prepared one twiddle row per butterfly; use its cached
+        // count instead of dividing at every recursive split.
+        let width = stage.twiddles.len();
         // CELT's factorizations end with a five-point unity butterfly. Its
         // samples can go directly to registers without the general stage's
         // split slices, twiddle rows and empty trailing iterator.

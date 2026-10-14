@@ -431,9 +431,8 @@ impl Curves {
         while first_over < limit {
             let candidate = first_over + (limit - first_over) / 2;
             let row = &mode.base[candidate];
-            let values =
-                std::array::from_fn(|band| adjusted(row, band) + info.boost_eighth_bits[band]);
-            if threshold_total(config, &values, threshold, caps) <= total {
+            let values = |band| adjusted(row, band) + info.boost_eighth_bits[band];
+            if fits_budget(config, values, threshold, caps, total) {
                 first_over = candidate + 1;
             } else {
                 limit = candidate;
@@ -471,14 +470,15 @@ impl Curves {
         let mut fraction = 0;
         for step in [32, 16, 8, 4, 2, 1] {
             let candidate = fraction + step;
-            let values =
-                std::array::from_fn(|band| self.low[band] + self.step[band] * candidate / 64);
-            if threshold_total(config, &values, self.threshold, self.caps) <= total {
+            // step and candidate are nonnegative. Evaluate only active bands
+            // directly in the projection, retaining the exact integer result.
+            let values = |band| self.low[band] + ((self.step[band] * candidate) >> 6);
+            if fits_budget(config, values, self.threshold, self.caps, total) {
                 fraction = candidate;
             }
         }
         let mut values =
-            std::array::from_fn(|band| self.low[band] + self.step[band] * fraction / 64);
+            std::array::from_fn(|band| self.low[band] + ((self.step[band] * fraction) >> 6));
         threshold_projection(config, &mut values, self.threshold, self.caps);
         values
     }
@@ -525,12 +525,14 @@ fn threshold_projection(
     values[config.end..].fill(0);
 }
 
-fn threshold_total(
+#[inline]
+fn fits_budget(
     config: AllocationConfig,
-    values: &[i32; BANDS],
+    values: impl Fn(usize) -> i32,
     threshold: &[i32; BANDS],
     caps: &[i32; BANDS],
-) -> i32 {
+    budget: i32,
+) -> bool {
     // Quality search needs only the total. Evaluate the same projection in
     // place in the accumulator, avoiding a copied and zeroed 21-band array.
     let mut total = 0;
@@ -538,14 +540,19 @@ fn threshold_total(
     let floor = config.floor();
     for band in (config.start..config.end).rev() {
         total += projected_band(
-            values[band],
+            values(band),
             threshold[band],
             caps[band],
             floor,
             &mut shape_started,
         );
+        // Validated boosts and adjusted curves are nonnegative, as is every
+        // projected band. Remaining bands cannot make an excess fit again.
+        if total > budget {
+            return false;
+        }
     }
-    total
+    true
 }
 
 struct Reservations {

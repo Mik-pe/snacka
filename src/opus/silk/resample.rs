@@ -260,6 +260,26 @@ const NUMERATORS: [[[f64; 14]; 6]; 3] = [
 ];
 // END GENERATED MODEL
 
+// Tap-major storage lets independent phases accumulate together while each
+// output retains the original newest-to-oldest floating-point sum.
+const PHASE_NUMERATORS: [[[f64; 6]; TAPS]; 3] = {
+    let mut result = [[[0.0; 6]; TAPS]; 3];
+    let mut family = 0;
+    while family < 3 {
+        let mut tap = 0;
+        while tap < TAPS {
+            let mut phase = 0;
+            while phase < 6 {
+                result[family][tap][phase] = NUMERATORS[family][phase][tap];
+                phase += 1;
+            }
+            tap += 1;
+        }
+        family += 1;
+    }
+    result
+};
+
 /// Composition of the owned interpolation numerator and an output low-pass.
 /// The stable feedback denominator remains shared with normal interpolation.
 pub(crate) struct FilterPlan {
@@ -321,6 +341,7 @@ pub(crate) struct Resampler {
     factor: usize,
     delay: usize,
     numerators: &'static [[f64; TAPS]; 6],
+    phase_numerators: &'static [[f64; 6]; TAPS],
     // Mirrored halves make each fourteen-sample window contiguous. This
     // removes ring-wrap branches from every phase without changing tap order.
     history: [f64; 2 * HISTORY],
@@ -339,6 +360,7 @@ impl Resampler {
             factor,
             delay,
             numerators: &NUMERATORS[family],
+            phase_numerators: &PHASE_NUMERATORS[family],
             history: [0.0; 2 * HISTORY],
             cursor: 0,
             clock: 0,
@@ -558,13 +580,13 @@ impl Resampler {
             self.history[self.cursor + HISTORY] = filtered;
             let mut sums = [0.0f64; PHASES];
             let begin = self.cursor + HISTORY - self.delay;
-            for (lag, &past) in self.history[begin + 1 - TAPS..=begin]
+            for (&past, coefficients) in self.history[begin + 1 - TAPS..=begin]
                 .iter()
                 .rev()
-                .enumerate()
+                .zip(self.phase_numerators)
             {
                 for (phase, sum) in sums.iter_mut().enumerate() {
-                    *sum += past * self.numerators[phase][lag];
+                    *sum += past * coefficients[phase];
                 }
             }
             for (destination, &value) in block.iter_mut().zip(&sums) {

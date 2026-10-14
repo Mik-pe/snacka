@@ -140,9 +140,13 @@ def main():
     parser.add_argument("--binary", type=Path, help="reuse previously built oracle")
     parser.add_argument("--quick", action="store_true", help="100 batches; exploratory only")
     parser.add_argument("--validate-only", action="store_true")
+    parser.add_argument("--require-parity", action="store_true",
+                        help="fail unless the full frozen-source timed matrix is no slower at p50/p95/p99")
     parser.add_argument("--packets", type=int, default=24)
     parser.add_argument("--case", action="append", help="explicit geometry filter, e.g. SILK/WB/20; partial coverage")
     args = parser.parse_args()
+    if args.require_parity and (args.quick or args.validate_only or args.case):
+        parser.error("--require-parity requires the full timed matrix, without --quick, --validate-only or --case")
     root = Path(__file__).resolve().parents[2]
     destination = args.output_dir.resolve()
     if destination == root or root in destination.parents:
@@ -242,7 +246,8 @@ def main():
     (destination / "summary.json").write_text(json.dumps(metadata, indent=2) + "\n")
     print(json.dumps({key: metadata[key] for key in ("planned_cases", "completed_cases", "complete",
                                                    "source_unchanged", "actual_fec_cases", "all_cases_not_slower")}, indent=2))
-    return 0 if metadata["complete"] else 1
+    passed = metadata["complete"] and (not args.require_parity or metadata["all_cases_not_slower"])
+    return 0 if passed else 1
 
 
 if __name__ == "__main__":

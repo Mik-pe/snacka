@@ -242,7 +242,11 @@ impl Synthesis {
                 }
                 // Within the current coefficient set, rewhitening uses the
                 // unclamped LPC output, including its prior-frame prefix.
-                for (i, destination) in residual.iter_mut().enumerate().take(j).skip(out_end) {
+                // The five-tap predictor can read no earlier than j-lag-2.
+                // Rebuild only that history window; every later subframe
+                // rebuilds its own window with its active coefficients/gain.
+                let first_needed = out_end.max(j - lag - 2);
+                for (i, destination) in residual.iter_mut().enumerate().take(j).skip(first_needed) {
                     let position = LPC_HISTORY + i - OUTPUT_HISTORY;
                     *destination = (lpc[position]
                         - prediction_scaled::<ORDER>(&lpc, position, coefficients))

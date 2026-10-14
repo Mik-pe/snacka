@@ -696,6 +696,8 @@ mod matrix {
         let mut reference_energy = 0.0f64;
         let mut compared = 0;
         let mut max_error = 0.0f32;
+        let mut owned_pcm_hash = 0xcbf29ce484222325;
+        let mut reference_pcm_hash = 0xcbf29ce484222325;
         let mut operation_counts = [0usize; 4];
         let mut operation_samples = [0usize; 4];
         let mut operation_error_energy = [0.0f64; 4];
@@ -758,6 +760,8 @@ mod matrix {
             fec_events += usize::from(fec);
             for (&a, &b) in left[..count * channels].iter().zip(&right) {
                 assert!(a.is_finite() && b.is_finite(), "packet {index} finite PCM");
+                owned_pcm_hash = hash(owned_pcm_hash, a.to_bits());
+                reference_pcm_hash = hash(reference_pcm_hash, b.to_bits());
                 let error = a - b;
                 max_error = max_error.max(error.abs());
                 error_energy += f64::from(error) * f64::from(error);
@@ -862,7 +866,10 @@ mod matrix {
             json_string(schedule),
             (error_energy / compared as f64).sqrt(),
             (reference_energy / compared as f64).sqrt(),
-            metadata(&stream)
+            format!(
+                "{},\"owned_pcm_hash\":\"{owned_pcm_hash:016x}\",\"reference_pcm_hash\":\"{reference_pcm_hash:016x}\"",
+                metadata(&stream)
+            )
         );
     }
 }

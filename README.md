@@ -24,6 +24,18 @@ cargo run --release --features opus --example opus_roundtrip -- \
 The [Opus RTP example](docs/opus-calls.md) exchanges standard Opus packets with
 other clients and handles reordering, duplicates, loss and in-band recovery.
 
+## Performance goal
+
+Make Snacka's owned Rust Opus implementation **as fast as libopus or faster**
+for complete encoding, decoding and loss recovery. Acceptance requires a
+Snacka/libopus time ratio **at most 1.0 in every matched case at p50, p95 and
+p99**, while preserving correctness and audio quality. This goal remains open;
+the latest measurements include slower decoder cases. See the
+[acceptance criteria and optimization priorities](docs/implementation.md#performance-goal)
+and [current evidence](docs/opus.md#verification-and-performance-target).
+
+## Native Snacka format
+
 - Mono normalized f32 PCM at 48 kHz.
 - 20 ms frames by default; optional 10 ms frames.
 - 12–32 kb/s including four bytes of framing and checksum per packet.

@@ -23,6 +23,47 @@ aggregate medians alone do not close the goal. Current evidence and remaining
 gaps live in [Opus support](opus.md). The Rust API may compose format operations
 differently from the reference API.
 
+## Performance goal
+
+Make Snacka as fast as libopus or faster without sacrificing correctness,
+audio quality or bounded, allocation-free processing. The first acceptance
+target is the owned standard Opus implementation, where wire modes and decoder
+packets can be matched directly.
+
+For every matched case, require Snacka/libopus processing-time ratios at most
+1.0 at paired p50, p95 and p99. These are percentiles of batch throughput;
+individual callback deadlines require separate measurements. A faster aggregate
+median cannot compensate for a slower case. Missing, failed or unmeasured cases
+keep the goal open.
+
+- Encoding: identical changing PCM, actual wire mode, bandwidth, frame duration,
+  channel count and complete packet byte budget; record reference complexity.
+- Decoding and loss recovery: identical packets, output rates, channel counts
+  and loss schedules, covering SILK, Hybrid and CELT. Run the full 1,080-case
+  decoder matrix, including ordinary decode, PLC return and FEC return.
+- Evidence: serialize measurements on frozen sources, alternate codec order
+  and retain raw results, source hashes, toolchain, build flags, libopus version
+  and host details. Repeat final measurements to confirm parity. Track ARM64
+  and x86-64 separately; one passing host closes only that host's result.
+- Quality: retain interoperability, official-vector and mathematical checks,
+  finite output and zero processing allocations. Preserve exact packet/PCM
+  traces for changes intended to preserve output. Evaluate deliberate encoder
+  or concealment output changes separately for quality before accepting speed
+  gains; equal packet budgets alone do not establish equivalent quality.
+
+Prioritize complete-decoder cases currently above 1.0, profiling SILK synthesis
+and resampling, Hybrid processing and short-frame CELT before choosing an
+optimization. Recheck encoder p95/p99 regressions, then rerun both complete
+matrices against libopus. Current gaps and benchmark commands are in
+[Opus support](opus.md#verification-and-performance-target); the full decoder
+driver is `tools/reference/benchmark_opus_matrix.py`.
+
+The native Snacka format also targets libopus-or-better processing cost, but
+uses a different bitstream. Compare matched PCM, packet budgets, frame durations
+and documented delay using the [CPU](cpu.md) and
+[quality](reference-quality.md) methods. Native results do not close the
+standard Opus target, and a faster native codec still needs quality validation.
+
 ## Current implementation
 
 A working DSP baseline encodes 48 kHz mono audio into native packets at

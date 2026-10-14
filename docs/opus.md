@@ -213,6 +213,86 @@ Ratios above one are slower than libopus. p95/p99 also contain slower cases;
 the performance target remains unmet. These are continuous-stream batch averages
 on generated voiced input, excluding construction, reset, validation and I/O.
 
+### Decoder optimization on x86-64, 2026-10-14
+
+The current change bounds SILK rewhitening to the history the five-tap predictor
+actually reads, transposes full-rate interpolation coefficients without changing
+sum order, and reuses planned FFT butterfly widths. CELT allocation evaluates
+active bands directly and stops over-budget searches. CELT loss prediction scores
+four coarse pitch lags together, keeps forecast-local LPC history contiguous,
+and bypasses envelope calculations when the entire forecast precedes the fade.
+Processing remains safe Rust and allocation-free.
+
+Compare against `e68ef30` using the same current timing-oracle source and release
+flags. Host: AMD EPYC 9V74 x86-64, Linux cloud VM, CPU affinity 0; Rust 1.99.0 and
+separately built libopus 1.6.1 with GCC 14.2/CMake Release and runtime SIMD enabled.
+Rust uses overflow checks, 16 codegen units, no LTO or native-CPU flags. Frequency,
+power and other VM workloads are uncontrolled. The
+[source and artifact manifest](measurements/2026-10-14-x86_64-opus-source.json)
+binds both libraries, common oracle, reference, generated inputs and raw results.
+
+The [selected paired table](measurements/2026-10-14-x86_64-opus-selected.csv)
+contains nine complete-decoder cases, three alternating-order before/after
+repetitions and 1,000 alternating Snacka/libopus batches per executable per case.
+Every batch lasts at least 400 microseconds. Percentiles describe batch averages,
+not individual callback deadlines. The change column is the median of each
+repetition's current/baseline p50 ratios normalized against its interleaved
+libopus measurements; independently aggregated ratio columns need not divide to
+that change.
+
+| Wire geometry, output and operation | Baseline p50/libopus | Current p50/libopus | Median p50 time change |
+| --- | ---: | ---: | ---: |
+| SILK NB 20 ms, mono, 16 kHz, decode | 1.338 | 1.307 | -1.22% |
+| SILK NB 20 ms, mono, 48 kHz, decode | 0.894 | 0.822 | -8.15% |
+| SILK WB 20 ms, mono, 8 kHz, decode | 1.615 | 1.534 | -4.40% |
+| Hybrid FB 20 ms, mono, 48 kHz, decode | 1.177 | 1.160 | -1.26% |
+| CELT FB 2.5 ms, mono, 48 kHz, decode | 1.338 | 1.280 | -4.48% |
+| CELT FB 20 ms, stereo, 48 kHz, decode | 1.289 | 1.302 | +0.71% |
+| CELT NB 2.5 ms, stereo, 8 kHz, PLC return | 1.950 | 1.699 | -12.83% |
+| CELT NB 2.5 ms, stereo, 48 kHz, PLC return | 2.002 | 1.717 | -13.70% |
+| CELT FB 20 ms, stereo, 48 kHz, PLC return | 1.380 | 1.365 | -1.11% |
+
+Eight selected medians improve and one increases. Small changes remain sensitive
+to host variation. All 1,080 generated mode/bandwidth/duration/channel/output-rate
+and decode/PLC-return/FEC-return traces retain their baseline PCM fingerprints;
+sample counts, finite PCM and ordinary entropy intervals also pass. Hashing runs
+outside the timing loops. This verifies preserved output on these generated
+streams; speech listening quality and official-vector scores were not remeasured.
+All 282 debug tests and 297 release tests, including public libopus reference
+checks, pass. Allocation and small-stack checks, Opus clippy and transform-plan
+reproduction pass.
+
+The [complete exploratory decoder matrix](measurements/2026-10-14-x86_64-opus-matrix.csv)
+uses 100 batches per case on this frozen source and completes all 1,080 cases
+without failures. Median p50/libopus ratios are 1.169 for SILK, 1.139 for Hybrid
+and 1.374 for CELT. 1,020 cases exceed libopus at one or more reported percentiles.
+This quick run identifies gaps; final acceptance requires 1,000 batches per case.
+The separate [88-case encoder run](measurements/2026-10-14-x86_64-opus-encoder.csv)
+uses 1,000 batches: median p50 ratios are 0.627 for SILK, 1.109 for Hybrid and
+0.587 for CELT. Sixteen encoder cases exceed libopus at p50 and 71 at one or more
+reported percentiles. Equal packet budgets do not establish equivalent quality.
+**Full libopus parity remains unmet.** These measurements cover this x86-64 host;
+ARM64 must be measured separately.
+
+Reproduce the complete decoder run with the driver below. Use `--quick` for
+exploration or `--validate-only` to generate the deterministic `.bit` inputs and
+check functionality. For before/after comparisons, build each library at its
+recorded snapshot, compile both standalone probes from the same current
+`tools/reference/benchmark_opus_decode.rs` with `-O -C overflow-checks=yes`, then
+run `matrix RATE CHANNELS SCHEDULE 1000 400000 FILE.bit` three times, reversing
+probe order on the second repetition and retaining both raw outputs.
+
+```sh
+python3 tools/reference/benchmark_opus_matrix.py /path/to/libopus.so \
+  --output-dir /tmp/snacka-opus-parity --require-parity
+```
+
+`--require-parity` returns failure if any case is missing, fails validation,
+changes source during measurement or exceeds libopus at p50, p95 or p99. It
+requires the full timed matrix and rejects quick, validation-only and filtered
+runs. Remaining work prioritizes CELT decoding/PLC, below-native-rate SILK
+filtering, Hybrid encoding and all encoder tails.
+
 Official RFC 8251 vectors are downloaded independently:
 
 ```sh

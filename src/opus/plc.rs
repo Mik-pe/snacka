@@ -202,32 +202,29 @@ impl LossPredictor {
                 first += f64::from(self.recent[channel][offset - 1]).powi(2);
             }
         }
-        let score = |lag: usize| {
-            let mut cross = 0.0f64;
-            let mut second = 1e-15f64;
-            for offset in (1..=window).step_by(4) {
-                for channel in 0..CHANNELS {
-                    // Differencing reduces DC and gives pitch harmonics a
-                    // comparable weight without an additional filter state.
-                    let a = self.recent[channel][offset - 1];
-                    let b = self.recent[channel][offset + lag - 1];
-                    cross += f64::from(a) * f64::from(b);
-                    second += f64::from(b).powi(2);
-                }
-            }
-            (cross / (first * second).sqrt()) as f32
-        };
         let mut best = 0.0;
         let mut pitch = 40;
-        for lag in (40..=maximum).step_by(4) {
-            let candidate = score(lag);
+        let mut lag = 40;
+        while lag + 12 <= maximum {
+            let candidates = self.pitch_scores::<CHANNELS, 4>(first, lag, window);
+            for (lane, candidate) in candidates.into_iter().enumerate() {
+                if candidate > best + 0.01 {
+                    best = candidate;
+                    pitch = lag + lane * 4;
+                }
+            }
+            lag += 16;
+        }
+        while lag <= maximum {
+            let candidate = self.pitch_scores::<CHANNELS, 1>(first, lag, window)[0];
             if candidate > best + 0.01 {
                 best = candidate;
                 pitch = lag;
             }
+            lag += 4;
         }
         for lag in pitch.saturating_sub(3).max(40)..=(pitch + 3).min(maximum) {
-            let candidate = score(lag);
+            let candidate = self.pitch_scores::<CHANNELS, 1>(first, lag, window)[0];
             if candidate > best {
                 best = candidate;
                 pitch = lag;
@@ -235,6 +232,30 @@ impl LossPredictor {
         }
         self.pitch = pitch;
         self.periodicity = ((best - 0.45) / 0.45).clamp(0.0, 1.0);
+    }
+
+    fn pitch_scores<const CHANNELS: usize, const LANES: usize>(
+        &self,
+        first: f64,
+        lag: usize,
+        window: usize,
+    ) -> [f32; LANES] {
+        // Share reference samples across adjacent coarse lags. Every lane
+        // retains the scalar offset/channel sum order and its own energy.
+        let mut cross = [0.0f64; LANES];
+        let mut second = [1e-15f64; LANES];
+        for offset in (1..=window).step_by(4) {
+            for channel in 0..CHANNELS {
+                let recent = &self.recent[channel];
+                let a = f64::from(recent[offset - 1]);
+                for lane in 0..LANES {
+                    let b = f64::from(recent[offset + lag + lane * 4 - 1]);
+                    cross[lane] += a * b;
+                    second[lane] += b * b;
+                }
+            }
+        }
+        std::array::from_fn(|lane| (cross[lane] / (first * second[lane]).sqrt()) as f32)
     }
 
     fn envelope(age: usize) -> f32 {
@@ -265,6 +286,7 @@ impl LossPredictor {
         }
         let periodicity = if allow_pitch { self.periodicity } else { 0.0 };
         let noise_mix = (1.0 - periodicity * periodicity).sqrt();
+        let unfaded = self.elapsed.saturating_add(samples + LOSS_LOOKAHEAD) <= 961;
         for (channel, values) in output.iter_mut().enumerate().take(channels) {
             for sample in 0..samples + LOSS_LOOKAHEAD {
                 let previous = |lag: usize| {
@@ -274,12 +296,15 @@ impl LossPredictor {
                         self.past(channel, lag - sample)
                     }
                 };
-                let envelope = Self::envelope(self.elapsed.saturating_add(sample));
-                let former = Self::envelope(
-                    self.elapsed
-                        .saturating_add(sample)
-                        .saturating_sub(self.pitch),
-                );
+                let (envelope, former) = if unfaded {
+                    (1.0, 1.0)
+                } else {
+                    let age = self.elapsed.saturating_add(sample);
+                    (
+                        Self::envelope(age),
+                        Self::envelope(age.saturating_sub(self.pitch)),
+                    )
+                };
                 let periodic = previous(self.pitch) * envelope / former.max(1e-10);
                 // A nonzero periodic sample is unchanged by the zero-weighted
                 // spectral/noise terms. Retain their signed-zero arithmetic
@@ -287,6 +312,14 @@ impl LossPredictor {
                 let exact_periodic = periodicity == 1.0 && periodic != 0.0;
                 let spectral = if exact_periodic {
                     0.0
+                } else if sample >= LOSS_ORDER {
+                    // Once the forecast supplies the entire LPC window, no
+                    // tap can refer to the ring or need its clamp/bounds test.
+                    self.coefficients[channel]
+                        .iter()
+                        .zip(values[sample - LOSS_ORDER..sample].iter().rev())
+                        .map(|(&coefficient, &past)| coefficient * past)
+                        .sum::<f32>()
                 } else {
                     self.coefficients[channel]
                         .iter()
@@ -315,6 +348,51 @@ impl LossPredictor {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn paired_pitch_scores_preserve_scalar_order_for_all_coarse_lags() {
+        let mut predictor = LossPredictor::new();
+        for (channel, recent) in predictor.recent.iter_mut().enumerate() {
+            for (index, sample) in recent.iter_mut().enumerate() {
+                *sample = match index % 7 {
+                    0 => -0.0,
+                    1 => f32::from_bits(1),
+                    _ => ((index * 73 + channel * 19) % 103) as f32 / 64.0 - 0.8,
+                };
+            }
+        }
+        for channels in [1, 2] {
+            for window in [1, 239, 240, 479, 480] {
+                let mut first = 1e-15f64;
+                for offset in (1..=window).step_by(4) {
+                    for channel in 0..channels {
+                        first += f64::from(predictor.recent[channel][offset - 1]).powi(2);
+                    }
+                }
+                for lag in (40..=948).step_by(16) {
+                    let actual = if channels == 1 {
+                        predictor.pitch_scores::<1, 4>(first, lag, window)
+                    } else {
+                        predictor.pitch_scores::<2, 4>(first, lag, window)
+                    };
+                    for (lane, candidate) in actual.into_iter().enumerate() {
+                        let mut cross = 0.0f64;
+                        let mut second = 1e-15f64;
+                        for offset in (1..=window).step_by(4) {
+                            for channel in 0..channels {
+                                let a = predictor.recent[channel][offset - 1];
+                                let b = predictor.recent[channel][offset + lag + lane * 4 - 1];
+                                cross += f64::from(a) * f64::from(b);
+                                second += f64::from(b).powi(2);
+                            }
+                        }
+                        let expected = (cross / (first * second).sqrt()) as f32;
+                        assert_eq!(candidate.to_bits(), expected.to_bits());
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn cached_differences_preserve_signed_zero_clipping_and_ring_wrap() {
