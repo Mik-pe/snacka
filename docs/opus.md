@@ -197,6 +197,22 @@ cases (both output channel counts and all five output rates) measured 2.4–2.8x
 faster at p50 on the same M5. This measures initialization against the preceding
 Snacka implementation, separately from packet processing and libopus parity.
 
+A frozen-source follow-up at `c7e9ca6` measured 90 selected complete-decoder
+cases against libopus 1.6.1, using 1,000 alternating batches and the same changing
+packets. Each selected geometry covers both channel counts, all five output
+rates, ordinary decode, PLC return and FEC return. Functional checks passed;
+this is partial performance coverage, not the complete 1,080-case matrix:
+
+| Selected wire geometry | Cases | Median p50 ratio | Largest p50 ratio |
+| --- | ---: | ---: | ---: |
+| SILK NB, 20 ms | 30 | 1.091 | 1.226 |
+| Hybrid FB, 20 ms | 30 | 1.024 | 1.310 |
+| CELT FB, 2.5 ms | 30 | 1.070 | 1.180 |
+
+Ratios above one are slower than libopus. p95/p99 also contain slower cases;
+the performance target remains unmet. These are continuous-stream batch averages
+on generated voiced input, excluding construction, reset, validation and I/O.
+
 Official RFC 8251 vectors are downloaded independently:
 
 ```sh
