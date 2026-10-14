@@ -8,6 +8,34 @@ use super::{Frame, FrameType, QuantizationOffset, SignalType};
 const MAX_SAMPLES: usize = 320;
 const MAX_ORDER: usize = 16;
 const OUTPUT_HISTORY: usize = 306;
+// A stable encoder-only feedback pole colors quantization error toward lower
+// frequencies, rather than spreading equal-power error across quiet high bands.
+const NOISE_POLE: f64 = 0.65;
+
+fn noise_pole(samples: &[f32], gain: f64) -> f64 {
+    let energy: f64 = samples
+        .iter()
+        .map(|&sample| f64::from(sample).powi(2))
+        .sum();
+    // Leave already fine quantization alone. For unit cells, the unshaped
+    // noise-power estimate is step^2/12; color only when estimated noise exceeds
+    // one percent of input energy (estimated quantization SNR below 20 dB).
+    let noise = (gain / 32_768.0).powi(2) * samples.len() as f64 / 12.0;
+    if noise <= 0.01 * energy {
+        return 0.0;
+    }
+    let correlation: f64 = samples
+        .windows(2)
+        .map(|pair| f64::from(pair[0]) * f64::from(pair[1]))
+        .sum();
+    // A low-pass error spectrum only matches a sufficiently dark input.
+    // Retain unshaped cells for bright/noisy audio and silence.
+    if energy > 1e-15 && correlation > 0.9 * energy {
+        NOISE_POLE
+    } else {
+        0.0
+    }
+}
 
 #[derive(Clone, Copy)]
 pub(super) struct History {
@@ -15,6 +43,7 @@ pub(super) struct History {
     pub(super) gain: Option<i32>,
     pub(super) output: [f64; OUTPUT_HISTORY],
     pub(super) voiced: bool,
+    pub(super) shaping_error: f64,
 }
 
 impl History {
@@ -24,6 +53,7 @@ impl History {
             gain: None,
             output: [0.0; OUTPUT_HISTORY],
             voiced: false,
+            shaping_error: 0.0,
         }
     }
 }
@@ -73,6 +103,7 @@ pub(super) struct Parameters<'a> {
     pub(super) conditional: bool,
     pub(super) seed: u8,
     pub(super) pitch: Pitch,
+    pub(super) low_rate: bool,
 }
 
 fn nearest_pulse(center: f64) -> i16 {
@@ -109,6 +140,7 @@ fn quantize_order<const ORDER: usize>(samples: &[f32], parameters: Parameters<'_
         conditional,
         seed,
         pitch,
+        low_rate,
     } = parameters;
     let (gain_symbols, gain_index) = gain_symbols(previous.gain, requested_gain, conditional);
     let gain = f64::from(gain_q16(gain_index)) / 65_536.0;
@@ -127,6 +159,11 @@ fn quantize_order<const ORDER: usize>(samples: &[f32], parameters: Parameters<'_
         .taps
         .map(|taps| taps.map(|value| f64::from(value) / 16384.0));
     let mut history = previous;
+    let noise_pole = if low_rate {
+        noise_pole(samples, gain)
+    } else {
+        0.0
+    };
     let mut seed = u32::from(seed);
     let mut pulses = [0; MAX_SAMPLES];
     let mut distortion = 0.0;
@@ -161,7 +198,8 @@ fn quantize_order<const ORDER: usize>(samples: &[f32], parameters: Parameters<'_
                 ltp_prediction += residual[position - pitch.lag + 2 - tap] * coefficient;
             }
         }
-        let target = f64::from(sample) - predicted - gain * ltp_prediction;
+        let unshaped_target = f64::from(sample) - predicted - gain * ltp_prediction;
+        let target = unshaped_target + noise_pole * history.shaping_error;
         seed = seed.wrapping_mul(196_314_165).wrapping_add(907_633_515);
         let modulation = if seed & 0x8000_0000 == 0 { 1.0 } else { -1.0 };
         let chosen = nearest_pulse(target * 32_768.0 * modulation / gain - offset);
@@ -169,11 +207,12 @@ fn quantize_order<const ORDER: usize>(samples: &[f32], parameters: Parameters<'_
             (f64::from(chosen) - f64::from(chosen.signum()) * (20.0 / 256.0) + offset) * modulation;
         let reconstructed = excitation * gain / 32_768.0;
         pulses[index] = chosen;
-        distortion += (target - reconstructed).powi(2);
+        distortion += (unshaped_target - reconstructed).powi(2);
         seed = seed.wrapping_add_signed(i32::from(chosen));
         history.lpc.copy_within(0..MAX_ORDER - 1, 1);
         residual[position] = reconstructed / gain + ltp_prediction;
         history.lpc[0] = predicted + gain * residual[position];
+        history.shaping_error = history.lpc[0] - f64::from(sample);
         outputs[position] = history.lpc[0].clamp(-1.0, 1.0);
     }
     // The final MB tail is coded as zero, but never contributes predictor
@@ -242,6 +281,7 @@ mod tests {
                             conditional: false,
                             seed,
                             pitch: Pitch::NONE,
+                            low_rate: true,
                         },
                     );
                     let mut excitation = [0; 80];
@@ -261,6 +301,65 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn shaped_cells_are_nearest_in_independent_decoder_reconstruction() {
+        let frame = Frame {
+            bandwidth: Bandwidth::Narrow,
+            duration: FrameDuration::Ms10,
+        };
+        let kind = FrameType {
+            signal: SignalType::Unvoiced,
+            offset: QuantizationOffset::Low,
+        };
+        let samples: [f32; 80] =
+            std::array::from_fn(|i| 0.2 * (i as f32 * 0.29).sin() + 0.03 * (i as f32 * 1.31).cos());
+        let chosen = quantize(
+            &samples,
+            Parameters {
+                frame,
+                kind,
+                coefficients: &[0; 10],
+                previous: History::new(),
+                requested_gain: 48,
+                conditional: false,
+                seed: 2,
+                pitch: Pitch::NONE,
+                low_rate: true,
+            },
+        );
+        let mut excitation = [0; 80];
+        reconstruct_excitation(&chosen.pulses[..80], kind, 2, &mut excitation).unwrap();
+        let scale = f64::from(gain_q16(48)) / (65_536.0 * 8_388_608.0);
+        let mut previous_error = 0.0;
+        for i in 0..80 {
+            let actual = f64::from(excitation[i]) * scale;
+            let wanted = f64::from(samples[i]) + 0.65 * previous_error;
+            let actual_error = (actual - wanted).powi(2);
+            for delta in [-2, -1, 1, 2] {
+                let mut alternative = chosen.pulses;
+                alternative[i] += delta;
+                let mut oracle = [0; 80];
+                reconstruct_excitation(&alternative[..=i], kind, 2, &mut oracle).unwrap();
+                let value = f64::from(oracle[i]) * scale;
+                assert!(actual_error <= (value - wanted).powi(2) + 1e-16);
+            }
+            previous_error = actual - f64::from(samples[i]);
+        }
+        assert!((chosen.history.shaping_error - previous_error).abs() < 1e-12);
+    }
+
+    #[test]
+    fn error_coloring_only_follows_dark_nonzero_input() {
+        assert_eq!(noise_pole(&[0.0; 80], 3000.0), 0.0);
+        assert_eq!(noise_pole(&[0.1; 80], 3000.0), 0.65);
+        assert_eq!(noise_pole(&[0.1; 80], 1.25), 0.0);
+        let bright: [f32; 80] = std::array::from_fn(|i| if i % 2 == 0 { 0.1 } else { -0.1 });
+        assert_eq!(noise_pole(&bright, 3000.0), 0.0);
+        let mut impulse = [0.0; 80];
+        impulse[40] = 0.1;
+        assert_eq!(noise_pole(&impulse, 3000.0), 0.0);
     }
 
     #[test]

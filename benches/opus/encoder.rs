@@ -11,16 +11,59 @@ use snacka::opus::{
 };
 
 #[derive(Clone, Copy)]
-struct Case {
+pub(super) struct Case {
     mode: Mode,
     bandwidth: Bandwidth,
     duration: FrameDuration,
     channels: usize,
     signal: Signal,
+    requested_override: Option<u32>,
+}
+
+pub(super) fn parse_case(arguments: &mut impl Iterator<Item = String>) -> Case {
+    let mut next = || {
+        arguments
+            .next()
+            .expect("--encoder-case MODE BW MS CHANNELS BITRATE")
+    };
+    let mode = match next().as_str() {
+        "silk" => Mode::Silk,
+        "hybrid" => Mode::Hybrid,
+        "celt" => Mode::Celt,
+        _ => panic!("encoder mode must be silk, hybrid or celt"),
+    };
+    let bandwidth = match next().as_str() {
+        "NB" => Bandwidth::Narrowband,
+        "MB" => Bandwidth::Mediumband,
+        "WB" => Bandwidth::Wideband,
+        "SWB" => Bandwidth::Superwideband,
+        "FB" => Bandwidth::Fullband,
+        _ => panic!("invalid encoder bandwidth"),
+    };
+    let duration = match next().as_str() {
+        "2.5" => FrameDuration::Ms2_5,
+        "5" => FrameDuration::Ms5,
+        "10" => FrameDuration::Ms10,
+        "20" => FrameDuration::Ms20,
+        "40" => FrameDuration::Ms40,
+        "60" => FrameDuration::Ms60,
+        _ => panic!("invalid encoder duration"),
+    };
+    Case {
+        mode,
+        bandwidth,
+        duration,
+        channels: next().parse().expect("encoder channels"),
+        signal: Signal::Voiced,
+        requested_override: Some(next().parse().expect("encoder bitrate")),
+    }
 }
 
 impl Case {
     fn requested_bitrate(self) -> u32 {
+        if let Some(bitrate) = self.requested_override {
+            return bitrate;
+        }
         let mono = match (self.mode, self.bandwidth) {
             (Mode::Silk, Bandwidth::Narrowband) => 12_000,
             (Mode::Silk, Bandwidth::Mediumband) => 16_000,
@@ -219,6 +262,12 @@ pub(super) fn run(options: &Options) {
     } else {
         &[Signal::Voiced]
     };
+    if let Some(case) = options.encoder_case {
+        for &signal in signals {
+            run_case(Case { signal, ..case }, options);
+        }
+        return;
+    }
     let all = [
         FrameDuration::Ms2_5,
         FrameDuration::Ms5,
@@ -276,6 +325,7 @@ pub(super) fn run(options: &Options) {
                                 duration,
                                 channels,
                                 signal,
+                                requested_override: None,
                             },
                             options,
                         );

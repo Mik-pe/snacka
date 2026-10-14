@@ -1,0 +1,135 @@
+{
+  "repository": "cmusphinx/an4",
+  "commit": "b567d132f43304e70a2b2eca6077f22255311812",
+  "selection": "First four sorted speakers of each official train/test split, first two sorted cen utterances each; selected before scoring.",
+  "clips": [
+    {
+      "split": "development",
+      "speaker": "fash",
+      "clip": "cen1-fash-b.wav",
+      "path": "wav/an4_clstk/fash/cen1-fash-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4_clstk/fash/cen1-fash-b.wav",
+      "sha256": "460b03afd86370a57f092d7d6013636ff9fd1be65e4aea7ca06c32e1cf05f1d4"
+    },
+    {
+      "split": "development",
+      "speaker": "fash",
+      "clip": "cen2-fash-b.wav",
+      "path": "wav/an4_clstk/fash/cen2-fash-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4_clstk/fash/cen2-fash-b.wav",
+      "sha256": "1bfec8115537ef64e9bc254596aac5a0bb87b6bab6e20e5b0a87e5af37378611"
+    },
+    {
+      "split": "development",
+      "speaker": "fbbh",
+      "clip": "cen1-fbbh-b.wav",
+      "path": "wav/an4_clstk/fbbh/cen1-fbbh-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4_clstk/fbbh/cen1-fbbh-b.wav",
+      "sha256": "b96250e5bb52981d19ac6e07fe993b9ba989ad765a7f2f19bd649c07c66bf9e5"
+    },
+    {
+      "split": "development",
+      "speaker": "fbbh",
+      "clip": "cen2-fbbh-b.wav",
+      "path": "wav/an4_clstk/fbbh/cen2-fbbh-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4_clstk/fbbh/cen2-fbbh-b.wav",
+      "sha256": "38630f1a2d72c6ac3c67188293f0c810c988ade95be9d7badce3032eaa967d16"
+    },
+    {
+      "split": "development",
+      "speaker": "fclc",
+      "clip": "cen1-fclc-b.wav",
+      "path": "wav/an4_clstk/fclc/cen1-fclc-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4_clstk/fclc/cen1-fclc-b.wav",
+      "sha256": "f1ea30d70ebf93f9a62c6475eac7b4f9faeb25b7d2172d87cbfec1935aa40b4e"
+    },
+    {
+      "split": "development",
+      "speaker": "fclc",
+      "clip": "cen2-fclc-b.wav",
+      "path": "wav/an4_clstk/fclc/cen2-fclc-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4_clstk/fclc/cen2-fclc-b.wav",
+      "sha256": "012e5637f30fdb3d05a87e736cbf51ed6bd9da7e3cac4ae897466b4a303ea85c"
+    },
+    {
+      "split": "development",
+      "speaker": "fejs",
+      "clip": "cen1-fejs-b.wav",
+      "path": "wav/an4_clstk/fejs/cen1-fejs-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4_clstk/fejs/cen1-fejs-b.wav",
+      "sha256": "a1f4f1f642b9839cba64dd2c1c814f0192f4e99745fb05d9e365d5263bdb718a"
+    },
+    {
+      "split": "development",
+      "speaker": "fejs",
+      "clip": "cen2-fejs-b.wav",
+      "path": "wav/an4_clstk/fejs/cen2-fejs-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4_clstk/fejs/cen2-fejs-b.wav",
+      "sha256": "f201fbcafc20e4f2dd3d2fb1e0f5af72fa07e2b5ddcdb083f064f2f281602196"
+    },
+    {
+      "split": "evaluation",
+      "speaker": "fcaw",
+      "clip": "cen1-fcaw-b.wav",
+      "path": "wav/an4test_clstk/fcaw/cen1-fcaw-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4test_clstk/fcaw/cen1-fcaw-b.wav",
+      "sha256": "90abde1683ad89638a1a76d87d771a2d96daf098fe1678775c61919a9f8c1521"
+    },
+    {
+      "split": "evaluation",
+      "speaker": "fcaw",
+      "clip": "cen2-fcaw-b.wav",
+      "path": "wav/an4test_clstk/fcaw/cen2-fcaw-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4test_clstk/fcaw/cen2-fcaw-b.wav",
+      "sha256": "cf75f34616f49180504029b1bd3909b4c4f293b3c2852c4e2a4e7586eec36714"
+    },
+    {
+      "split": "evaluation",
+      "speaker": "fjlp",
+      "clip": "cen1-fjlp-b.wav",
+      "path": "wav/an4test_clstk/fjlp/cen1-fjlp-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4test_clstk/fjlp/cen1-fjlp-b.wav",
+      "sha256": "e84cd366f1d02666fc76494197fddfb710cd81b4ace0e35064f83b044f5cca2b"
+    },
+    {
+      "split": "evaluation",
+      "speaker": "fjlp",
+      "clip": "cen2-fjlp-b.wav",
+      "path": "wav/an4test_clstk/fjlp/cen2-fjlp-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4test_clstk/fjlp/cen2-fjlp-b.wav",
+      "sha256": "a643f71722589ee76f3f2ad4f34579c6d6a33502108440da05db4d05fc960ff8"
+    },
+    {
+      "split": "evaluation",
+      "speaker": "fvap",
+      "clip": "cen1-fvap-b.wav",
+      "path": "wav/an4test_clstk/fvap/cen1-fvap-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4test_clstk/fvap/cen1-fvap-b.wav",
+      "sha256": "a7cabd567c9638b906ac85b3b1c3e1b96280895dbd1b3f91317cc308a94f5fe7"
+    },
+    {
+      "split": "evaluation",
+      "speaker": "fvap",
+      "clip": "cen2-fvap-b.wav",
+      "path": "wav/an4test_clstk/fvap/cen2-fvap-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4test_clstk/fvap/cen2-fvap-b.wav",
+      "sha256": "42e8da9176fbd2675c4d25802ace50ce03625c7717061d9e5b2330c1ed6aac72"
+    },
+    {
+      "split": "evaluation",
+      "speaker": "marh",
+      "clip": "cen1-marh-b.wav",
+      "path": "wav/an4test_clstk/marh/cen1-marh-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4test_clstk/marh/cen1-marh-b.wav",
+      "sha256": "9d4646119ea96e2b101d8f6258d5d2584669d81bc1dccbb647d70ae5ada8fc67"
+    },
+    {
+      "split": "evaluation",
+      "speaker": "marh",
+      "clip": "cen2-marh-b.wav",
+      "path": "wav/an4test_clstk/marh/cen2-marh-b.wav",
+      "url": "https://raw.githubusercontent.com/cmusphinx/an4/b567d132f43304e70a2b2eca6077f22255311812/wav/an4test_clstk/marh/cen2-marh-b.wav",
+      "sha256": "e4138a33c4188cb19d66aa7b19fa58bc213ee67d439a12f9a473be98721e98fa"
+    }
+  ]
+}

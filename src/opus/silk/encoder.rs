@@ -273,6 +273,37 @@ impl SilkEncoder {
                         best = choose_stage(&mono[..samples], parameters, per_frame);
                     }
                 }
+                if let Some((_, _, error)) = &best {
+                    let energy = mono[..samples]
+                        .iter()
+                        .map(|&value| f64::from(value).powi(2))
+                        .sum::<f64>();
+                    // A predictor can fit the packet while leaving too few
+                    // bits for its excitation. Compare a broad, cheaper model
+                    // before accepting a frame with more than 25% error power.
+                    if *error > energy * 0.25 {
+                        let alternative = StageParameters {
+                            spectrum: broaden(spectrum, frame.bandwidth, 0.6),
+                            pitch: Pitch::NONE,
+                            kind: FrameType {
+                                signal: if kind.signal == SignalType::Inactive {
+                                    SignalType::Inactive
+                                } else {
+                                    SignalType::Unvoiced
+                                },
+                                ..kind
+                            },
+                            ..parameters
+                        };
+                        if let Some(candidate) =
+                            choose_stage(&mono[..samples], alternative, per_frame)
+                            && candidate.2 < *error
+                        {
+                            best = Some(candidate);
+                            parameters = alternative;
+                        }
+                    }
+                }
                 let Some((stage, committed, error)) = best else {
                     return Err(Error::Output);
                 };
@@ -363,7 +394,7 @@ fn choose_stage(
     parameters: StageParameters,
     budget: f32,
 ) -> Option<(CodedFrame, History, f64)> {
-    let mut best = None;
+    let mut best: Option<(CodedFrame, History, f64)> = None;
     let mut lower = 0;
     let mut upper = 63;
     while lower <= upper {
@@ -379,6 +410,8 @@ fn choose_stage(
                 conditional: parameters.conditional,
                 seed: 0,
                 pitch: parameters.pitch,
+                // At generous budgets, preserve ordinary fine quantization.
+                low_rate: budget <= samples.len() as f32 * 1.5,
             },
         );
         let stage = CodedFrame {
@@ -394,7 +427,15 @@ fn choose_stage(
             coded: true,
         };
         if estimated_cost(parameters.frame, &stage).unwrap_or(f32::INFINITY) <= budget {
-            best = Some((stage, candidate.history, candidate.distortion));
+            // A smaller gain is not necessarily less distorted once causal
+            // reconstruction changes future predictor history. Keep the best
+            // fitting reconstruction among the candidates already evaluated.
+            if best
+                .as_ref()
+                .is_none_or(|(_, _, error)| candidate.distortion <= *error)
+            {
+                best = Some((stage, candidate.history, candidate.distortion));
+            }
             upper = gain - 1;
         } else {
             lower = gain + 1;
@@ -495,6 +536,66 @@ pub(super) fn estimated_cost(frame: Frame, stage: &CodedFrame) -> Result<f32, Er
 mod tests {
     use super::*;
     use crate::opus::silk::SilkDecoder;
+
+    #[test]
+    fn low_rate_formant_signal_has_bounded_reconstruction_error() {
+        // Independent voiced excitation with three broad formant regions and
+        // a changing amplitude. A sine-only test misses spectral side-info
+        // consuming the bits that a low-rate rest signal needs.
+        let frame = Frame {
+            bandwidth: Bandwidth::Wide,
+            duration: FrameDuration::Ms20,
+        };
+        let mut encoder = SilkEncoder::new();
+        let mut decoder = SilkDecoder::new();
+        let mut signal = [0.0; 320];
+        let mut decoded = [0.0; 320];
+        let mut last_input = 0.0;
+        let mut energy = 0.0;
+        let mut error = 0.0;
+        for packet in 0..24 {
+            for (index, sample) in signal.iter_mut().enumerate() {
+                let time = (packet * 320 + index) as f64 / 16_000.0;
+                let amplitude = 0.02 * (1.0 + 0.6 * (time * 13.0).sin());
+                let mut value = 0.0;
+                for harmonic in 1..=28 {
+                    let frequency = harmonic as f64 * 137.0;
+                    let envelope = [650.0, 1200.0, 2500.0]
+                        .into_iter()
+                        .map(|center| 1.0 / (1.0 + ((frequency - center) / 160.0).powi(2)))
+                        .sum::<f64>();
+                    value += envelope * (time * std::f64::consts::TAU * frequency).sin();
+                }
+                *sample = (amplitude * value) as f32;
+            }
+            let mut bytes = [0; 64];
+            let mut entropy = RangeEncoder::new(&mut bytes);
+            let stats = encoder
+                .encode_layer(&mut entropy, frame, PacketDuration::Ms20, 1, &signal, 232)
+                .unwrap();
+            assert!(stats.bits <= 232);
+            let expected_range = entropy.range();
+            let length = entropy.finish().unwrap();
+            let mut entropy = crate::entropy::Decoder::new(&bytes[..length]);
+            decoder
+                .decode(&mut entropy, frame, PacketDuration::Ms20, 1, &mut decoded)
+                .unwrap();
+            assert_eq!(entropy.range(), expected_range);
+            for (&input, &output) in signal.iter().zip(&decoded) {
+                energy += f64::from(last_input).powi(2);
+                error += f64::from(output - last_input).powi(2);
+                last_input = input;
+            }
+        }
+        let snr = 10.0 * (energy / error).log10();
+        // A waveform regression guard, independent of the encoder's retry
+        // trigger: error must stay below 40% of this bright signal's energy.
+        // The old fitting-but-coarse model has more error power than signal.
+        assert!(
+            error < 0.4 * energy,
+            "low-rate formant reconstruction SNR={snr}"
+        );
+    }
 
     #[test]
     fn real_audio_encodes_all_rates_durations_and_channels_with_exact_ranges() {

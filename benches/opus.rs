@@ -48,6 +48,7 @@ struct Options {
     input_channels: usize,
     bandwidth: Bandwidth,
     encoder_all: bool,
+    encoder_case: Option<encoder_bench::Case>,
     decode_only: bool,
 }
 impl Options {
@@ -60,6 +61,7 @@ impl Options {
             input_channels: 1,
             bandwidth: Bandwidth::Fullband,
             encoder_all: false,
+            encoder_case: None,
             decode_only: false,
         };
         let mut input_path = None;
@@ -69,6 +71,11 @@ impl Options {
                 "--quick" => options.quick = true,
                 "--full" => options.full = true,
                 "--encoder-all" => options.encoder_all = true,
+                "--encoder-case" => {
+                    assert!(options.encoder_case.is_none(), "one --encoder-case per run");
+                    options.encoder_all = true;
+                    options.encoder_case = Some(encoder_bench::parse_case(&mut arguments));
+                }
                 "--decode-only" => options.decode_only = true,
                 "--frames" => {
                     options.frames = arguments.next().expect("--frames N").parse().unwrap();

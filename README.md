@@ -39,6 +39,8 @@ budgets, bandwidth, channels, frame duration and comparable delay, including
 noise and packet loss. Acceptance requires held-out perceptual measurements and
 blind listening; interoperability and throughput alone do not meet it. See the
 [quality acceptance criteria](docs/implementation.md#quality-goal).
+The [real-speech evaluation](docs/opus.md#speech-quality-improvement-on-x86-64-2026-10-14)
+shows improved SILK/Hybrid reconstruction and remaining gaps to the reference.
 
 ## Native Snacka format
 
