@@ -1,0 +1,131 @@
+{
+  "kind": "PUBLICATION_OF_FIXED_BASELINE_EXPLORATORY100",
+  "source_commit": "4340e8d16a9251cf83a6635fe01c64dc1f0aa469",
+  "manifest_sha256": "3406ad4a01c95411afb4f82e469c1f90944a087e939166ef5cb327a4465daa12",
+  "production_profile": "4340e8d-production-Cargo-lto-default-false-ThinLOCAL-CGU16;bridge-direct-rustc-default-ThinLOCAL-CGU16;EXPLORATORY100",
+  "expected_cases": 2130,
+  "retained_cases": 2130,
+  "group_rows": 48,
+  "statuses": {
+    "OK": 2130
+  },
+  "owned_raw_batch_values": 213000,
+  "native_raw_batch_values": 213000,
+  "all_actual_batch_values": 426000,
+  "minimum_actual_batch_ns": 395333,
+  "maximum_actual_batch_ns": 137289209,
+  "raw_results_directory": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/results/raw",
+  "raw_array_location": "Each of2130retained raw/*.stdout JSON files has100owned_batch_ns and100reference_batch_ns entries. Full progress.json contains hashes for6390raw stdout/stderr/record files. No large raw arrays or PCM duplicated in this publication bundle.",
+  "references": {
+    "full_frozen_manifest": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/manifest.json",
+      "sha256": "3406ad4a01c95411afb4f82e469c1f90944a087e939166ef5cb327a4465daa12",
+      "bytes": 19607
+    },
+    "root_freeze_review": {
+      "path": "/tmp/snacka-parity-20261015/full-m5-root-freeze-review.json",
+      "sha256": "68daf3a905a814a4df2f5b672795c997e0cd687aaea3540a93e6527cbdb00b94",
+      "bytes": 606
+    },
+    "root_start_receipt": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/root-start.json",
+      "sha256": "8961f6512c0b87f971b0d0556ee56dffc98cd7a6b5f030136bd744c93d5b671f",
+      "bytes": 562
+    },
+    "root_raw_data_audit": {
+      "path": "/tmp/snacka-parity-20261015/full-m5-root-data-audit.json",
+      "sha256": "c4446a4880953cc7bf56eeaff95c068ad234395db7e0a385bd08a1db11890ccf",
+      "bytes": 2784
+    },
+    "postrun_source_observation_pins": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/postrun-pins.json",
+      "sha256": "44fc7349997d499a4d0fbc1020e3b01d2943e76e9dab2aff4f611faad330b84d",
+      "bytes": 1181
+    },
+    "full_process_records": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/results/cases.jsonl",
+      "sha256": "7af5ff0492f757285e77d1a5dc3462377fb6e0a60371e5b2bbeb0b77061fdeb5",
+      "bytes": 10515866
+    },
+    "full_progress_and_all6390_raw_file_hashes": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/results/progress.json",
+      "sha256": "5fe7c2c17890e8120c1781b0f885b64b50297b11e68aad0a55d7f0ef8c1eb361",
+      "bytes": 593449
+    },
+    "explicit_failures_file": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/results/failures.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "frozen_reporter_bound_report": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/results/report-bound.json",
+      "sha256": "3a70b6fe1abc7b0156eaca1d7e9a5f86bf919ad718b8903236de206827132f26",
+      "bytes": 1295
+    },
+    "full_descriptive_analysis": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/results/analysis-full.json",
+      "sha256": "10c1883a4576f92be2d053e8651eb2829833f77f14f11497a8d9b232226e6199",
+      "bytes": 3582289
+    },
+    "full_analysis_script": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/analyze-results.py",
+      "sha256": "e07065a6b6b23832370641f4f9fb6f178be07e7ec3063feb38277ad0f02548f6",
+      "bytes": 11575
+    },
+    "independent_metadata_analysis": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/independent-analysis/metadata-hotspots.json",
+      "sha256": "3663c94f0b7b14fc176078824b4b3c8305edfd730d95ab3d0bff36689203c7c3",
+      "bytes": 53191
+    },
+    "independent_metadata_analysis_text": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/independent-analysis/metadata-hotspots.txt",
+      "sha256": "ce86bc35aade3c4c9116d8f45b1b48a4f0ecf8ceaa96c8d9d3021058998c9755",
+      "bytes": 6123
+    },
+    "frozen_driver": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/run.py",
+      "sha256": "ed141c08574fad74b30419de7d0b52c7497b14f1d5dbe2c51367c87470be4378",
+      "bytes": 14670
+    },
+    "frozen_reporter": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/report.py",
+      "sha256": "8a60e3104989f9f8cefe79ffcf4ebf5cf1822bbb1daf829a763ff477b166aa53",
+      "bytes": 4735
+    },
+    "frozen_reporter_metadata_wrapper": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/report-metadata.py",
+      "sha256": "25a2759aacba15c7f2c315b36d7419df450b9d96cebea0e8bf995c99eedde6e2",
+      "bytes": 2695
+    },
+    "source_bridge": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/source/tools/reference/benchmark_opus_decode.rs",
+      "sha256": "c6adb009e8e889adf358385d1eeb9c69f557289c60d068acb5bae8b2159f7aeb",
+      "bytes": 37991
+    },
+    "input_inventory": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/inputs.json",
+      "sha256": "fc3f3109b47f4a53e8f261899020425ac3064360b77fad573c78232016b637ec",
+      "bytes": 35384
+    },
+    "case_inventory": {
+      "path": "/private/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/cases.json",
+      "sha256": "4b9b8474d55058b1735855dea85f0fa31d341206ae57865d626f772b921e9471",
+      "bytes": 348641
+    },
+    "publication_preparation_script": {
+      "path": "/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/prepare-publication.py",
+      "sha256": "1d00bb91b50c46707b7647282bc91b8d268f01d68dabce1f244fbeaeeea6cf50",
+      "bytes": 12313
+    }
+  },
+  "timing_or_codec_run_by_publication": false,
+  "rejected_1a_source_or_archive_used": false,
+  "claim": "Exploratory fixed baseline only; no optimization admission, uncertainty/statisticalPASS, deadline acceptance, waveform/perceptual equivalence, or full Opus parity.",
+  "readme_revision": {
+    "scope": "Readability-only revision; CSV/group data and frozen measurements unchanged. Original prepare-publication.py generatedv1; final README is the subsequent reviewed prose revision, not claimed regenerated by that script.",
+    "previous_readme_path": "/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/artifacts/publication-history/v1/README.md",
+    "previous_readme_sha256": "f1faac94ac1fabd7c267b02e2d8f39fffa8bf64a8172c5d1b615bcf7547c5057",
+    "final_readme_sha256": "dd153a38a04964a34ec253957f4c87c6babc60cf4183cbf45f06ae44edf3cfa0",
+    "final_word_count": 841
+  }
+}

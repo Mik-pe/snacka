@@ -1,0 +1,18 @@
+{
+  "README.md": {
+    "sha256": "dd153a38a04964a34ec253957f4c87c6babc60cf4183cbf45f06ae44edf3cfa0",
+    "bytes": 6193
+  },
+  "all-cases.csv": {
+    "sha256": "77f0f83039f7d8a9ba674a881117e083c782199c1843c3b88ed17d2f85ab77ef",
+    "bytes": 451710
+  },
+  "groups.csv": {
+    "sha256": "97da6c10744a86b4c5148eec60729b7a617ab913aabacd4eaecaf6a750664a35",
+    "bytes": 6882
+  },
+  "provenance.json": {
+    "sha256": "2b6eec3d41832be8a8850597a158e004c1dba3ada88aeebe973203f63d855299",
+    "bytes": 6705
+  }
+}

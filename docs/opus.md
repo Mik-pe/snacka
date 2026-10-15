@@ -321,8 +321,12 @@ warmups, calibration or batches. The [long-packet validation note](measurements/
 records the 80/100/120 ms checks and preserves the earlier timing exclusions.
 The broader decoder matrix covers 2,130 mode/bandwidth/duration/channel/rate
 and decode/PLC/FEC-return cases, including aggregated packets through 120 ms.
-Its functional validation passed; final timing
-must bind to the measured source snapshot.
+Its functional validation passed. The [complete M5 baseline](measurements/2026-10-15-macos-full-decoder/README.md)
+records all 2,130 timed cases and 426,000 raw batch durations at source
+`4340e8d`. It is a 100-batch exploratory profile of that source, before the
+last-packet-status API. Median case p50 ratios are 1.138 for SILK, 1.069 for
+CELT and 1.031 for Hybrid. Recovery, waveform and tail qualifications remain
+part of that report; full performance and quality parity are still unmet.
 
 ### Standard input rates and projection encoding, 2026-10-15
 
