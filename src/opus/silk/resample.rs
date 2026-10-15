@@ -512,7 +512,6 @@ impl Resampler {
         const OUTPUTS: usize = 4;
         let first = (6 - self.clock % 6) % 6;
         let origin = first / 3;
-        let origins = [origin, origin + 2, origin + 4, origin + 6];
         let numerators = &plan.numerators[first % 3][..plan.taps];
         // WB-to-8 kHz outputs share one phase, separated by two native samples.
         // Evaluate four together to overlap the long FIR accumulations while
@@ -532,10 +531,26 @@ impl Resampler {
                 self.history[self.cursor + HISTORY] = filtered;
                 self.cursor = (self.cursor + 1) & (HISTORY - 1);
             }
-            let histories = origins.map(|origin| {
-                let begin = ((cursor + origin) & (HISTORY - 1)) + HISTORY - self.delay;
-                &self.history[begin + 1 - plan.taps..=begin]
-            });
+            // Explicit windows avoid array::map's preparation helper while
+            // retaining the same reverse tap index for all four outputs.
+            let histories = [
+                {
+                    let begin = ((cursor + origin) & (HISTORY - 1)) + HISTORY - self.delay;
+                    &self.history[begin + 1 - plan.taps..=begin]
+                },
+                {
+                    let begin = ((cursor + origin + 2) & (HISTORY - 1)) + HISTORY - self.delay;
+                    &self.history[begin + 1 - plan.taps..=begin]
+                },
+                {
+                    let begin = ((cursor + origin + 4) & (HISTORY - 1)) + HISTORY - self.delay;
+                    &self.history[begin + 1 - plan.taps..=begin]
+                },
+                {
+                    let begin = ((cursor + origin + 6) & (HISTORY - 1)) + HISTORY - self.delay;
+                    &self.history[begin + 1 - plan.taps..=begin]
+                },
+            ];
             let mut sums = [0.0; OUTPUTS];
             for tap in 0..plan.taps {
                 for lane in 0..OUTPUTS {
@@ -964,6 +979,72 @@ mod tests {
             let mut tail = [0.0; TAIL_SAMPLES];
             selected.tail_48k(&mut tail).unwrap();
             assert_eq!(tail, full_output[full_output.len() - TAIL_SAMPLES..]);
+        }
+    }
+
+    #[test]
+    fn wide_8k_batched_windows_match_scalar_at_every_ring_cursor_and_clock() {
+        let input: [f32; 31] = std::array::from_fn(|index| match index % 7 {
+            0 => -0.0,
+            1 => 0.0,
+            2 => 1e20,
+            3 => -1e20,
+            _ => ((index * 73 % 103) as f32 - 51.0) / 64.0,
+        });
+        let coefficients = low_pass(8_000);
+        for cursor in 0..HISTORY {
+            for clock in 0..12 {
+                for taps in [1, 13, 49, 97] {
+                    let plan =
+                        FilterPlan::new(Bandwidth::Wide, 8_000, &coefficients[..taps]).unwrap();
+                    for width in [0, 1, 7, 8, 9, 16, 31] {
+                        for zero_history in [false, true] {
+                            let mut scalar = Resampler::new(Bandwidth::Wide);
+                            scalar.cursor = cursor;
+                            scalar.clock = clock;
+                            for index in 0..HISTORY {
+                                let value = if zero_history || index % 5 < 2 {
+                                    if index % 2 == 0 { -0.0 } else { 0.0 }
+                                } else {
+                                    ((index * 37 % 127) as f64 - 63.0) * 1e18
+                                };
+                                scalar.history[index] = value;
+                                scalar.history[index + HISTORY] = value;
+                            }
+                            let mut batched = Resampler::new(Bandwidth::Wide);
+                            batched.cursor = cursor;
+                            batched.clock = clock;
+                            batched.history = scalar.history;
+                            let length = scalar.output_count(width * 3, 6);
+                            let mut expected = vec![0.0; length];
+                            let mut actual = vec![0.0; length];
+                            scalar
+                                .process_filtered(&input[..width], &mut expected, &plan, false)
+                                .unwrap();
+                            batched
+                                .process_filtered(&input[..width], &mut actual, &plan, true)
+                                .unwrap();
+                            assert_eq!(
+                                actual
+                                    .iter()
+                                    .map(|value| value.to_bits())
+                                    .collect::<Vec<_>>(),
+                                expected
+                                    .iter()
+                                    .map(|value| value.to_bits())
+                                    .collect::<Vec<_>>(),
+                                "cursor {cursor}, clock {clock}, taps {taps}, width {width}, zero {zero_history}"
+                            );
+                            assert_eq!(
+                                batched.history.map(f64::to_bits),
+                                scalar.history.map(f64::to_bits)
+                            );
+                            assert_eq!(batched.cursor, scalar.cursor);
+                            assert_eq!(batched.clock, scalar.clock);
+                        }
+                    }
+                }
+            }
         }
     }
 
