@@ -45,7 +45,8 @@
         "output_rms": 0.5550606132266389,
         "output_peak": 1.0,
         "trim_samples": 1920,
-        "delay_search_max_samples": 1024
+        "delay_search_max_samples": 1024,
+        "wire_match": "MATCHED NB10 mono15byteCBR"
       }
     },
     "wb": {
@@ -90,7 +91,8 @@
         "output_rms": 0.04797358569551914,
         "output_peak": 0.583221435546875,
         "trim_samples": 1920,
-        "delay_search_max_samples": 1024
+        "delay_search_max_samples": 1024,
+        "wire_match": "UNMATCHED: nativeTOC8/11 is NB20; requested candidate isWB20 (TOC75)"
       }
     }
   }

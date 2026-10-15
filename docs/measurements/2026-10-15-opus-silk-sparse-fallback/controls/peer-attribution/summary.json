@@ -1,0 +1,287 @@
+{
+  "candidate_commit": "8f723ba1f35c053e1cc840f38a4b20446a127dde",
+  "libopus": "libopus 1.6.1",
+  "scope": "Same frozen packets, native/48k decoder numerical diagnostics only; no encoding, tuning, perceptual scoring or fresh corpus",
+  "alignment_convention": "Compare own[t] with native[t+lag]; fixed common interior for every candidate lag; zero-shift metrics retain all samples",
+  "profiles": {
+    "nb": {
+      "packets": 96,
+      "output_rates": {
+        "8000": {
+          "samples": 7680,
+          "owned": {
+            "rms": 0.2838600620645912,
+            "peak_abs": 1.0,
+            "min": -1.0,
+            "max": 1.0
+          },
+          "native": {
+            "rms": 0.28379428862604383,
+            "peak_abs": 1.0,
+            "min": -1.0,
+            "max": 0.999969482421875
+          },
+          "zero_shift": {
+            "samples": 7680,
+            "max_abs": 0.007822468876838684,
+            "rmse": 0.0009828067084965985,
+            "mean": -9.09326257669818e-05
+          },
+          "best_alignment": {
+            "lag": 0,
+            "search_max": 24,
+            "fixed_samples": 7632,
+            "metrics": {
+              "samples": 7632,
+              "max_abs": 0.003993809223175049,
+              "rmse": 0.0009610723470182219,
+              "mean": -8.439739271262572e-05
+            }
+          },
+          "max_error_location": {
+            "sample": 8,
+            "packet": 0,
+            "owned": -0.13050313293933868,
+            "native": -0.1226806640625
+          },
+          "exact_ranges_counts": true,
+          "clamp_counterfactual": {
+            "overshoot_samples": 0,
+            "overshoot_fraction": 0.0,
+            "clamp_own_only": {
+              "samples": 7680,
+              "max_abs": 0.007822468876838684,
+              "rmse": 0.0009828067084965985,
+              "mean": -9.09326257669818e-05
+            },
+            "raw_error_on_overshoot": {
+              "samples": 0,
+              "max_abs": null,
+              "rmse": null,
+              "mean": null
+            },
+            "raw_error_elsewhere": {
+              "samples": 7680,
+              "max_abs": 0.007822468876838684,
+              "rmse": 0.0009828067084965985,
+              "mean": -9.09326257669818e-05
+            },
+            "overshoot_error_energy_fraction": 0.0,
+            "overshoot_component_rms": 0.0
+          }
+        },
+        "48000": {
+          "samples": 46080,
+          "owned": {
+            "rms": 0.2838567910074722,
+            "peak_abs": 1.3829526901245117,
+            "min": -1.3829526901245117,
+            "max": 1.0994912385940552
+          },
+          "native": {
+            "rms": 0.28043967318551677,
+            "peak_abs": 1.0,
+            "min": -1.0,
+            "max": 0.999969482421875
+          },
+          "zero_shift": {
+            "samples": 46080,
+            "max_abs": 0.3829526901245117,
+            "rmse": 0.01425612588836073,
+            "mean": -0.0008397947522589118
+          },
+          "best_alignment": {
+            "lag": 0,
+            "search_max": 144,
+            "fixed_samples": 45792,
+            "metrics": {
+              "samples": 45792,
+              "max_abs": 0.3829526901245117,
+              "rmse": 0.014294566499859504,
+              "mean": -0.0008409981089075353
+            }
+          },
+          "max_error_location": {
+            "sample": 367,
+            "packet": 0,
+            "owned": -1.3829526901245117,
+            "native": -1.0
+          },
+          "exact_ranges_counts": true,
+          "clamp_counterfactual": {
+            "overshoot_samples": 255,
+            "overshoot_fraction": 0.005533854166666667,
+            "clamp_own_only": {
+              "samples": 46080,
+              "max_abs": 0.09531217813491821,
+              "rmse": 0.0021468650293918,
+              "mean": -0.0001117865908565009
+            },
+            "raw_error_on_overshoot": {
+              "samples": 255,
+              "max_abs": 0.3829526901245117,
+              "rmse": 0.1901559599303975,
+              "mean": -0.13797817043229646
+            },
+            "raw_error_elsewhere": {
+              "samples": 45825,
+              "max_abs": 0.09531217813491821,
+              "rmse": 0.0017760485397340252,
+              "mean": -7.666794814740997e-05
+            },
+            "overshoot_error_energy_fraction": 0.9845653558322701,
+            "overshoot_component_rms": 0.013918036687752459
+          },
+          "existing_48k_owned_exact": true,
+          "existing_48k_native_exact": true
+        }
+      }
+    },
+    "wb": {
+      "packets": 75,
+      "output_rates": {
+        "16000": {
+          "samples": 24000,
+          "owned": {
+            "rms": 0.02901364590560642,
+            "peak_abs": 0.6606811285018921,
+            "min": -0.3288091719150543,
+            "max": 0.6606811285018921
+          },
+          "native": {
+            "rms": 0.02899492790982703,
+            "peak_abs": 0.662109375,
+            "min": -0.329071044921875,
+            "max": 0.662109375
+          },
+          "zero_shift": {
+            "samples": 24000,
+            "max_abs": 0.0031898394227027893,
+            "rmse": 0.00035142108767729504,
+            "mean": 4.2382895841759215e-05
+          },
+          "best_alignment": {
+            "lag": 0,
+            "search_max": 24,
+            "fixed_samples": 23952,
+            "metrics": {
+              "samples": 23952,
+              "max_abs": 0.0031898394227027893,
+              "rmse": 0.0003517722456072243,
+              "mean": 4.24919381099036e-05
+            }
+          },
+          "max_error_location": {
+            "sample": 7730,
+            "packet": 24,
+            "owned": 0.06816176325082779,
+            "native": 0.064971923828125
+          },
+          "exact_ranges_counts": true,
+          "clamp_counterfactual": {
+            "overshoot_samples": 0,
+            "overshoot_fraction": 0.0,
+            "clamp_own_only": {
+              "samples": 24000,
+              "max_abs": 0.0031898394227027893,
+              "rmse": 0.00035142108767729504,
+              "mean": 4.2382895841759215e-05
+            },
+            "raw_error_on_overshoot": {
+              "samples": 0,
+              "max_abs": null,
+              "rmse": null,
+              "mean": null
+            },
+            "raw_error_elsewhere": {
+              "samples": 24000,
+              "max_abs": 0.0031898394227027893,
+              "rmse": 0.00035142108767729504,
+              "mean": 4.2382895841759215e-05
+            },
+            "overshoot_error_energy_fraction": 0.0,
+            "overshoot_component_rms": 0.0
+          }
+        },
+        "48000": {
+          "samples": 72000,
+          "owned": {
+            "rms": 0.029018413046855644,
+            "peak_abs": 0.7089759707450867,
+            "min": -0.35429731011390686,
+            "max": 0.7089759707450867
+          },
+          "native": {
+            "rms": 0.0289916825197406,
+            "peak_abs": 0.710540771484375,
+            "min": -0.3543701171875,
+            "max": 0.710540771484375
+          },
+          "zero_shift": {
+            "samples": 72000,
+            "max_abs": 0.003418918699026108,
+            "rmse": 0.0003524976875478613,
+            "mean": 4.2253179698677166e-05
+          },
+          "best_alignment": {
+            "lag": 0,
+            "search_max": 144,
+            "fixed_samples": 71712,
+            "metrics": {
+              "samples": 71712,
+              "max_abs": 0.003418918699026108,
+              "rmse": 0.0003532026740305922,
+              "mean": 4.246646600809909e-05
+            }
+          },
+          "max_error_location": {
+            "sample": 24423,
+            "packet": 25,
+            "owned": -0.012940403074026108,
+            "native": -0.009521484375
+          },
+          "exact_ranges_counts": true,
+          "clamp_counterfactual": {
+            "overshoot_samples": 0,
+            "overshoot_fraction": 0.0,
+            "clamp_own_only": {
+              "samples": 72000,
+              "max_abs": 0.003418918699026108,
+              "rmse": 0.0003524976875478613,
+              "mean": 4.2253179698677166e-05
+            },
+            "raw_error_on_overshoot": {
+              "samples": 0,
+              "max_abs": null,
+              "rmse": null,
+              "mean": null
+            },
+            "raw_error_elsewhere": {
+              "samples": 72000,
+              "max_abs": 0.003418918699026108,
+              "rmse": 0.0003524976875478613,
+              "mean": 4.2253179698677166e-05
+            },
+            "overshoot_error_energy_fraction": 0.0,
+            "overshoot_component_rms": 0.0
+          },
+          "existing_48k_owned_exact": true,
+          "existing_48k_native_exact": true
+        }
+      }
+    }
+  },
+  "input_sha256": {
+    "/private/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/refusal-sparse/nb.packets": "c35feba0f62d5de7fe05b5193c21190357a997bf9c3fcbc2014f3d86dfdfa1f8",
+    "/private/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/refusal-sparse/nb.ranges": "728b9b900d6eaf87de0522e06cdf4b74be909a5a84f67129b32c3a993d892a57",
+    "/private/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/refusal-sparse/nb.owned.f32": "81253e3410f71b8234998c3e52a0b5fba7f5735bf4d8512f9ec9e91d0af65a24",
+    "/private/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/refusal-sparse/nb.native.f32": "f4e391fe3f9fce4b3724c0882a156d91198bb9e83c74d7f87362495a3aefc967",
+    "/private/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/refusal-sparse/wb.packets": "af9092909e3a49f4ba18c79d185fc39f48d5131c52780b54b4c617e94348bd18",
+    "/private/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/refusal-sparse/wb.ranges": "15b073fb36db6785739a2c92910e5bd7387904fe958e05935c58331457c6d5f1",
+    "/private/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/refusal-sparse/wb.owned.f32": "da44edfa3df7c4346e3dc7f371e264aa08d48ade2e499249384ea81e24d0bf21",
+    "/private/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/refusal-sparse/wb.native.f32": "96e41abc16c47be33f900a5202a2b4cffb0a0dcc039cd3254b2b76ffc1b15d3d",
+    "/private/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/libsnacka_sparse.rlib": "d2bcfa54991cb2e7f29bde23ac7fe90c5533ea7d9ff61bcddf492dee3a638ff1",
+    "/private/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/controls/peer-attribution/decode.rs": "172c7b7d71fcc576c7c4a4617db4b68b0e7bd2eb7c94777abb693e06be904c19",
+    "/private/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/controls/peer-attribution/analyze.py": "71b49a19ece025574824ac1d92e742511b9cf270fc915dcc10958bbc8c8139ea"
+  }
+}
