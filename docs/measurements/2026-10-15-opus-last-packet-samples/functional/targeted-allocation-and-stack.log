@@ -1,0 +1,21 @@
+   Compiling snacka v0.2.0 (/private/tmp/snacka-opus-decoder-last-packet-samples-20261015)
+    Finished `release` profile [optimized] target(s) in 0.82s
+     Running tests/allocations.rs (/tmp/snacka-opus-decoder-last-samples-check-target/release/deps/allocations-337e29de5c483038)
+
+running 5 tests
+test adaptation_construction_feedback_updates_and_timeouts_never_allocate ... ok
+test opus_pcm_format_conversion_never_allocates ... ok
+test opus_call_controls_and_generated_redundancy_do_not_allocate ... ok
+test opus_processing_reset_and_rate_changes_do_not_allocate ... ok
+test steady_state_processing_never_allocates ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.94s
+
+     Running tests/opus_stack.rs (/tmp/snacka-opus-decoder-last-samples-check-target/release/deps/opus_stack-e3e5f8306ad7de32)
+
+running 2 tests
+test duplex_codec_construction_and_processing_fit_a_one_mebibyte_stack ... ok
+test public_opus_construction_and_reset_fit_a_one_mib_thread ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

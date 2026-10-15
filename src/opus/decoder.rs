@@ -395,6 +395,7 @@ pub struct Decoder {
     previous_coded_channels: usize,
     previous_redundancy_end: bool,
     final_range: u32,
+    last_packet_samples: usize,
 }
 
 impl Decoder {
@@ -461,6 +462,7 @@ impl Decoder {
             previous_coded_channels: channels,
             previous_redundancy_end: false,
             final_range: 0,
+            last_packet_samples: 0,
         })
     }
 
@@ -497,6 +499,7 @@ impl Decoder {
             }
             self.write_output(samples, destination)?;
         }
+        self.last_packet_samples = total;
         Ok(total)
     }
 
@@ -570,6 +573,12 @@ impl Decoder {
     /// concealment produces silence. Output capacity and duration are validated
     /// before changing prediction or interpolation history.
     pub fn conceal(&mut self, samples: usize, output: &mut [f32]) -> Result<usize, Error> {
+        let decoded = self.conceal_unrecorded(samples, output)?;
+        self.last_packet_samples = decoded;
+        Ok(decoded)
+    }
+
+    fn conceal_unrecorded(&mut self, samples: usize, output: &mut [f32]) -> Result<usize, Error> {
         let quantum = self.sample_rate as usize / 400;
         if samples == 0 || samples > quantum * 48 || !samples.is_multiple_of(quantum) {
             return Err(Error::Argument);
@@ -621,6 +630,17 @@ impl Decoder {
         samples: usize,
         output: &mut [f32],
     ) -> Result<Recovery, Error> {
+        let recovery = self.recover_unrecorded(packet, samples, output)?;
+        self.last_packet_samples = samples;
+        Ok(recovery)
+    }
+
+    fn recover_unrecorded(
+        &mut self,
+        packet: &Packet<'_>,
+        samples: usize,
+        output: &mut [f32],
+    ) -> Result<Recovery, Error> {
         let quantum = self.sample_rate as usize / 400;
         if samples == 0 || samples > quantum * 48 || !samples.is_multiple_of(quantum) {
             return Err(Error::Argument);
@@ -633,7 +653,7 @@ impl Decoder {
         let frame_samples = packet.frame_samples(48_000)?;
         let bytes = packet.frames().next().ok_or(Error::Corrupt)?;
         if toc.mode() == Mode::Celt || bytes.len() <= 1 {
-            self.conceal(samples, output)?;
+            self.conceal_unrecorded(samples, output)?;
             return Ok(Recovery::Concealed);
         }
         let duration = silk_duration(frame_samples)?;
@@ -663,13 +683,13 @@ impl Decoder {
         });
         if !present {
             let interval = probe.range();
-            self.conceal(samples, output)?;
+            self.conceal_unrecorded(samples, output)?;
             self.final_range = interval;
             return Ok(Recovery::Concealed);
         }
         let prefix = samples.saturating_sub(frame_output);
         if prefix != 0 {
-            self.conceal(prefix, &mut output[..prefix * self.channels])?;
+            self.conceal_unrecorded(prefix, &mut output[..prefix * self.channels])?;
         }
         self.prepare_lowband(bandwidth);
         let mut decoder = range::Decoder::new(bytes);
@@ -1075,6 +1095,7 @@ impl Decoder {
         self.previous_coded_channels = self.channels;
         self.previous_redundancy_end = false;
         self.final_range = 0;
+        self.last_packet_samples = 0;
     }
 
     /// Last consumed entropy interval. Ordinary packets report their last
@@ -1083,6 +1104,19 @@ impl Decoder {
     /// reports zero. This excludes random-state changes from concealment.
     pub const fn final_range(&self) -> u32 {
         self.final_range
+    }
+
+    /// Samples per channel from the last successful decode, conceal or recovery.
+    ///
+    /// The count uses the configured output sample rate and is zero before any
+    /// successful operation and after [`Self::reset`]. A packet containing
+    /// several frames reports its full duration. Recovery reports the entire
+    /// requested interval, including any concealed prefix and recovered tail.
+    /// Errors retain the preceding count; a content error can still advance
+    /// codec history and write an output prefix, requiring reset as documented
+    /// by [`Self::decode`]. Gain and phase-inversion changes do not alter it.
+    pub const fn last_packet_samples(&self) -> usize {
+        self.last_packet_samples
     }
 
     /// Configured output sampling rate in Hz.
@@ -1134,6 +1168,29 @@ impl Decoder {
 mod tests {
     use super::super::celt::{CeltConfig, CeltEncoder};
     use super::*;
+
+    #[test]
+    fn failed_processing_retains_last_completed_packet_samples() {
+        let mut decoder = Decoder::new(1).unwrap();
+        let mut output = [13.0; 1927];
+        decoder.conceal(1920, &mut output).unwrap();
+        assert_eq!(decoder.last_packet_samples(), 1920);
+        decoder.set_gain_q8(1);
+        // Inject a late numerical failure at the common output boundary. This
+        // is an owned metadata-atomicity check, not a native gain-overflow claim.
+        decoder.gain_factor = f32::INFINITY;
+        assert_eq!(decoder.conceal(360, &mut output), Err(Error::Corrupt));
+        assert_eq!(decoder.last_packet_samples(), 1920);
+        assert_eq!(decoder.decode(&[0x60], &mut output), Err(Error::Corrupt));
+        assert_eq!(decoder.last_packet_samples(), 1920);
+        assert_eq!(
+            decoder.recover(&[0x60], 360, &mut output),
+            Err(Error::Corrupt)
+        );
+        assert_eq!(decoder.last_packet_samples(), 1920);
+        decoder.reset();
+        assert_eq!(decoder.last_packet_samples(), 0);
+    }
 
     #[test]
     fn gain_retains_float_headroom_and_rejects_numeric_overflow() {

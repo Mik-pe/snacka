@@ -259,15 +259,18 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
                 decoder.reset();
             }
             let samples = decoder.decode(packet, &mut output).unwrap();
+            assert_eq!(decoder.last_packet_samples(), samples);
             // Exercise exact 2.5 ms partial LP prediction and both actual LBRR
             // recovery and absent-redundancy fallback without new storage.
             decoder.conceal(rate as usize / 400, &mut output).unwrap();
+            assert_eq!(decoder.last_packet_samples(), rate as usize / 400);
             actual_recovery |=
                 decoder.recover(packet, samples, &mut output).unwrap() == Recovery::Fec;
             actual_partial_recovery |= decoder
                 .recover(packet, rate as usize * 3 / 400, &mut output)
                 .unwrap()
                 == Recovery::Fec;
+            assert_eq!(decoder.last_packet_samples(), rate as usize * 3 / 400);
             decoder.decode(packet, &mut output).unwrap();
             black_box(&output);
         }

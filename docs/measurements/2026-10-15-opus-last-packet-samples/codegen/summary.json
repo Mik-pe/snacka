@@ -1,0 +1,223 @@
+{
+  "scope": "Inventory of existing release rlib AArch64 disassembly, not cost evidence. Instruction counts are static; no ABI layout guarantee is exported by the Rust type. Source DSP bodies unchanged; generated bodies are not claimed byte-identical.",
+  "roles": {
+    "before": {
+      "write_output": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder12write_output",
+        "instructions": 6417,
+        "text_bytes": 25668,
+        "instruction_text_sha256": "bd81753ede725f4a7e121fe3af67b1fb20e2295804d17e995d66bffe1d4d9211",
+        "first_instructions": [
+          "sub\tsp, sp, #0xd0",
+          "stp\tx28, x27, [sp, #0x70]",
+          "stp\tx26, x25, [sp, #0x80]"
+        ]
+      },
+      "conceal_frame": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder13conceal_frame",
+        "instructions": 352,
+        "text_bytes": 1408,
+        "instruction_text_sha256": "ead07f0e4f8d21d19b971bc7401fda4474372d793d1ffacc74728fd2aad3ca47",
+        "first_instructions": [
+          "sub\tsp, sp, #0x70",
+          "stp\tx26, x25, [sp, #0x20]",
+          "stp\tx24, x23, [sp, #0x30]"
+        ]
+      },
+      "decode_parsed": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder13decode_parsed",
+        "instructions": 1010,
+        "text_bytes": 4040,
+        "instruction_text_sha256": "247ec51a1601a439c6f7b1b999fbbf18b88c4e904b602b3ed8828e39e0c565f4",
+        "first_instructions": [
+          "stp\tx28, x27, [sp, #-0x60]!",
+          "stp\tx26, x25, [sp, #0x10]",
+          "stp\tx24, x23, [sp, #0x20]"
+        ]
+      },
+      "recover_parsed": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder14recover_parsed",
+        "instructions": 451,
+        "text_bytes": 1804,
+        "instruction_text_sha256": "2152519ecea90cd0b57f1531fefd1e3ee0ee07a0a483f3febe93488fdfb3d2ed",
+        "first_instructions": [
+          "sub\tsp, sp, #0x140",
+          "stp\tx28, x27, [sp, #0xe0]",
+          "stp\tx26, x25, [sp, #0xf0]"
+        ]
+      },
+      "render_lowband": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder14render_lowband",
+        "instructions": 558,
+        "text_bytes": 2232,
+        "instruction_text_sha256": "b384c438668e006835ed4d81ac7320e9eef4ab6002757a650f9e40424a5940cd",
+        "first_instructions": [
+          "stp\td9, d8, [sp, #-0x70]!",
+          "stp\tx28, x27, [sp, #0x10]",
+          "stp\tx26, x25, [sp, #0x20]"
+        ]
+      },
+      "new": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder3new",
+        "instructions": 2,
+        "text_bytes": 8,
+        "instruction_text_sha256": "efc798b923f8f209be6fb317286ae56e0253791189af74055a5aa3c24ea51bb4",
+        "first_instructions": [
+          "mov\tw1, #0xbb80",
+          "b\t0xa144"
+        ]
+      },
+      "reset": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder5reset",
+        "instructions": 175,
+        "text_bytes": 700,
+        "instruction_text_sha256": "1f9dd1f8bc1739a3b4af8cc42b722683453dc0845c6951ea3498982c4a38a07e",
+        "first_instructions": [
+          "sub\tsp, sp, #0xc0",
+          "stp\tx26, x25, [sp, #0x70]",
+          "stp\tx24, x23, [sp, #0x80]"
+        ]
+      },
+      "conceal": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder7conceal",
+        "instructions": 162,
+        "text_bytes": 648,
+        "instruction_text_sha256": "4cab656609c9c18d4b7a7cf38cf50cdc442f9bcdfc43075b39624a4aae3a67cb",
+        "first_instructions": [
+          "stp\tx28, x27, [sp, #-0x60]!",
+          "stp\tx26, x25, [sp, #0x10]",
+          "stp\tx24, x23, [sp, #0x20]"
+        ]
+      },
+      "recover": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder7recover",
+        "instructions": 59,
+        "text_bytes": 236,
+        "instruction_text_sha256": "53436a976229749d40565fd48736d03b2ec80c7ed1924de034bdf57bb452af60",
+        "first_instructions": [
+          "sub\tsp, sp, #0x170",
+          "stp\tx28, x27, [sp, #0x130]",
+          "stp\tx22, x21, [sp, #0x140]"
+        ]
+      }
+    },
+    "after": {
+      "write_output": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder12write_output",
+        "instructions": 6417,
+        "text_bytes": 25668,
+        "instruction_text_sha256": "b0ba5e49bc231b7683a6a1ac1b8d3d88a81b1a2bad6aa298d5baef1f4a85b37e",
+        "first_instructions": [
+          "sub\tsp, sp, #0xd0",
+          "stp\tx28, x27, [sp, #0x70]",
+          "stp\tx26, x25, [sp, #0x80]"
+        ]
+      },
+      "conceal_frame": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder13conceal_frame",
+        "instructions": 352,
+        "text_bytes": 1408,
+        "instruction_text_sha256": "17fe45e9f1977783d4627bf9c652d1f19dd78cbd6322087d6dafee30668a9fcb",
+        "first_instructions": [
+          "sub\tsp, sp, #0x70",
+          "stp\tx26, x25, [sp, #0x20]",
+          "stp\tx24, x23, [sp, #0x30]"
+        ]
+      },
+      "decode_parsed": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder13decode_parsed",
+        "instructions": 1011,
+        "text_bytes": 4044,
+        "instruction_text_sha256": "06dee76e3608808ad566b2271b689043f5bc07c40432467a5bca50bfaff18981",
+        "first_instructions": [
+          "stp\tx28, x27, [sp, #-0x60]!",
+          "stp\tx26, x25, [sp, #0x10]",
+          "stp\tx24, x23, [sp, #0x20]"
+        ]
+      },
+      "recover_parsed": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder14recover_parsed",
+        "instructions": 442,
+        "text_bytes": 1768,
+        "instruction_text_sha256": "e8eabf04d0306ef8112fe1918fffe48b05330e6d263761d7cebe13fd88984aa5",
+        "first_instructions": [
+          "sub\tsp, sp, #0x140",
+          "stp\tx28, x27, [sp, #0xe0]",
+          "stp\tx26, x25, [sp, #0xf0]"
+        ]
+      },
+      "render_lowband": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder14render_lowband",
+        "instructions": 558,
+        "text_bytes": 2232,
+        "instruction_text_sha256": "282cfa1eb9bb0d963b05d7a50bec7de2e8e871a71039faf025e77bda826de8f9",
+        "first_instructions": [
+          "stp\td9, d8, [sp, #-0x70]!",
+          "stp\tx28, x27, [sp, #0x10]",
+          "stp\tx26, x25, [sp, #0x20]"
+        ]
+      },
+      "conceal_unrecorded": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder18conceal_unrecorded.llvm.15531928491309338653",
+        "instructions": 162,
+        "text_bytes": 648,
+        "instruction_text_sha256": "32eb707730afbe426b5fdb578ca76edb4004700f5c305eae3e85dd17a4a4843e",
+        "first_instructions": [
+          "stp\tx28, x27, [sp, #-0x60]!",
+          "stp\tx26, x25, [sp, #0x10]",
+          "stp\tx24, x23, [sp, #0x20]"
+        ]
+      },
+      "new": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder3new",
+        "instructions": 2,
+        "text_bytes": 8,
+        "instruction_text_sha256": "ab953be7e67f4fe7a2efdc4066907bbfd425aee0ac4a71c7eda736175f4bcb1e",
+        "first_instructions": [
+          "mov\tw1, #0xbb80",
+          "b\t0xa3b0"
+        ]
+      },
+      "reset": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder5reset",
+        "instructions": 176,
+        "text_bytes": 704,
+        "instruction_text_sha256": "069712d895b8376989cb8733576f052ff4ff6cbe71954985e7105ea29bdfebbe",
+        "first_instructions": [
+          "sub\tsp, sp, #0xc0",
+          "stp\tx26, x25, [sp, #0x70]",
+          "stp\tx24, x23, [sp, #0x80]"
+        ]
+      },
+      "conceal": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder7conceal",
+        "instructions": 26,
+        "text_bytes": 104,
+        "instruction_text_sha256": "2333507e262bc35f02ce596ed21d8167bf5057b797a837e36db888ebbb15ae51",
+        "first_instructions": [
+          "sub\tsp, sp, #0x30",
+          "stp\tx20, x19, [sp, #0x10]",
+          "stp\tx29, x30, [sp, #0x20]"
+        ]
+      },
+      "recover": {
+        "symbol": "__RNvMs5_NtNtCsdDupoQF66P7_6snacka4opus7decoderNtB5_7Decoder7recover",
+        "instructions": 59,
+        "text_bytes": 236,
+        "instruction_text_sha256": "4a4c1b6c2cd62f61b97ca4cab0f9d20dc0b98375cffb3d4f22a8d99c280071a4",
+        "first_instructions": [
+          "sub\tsp, sp, #0x170",
+          "stp\tx28, x27, [sp, #0x130]",
+          "stp\tx22, x21, [sp, #0x140]"
+        ]
+      }
+    }
+  },
+  "public_entrypoint_effects": {
+    "decode_parsed": "One successful outer status store; same starting96-byte stack frame.",
+    "conceal": "New48-byte outer wrapper calls preserved unrecorded body with96-byte stack frame.",
+    "recover_parsed": "Recovery helper is inlined here by LLVM; same starting320-byte stack frame, internal conceal helper calls remain.",
+    "recover": "Public packet parse/dispatch wrapper is codegen-changed.",
+    "last_packet_samples": "Getter is inline/metadata-only and has no standalone library symbol in this build."
+  }
+}

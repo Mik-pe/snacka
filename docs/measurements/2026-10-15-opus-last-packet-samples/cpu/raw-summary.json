@@ -1,0 +1,2704 @@
+{
+  "source_commit": "89e2b209184b43de3e69c37ad33f6b00976254f9",
+  "processes": 84,
+  "valid": 84,
+  "quartets": 21,
+  "failures": [],
+  "raw_batch_count": 168000,
+  "global_minimum_batch_ns": 581791,
+  "global_maximum_batch_ns": 3548250,
+  "process_result_bytes": 1409069,
+  "started_utc": "2026-10-15T12:16:05.619524+00:00",
+  "finished_utc": "2026-10-15T12:18:40.722850+00:00",
+  "data_validation": "PASS; not speed, quality, waveform-parity, hard-deadline or no-tail-regression acceptance.",
+  "roles": [
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 0,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "fa667975fd581a4614f377cf456f17344302ac3dc965af691ce7285e9a72e618",
+      "stdout_bytes": 18303,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1427167,
+      "reference_minimum_batch_ns": 1166125,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7483.510416666667,
+          "libopus": 6131.510416666667,
+          "ratio": 1.220500318538968
+        },
+        "p95": {
+          "snacka": 7569.442708333333,
+          "libopus": 6211.807291666667,
+          "ratio": 1.218557233494345
+        },
+        "p99": {
+          "snacka": 7883.03125,
+          "libopus": 6390.84375,
+          "ratio": 1.233488340252412
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 1,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "eea3d73876a929385d9f04f24c6ec6ce4babf3c935f80d59033737382ac49149",
+      "stdout_bytes": 18304,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1424125,
+      "reference_minimum_batch_ns": 1162125,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7499.78125,
+          "libopus": 6107.854166666667,
+          "ratio": 1.227891342090273
+        },
+        "p95": {
+          "snacka": 7674.479166666667,
+          "libopus": 6206.380208333333,
+          "ratio": 1.2365467324032309
+        },
+        "p99": {
+          "snacka": 8121.963541666667,
+          "libopus": 6504.34375,
+          "ratio": 1.248698385854325
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 2,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "d0de9905fd0dedaf33fe75c49883e8f6a5e3a6cc712a5f109028762bc437ef98",
+      "stdout_bytes": 18307,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1430416,
+      "reference_minimum_batch_ns": 1160875,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7508.682291666667,
+          "libopus": 6102.213541666667,
+          "ratio": 1.2304850101354956
+        },
+        "p95": {
+          "snacka": 7715.494791666667,
+          "libopus": 6231.338541666667,
+          "ratio": 1.2381761543007161
+        },
+        "p99": {
+          "snacka": 8311.848958333334,
+          "libopus": 6625,
+          "ratio": 1.2546187106918238
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 3,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "729d6e935bfa6c698462970d8aad566f4931e594fb286d0b33aa2b628cdbfadd",
+      "stdout_bytes": 18307,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1427209,
+      "reference_minimum_batch_ns": 1162875,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7502.390625,
+          "libopus": 6118.057291666667,
+          "ratio": 1.2262700833512816
+        },
+        "p95": {
+          "snacka": 7674.916666666667,
+          "libopus": 6211.15625,
+          "ratio": 1.2356663329258004
+        },
+        "p99": {
+          "snacka": 8176.651041666667,
+          "libopus": 6649.958333333333,
+          "ratio": 1.2295792893439181
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "fbc745ba24da99b4cf3cecdbf05e405729d0e3303519d587f24e054fb8012291",
+      "stdout_bytes": 16309,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 763959,
+      "reference_minimum_batch_ns": 666292,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8029.947916666667,
+          "libopus": 7026.041666666667,
+          "ratio": 1.1428836174944403
+        },
+        "p95": {
+          "snacka": 8171.875,
+          "libopus": 7138.885416666667,
+          "ratio": 1.1446990003399806
+        },
+        "p99": {
+          "snacka": 8791.666666666666,
+          "libopus": 7406.6875,
+          "ratio": 1.1869903606256733
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "4192e39c2fa632a4e30871524d39ff978cc406e7d615042368da6dd8888a4b83",
+      "stdout_bytes": 16302,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 765209,
+      "reference_minimum_batch_ns": 670208,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8020.395833333333,
+          "libopus": 7020.395833333333,
+          "ratio": 1.1424421106359743
+        },
+        "p95": {
+          "snacka": 8152.78125,
+          "libopus": 7118.489583333333,
+          "ratio": 1.1452965063105909
+        },
+        "p99": {
+          "snacka": 8280.375,
+          "libopus": 7284.28125,
+          "ratio": 1.1367456466621193
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "8af8bee18b0667dd1082eb9dae43b61c17f1c273c440e9652847fba692bf3958",
+      "stdout_bytes": 16317,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 762875,
+      "reference_minimum_batch_ns": 671625,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8028.21875,
+          "libopus": 7053.822916666667,
+          "ratio": 1.1381372689454743
+        },
+        "p95": {
+          "snacka": 8156.677083333333,
+          "libopus": 7147.572916666667,
+          "ratio": 1.1411813742135661
+        },
+        "p99": {
+          "snacka": 8543.833333333334,
+          "libopus": 7408.427083333333,
+          "ratio": 1.153258746725646
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "2aac3a4a9b9fd309ed42252abfaf9ca703939720fefc5fd2d437565eba30e196",
+      "stdout_bytes": 16316,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 764000,
+      "reference_minimum_batch_ns": 669042,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8052.510416666667,
+          "libopus": 7037.760416666667,
+          "ratio": 1.144186493987049
+        },
+        "p95": {
+          "snacka": 8236.979166666666,
+          "libopus": 7195.3125,
+          "ratio": 1.1447701773434673
+        },
+        "p99": {
+          "snacka": 8717.447916666666,
+          "libopus": 7766.489583333333,
+          "ratio": 1.1224437788951733
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "635d8ebc0e8b88ea5a32e19c0e54c03dc3cc323638d2ba1d9c42ac14475706f6",
+      "stdout_bytes": 16266,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 808958,
+      "reference_minimum_batch_ns": 661458,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17265.625,
+          "libopus": 13992.1875,
+          "ratio": 1.2339475153545505
+        },
+        "p95": {
+          "snacka": 18156.25,
+          "libopus": 14970.5,
+          "ratio": 1.2128018436257975
+        },
+        "p99": {
+          "snacka": 19982.645833333332,
+          "libopus": 16692.708333333332,
+          "ratio": 1.1970882995319814
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "59911fbb6a30fddd34ef3446c815f2a378f5cec4503a03447c823d11123527f9",
+      "stdout_bytes": 16289,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 807375,
+      "reference_minimum_batch_ns": 661375,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17184.020833333332,
+          "libopus": 14013.020833333334,
+          "ratio": 1.2262895372607323
+        },
+        "p95": {
+          "snacka": 18100.6875,
+          "libopus": 14922.729166666666,
+          "ratio": 1.2129609334753613
+        },
+        "p99": {
+          "snacka": 19625.875,
+          "libopus": 16361.979166666666,
+          "ratio": 1.1994805029444533
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "a32ff55edabe39398f8d6427f24697a0b6a4d948515de237284dd12244e198c7",
+      "stdout_bytes": 16298,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 812833,
+      "reference_minimum_batch_ns": 657708,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17247.395833333332,
+          "libopus": 13950.520833333334,
+          "ratio": 1.2363263020347208
+        },
+        "p95": {
+          "snacka": 18374.125,
+          "libopus": 14927.958333333334,
+          "ratio": 1.2308531809719458
+        },
+        "p99": {
+          "snacka": 20580.729166666668,
+          "libopus": 16877.604166666668,
+          "ratio": 1.2194105847862984
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "7a10ce28466a1aa7319d4b9bb1529bcabd2009368dc9f748fb81933e090e26bf",
+      "stdout_bytes": 16263,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 811917,
+      "reference_minimum_batch_ns": 660750,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17215.270833333332,
+          "libopus": 13976.5625,
+          "ratio": 1.2317242407303894
+        },
+        "p95": {
+          "snacka": 17726.5625,
+          "libopus": 14542.541666666666,
+          "ratio": 1.218945278364339
+        },
+        "p99": {
+          "snacka": 18530.375,
+          "libopus": 15563.375,
+          "ratio": 1.190639883701318
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 0,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "57f98af26f10a114dbf4c0ab40b9d13a03a618c9f5bb8b4ea0dacc2c0a0732d8",
+      "stdout_bytes": 16428,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 734333,
+      "reference_minimum_batch_ns": 593542,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15406.25,
+          "libopus": 12474.8125,
+          "ratio": 1.23498850183119
+        },
+        "p95": {
+          "snacka": 15750,
+          "libopus": 12691.833333333334,
+          "ratio": 1.240955470052921
+        },
+        "p99": {
+          "snacka": 16217,
+          "libopus": 12999.125,
+          "ratio": 1.247545507870722
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 1,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "6674ace88f148a6f0f44c9920afaca9f437b37681377b738a87bfdd87c96e388",
+      "stdout_bytes": 18476,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1465208,
+      "reference_minimum_batch_ns": 1186041,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15376.302083333334,
+          "libopus": 12463.979166666666,
+          "ratio": 1.2336591611493788
+        },
+        "p95": {
+          "snacka": 15786.895833333334,
+          "libopus": 12723.520833333334,
+          "ratio": 1.2407647254346854
+        },
+        "p99": {
+          "snacka": 16952.25,
+          "libopus": 13520.833333333334,
+          "ratio": 1.2537873651771956
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 2,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "f7600b377eec544a9548cc5bbc22a9840862e504906836daaf8ae818938096aa",
+      "stdout_bytes": 18453,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1466750,
+      "reference_minimum_batch_ns": 1183000,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15394.53125,
+          "libopus": 12438.375,
+          "ratio": 1.2376641844292362
+        },
+        "p95": {
+          "snacka": 15709.635416666666,
+          "libopus": 12648.875,
+          "ratio": 1.241978865050581
+        },
+        "p99": {
+          "snacka": 16600.260416666668,
+          "libopus": 13246.53125,
+          "ratio": 1.2531779152875713
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 3,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "91434c59f0ac9f18720f9029d05bea696619441aec66c24bcd717ed8d85ed9a0",
+      "stdout_bytes": 16465,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 734791,
+      "reference_minimum_batch_ns": 592792,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15409.729166666666,
+          "libopus": 12498.25,
+          "ratio": 1.2329509464658386
+        },
+        "p95": {
+          "snacka": 15653.645833333334,
+          "libopus": 12708.333333333334,
+          "ratio": 1.231762295081967
+        },
+        "p99": {
+          "snacka": 16249.125,
+          "libopus": 13019.958333333334,
+          "ratio": 1.2480166667200037
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "d6ed6ea56b7d332a0d8dfc9b048246b13856015efb3a328b0fa656a9c72650ca",
+      "stdout_bytes": 16296,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 647375,
+      "reference_minimum_batch_ns": 628917,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3405.5989583333335,
+          "libopus": 3340.7135416666665,
+          "ratio": 1.019422622100755
+        },
+        "p95": {
+          "snacka": 3460.71875,
+          "libopus": 3398.65625,
+          "ratio": 1.0182608935516795
+        },
+        "p99": {
+          "snacka": 3575.7395833333335,
+          "libopus": 3464.1927083333335,
+          "ratio": 1.0321999624130802
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "9a807bc0df829dc1c5a3e0ba8626151444291bd903feefaa12bffbff522a3531",
+      "stdout_bytes": 16313,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 646875,
+      "reference_minimum_batch_ns": 629625,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3403.2083333333335,
+          "libopus": 3328.9895833333335,
+          "ratio": 1.0222946777519455
+        },
+        "p95": {
+          "snacka": 3454.2135416666665,
+          "libopus": 3386.9322916666665,
+          "ratio": 1.0198649527672996
+        },
+        "p99": {
+          "snacka": 3519.9635416666665,
+          "libopus": 3421.0052083333335,
+          "ratio": 1.0289266830381543
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "4dce3a49ed9d3e69920347ca6dddd698a01291facd51be1de179fc4ef3a9f698",
+      "stdout_bytes": 16305,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 647250,
+      "reference_minimum_batch_ns": 626916,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3411.4583333333335,
+          "libopus": 3326.6041666666665,
+          "ratio": 1.025507743757711
+        },
+        "p95": {
+          "snacka": 3470.921875,
+          "libopus": 3376.7395833333335,
+          "ratio": 1.0278914880293182
+        },
+        "p99": {
+          "snacka": 3547.9635416666665,
+          "libopus": 3427.3020833333335,
+          "ratio": 1.0352059594980259
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "e6f34ddeef904ea2045dc744db23efdf8de92df950f911d63e3d2900d86f2c5f",
+      "stdout_bytes": 16281,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 647000,
+      "reference_minimum_batch_ns": 629417,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3416.234375,
+          "libopus": 3333.546875,
+          "ratio": 1.0248046609514079
+        },
+        "p95": {
+          "snacka": 3467.8802083333335,
+          "libopus": 3390.4114583333335,
+          "ratio": 1.022849365321011
+        },
+        "p99": {
+          "snacka": 3621.3125,
+          "libopus": 3453.34375,
+          "ratio": 1.0486394527043537
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "28adf8e3c277af1cea88f74ec33aa8fa50255d7203c3a529502ef5955f22ee37",
+      "stdout_bytes": 16274,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 599000,
+      "reference_minimum_batch_ns": 683708,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3158.8541666666665,
+          "libopus": 3597.4427083333335,
+          "ratio": 0.8780832448976341
+        },
+        "p95": {
+          "snacka": 3214.84375,
+          "libopus": 3646.265625,
+          "ratio": 0.8816811720895951
+        },
+        "p99": {
+          "snacka": 3351.5625,
+          "libopus": 3748.046875,
+          "ratio": 0.89421573736321
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "88115ff15a4de80651cc61579ce338c11cb77150cd5d240e78459d49341e7477",
+      "stdout_bytes": 16307,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 600292,
+      "reference_minimum_batch_ns": 684291,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3170.7916666666665,
+          "libopus": 3601.1302083333335,
+          "ratio": 0.8804990331449762
+        },
+        "p95": {
+          "snacka": 3221.3541666666665,
+          "libopus": 3637.5885416666665,
+          "ratio": 0.8855740911232115
+        },
+        "p99": {
+          "snacka": 3340.9270833333335,
+          "libopus": 3741.3229166666665,
+          "ratio": 0.8929801457260829
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "ec0a585bc087df56cd62abe886183d4422d16342a8ba92c2bd158f085ce5e28e",
+      "stdout_bytes": 16300,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 602375,
+      "reference_minimum_batch_ns": 683709,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3176.6510416666665,
+          "libopus": 3597.2239583333335,
+          "ratio": 0.8830840332606017
+        },
+        "p95": {
+          "snacka": 3216.3645833333335,
+          "libopus": 3644.09375,
+          "ratio": 0.8826239948775558
+        },
+        "p99": {
+          "snacka": 3329.6458333333335,
+          "libopus": 3684.2447916666665,
+          "ratio": 0.9037526064675738
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "09c9ce2ba86019297bf14123eaca33247f87060aa4e28d195a84eacaab1c2c37",
+      "stdout_bytes": 16286,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 597916,
+      "reference_minimum_batch_ns": 682750,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3153.6458333333335,
+          "libopus": 3583.765625,
+          "ratio": 0.8799810487978921
+        },
+        "p95": {
+          "snacka": 3188.8020833333335,
+          "libopus": 3625,
+          "ratio": 0.8796695402298851
+        },
+        "p99": {
+          "snacka": 3267.1458333333335,
+          "libopus": 3688.3697916666665,
+          "ratio": 0.8857967117925574
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "d6dfc57adedb68b680a03c2f0affb5984181104610e5659931503e567f6890de",
+      "stdout_bytes": 16282,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 883458,
+      "reference_minimum_batch_ns": 775541,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2325.3046875,
+          "libopus": 2048.6119791666665,
+          "ratio": 1.1350635020917363
+        },
+        "p95": {
+          "snacka": 2355.46875,
+          "libopus": 2078.125,
+          "ratio": 1.1334586466165413
+        },
+        "p99": {
+          "snacka": 2405.1640625,
+          "libopus": 2101.1276041666665,
+          "ratio": 1.1447015677345869
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "d636526eb826c7a17c76b71dfeb9ca23235f6959f5a9f17be476b44516db909b",
+      "stdout_bytes": 16290,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 883417,
+      "reference_minimum_batch_ns": 778250,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2329.1015625,
+          "libopus": 2056.5338541666665,
+          "ratio": 1.1325374283438583
+        },
+        "p95": {
+          "snacka": 2365.34375,
+          "libopus": 2091.3619791666665,
+          "ratio": 1.1310063841470932
+        },
+        "p99": {
+          "snacka": 2421.984375,
+          "libopus": 2115.5598958333335,
+          "ratio": 1.1448432066471765
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "87670fbe8d2eb3a17dd62b5528ebbaf17f65ed5b713504b34d49ce60546551df",
+      "stdout_bytes": 16295,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 886125,
+      "reference_minimum_batch_ns": 780416,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2337.78125,
+          "libopus": 2057.1822916666665,
+          "ratio": 1.136399656690609
+        },
+        "p95": {
+          "snacka": 2384.2213541666665,
+          "libopus": 2093.6432291666665,
+          "ratio": 1.1387906597226973
+        },
+        "p99": {
+          "snacka": 2527.234375,
+          "libopus": 2208.3333333333335,
+          "ratio": 1.1444080188679244
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "980badf9966bd512cd223de8e2f63b738b633b66f246740aab866a73ed6f2b6b",
+      "stdout_bytes": 16293,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 883833,
+      "reference_minimum_batch_ns": 778208,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2325.1953125,
+          "libopus": 2053.4947916666665,
+          "ratio": 1.1323112782832112
+        },
+        "p95": {
+          "snacka": 2365.34375,
+          "libopus": 2088.6510416666665,
+          "ratio": 1.1324743591981468
+        },
+        "p99": {
+          "snacka": 2452.2578125,
+          "libopus": 2121.8541666666665,
+          "ratio": 1.1557145872811712
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 0,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "b1cd84516183ff6f64609aea9b2cbc1327cec624b0112b5f88a2a8f6b26fa65e",
+      "stdout_bytes": 18315,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1427958,
+      "reference_minimum_batch_ns": 1160666,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7522.786458333333,
+          "libopus": 6130.427083333333,
+          "ratio": 1.2271227364868884
+        },
+        "p95": {
+          "snacka": 8212.671875,
+          "libopus": 6684.026041666667,
+          "ratio": 1.228701358104249
+        },
+        "p99": {
+          "snacka": 13975.260416666666,
+          "libopus": 10772.354166666666,
+          "ratio": 1.2973264896832748
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 1,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "a6c71ad0abd83cfa81b02be74d0d5bd7b2803e9fcfcd2f8ae0e6f733f64fb111",
+      "stdout_bytes": 18314,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1427250,
+      "reference_minimum_batch_ns": 1161583,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7505.208333333333,
+          "libopus": 6103.515625,
+          "ratio": 1.2296533333333333
+        },
+        "p95": {
+          "snacka": 7854.385416666667,
+          "libopus": 6362.848958333333,
+          "ratio": 1.2344133057535318
+        },
+        "p99": {
+          "snacka": 8662.760416666666,
+          "libopus": 6921.223958333333,
+          "ratio": 1.2516226131125952
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 2,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "58789b1603267ddce95545acdb0843134ee521856079df78994ec7a2343ceeef",
+      "stdout_bytes": 18300,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1428542,
+      "reference_minimum_batch_ns": 1162459,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7521.265625,
+          "libopus": 6134.979166666667,
+          "ratio": 1.225964330223887
+        },
+        "p95": {
+          "snacka": 7716.364583333333,
+          "libopus": 6310.765625,
+          "ratio": 1.2227303376257668
+        },
+        "p99": {
+          "snacka": 8298.390625,
+          "libopus": 6670.791666666667,
+          "ratio": 1.243988875633202
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 3,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "a2842158405616ef85acc89a61805487591535e2337605c5e914e8b67be899d1",
+      "stdout_bytes": 16282,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 714917,
+      "reference_minimum_batch_ns": 581791,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7539.0625,
+          "libopus": 6129.78125,
+          "ratio": 1.2299072662666388
+        },
+        "p95": {
+          "snacka": 7727,
+          "libopus": 6247.822916666667,
+          "ratio": 1.2367508015291993
+        },
+        "p99": {
+          "snacka": 8346.354166666666,
+          "libopus": 6753.03125,
+          "ratio": 1.235941884123025
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "4a0b11e78a38344f0d8b2d630c78667a548f3cda978bad65ca036103a6913b7c",
+      "stdout_bytes": 16303,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 763042,
+      "reference_minimum_batch_ns": 667292,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8003.90625,
+          "libopus": 7025.166666666667,
+          "ratio": 1.1393190553011792
+        },
+        "p95": {
+          "snacka": 8126.729166666667,
+          "libopus": 7128.90625,
+          "ratio": 1.139968584474886
+        },
+        "p99": {
+          "snacka": 8421.875,
+          "libopus": 7318.583333333333,
+          "ratio": 1.1507520808899718
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "53a8f2bd55be1142f6ba94cad49965c302787406f1ae0ab50b057c07026bfa27",
+      "stdout_bytes": 16317,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 764667,
+      "reference_minimum_batch_ns": 666292,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8022.135416666667,
+          "libopus": 7010.416666666667,
+          "ratio": 1.1443164933135215
+        },
+        "p95": {
+          "snacka": 8146.270833333333,
+          "libopus": 7096.78125,
+          "ratio": 1.147882476063826
+        },
+        "p99": {
+          "snacka": 8485.677083333334,
+          "libopus": 7275.604166666667,
+          "ratio": 1.1663192346569156
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "8d24845520d491d6e1686acf69e0b766ab9a89b2c64a652cdced4b836fb5a2a6",
+      "stdout_bytes": 16318,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 766417,
+      "reference_minimum_batch_ns": 668750,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8078.552083333333,
+          "libopus": 7065.96875,
+          "ratio": 1.1433042473239545
+        },
+        "p95": {
+          "snacka": 8223.958333333334,
+          "libopus": 7170.135416666667,
+          "ratio": 1.1469739210527463
+        },
+        "p99": {
+          "snacka": 8548.614583333334,
+          "libopus": 7422.739583333333,
+          "ratio": 1.1516791728121496
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "4eda1e05d5ae7ed424441b6436b65fa6c16aaad0ba15a369acd4366383aff768",
+      "stdout_bytes": 16284,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 765750,
+      "reference_minimum_batch_ns": 671708,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8039.5,
+          "libopus": 7078.125,
+          "ratio": 1.135823399558499
+        },
+        "p95": {
+          "snacka": 8249.5625,
+          "libopus": 7216.583333333333,
+          "ratio": 1.1431396436448458
+        },
+        "p99": {
+          "snacka": 8897.135416666666,
+          "libopus": 7983.5,
+          "ratio": 1.114440460533183
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "093a9339f8f781d5df38a844031e5d49912d6e4398ebf746daffdd86e2143425",
+      "stdout_bytes": 16281,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 810917,
+      "reference_minimum_batch_ns": 662542,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17248.25,
+          "libopus": 14049.479166666666,
+          "ratio": 1.2276789620018536
+        },
+        "p95": {
+          "snacka": 18322.916666666668,
+          "libopus": 14858.520833333334,
+          "ratio": 1.2331588636710977
+        },
+        "p99": {
+          "snacka": 20305.5625,
+          "libopus": 16616.3125,
+          "ratio": 1.2220257954344564
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "a4e9096386c90b55b601ace2f4ed091622017962a86533a4b46b5d452d983553",
+      "stdout_bytes": 16316,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 816542,
+      "reference_minimum_batch_ns": 661458,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17470.479166666668,
+          "libopus": 14038.1875,
+          "ratio": 1.2444967818435726
+        },
+        "p95": {
+          "snacka": 19340.270833333332,
+          "libopus": 15784.708333333334,
+          "ratio": 1.22525360779024
+        },
+        "p99": {
+          "snacka": 22432.291666666668,
+          "libopus": 17422.729166666668,
+          "ratio": 1.2875302974682257
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "05fab0665af8fdcd484aa20ce6ea437c556ff4b1c53c1698cc617ed0df2ad449",
+      "stdout_bytes": 16292,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 809041,
+      "reference_minimum_batch_ns": 657708,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17222.229166666668,
+          "libopus": 13980.041666666666,
+          "ratio": 1.2319154389740135
+        },
+        "p95": {
+          "snacka": 18622.395833333332,
+          "libopus": 15140.625,
+          "ratio": 1.2299621603027175
+        },
+        "p99": {
+          "snacka": 21267.354166666668,
+          "libopus": 17406.25,
+          "ratio": 1.2218228605625374
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "36728f217703fc775fc0d3b25f2db0809194d1837f1d818ddb7d7710bcb00df5",
+      "stdout_bytes": 16295,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 804292,
+      "reference_minimum_batch_ns": 662083,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17160.583333333332,
+          "libopus": 13986.979166666666,
+          "ratio": 1.2268970396574195
+        },
+        "p95": {
+          "snacka": 18049.479166666668,
+          "libopus": 14644.104166666666,
+          "ratio": 1.2325423912069278
+        },
+        "p99": {
+          "snacka": 19707.479166666668,
+          "libopus": 16179.6875,
+          "ratio": 1.2180383067761147
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 0,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "86b60c10c9723d3c7760b9edaa9d9eb896223a95d35ff00965ce8e5cf0458fec",
+      "stdout_bytes": 18445,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1466375,
+      "reference_minimum_batch_ns": 1183667,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15379.34375,
+          "libopus": 12449.21875,
+          "ratio": 1.235366175086288
+        },
+        "p95": {
+          "snacka": 15804.6875,
+          "libopus": 12772.135416666666,
+          "ratio": 1.2374350086655113
+        },
+        "p99": {
+          "snacka": 16578.125,
+          "libopus": 13344.625,
+          "ratio": 1.2423072960086927
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 1,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "247d2c73afb461a98651b638f353d2fdd9d31950d2469d2e4f343f02cf1cb0c2",
+      "stdout_bytes": 18477,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1471417,
+      "reference_minimum_batch_ns": 1181792,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15438.364583333334,
+          "libopus": 12460.510416666666,
+          "ratio": 1.238983321476431
+        },
+        "p95": {
+          "snacka": 16048.177083333334,
+          "libopus": 12822.489583333334,
+          "ratio": 1.2515648368467187
+        },
+        "p99": {
+          "snacka": 17028.21875,
+          "libopus": 13791.229166666666,
+          "ratio": 1.234713638952293
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 2,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "e28e93cc30157fbc73e36c8cdbc4eb21bf9844ba7cfb7167e2be0b44e779e34a",
+      "stdout_bytes": 18471,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1472750,
+      "reference_minimum_batch_ns": 1186166,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15447.489583333334,
+          "libopus": 12457.46875,
+          "ratio": 1.2400183290311952
+        },
+        "p95": {
+          "snacka": 15710.9375,
+          "libopus": 12676.645833333334,
+          "ratio": 1.2393607667643418
+        },
+        "p99": {
+          "snacka": 16665.364583333332,
+          "libopus": 13427.520833333334,
+          "ratio": 1.2411348893209064
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 3,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "f3ed3b6660d8ef39a3e3928fc827dce5c6e84205b8d50d288d020b2a8cf7328b",
+      "stdout_bytes": 18477,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1465959,
+      "reference_minimum_batch_ns": 1185667,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15377.166666666666,
+          "libopus": 12455.729166666666,
+          "ratio": 1.2345456826259669
+        },
+        "p95": {
+          "snacka": 15592.447916666666,
+          "libopus": 12630.635416666666,
+          "ratio": 1.234494338748133
+        },
+        "p99": {
+          "snacka": 16250.4375,
+          "libopus": 12935.760416666666,
+          "ratio": 1.2562413786716893
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "eccf2e690a469e756957c8ec43a1076bc35fe7b8baa7c64951cc6d30ddabafea",
+      "stdout_bytes": 16305,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 644334,
+      "reference_minimum_batch_ns": 628917,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3391.7135416666665,
+          "libopus": 3335.2864583333335,
+          "ratio": 1.016918211985165
+        },
+        "p95": {
+          "snacka": 3437.2864583333335,
+          "libopus": 3385.203125,
+          "ratio": 1.0153855858600311
+        },
+        "p99": {
+          "snacka": 3524.0885416666665,
+          "libopus": 3437.0677083333335,
+          "ratio": 1.0253183354876447
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "21af556ae221cb8f81f6734bd3afcc03645dfbec3257d6fbf5bb8e00008b80b6",
+      "stdout_bytes": 16295,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 644833,
+      "reference_minimum_batch_ns": 627459,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3396.0520833333335,
+          "libopus": 3352.8645833333335,
+          "ratio": 1.012880776699029
+        },
+        "p95": {
+          "snacka": 3463.9791666666665,
+          "libopus": 3427.3020833333335,
+          "ratio": 1.0107014445886433
+        },
+        "p99": {
+          "snacka": 3714.84375,
+          "libopus": 3542.53125,
+          "ratio": 1.048641067033636
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "7f8c6ed0806007ee6fd1dac68a716059f645f49a33ff3a268e176db1e15a965f",
+      "stdout_bytes": 16290,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 649625,
+      "reference_minimum_batch_ns": 628917,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3414.7135416666665,
+          "libopus": 3331.3802083333335,
+          "ratio": 1.025014657025601
+        },
+        "p95": {
+          "snacka": 3466.1458333333335,
+          "libopus": 3392.578125,
+          "ratio": 1.0216848973325656
+        },
+        "p99": {
+          "snacka": 3533.203125,
+          "libopus": 3427.953125,
+          "ratio": 1.030703453682728
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "b68df03a1359819188de3bd5ecbb9d4ed0d51ee4259cc7b86774490780f08dbb",
+      "stdout_bytes": 16299,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 650500,
+      "reference_minimum_batch_ns": 629083,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3420.7864583333335,
+          "libopus": 3338.7552083333335,
+          "ratio": 1.0245694113169048
+        },
+        "p95": {
+          "snacka": 3475.046875,
+          "libopus": 3403.859375,
+          "ratio": 1.0209137605750824
+        },
+        "p99": {
+          "snacka": 3526.9114583333335,
+          "libopus": 3436.4166666666665,
+          "ratio": 1.026334056793656
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "de73a73b28c919e4c05b26ac5eae71a3d8b5b27ac0a2bac74b5ac206b1ea2f08",
+      "stdout_bytes": 16287,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 599292,
+      "reference_minimum_batch_ns": 684042,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3173.1770833333335,
+          "libopus": 3600.4739583333335,
+          "ratio": 0.8813220481678483
+        },
+        "p95": {
+          "snacka": 3243.7083333333335,
+          "libopus": 3658.203125,
+          "ratio": 0.8866944296138103
+        },
+        "p99": {
+          "snacka": 3478.953125,
+          "libopus": 3861.328125,
+          "ratio": 0.9009731917046029
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "64da6c8ec12dbb1a9bed39f219a5995fa2839bc30e872f328ceb7c444971bd50",
+      "stdout_bytes": 16283,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 601542,
+      "reference_minimum_batch_ns": 684917,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3172.3125,
+          "libopus": 3605.0364583333335,
+          "ratio": 0.8799668288144336
+        },
+        "p95": {
+          "snacka": 3227.2135416666665,
+          "libopus": 3660.5885416666665,
+          "ratio": 0.8816105675174615
+        },
+        "p99": {
+          "snacka": 3336.15625,
+          "libopus": 3720.484375,
+          "ratio": 0.8966994384971715
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "163932a6d272a7e6fcc5d440c4e30b7dcb52c8e6b9ab8f2357f4ca8eafcdd1a9",
+      "stdout_bytes": 16282,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 601916,
+      "reference_minimum_batch_ns": 683000,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3176.4322916666665,
+          "libopus": 3594.4010416666665,
+          "ratio": 0.8837167179858721
+        },
+        "p95": {
+          "snacka": 3370.4427083333335,
+          "libopus": 3718.96875,
+          "ratio": 0.9062842241772893
+        },
+        "p99": {
+          "snacka": 3822.046875,
+          "libopus": 3960.5,
+          "ratio": 0.9650415035980305
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "4e990ad6099a88f89b8668ac3af1bc39540e167470caa193a2a575c1d08b235c",
+      "stdout_bytes": 16317,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 601709,
+      "reference_minimum_batch_ns": 684542,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3180.1197916666665,
+          "libopus": 3599.1770833333335,
+          "ratio": 0.8835685819385797
+        },
+        "p95": {
+          "snacka": 3264.7552083333335,
+          "libopus": 3682.078125,
+          "ratio": 0.8866610369201042
+        },
+        "p99": {
+          "snacka": 5049.041666666667,
+          "libopus": 5129.557291666667,
+          "ratio": 0.984303591826374
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "d031ce92f3167089c8328e9c76cfb2869638adb18f4d2aa4a77562b84179baaa",
+      "stdout_bytes": 16317,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 887750,
+      "reference_minimum_batch_ns": 780375,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2336.9140625,
+          "libopus": 2057.0755208333335,
+          "ratio": 1.136037077313186
+        },
+        "p95": {
+          "snacka": 2462.6744791666665,
+          "libopus": 2169.2708333333335,
+          "ratio": 1.1352545018007203
+        },
+        "p99": {
+          "snacka": 2587.4557291666665,
+          "libopus": 2377.1692708333335,
+          "ratio": 1.0884608685268828
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "7e3b9e976328713745176378d84fceeda7e40fde2fcf26a8cd48ee36b9bb422f",
+      "stdout_bytes": 16319,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 889666,
+      "reference_minimum_batch_ns": 781875,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2344.5104166666665,
+          "libopus": 2062.7161458333335,
+          "ratio": 1.1366132084642644
+        },
+        "p95": {
+          "snacka": 2470.921875,
+          "libopus": 2167.6432291666665,
+          "ratio": 1.1399116984532212
+        },
+        "p99": {
+          "snacka": 2744.140625,
+          "libopus": 2426.4322916666665,
+          "ratio": 1.130936409981218
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "01fa58de879e95ed6fc4dd9ae538e7b179e46f430e8fdfb2687f4bfcaeee1e8e",
+      "stdout_bytes": 16299,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 884000,
+      "reference_minimum_batch_ns": 776000,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2337.3489583333335,
+          "libopus": 2046.3333333333333,
+          "ratio": 1.1422132065482977
+        },
+        "p95": {
+          "snacka": 2375.5416666666665,
+          "libopus": 2082.03125,
+          "ratio": 1.1409731081926204
+        },
+        "p99": {
+          "snacka": 2442.1640625,
+          "libopus": 2141.8177083333335,
+          "ratio": 1.140229653064351
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "d5e1f1eb6ef54b95a3e12bd76deee427cacb375532228499264b64d9ada3c5c2",
+      "stdout_bytes": 16297,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 891125,
+      "reference_minimum_batch_ns": 775875,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2344.5104166666665,
+          "libopus": 2050.9973958333335,
+          "ratio": 1.1431074566109223
+        },
+        "p95": {
+          "snacka": 2377.0625,
+          "libopus": 2086.2630208333335,
+          "ratio": 1.1393877359962552
+        },
+        "p99": {
+          "snacka": 2438.8020833333335,
+          "libopus": 2155.3828125,
+          "ratio": 1.1314937045937556
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 0,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "1a71557d6d90adcbb108155844a59e5fa1230697735880218bd6557aad6a1488",
+      "stdout_bytes": 18314,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1430375,
+      "reference_minimum_batch_ns": 1162084,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7511.067708333333,
+          "libopus": 6108.291666666667,
+          "ratio": 1.2296511231318086
+        },
+        "p95": {
+          "snacka": 7614.369791666667,
+          "libopus": 6185.979166666667,
+          "ratio": 1.2309077652082836
+        },
+        "p99": {
+          "snacka": 7809.026041666667,
+          "libopus": 6404.296875,
+          "ratio": 1.2193416692080918
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 1,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "5008bdd56378e0d8f8b8d2a47d489799307fe1c45d7264093e52184cb5914f45",
+      "stdout_bytes": 18298,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1429042,
+      "reference_minimum_batch_ns": 1161916,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7518.229166666667,
+          "libopus": 6117.1875,
+          "ratio": 1.229033631332482
+        },
+        "p95": {
+          "snacka": 7714.411458333333,
+          "libopus": 6207.46875,
+          "ratio": 1.2427628344215722
+        },
+        "p99": {
+          "snacka": 8068.140625,
+          "libopus": 6559.677083333333,
+          "ratio": 1.2299600304257863
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 2,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "2f22df6c7c51d1d996f00743dba82728f7b8d9faf5425c895bcae9adb5b8d6ba",
+      "stdout_bytes": 18294,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1431333,
+      "reference_minimum_batch_ns": 1162708,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7530.598958333333,
+          "libopus": 6108.723958333333,
+          "ratio": 1.232761376958329
+        },
+        "p95": {
+          "snacka": 7687.5,
+          "libopus": 6220.265625,
+          "ratio": 1.235879697661625
+        },
+        "p99": {
+          "snacka": 8146.484375,
+          "libopus": 6677.947916666667,
+          "ratio": 1.219908342601504
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch.bit-8000-decode",
+      "slot": 3,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "bd5a475618adff6e25a18fbefab9ea35b6ce43bf558a41e424bdd612a16222a1",
+      "stdout_bytes": 18307,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1428583,
+      "reference_minimum_batch_ns": 1163000,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 7509.114583333333,
+          "libopus": 6136.067708333333,
+          "ratio": 1.2237665782493368
+        },
+        "p95": {
+          "snacka": 7684.244791666667,
+          "libopus": 6240.666666666667,
+          "ratio": 1.2313179347826086
+        },
+        "p99": {
+          "snacka": 7977,
+          "libopus": 6451.604166666667,
+          "ratio": 1.2364366743413298
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "b03f6a68c942f7c901fce0540e971305a70d134483b18c132a126d6fa6d8bc10",
+      "stdout_bytes": 16299,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 763625,
+      "reference_minimum_batch_ns": 670500,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8018.666666666667,
+          "libopus": 7051.65625,
+          "ratio": 1.1371323817247425
+        },
+        "p95": {
+          "snacka": 8167.104166666667,
+          "libopus": 7154.083333333333,
+          "ratio": 1.1416003680881548
+        },
+        "p99": {
+          "snacka": 8585.5,
+          "libopus": 7429.6875,
+          "ratio": 1.1555667718191378
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "675eb8fc24b1b549022b8d2a672b601ff3f0c4adb3093b62cbb0b1849ec742c8",
+      "stdout_bytes": 16325,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 762708,
+      "reference_minimum_batch_ns": 668042,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8036.458333333333,
+          "libopus": 7026.916666666667,
+          "ratio": 1.1436678011930315
+        },
+        "p95": {
+          "snacka": 8179.260416666667,
+          "libopus": 7135.416666666667,
+          "ratio": 1.1462905109489052
+        },
+        "p99": {
+          "snacka": 8321.177083333334,
+          "libopus": 7286.895833333333,
+          "ratio": 1.1419371531659286
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "23b5f3527ed0da5d49f8ae16c5f5e1c92e40dc5f1865db38025cea821660ac4d",
+      "stdout_bytes": 16316,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 763083,
+      "reference_minimum_batch_ns": 668334,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8013.020833333333,
+          "libopus": 7075.083333333333,
+          "ratio": 1.132569109904477
+        },
+        "p95": {
+          "snacka": 8307.729166666666,
+          "libopus": 7281.6875,
+          "ratio": 1.1409071271826299
+        },
+        "p99": {
+          "snacka": 8911.020833333334,
+          "libopus": 7869.354166666667,
+          "ratio": 1.132370032483606
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch.bit-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "e9168697c0f48548cf3b848532c8f640ebd804cf75b076d020b0bc5f854a244c",
+      "stdout_bytes": 16305,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 763875,
+      "reference_minimum_batch_ns": 672166,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 8026.90625,
+          "libopus": 7106.770833333333,
+          "ratio": 1.1294730670575301
+        },
+        "p95": {
+          "snacka": 8243.052083333334,
+          "libopus": 7261.28125,
+          "ratio": 1.1352062810310968
+        },
+        "p99": {
+          "snacka": 8969.625,
+          "libopus": 8159.291666666667,
+          "ratio": 1.099314176577828
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "bd7add5ac4511cea3ba5d82ccd02b1eb93b715755abed9378b62437a558043f3",
+      "stdout_bytes": 16307,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 808333,
+      "reference_minimum_batch_ns": 661584,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17366.333333333332,
+          "libopus": 14054.6875,
+          "ratio": 1.2356257179914767
+        },
+        "p95": {
+          "snacka": 18842.020833333332,
+          "libopus": 15158.854166666666,
+          "ratio": 1.2429713107713452
+        },
+        "p99": {
+          "snacka": 21677.083333333332,
+          "libopus": 17917.541666666668,
+          "ratio": 1.2098246364712422
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "70e40ab4d2b13c8bf9bb56d33048b934d5d31a538b877da91d25666381c59c89",
+      "stdout_bytes": 16282,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 810584,
+      "reference_minimum_batch_ns": 661333,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17342.875,
+          "libopus": 14010.416666666666,
+          "ratio": 1.2378557620817845
+        },
+        "p95": {
+          "snacka": 18415.791666666668,
+          "libopus": 14927.083333333334,
+          "ratio": 1.2337166782972784
+        },
+        "p99": {
+          "snacka": 20108.5,
+          "libopus": 16660.583333333332,
+          "ratio": 1.2069505369459852
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "4863eedad84bdb0e8136f11717982db5b6053b8109c60a09c3c44529eef39bf1",
+      "stdout_bytes": 16276,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 811833,
+      "reference_minimum_batch_ns": 662125,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17267.375,
+          "libopus": 13971.354166666666,
+          "ratio": 1.235912767940354
+        },
+        "p95": {
+          "snacka": 17959.1875,
+          "libopus": 14554.6875,
+          "ratio": 1.23391089640365
+        },
+        "p99": {
+          "snacka": 19769.104166666668,
+          "libopus": 15934.020833333334,
+          "ratio": 1.2406852214797217
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-2ch.bit-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "5d7255540af1fc4904231478bdbca02cada70870a1a9ecb8cacc6197e01b29e4",
+      "stdout_bytes": 16286,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 803208,
+      "reference_minimum_batch_ns": 658417,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 17113.708333333332,
+          "libopus": 13986.979166666666,
+          "ratio": 1.2235457084341836
+        },
+        "p95": {
+          "snacka": 17815.958333333332,
+          "libopus": 14535.604166666666,
+          "ratio": 1.2256771806010816
+        },
+        "p99": {
+          "snacka": 19101.5625,
+          "libopus": 16132.8125,
+          "ratio": 1.1840193704600483
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 0,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "0d0220440f2b173fe1144f6c35e8f18b163c7fd278a2b517556b69bf0e42063e",
+      "stdout_bytes": 16477,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 736042,
+      "reference_minimum_batch_ns": 591042,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15485.229166666666,
+          "libopus": 12518.229166666666,
+          "ratio": 1.2370143540669856
+        },
+        "p95": {
+          "snacka": 16036.458333333334,
+          "libopus": 12908.854166666666,
+          "ratio": 1.2422836392979624
+        },
+        "p99": {
+          "snacka": 17327.25,
+          "libopus": 14292.541666666666,
+          "ratio": 1.2123281081916268
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 1,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "b49e39c910ade1038ef2f2687f1af419a3717189194eca55c0b03a9726eb8dce",
+      "stdout_bytes": 18475,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1465416,
+      "reference_minimum_batch_ns": 1188542,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15372.822916666666,
+          "libopus": 12498.270833333334,
+          "ratio": 1.2299959827776177
+        },
+        "p95": {
+          "snacka": 15735.239583333334,
+          "libopus": 12700.947916666666,
+          "ratio": 1.238902772184819
+        },
+        "p99": {
+          "snacka": 16782.125,
+          "libopus": 13424.479166666666,
+          "ratio": 1.250113676042677
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 2,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "bb34688109ec57e164b5eaf964f60d38bc76ac1a6ab9f186c090d9678e66f5a0",
+      "stdout_bytes": 18465,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 1467625,
+      "reference_minimum_batch_ns": 1182291,
+      "operations_per_batch": 96,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15377.166666666666,
+          "libopus": 12456.59375,
+          "ratio": 1.2344599956682916
+        },
+        "p95": {
+          "snacka": 15646.708333333334,
+          "libopus": 12654.947916666666,
+          "ratio": 1.236410330280893
+        },
+        "p99": {
+          "snacka": 16503.041666666668,
+          "libopus": 13148,
+          "ratio": 1.2551750583105161
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "Hybrid-FB-10ms-2ch.bit-48000-fec-return",
+      "slot": 3,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "9dfbe7c7c7c678a322a911185e4752fb852eb11587011b3976b962295258636a",
+      "stdout_bytes": 16468,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 734916,
+      "reference_minimum_batch_ns": 591083,
+      "operations_per_batch": 48,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 15434.895833333334,
+          "libopus": 12486.125,
+          "ratio": 1.2361638084940951
+        },
+        "p95": {
+          "snacka": 15757.8125,
+          "libopus": 12739.583333333334,
+          "ratio": 1.2369174161896974
+        },
+        "p99": {
+          "snacka": 16259.541666666666,
+          "libopus": 12990.458333333334,
+          "ratio": 1.2516526553143172
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "189330bf8fa4d675c0ec73b284981bfed08da542698d73943993340526383c94",
+      "stdout_bytes": 16294,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 651208,
+      "reference_minimum_batch_ns": 630125,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3429.0364583333335,
+          "libopus": 3346.5677083333335,
+          "ratio": 1.024642785440929
+        },
+        "p95": {
+          "snacka": 3476.125,
+          "libopus": 3405.5989583333335,
+          "ratio": 1.0207088510800995
+        },
+        "p99": {
+          "snacka": 3560.765625,
+          "libopus": 3446.1822916666665,
+          "ratio": 1.033249353526774
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "98316580965982c935affd6f18b877fc4f05339430d7c5e3a195d80343fba3c5",
+      "stdout_bytes": 16311,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 648542,
+      "reference_minimum_batch_ns": 630291,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3413.1927083333335,
+          "libopus": 3351.1302083333335,
+          "ratio": 1.0185198712499048
+        },
+        "p95": {
+          "snacka": 3602.4270833333335,
+          "libopus": 3509.1145833333335,
+          "ratio": 1.02659146567718
+        },
+        "p99": {
+          "snacka": 3985.8958333333335,
+          "libopus": 3904.0833333333335,
+          "ratio": 1.0209556233857713
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "38943a9dc0b600612076bcd9a5d5e1542858579d99ad7e0bfc1bdb8faa208581",
+      "stdout_bytes": 16282,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 648542,
+      "reference_minimum_batch_ns": 627292,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3414.0625,
+          "libopus": 3328.9947916666665,
+          "ratio": 1.0255535720711488
+        },
+        "p95": {
+          "snacka": 3623.046875,
+          "libopus": 3512.1510416666665,
+          "ratio": 1.0315749043870017
+        },
+        "p99": {
+          "snacka": 3781.46875,
+          "libopus": 3779.078125,
+          "ratio": 1.0006325947548385
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-2.5ms-2ch.bit-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "a58af917a41b2b947b9fd48264caf55160d3e8e125a5a7de3af7b822a2378b22",
+      "stdout_bytes": 16305,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 648375,
+      "reference_minimum_batch_ns": 628458,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3415.3645833333335,
+          "libopus": 3329.640625,
+          "ratio": 1.025745708918161
+        },
+        "p95": {
+          "snacka": 3473.3072916666665,
+          "libopus": 3385.6354166666665,
+          "ratio": 1.0258952498453946
+        },
+        "p99": {
+          "snacka": 3604.8177083333335,
+          "libopus": 3444.0104166666665,
+          "ratio": 1.0466918714555766
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "f19dedebbc53daa1c68f009b08f015742f84ebb033a4f242b91f1ba295fb5fe4",
+      "stdout_bytes": 16300,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 599708,
+      "reference_minimum_batch_ns": 684083,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3158.203125,
+          "libopus": 3596.3541666666665,
+          "ratio": 0.8781679942070963
+        },
+        "p95": {
+          "snacka": 3213.7552083333335,
+          "libopus": 3643.4427083333335,
+          "ratio": 0.8820655258233613
+        },
+        "p99": {
+          "snacka": 3292.1041666666665,
+          "libopus": 3691.8385416666665,
+          "ratio": 0.8917248491534677
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "6401ab8535456b62a9e8a79ee68a28cf8bd2d8617ed27bad8bb0fd937efc69e1",
+      "stdout_bytes": 16298,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 599083,
+      "reference_minimum_batch_ns": 683667,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3157.984375,
+          "libopus": 3590.7135416666665,
+          "ratio": 0.8794865806906416
+        },
+        "p95": {
+          "snacka": 3202.0416666666665,
+          "libopus": 3641.4895833333335,
+          "ratio": 0.879321934991118
+        },
+        "p99": {
+          "snacka": 3254.3385416666665,
+          "libopus": 3678.8229166666665,
+          "ratio": 0.884614077759247
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "2afd839fcf871a498a1ee60e92f4f8cc358239e58350e3b05ae569308b2c90a6",
+      "stdout_bytes": 16278,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 600375,
+      "reference_minimum_batch_ns": 685083,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3173.390625,
+          "libopus": 3596.5729166666665,
+          "ratio": 0.8823373523985507
+        },
+        "p95": {
+          "snacka": 3222.875,
+          "libopus": 3645.4010416666665,
+          "ratio": 0.884093399645958
+        },
+        "p99": {
+          "snacka": 3316.625,
+          "libopus": 3700.3072916666665,
+          "ratio": 0.896310694916948
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-5ms-1ch.bit-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "e4268c33786ddc851d62fce3b239e47665e248221aec95dae6658f081c92353d",
+      "stdout_bytes": 16300,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 597083,
+      "reference_minimum_batch_ns": 682417,
+      "operations_per_batch": 192,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 3153.4322916666665,
+          "libopus": 3591.578125,
+          "ratio": 0.8780074334779134
+        },
+        "p95": {
+          "snacka": 3209.4166666666665,
+          "libopus": 3637.8020833333335,
+          "ratio": 0.8822405928488184
+        },
+        "p99": {
+          "snacka": 3270.6145833333335,
+          "libopus": 3703.5572916666665,
+          "ratio": 0.8831008475803809
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "2c90107a3846e62e8be7bcbc2c67a2abdd09f497daf66739e39b4cc53df98c6f",
+      "stdout_bytes": 16327,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 882542,
+      "reference_minimum_batch_ns": 774541,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2338.2161458333335,
+          "libopus": 2052.2994791666665,
+          "ratio": 1.1393152751677171
+        },
+        "p95": {
+          "snacka": 2464.953125,
+          "libopus": 2142.1432291666665,
+          "ratio": 1.1506948235010934
+        },
+        "p99": {
+          "snacka": 2756.4036458333335,
+          "libopus": 2507.0520833333335,
+          "ratio": 1.0994600647340627
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "d5730d893f68a4edc9ecd1f069a9843dbd4ded66c2d02fcfa98b04d764a93a0c",
+      "stdout_bytes": 16286,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 882250,
+      "reference_minimum_batch_ns": 775209,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2321.3984375,
+          "libopus": 2049.1536458333335,
+          "ratio": 1.1328571882446385
+        },
+        "p95": {
+          "snacka": 2459.5286458333335,
+          "libopus": 2161.2421875,
+          "ratio": 1.13801621125968
+        },
+        "p99": {
+          "snacka": 2534.9375,
+          "libopus": 2271.484375,
+          "ratio": 1.1159828030954428
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "b246293b2d83b7202739564f1f6680b598e89ca61f8a19150426c6e8eaef159e",
+      "stdout_bytes": 16291,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 882292,
+      "reference_minimum_batch_ns": 777208,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2328.3411458333335,
+          "libopus": 2054.3619791666665,
+          "ratio": 1.133364601489463
+        },
+        "p95": {
+          "snacka": 2361.109375,
+          "libopus": 2087.3463541666665,
+          "ratio": 1.1311536153484352
+        },
+        "p99": {
+          "snacka": 2438.5859375,
+          "libopus": 2140.515625,
+          "ratio": 1.139251640594775
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-WB-5ms-1ch.bit-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "status": "VALID",
+      "return_code": 0,
+      "stdout_sha256": "3ca9b197ea2327e4fc653b8b646347516a7523cbc970273dfd5c785521057151",
+      "stdout_bytes": 16301,
+      "raw_owned_batches": 1000,
+      "raw_reference_batches": 1000,
+      "owned_minimum_batch_ns": 883708,
+      "reference_minimum_batch_ns": 776084,
+      "operations_per_batch": 384,
+      "p50_p95_p99": {
+        "p50": {
+          "snacka": 2333.5520833333335,
+          "libopus": 2046.765625,
+          "ratio": 1.1401169019209678
+        },
+        "p95": {
+          "snacka": 2367.2942708333335,
+          "libopus": 2079.4270833333335,
+          "ratio": 1.1384358171571698
+        },
+        "p99": {
+          "snacka": 2416.3411458333335,
+          "libopus": 2104.9244791666665,
+          "ratio": 1.14794671720952
+        }
+      }
+    }
+  ]
+}
