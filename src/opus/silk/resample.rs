@@ -407,6 +407,7 @@ impl Resampler {
         input: &[f32],
         output: &mut [f32],
         plan: &FilterPlan,
+        batch_outputs: bool,
     ) -> Result<(), Error> {
         if plan.factor != self.factor {
             return Err(Error::Argument);
@@ -418,6 +419,7 @@ impl Resampler {
         self.validate(input)?;
         match (self.factor, plan.step) {
             (3, 4) => self.run_filtered::<3, 4>(input, output, plan),
+            (3, 6) if batch_outputs => self.run_filtered_wide_8k(input, output, plan),
             (3, 6) => self.run_filtered::<3, 6>(input, output, plan),
             (4, 6) => self.run_filtered::<4, 6>(input, output, plan),
             _ => unreachable!("validated below-native filter geometry"),
@@ -503,6 +505,51 @@ impl Resampler {
             return Err(Error::Argument);
         }
         Ok(())
+    }
+
+    fn run_filtered_wide_8k(&mut self, input: &[f32], output: &mut [f32], plan: &FilterPlan) {
+        const INPUTS: usize = 8;
+        const OUTPUTS: usize = 4;
+        let first = (6 - self.clock % 6) % 6;
+        let origin = first / 3;
+        let origins = [origin, origin + 2, origin + 4, origin + 6];
+        let numerators = &plan.numerators[first % 3][..plan.taps];
+        // WB-to-8 kHz outputs share one phase, separated by two native samples.
+        // Evaluate four together to overlap the long FIR accumulations while
+        // retaining newest-to-oldest addition order within every output. Eight
+        // new samples fit beside the longest composed filter and native delay.
+        debug_assert!(INPUTS + self.delay + plan.taps <= HISTORY);
+        let mut destination = 0;
+        let (chunks, remainder) = input.as_chunks::<INPUTS>();
+        for chunk in chunks {
+            let cursor = self.cursor;
+            for &sample in chunk {
+                let mut filtered = f64::from(sample);
+                for (lag, &coefficient) in FEEDBACK.iter().enumerate() {
+                    filtered -= coefficient * self.history[self.cursor + HISTORY - 1 - lag];
+                }
+                self.history[self.cursor] = filtered;
+                self.history[self.cursor + HISTORY] = filtered;
+                self.cursor = (self.cursor + 1) & (HISTORY - 1);
+            }
+            let histories = origins.map(|origin| {
+                let begin = ((cursor + origin) & (HISTORY - 1)) + HISTORY - self.delay;
+                &self.history[begin + 1 - plan.taps..=begin]
+            });
+            let mut sums = [0.0; OUTPUTS];
+            for tap in 0..plan.taps {
+                for lane in 0..OUTPUTS {
+                    sums[lane] += histories[lane][plan.taps - 1 - tap] * numerators[tap];
+                }
+            }
+            for &sum in &sums {
+                output[destination] = sum as f32;
+                destination += 1;
+            }
+        }
+        // Whole blocks leave the phase clock unchanged, so the original
+        // scalar path consumes the remaining samples with the same clock.
+        self.run_filtered::<3, 6>(remainder, &mut output[destination..], plan);
     }
 
     fn run_filtered<const PHASES: usize, const STEP: usize>(
@@ -803,7 +850,7 @@ mod tests {
                         .collect();
                     let mut output = vec![0.0; expected.len()];
                     selected
-                        .process_filtered(&input[offset..offset + width], &mut output, &plan)
+                        .process_filtered(&input[offset..offset + width], &mut output, &plan, true)
                         .unwrap();
                     for (&actual, &expected) in output.iter().zip(&expected) {
                         maximum_error = maximum_error.max((actual - expected).abs());
@@ -826,7 +873,7 @@ mod tests {
 
                 let before = (selected.history, selected.cursor, selected.clock);
                 assert_eq!(
-                    selected.process_filtered(&[0.0; 12], &mut [], &plan),
+                    selected.process_filtered(&[0.0; 12], &mut [], &plan, true),
                     Err(Error::Output)
                 );
                 let mut too_long = [123.0; TAIL_SAMPLES + 1];
@@ -840,6 +887,84 @@ mod tests {
         assert!(FilterPlan::new(Bandwidth::Wide, 8_000, &[f32::NAN]).is_err());
         assert!(FilterPlan::new(Bandwidth::Wide, 8_000, &[4.001]).is_err());
         assert!(FilterPlan::new(Bandwidth::Wide, 8_000, &[0.0; 98]).is_err());
+    }
+
+    #[test]
+    fn fused_filter_batches_preserve_scalar_sums_across_wraps_and_phase_changes() {
+        let input: Vec<f32> = (0..2048)
+            .map(|index| ((index * 73 % 103) as f32 - 51.0) / 64.0)
+            .collect();
+        // Unbounded scalar feedback is independent of ring layout and batching.
+        let mut filtered = vec![0.0; input.len()];
+        for (index, &sample) in input.iter().enumerate() {
+            filtered[index] = f64::from(sample);
+            for (lag, &coefficient) in FEEDBACK.iter().enumerate() {
+                if index > lag {
+                    filtered[index] -= coefficient * filtered[index - lag - 1];
+                }
+            }
+        }
+        for bandwidth in [Bandwidth::Medium, Bandwidth::Wide] {
+            let mut selected = Resampler::new(bandwidth);
+            let mut scalar = Resampler::new(bandwidth);
+            let mut full = Resampler::new(bandwidth);
+            let mut full_output = vec![0.0; input.len() * selected.factor];
+            full.process(&input, &mut full_output).unwrap();
+            let mut offset = 0;
+            let mut segment = 0;
+            while offset < input.len() {
+                let rate = if bandwidth == Bandwidth::Wide && segment % 2 == 1 {
+                    12_000
+                } else {
+                    8_000
+                };
+                let coefficients = low_pass(rate);
+                let taps = [1, 13, 49, 97][segment % 4];
+                let plan = FilterPlan::new(bandwidth, rate, &coefficients[..taps]).unwrap();
+                let width = [1, 2, 3, 4, 5, 6, 7, 8, 9, 31, 67, 131][segment % 12]
+                    .min(input.len() - offset);
+                let begin = offset * selected.factor;
+                let end = (offset + width) * selected.factor;
+                let expected: Vec<f32> = (begin..end)
+                    .filter(|index| index.is_multiple_of(plan.step))
+                    .map(|index| {
+                        let position = index / selected.factor;
+                        let phase = index % selected.factor;
+                        let mut sum = 0.0;
+                        if position >= selected.delay {
+                            let position = position - selected.delay;
+                            for tap in 0..plan.taps.min(position + 1) {
+                                sum += filtered[position - tap] * plan.numerators[phase][tap];
+                            }
+                        }
+                        sum as f32
+                    })
+                    .collect();
+                for (resampler, batch_outputs) in [(&mut scalar, false), (&mut selected, true)] {
+                    let mut output = vec![0.0; expected.len()];
+                    resampler
+                        .process_filtered(
+                            &input[offset..offset + width],
+                            &mut output,
+                            &plan,
+                            batch_outputs,
+                        )
+                        .unwrap();
+                    assert_eq!(output, expected, "{bandwidth:?}, {rate}, {offset}");
+                }
+                offset += width;
+                segment += 1;
+            }
+            assert_eq!(selected.history, full.history);
+            assert_eq!(selected.cursor, full.cursor);
+            assert_eq!(selected.clock, full.clock);
+            assert_eq!(scalar.history, full.history);
+            assert_eq!(scalar.cursor, full.cursor);
+            assert_eq!(scalar.clock, full.clock);
+            let mut tail = [0.0; TAIL_SAMPLES];
+            selected.tail_48k(&mut tail).unwrap();
+            assert_eq!(tail, full_output[full_output.len() - TAIL_SAMPLES..]);
+        }
     }
 
     #[test]

@@ -689,8 +689,106 @@ impl MdctPlan {
         Ok(())
     }
 
-    #[cfg_attr(feature = "opus", inline(always))]
-    fn inverse_inner(&self, input: &[f32], output: &mut [f32], workspace: &mut MdctWorkspace) {
+    /// Invert a 10/20 ms Opus plan into its live frame and 120-sample overlap.
+    /// The caller checked the same coefficient headroom as `inverse_finite`.
+    /// Samples outside this interval have zero window weight and are discarded.
+    #[cfg(feature = "opus")]
+    pub(crate) fn inverse_lapped_finite(
+        &self,
+        input: &[f32],
+        output: &mut [f32],
+        overlap: &mut [f32; 120],
+        workspace: &mut MdctWorkspace,
+    ) -> Result<(), Error> {
+        let n = self.coefficients;
+        let q = n / 2;
+        if !matches!(n, 480 | 960)
+            || input.len() != n
+            || output.len() != n
+            || workspace.input.len() != q
+            || workspace.output.len() != q
+        {
+            return Err(Error::Length);
+        }
+        debug_assert!(
+            input
+                .iter()
+                .all(|sample| { sample.abs() <= f32::MAX / (16 * n) as f32 })
+        );
+        self.inverse_fft(input, workspace);
+        let mut next_overlap = [0.0; 120];
+        let (leading, rest) = output.split_at_mut(60);
+        let (lower, upper) = rest.split_at_mut(q);
+        let (next_upper, next_high) = next_overlap.split_at_mut(60);
+        let leading = leading.as_chunks_mut::<2>().0;
+        let lower = lower.as_chunks_mut::<2>().0;
+        let upper = upper.as_chunks_mut::<2>().0;
+        let next_upper = next_upper.as_chunks_mut::<2>().0;
+        let next_high = next_high.as_chunks_mut::<2>().0;
+        let boundary = q / 2;
+        // The outer thirty rows at each end contribute all four aliases.
+        // Interior rows contribute only their two middle samples; the other
+        // two lie in the zero-padded portions of a full 2N inverse block.
+        for (((((&sample, row), low), lower), upper), high) in workspace.output[..30]
+            .iter()
+            .zip(&self.rows[..30])
+            .zip(leading.iter_mut().rev())
+            .zip(&mut lower[..30])
+            .zip(next_upper.iter_mut().rev())
+            .zip(next_high.iter_mut())
+        {
+            let value = sample.multiply(row.post);
+            let imaginary_value = -value.imaginary;
+            upper[1] = -value.real * row.window[0];
+            high[0] = -value.real * row.window[1];
+            lower[0] = -imaginary_value * row.window[2];
+            low[1] = imaginary_value * row.window[3];
+        }
+        for (((&sample, row), lower), upper) in workspace.output[30..boundary]
+            .iter()
+            .zip(&self.rows[30..boundary])
+            .zip(&mut lower[30..])
+            .zip(upper.iter_mut().rev())
+        {
+            let value = sample.multiply(row.post);
+            let imaginary_value = -value.imaginary;
+            upper[1] = -value.real * row.window[0];
+            lower[0] = -imaginary_value * row.window[2];
+        }
+        for (((&sample, row), lower), upper) in workspace.output[boundary..q - 30]
+            .iter()
+            .zip(&self.rows[boundary..q - 30])
+            .zip(lower[30..].iter_mut().rev())
+            .zip(upper.iter_mut())
+        {
+            let value = sample.multiply(row.post);
+            let imaginary_value = -value.imaginary;
+            lower[1] = -value.real * row.window[0];
+            upper[0] = -imaginary_value * row.window[2];
+        }
+        for (((((&sample, row), low), lower), upper), high) in workspace.output[q - 30..]
+            .iter()
+            .zip(&self.rows[q - 30..])
+            .zip(leading.iter_mut())
+            .zip(lower[..30].iter_mut().rev())
+            .zip(next_upper.iter_mut())
+            .zip(next_high.iter_mut().rev())
+        {
+            let value = sample.multiply(row.post);
+            let imaginary_value = -value.imaginary;
+            lower[1] = -value.real * row.window[0];
+            low[0] = value.real * row.window[1];
+            upper[0] = -imaginary_value * row.window[2];
+            high[1] = -imaginary_value * row.window[3];
+        }
+        for (destination, &previous) in output.iter_mut().zip(overlap.iter()) {
+            *destination += previous;
+        }
+        *overlap = next_overlap;
+        Ok(())
+    }
+
+    fn inverse_fft(&self, input: &[f32], workspace: &mut MdctWorkspace) {
         let n = self.coefficients;
         for (index, (sample, row)) in workspace.input.iter_mut().zip(&self.rows).enumerate() {
             *sample = Complex {
@@ -700,6 +798,12 @@ impl MdctPlan {
             .multiply(row.pre);
         }
         self.fft.run(&workspace.input, &mut workspace.output, false);
+    }
+
+    #[cfg_attr(feature = "opus", inline(always))]
+    fn inverse_inner(&self, input: &[f32], output: &mut [f32], workspace: &mut MdctWorkspace) {
+        self.inverse_fft(input, workspace);
+        let n = self.coefficients;
         let q = n / 2;
         let boundary = q.div_ceil(2);
         if q.is_multiple_of(2) {

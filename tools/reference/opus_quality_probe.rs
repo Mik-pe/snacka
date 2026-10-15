@@ -37,6 +37,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         "20" => FrameDuration::Ms20,
         "40" => FrameDuration::Ms40,
         "60" => FrameDuration::Ms60,
+        "80" => FrameDuration::Ms80,
+        "100" => FrameDuration::Ms100,
+        "120" => FrameDuration::Ms120,
         _ => return Err("invalid frame duration".into()),
     };
     let channels: usize = args[6].parse()?;

@@ -1,0 +1,1069 @@
+{
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: aarch64-apple-darwin\nrelease: 1.99.0\nLLVM version: 23.1.1\n",
+  "host": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "cpu": "Apple M5",
+  "flags": {
+    "overflow_checks": true,
+    "codegen_units": 16,
+    "lto": false,
+    "native_cpu": false,
+    "incremental": false,
+    "rustc_wrappers": false
+  },
+  "snapshots": {
+    "before": {
+      "build": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "build",
+        "--locked",
+        "--release",
+        "--features",
+        "opus",
+        "--lib",
+        "--target-dir",
+        "/private/tmp/snacka-parity-20261015/clean/before-target"
+      ],
+      "bridge": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+        "--edition=2024",
+        "-O",
+        "-C",
+        "overflow-checks=yes",
+        "-C",
+        "codegen-units=16",
+        "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/tools/reference/benchmark_opus_decode.rs",
+        "--extern",
+        "snacka=/private/tmp/snacka-parity-20261015/clean/before-target/release/libsnacka.rlib",
+        "-L",
+        "dependency=/private/tmp/snacka-parity-20261015/clean/before-target/release/deps",
+        "-L",
+        "native=/opt/homebrew/lib",
+        "-o",
+        "/private/tmp/snacka-parity-20261015/clean-before-decode"
+      ],
+      "sources": {
+        "Cargo.toml": "60a0cbbc0220f4951c3b0bc90f7f2b4fb455a763a7debf3bfb830e93ebf0306b",
+        "Cargo.lock": "ea4659d4176642f085e36c3fd2d912e9c7e5ea80eb4fd21013a62303e6fc9b0a",
+        "tools/reference/benchmark_opus_decode.rs": "c6adb009e8e889adf358385d1eeb9c69f557289c60d068acb5bae8b2159f7aeb",
+        "src/adaptive.rs": "24ff58d6d449cc00c803413659a810f151399e9280332345d829702e430a90b1",
+        "src/codec.rs": "b5557458bc2642baf4ab20741d31359773d6371c4083346d37b73d953e3d0216",
+        "src/concealment.rs": "0b024870fc663fc17eda2de8a93a20c2dbf5b0ff82a295a97040c2b00bc73d4c",
+        "src/entropy.rs": "6947a47169e142db7ed7bb66000d7670d7991ebb62774f988c546161cb60f870",
+        "src/harmonic.rs": "0eddd938566232bd91b5eba280c26a8d79a14b8edf3bb69071853a283625addc",
+        "src/harmonic_joint.rs": "0d20737869f3e0a96033625b573c0736b865235be393157bd76cad0d6426af98",
+        "src/lib.rs": "1a0067c4819386fa7894223e72f26583b249c7c4ff0b7483e16e4b82210ca7d9",
+        "src/opus/allocation.rs": "afc13c6a8416d9c55a248f6910ffe3cb226518b913b9b8e5621bc9bc169b65bd",
+        "src/opus/bands.rs": "04b8459203e8cb2fff91338ce45bfbe805754f0d0e558f4433436342421d3a19",
+        "src/opus/celt.rs": "40296bafa476bed9bb9e3d95072493519c797d99651d0df9e6de169b13ad11e5",
+        "src/opus/decoder.rs": "8f3e259de95c32c1093c21c2c306f6187c7eb8b4d2d9da53a1212d29421c9fbe",
+        "src/opus/dtx.rs": "d322b28b0fbb64b68444351c8907f52ab26ae06819b6e36c53b9ab1eaf25687c",
+        "src/opus/encoder.rs": "ec563032174b77900f1437a71aa34c71b8fe21117a38edb94c9abbf729267da7",
+        "src/opus/encoder_transition.rs": "7264620efaac530e4f5921217169517097de861557eceb73b48973a19f84c12b",
+        "src/opus/energy.rs": "5a7bd73ce9ac609e9644f62347579ff223522a11bf2e3a2f6e41bc950d1300e7",
+        "src/opus/flags.rs": "a92b363574a9d02c80eb26fb0da27a5207a5b356e40a38e626055558488e6114",
+        "src/opus/mod.rs": "22588ad18b559327f1b1a78e73fef5969cc46d2e7bf60eae5713a7736adaab29",
+        "src/opus/multistream.rs": "711455b26dd2d6eba0c7f880fb66f9fe0b0e93806960a148fd808ce4e0c2326a",
+        "src/opus/ogg.rs": "0f60441c53191ae673802834f90f92510897a54845709b538a09e638496de61a",
+        "src/opus/packet.rs": "551e44a91a322991d42c6302197bcdd36d1293b06d3ef4a272ba8065db9e1784",
+        "src/opus/plc.rs": "01878472ebb71e6d7128c63bd216ce703a4e32ee5a42f63e74b9c19ca0e6aa4f",
+        "src/opus/projection.rs": "1d384d854a59bd32335479db0a14ad58cc5c489724f4d4d1127d5b843e88b047",
+        "src/opus/pvq.rs": "8f29af81d9a7d4645801134ef16075c6afd19aca258f8810d515288f4c0ea719",
+        "src/opus/range.rs": "39ea920cc34b87fcaf1c66e321997208dbf3c72f8d07d3680a36fa84b22bac52",
+        "src/opus/repacketize.rs": "36907306d17b543082c4aa48328fd3344a4f6e8d7552ae2e5c231b0f639bf0ca",
+        "src/opus/silk/analysis.rs": "6a01ced7bd24935bcae58faf2853993462e55b1ffd74d03fd25d97cf4f237228",
+        "src/opus/silk/decoder.rs": "18a3ce0c5761d249e88e08c42f97a92bb8e28f774da71e76adf3cab1b19a1096",
+        "src/opus/silk/downsample.rs": "b90aa47f8032be8f3837f1b44580939553e7ecaaf86ac524791918bc36bde3a3",
+        "src/opus/silk/encode_pulses.rs": "465bb35c14e5d5353ae8ed55b4edfb09880cbd84da5c0342bd4586abe087e2b5",
+        "src/opus/silk/encoder.rs": "de3e22ed10dcbd6e541f63a159ba78bcacf627e32fb7e31f0153afe4d6ec422b",
+        "src/opus/silk/excitation.rs": "c799d9527087b9b572a98561f8acd842e7ea8b3e1dce8e6be77e96696a534d74",
+        "src/opus/silk/frame.rs": "1082d999010f2fcabcfa611d217d85be0f6b095851d1d8e783ace277a0e3cce7",
+        "src/opus/silk/frame_tables.rs": "e390dfd6d528855e1738a057d70c4e5e5a4037a9f9088235518c6c1168d84c8e",
+        "src/opus/silk/lpc.rs": "50b5795a1aba85e03a4f50a4e1726329d70593fa24eae30cf2f6160ce4929a8c",
+        "src/opus/silk/mod.rs": "17d626560769390127288e431728c974f816e9e9076a0d4548c3f8a40d4b886f",
+        "src/opus/silk/native_delay.rs": "2e640e1b6616b04b8b86044d9c513ba7f2ff8c33f766d86f558cf0f2af5ef6d5",
+        "src/opus/silk/pitch.rs": "4a84ff4061a96f26fc0ee0213a07090444288e32b5db2d883a52106f0b4aa34d",
+        "src/opus/silk/quantize.rs": "35a45029e76986cf0eb88491de5854ea1cbea9e339407c9cac8c78b5bcfa05f0",
+        "src/opus/silk/redundancy.rs": "ef5fbf9610565982cca6ed26d9cb35f1d5bad905abae274e5848e07a8a464c84",
+        "src/opus/silk/resample.rs": "07a8b17a842c0e80467af1413c02197a2c4072675fd28c1a0be02e2550ad2cc1",
+        "src/opus/silk/synthesis.rs": "b06a80574fcfc2ba3bbfe2beb8317f593eb5b8ec4c9834f43195c498cb591dc6",
+        "src/opus/silk/tables.rs": "fb5cb883d311e92f057427b0eda15a2d6b241fbe95b0d6afc9abaab504f647be",
+        "src/opus/transform.rs": "60487f734ca50d50b25f9d8d42f05d110016e5d16488a0245bd91c562d115002",
+        "src/pulse.rs": "ed639fb3441c37d8251849bc5b6ffb2958558ce1d74d89726ddb7684eac971d3",
+        "src/pulse_classes.rs": "b5abb1763796c54d33081fdabb64ca5f5db2ea3bbb9cf96e6d3f506647d112eb",
+        "src/transform/precomputed.rs": "f0145aaad4597883043f79d5f5e61ebbff3eb3c297b24923ef3b69c4b0012267",
+        "src/transform.rs": "8dd803bbc274f88c1fe141d3ee41a041fc7442b37c508561b336a637ea0350d0"
+      },
+      "binary_sha256": "64670d5b2573566f22bd12195f09aade54d1e213b6faaa6707fdd95d84f4295c"
+    },
+    "after": {
+      "build": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "build",
+        "--locked",
+        "--release",
+        "--features",
+        "opus",
+        "--lib",
+        "--target-dir",
+        "/private/tmp/snacka-parity-20261015/clean/after-target"
+      ],
+      "bridge": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+        "--edition=2024",
+        "-O",
+        "-C",
+        "overflow-checks=yes",
+        "-C",
+        "codegen-units=16",
+        "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/tools/reference/benchmark_opus_decode.rs",
+        "--extern",
+        "snacka=/private/tmp/snacka-parity-20261015/clean/after-target/release/libsnacka.rlib",
+        "-L",
+        "dependency=/private/tmp/snacka-parity-20261015/clean/after-target/release/deps",
+        "-L",
+        "native=/opt/homebrew/lib",
+        "-o",
+        "/private/tmp/snacka-parity-20261015/clean-after-decode"
+      ],
+      "sources": {
+        "Cargo.toml": "60a0cbbc0220f4951c3b0bc90f7f2b4fb455a763a7debf3bfb830e93ebf0306b",
+        "Cargo.lock": "ea4659d4176642f085e36c3fd2d912e9c7e5ea80eb4fd21013a62303e6fc9b0a",
+        "tools/reference/benchmark_opus_decode.rs": "c6adb009e8e889adf358385d1eeb9c69f557289c60d068acb5bae8b2159f7aeb",
+        "src/adaptive.rs": "24ff58d6d449cc00c803413659a810f151399e9280332345d829702e430a90b1",
+        "src/codec.rs": "b5557458bc2642baf4ab20741d31359773d6371c4083346d37b73d953e3d0216",
+        "src/concealment.rs": "0b024870fc663fc17eda2de8a93a20c2dbf5b0ff82a295a97040c2b00bc73d4c",
+        "src/entropy.rs": "6947a47169e142db7ed7bb66000d7670d7991ebb62774f988c546161cb60f870",
+        "src/harmonic.rs": "0eddd938566232bd91b5eba280c26a8d79a14b8edf3bb69071853a283625addc",
+        "src/harmonic_joint.rs": "0d20737869f3e0a96033625b573c0736b865235be393157bd76cad0d6426af98",
+        "src/lib.rs": "1a0067c4819386fa7894223e72f26583b249c7c4ff0b7483e16e4b82210ca7d9",
+        "src/opus/allocation.rs": "afc13c6a8416d9c55a248f6910ffe3cb226518b913b9b8e5621bc9bc169b65bd",
+        "src/opus/bands.rs": "04b8459203e8cb2fff91338ce45bfbe805754f0d0e558f4433436342421d3a19",
+        "src/opus/celt.rs": "40296bafa476bed9bb9e3d95072493519c797d99651d0df9e6de169b13ad11e5",
+        "src/opus/decoder.rs": "98068e4a4763fe27664765015034ccf624b04d68f1b8c6c5877798df311600a9",
+        "src/opus/dtx.rs": "ba949ad11da2a05a383f5ea6e4f2982f2319610d6899df8b3eef8edbbd2698e3",
+        "src/opus/encoder.rs": "71a5e55dc842ab9d2d7d4619c7d0381081a7481c548de06eb55d326d204b0698",
+        "src/opus/encoder_transition.rs": "7264620efaac530e4f5921217169517097de861557eceb73b48973a19f84c12b",
+        "src/opus/energy.rs": "5a7bd73ce9ac609e9644f62347579ff223522a11bf2e3a2f6e41bc950d1300e7",
+        "src/opus/flags.rs": "a92b363574a9d02c80eb26fb0da27a5207a5b356e40a38e626055558488e6114",
+        "src/opus/mod.rs": "22588ad18b559327f1b1a78e73fef5969cc46d2e7bf60eae5713a7736adaab29",
+        "src/opus/multistream.rs": "83eed05f14c22f2c3a62d5496b5537cf67f1ca34605f0d75e75cafa9ecd6572e",
+        "src/opus/ogg.rs": "0f60441c53191ae673802834f90f92510897a54845709b538a09e638496de61a",
+        "src/opus/packet.rs": "551e44a91a322991d42c6302197bcdd36d1293b06d3ef4a272ba8065db9e1784",
+        "src/opus/plc.rs": "01878472ebb71e6d7128c63bd216ce703a4e32ee5a42f63e74b9c19ca0e6aa4f",
+        "src/opus/projection.rs": "1d384d854a59bd32335479db0a14ad58cc5c489724f4d4d1127d5b843e88b047",
+        "src/opus/pvq.rs": "8f29af81d9a7d4645801134ef16075c6afd19aca258f8810d515288f4c0ea719",
+        "src/opus/range.rs": "39ea920cc34b87fcaf1c66e321997208dbf3c72f8d07d3680a36fa84b22bac52",
+        "src/opus/repacketize.rs": "36907306d17b543082c4aa48328fd3344a4f6e8d7552ae2e5c231b0f639bf0ca",
+        "src/opus/silk/analysis.rs": "6a01ced7bd24935bcae58faf2853993462e55b1ffd74d03fd25d97cf4f237228",
+        "src/opus/silk/decoder.rs": "18a3ce0c5761d249e88e08c42f97a92bb8e28f774da71e76adf3cab1b19a1096",
+        "src/opus/silk/downsample.rs": "b90aa47f8032be8f3837f1b44580939553e7ecaaf86ac524791918bc36bde3a3",
+        "src/opus/silk/encode_pulses.rs": "465bb35c14e5d5353ae8ed55b4edfb09880cbd84da5c0342bd4586abe087e2b5",
+        "src/opus/silk/encoder.rs": "de3e22ed10dcbd6e541f63a159ba78bcacf627e32fb7e31f0153afe4d6ec422b",
+        "src/opus/silk/excitation.rs": "c799d9527087b9b572a98561f8acd842e7ea8b3e1dce8e6be77e96696a534d74",
+        "src/opus/silk/frame.rs": "1082d999010f2fcabcfa611d217d85be0f6b095851d1d8e783ace277a0e3cce7",
+        "src/opus/silk/frame_tables.rs": "e390dfd6d528855e1738a057d70c4e5e5a4037a9f9088235518c6c1168d84c8e",
+        "src/opus/silk/lpc.rs": "50b5795a1aba85e03a4f50a4e1726329d70593fa24eae30cf2f6160ce4929a8c",
+        "src/opus/silk/mod.rs": "17d626560769390127288e431728c974f816e9e9076a0d4548c3f8a40d4b886f",
+        "src/opus/silk/native_delay.rs": "2e640e1b6616b04b8b86044d9c513ba7f2ff8c33f766d86f558cf0f2af5ef6d5",
+        "src/opus/silk/pitch.rs": "4a84ff4061a96f26fc0ee0213a07090444288e32b5db2d883a52106f0b4aa34d",
+        "src/opus/silk/quantize.rs": "35a45029e76986cf0eb88491de5854ea1cbea9e339407c9cac8c78b5bcfa05f0",
+        "src/opus/silk/redundancy.rs": "ef5fbf9610565982cca6ed26d9cb35f1d5bad905abae274e5848e07a8a464c84",
+        "src/opus/silk/resample.rs": "5f6f25fd13b0cf6fd9d69893d0632254f165d132b52a9156d610525e21a9e90b",
+        "src/opus/silk/synthesis.rs": "b06a80574fcfc2ba3bbfe2beb8317f593eb5b8ec4c9834f43195c498cb591dc6",
+        "src/opus/silk/tables.rs": "fb5cb883d311e92f057427b0eda15a2d6b241fbe95b0d6afc9abaab504f647be",
+        "src/opus/transform.rs": "91227d0e98735ca7521a5ede5efa4f148aab38fde18cce8bd524942a8a0568b3",
+        "src/pulse.rs": "ed639fb3441c37d8251849bc5b6ffb2958558ce1d74d89726ddb7684eac971d3",
+        "src/pulse_classes.rs": "b5abb1763796c54d33081fdabb64ca5f5db2ea3bbb9cf96e6d3f506647d112eb",
+        "src/transform/precomputed.rs": "f0145aaad4597883043f79d5f5e61ebbff3eb3c297b24923ef3b69c4b0012267",
+        "src/transform.rs": "6eb0c854413afa5fd8b4f5d69254c57c134e9217797081ef8502dbe50d23125a"
+      },
+      "binary_sha256": "e5798f9bd1e1543df7f4cb884259395bafacd8169319ed22c91c52a8ee319f31"
+    }
+  },
+  "baseline_commit": "87062cd2bd4d11818dd185de51a50d938bbb6f9c",
+  "reference_library": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+  "reference_sha256": "98dcd3cc62c6cf913b789051536ab246c56cc163c74bd8b4968ac467ec74b68b",
+  "reference_version": "libopus 1.6.1",
+  "macos_qos_requested": "user-initiated; not CPU affinity",
+  "scope": "11 selected complete-decoder cases, 3 alternating-role before/after repetitions, 1000 alternating Snacka/libopus batches per executable, every measured batch >=200us. Continuous cached generated streams, not callback deadlines. Sources frozen; unrelated host load, frequency and power uncontrolled. Other modes/geometries and x86-64 performance acceptance remain open.",
+  "records": [
+    {
+      "case": "after-SILK-WB-20-1-8000-decode",
+      "repetition": 0,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-decode-0-baseline.json",
+      "sha256": "8e2ad69e23efd9c3357459221ecdf31fd69af10e7e882c704d2d6df51d01e2d1"
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-decode",
+      "repetition": 0,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-decode-0-after.json",
+      "sha256": "a0ae59bc1a51cd7c759f412610dff622c8c957ff5a65470f8c6a61fd36591909"
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-decode",
+      "repetition": 1,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-decode-1-baseline.json",
+      "sha256": "de0bdbd8a65579ad664a0d5def10099fab0e52bacce60bb08485098083895c87"
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-decode",
+      "repetition": 1,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-decode-1-after.json",
+      "sha256": "477afd05a8406134e092cdf0797ebf874922fcf1638966eac74431669c643130"
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-decode",
+      "repetition": 2,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-decode-2-baseline.json",
+      "sha256": "8f4e76033872e41f52c5f296330aab0567c3a335b4686ec1dddbfc175d40d996"
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-decode",
+      "repetition": 2,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-decode-2-after.json",
+      "sha256": "f3b4320207079123f153ef9fc3a328ccaad087b6c09face2c33a409e938b44d6"
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-fec-return",
+      "repetition": 0,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-fec-return-0-baseline.json",
+      "sha256": "0ada65eae223c97c4e9273f6b8f212713214238527204caae34f71e1553e61f6"
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-fec-return",
+      "repetition": 0,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-fec-return-0-after.json",
+      "sha256": "0c645163f245040ab477c0e825de63104d885f81eb2de0817fa87571106165a1"
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-fec-return",
+      "repetition": 1,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-fec-return-1-baseline.json",
+      "sha256": "f5f729e0f0162d01897dcd94f71f1fb2b378b54f2b65b8a49a6726f2d858993b"
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-fec-return",
+      "repetition": 1,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-fec-return-1-after.json",
+      "sha256": "007e87350b25bfb560e6766a665943b629ec871e5967eeb85b6701850e3fdce6"
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-fec-return",
+      "repetition": 2,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-fec-return-2-baseline.json",
+      "sha256": "29ca073bd1c2878b08c4468217da478cdeda94503baea5dc80bc2f6301f8b370"
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-fec-return",
+      "repetition": 2,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-1-8000-fec-return-2-after.json",
+      "sha256": "a3984fa2a0295cf05d6a09c696e7c1a3b28748945ef634d982d553dd066a3001"
+    },
+    {
+      "case": "after-SILK-WB-20-2-8000-decode",
+      "repetition": 0,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-2-8000-decode-0-baseline.json",
+      "sha256": "6a617cf58afb676126ce9cca1444f6b037e613ab3e095d2218b49da0b54d87f3"
+    },
+    {
+      "case": "after-SILK-WB-20-2-8000-decode",
+      "repetition": 0,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-2-8000-decode-0-after.json",
+      "sha256": "428b7f1c766ca048a76b383efdc6a47dfff51b2186d47dae17122953af959b4d"
+    },
+    {
+      "case": "after-SILK-WB-20-2-8000-decode",
+      "repetition": 1,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-2-8000-decode-1-baseline.json",
+      "sha256": "e3e375ae32b7286800ca196a1b8ed921ee115afb94bb18a37871fb4360fe05eb"
+    },
+    {
+      "case": "after-SILK-WB-20-2-8000-decode",
+      "repetition": 1,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-2-8000-decode-1-after.json",
+      "sha256": "e29db9084b1c77fa2817ed3b13b3354872726c425c64183479769a66e3adb2d6"
+    },
+    {
+      "case": "after-SILK-WB-20-2-8000-decode",
+      "repetition": 2,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-2-8000-decode-2-baseline.json",
+      "sha256": "69d91fb56a3fcfcdaf6fb82f123b2cd9ddfa3495b6c9acf9bb6a5a241a3e02d6"
+    },
+    {
+      "case": "after-SILK-WB-20-2-8000-decode",
+      "repetition": 2,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-20-2-8000-decode-2-after.json",
+      "sha256": "aec85994226dc031c2e660e2b8e989f4c04acc0383d3d9181edafcb4316eff3f"
+    },
+    {
+      "case": "after-SILK-WB-10-1-8000-plc-return",
+      "repetition": 0,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-10-1-8000-plc-return-0-baseline.json",
+      "sha256": "942fdf041c506ce5f5be09efa35c390b0edf82b19c502e5f1e1c55c1845a35cd"
+    },
+    {
+      "case": "after-SILK-WB-10-1-8000-plc-return",
+      "repetition": 0,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-10-1-8000-plc-return-0-after.json",
+      "sha256": "908069d3ae54bb4e888de411dbd8352cd841ca8f1ae164a2a4ee6911b7d6f110"
+    },
+    {
+      "case": "after-SILK-WB-10-1-8000-plc-return",
+      "repetition": 1,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-10-1-8000-plc-return-1-baseline.json",
+      "sha256": "4e680e078fca1a04b6c31c662e472a754df3e46032dc031706ae872a2712fe0d"
+    },
+    {
+      "case": "after-SILK-WB-10-1-8000-plc-return",
+      "repetition": 1,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-10-1-8000-plc-return-1-after.json",
+      "sha256": "a6b315d33faa5b45642571ec7c897a89243a9fd36bb9d7133dcd199d77c3ba9c"
+    },
+    {
+      "case": "after-SILK-WB-10-1-8000-plc-return",
+      "repetition": 2,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-10-1-8000-plc-return-2-baseline.json",
+      "sha256": "e3e0bb1b2a3f9cff51dd8ec933e676266dd35f44b0bba2d24ea69b3bb8333f93"
+    },
+    {
+      "case": "after-SILK-WB-10-1-8000-plc-return",
+      "repetition": 2,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-10-1-8000-plc-return-2-after.json",
+      "sha256": "45e94dc05890847fa313c7b634a2473e41af36b492f0e8e74095bbc9e5506a48"
+    },
+    {
+      "case": "after-SILK-WB-60-2-8000-decode",
+      "repetition": 0,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-60-2-8000-decode-0-baseline.json",
+      "sha256": "3765b50a1c55e7a2f2d3746baa84eb79a72388e1293d566d711092428b9ea0ff"
+    },
+    {
+      "case": "after-SILK-WB-60-2-8000-decode",
+      "repetition": 0,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-60-2-8000-decode-0-after.json",
+      "sha256": "5ab4b960c11a888faba00b1d88d2a4958cbe08cc8bfc4e2bd4400017c7e517e5"
+    },
+    {
+      "case": "after-SILK-WB-60-2-8000-decode",
+      "repetition": 1,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-60-2-8000-decode-1-baseline.json",
+      "sha256": "102c250d44d0495b36912ac49144618118ea208d47ba1c6c67460eaff3bb50b2"
+    },
+    {
+      "case": "after-SILK-WB-60-2-8000-decode",
+      "repetition": 1,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-60-2-8000-decode-1-after.json",
+      "sha256": "ef91c965218ae3e1ffa2f681af194b08fbf2f6aedb562cde33ac81b7a320ba81"
+    },
+    {
+      "case": "after-SILK-WB-60-2-8000-decode",
+      "repetition": 2,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-60-2-8000-decode-2-baseline.json",
+      "sha256": "8ee5f029ec679ecd11919f200e6e4d6ecdd59f216f283d3a502ce53d59ee129b"
+    },
+    {
+      "case": "after-SILK-WB-60-2-8000-decode",
+      "repetition": 2,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-WB-60-2-8000-decode-2-after.json",
+      "sha256": "c1290bc5f3191c44ffa75db5f8f897aec98405b66b724154381fa34106029dd8"
+    },
+    {
+      "case": "after-SILK-NB-20-1-48000-decode",
+      "repetition": 0,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-NB-20-1-48000-decode-0-baseline.json",
+      "sha256": "d805a4239844b7f2eac67e0c133eb53206ffbf4b1ac1b6e85a41b276b483dacc"
+    },
+    {
+      "case": "after-SILK-NB-20-1-48000-decode",
+      "repetition": 0,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-NB-20-1-48000-decode-0-after.json",
+      "sha256": "97ca699e0452e7230035671aab42311b855eb183379c652128304f0b5481939c"
+    },
+    {
+      "case": "after-SILK-NB-20-1-48000-decode",
+      "repetition": 1,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-NB-20-1-48000-decode-1-baseline.json",
+      "sha256": "40d49abfa1922f6e552db6be38a6b1b28616040e02eb5ae6dec5b2a7b572ef09"
+    },
+    {
+      "case": "after-SILK-NB-20-1-48000-decode",
+      "repetition": 1,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-NB-20-1-48000-decode-1-after.json",
+      "sha256": "d590c06c7e8ec314eb0ef62d73c31ef389a39747fde21370434aa0fa26b1e321"
+    },
+    {
+      "case": "after-SILK-NB-20-1-48000-decode",
+      "repetition": 2,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-NB-20-1-48000-decode-2-baseline.json",
+      "sha256": "f6d74df9cc37d3e66d9f53c0ba75c7fe406be40b6d4207ccd46bdae5950c9161"
+    },
+    {
+      "case": "after-SILK-NB-20-1-48000-decode",
+      "repetition": 2,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-SILK-NB-20-1-48000-decode-2-after.json",
+      "sha256": "0d4bec683c7b227ada264af2a4ee09f652dbe5f4dc3c6e1ad28e0c5d29c8399d"
+    },
+    {
+      "case": "after-CELT-FB-2.5-1-48000-decode",
+      "repetition": 0,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-2.5-1-48000-decode-0-baseline.json",
+      "sha256": "d450b47bfcd874ca7ea8ddc4bf514bfd9ee097640e0f5140085d42af5328ad14"
+    },
+    {
+      "case": "after-CELT-FB-2.5-1-48000-decode",
+      "repetition": 0,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-2.5-1-48000-decode-0-after.json",
+      "sha256": "6d5728481f15250fe72f6e4bd44deed254353f30db0f1381551e3e7470c4ed70"
+    },
+    {
+      "case": "after-CELT-FB-2.5-1-48000-decode",
+      "repetition": 1,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-2.5-1-48000-decode-1-baseline.json",
+      "sha256": "9700d92abef084117ad7d21a16b2829d6630e5acc0671a387c305b185f5890fc"
+    },
+    {
+      "case": "after-CELT-FB-2.5-1-48000-decode",
+      "repetition": 1,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-2.5-1-48000-decode-1-after.json",
+      "sha256": "7278ef02cd038e10f3f49744f648c5699c375510cd99accefef97540ef94f30a"
+    },
+    {
+      "case": "after-CELT-FB-2.5-1-48000-decode",
+      "repetition": 2,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-2.5-1-48000-decode-2-baseline.json",
+      "sha256": "fd77e5ad4ed5d4baeee5664e4a577ac2b99c80a78ca3cbad25e17867b8fe00cc"
+    },
+    {
+      "case": "after-CELT-FB-2.5-1-48000-decode",
+      "repetition": 2,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-2.5-1-48000-decode-2-after.json",
+      "sha256": "95fccb72592cb37f64ada932ff613f9464b1526f48b72bacd1182b30d3bd15c0"
+    },
+    {
+      "case": "after-CELT-WB-10-1-24000-decode",
+      "repetition": 0,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-WB-10-1-24000-decode-0-baseline.json",
+      "sha256": "1e187561b55a3d8b465f8836e659f173ad72289b27aa7c105d66b8fbd6c812c4"
+    },
+    {
+      "case": "after-CELT-WB-10-1-24000-decode",
+      "repetition": 0,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-WB-10-1-24000-decode-0-after.json",
+      "sha256": "411e40feaa4ed473eaec6091aee7873808d91305c33327a93ea75c723165d695"
+    },
+    {
+      "case": "after-CELT-WB-10-1-24000-decode",
+      "repetition": 1,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-WB-10-1-24000-decode-1-baseline.json",
+      "sha256": "74dbd557b48b2f7677ec6d35a934343632edad27e4e4b1f4d39672b32cb8b748"
+    },
+    {
+      "case": "after-CELT-WB-10-1-24000-decode",
+      "repetition": 1,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-WB-10-1-24000-decode-1-after.json",
+      "sha256": "f253caf4d755625ec2139ac7ef7e7986d519cbcb4d1fef2b1d01b1782ea3fc65"
+    },
+    {
+      "case": "after-CELT-WB-10-1-24000-decode",
+      "repetition": 2,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-WB-10-1-24000-decode-2-baseline.json",
+      "sha256": "8d792c1dc1968517ef6421f44add9ab31713d730f378b74c264f5b7be194a74b"
+    },
+    {
+      "case": "after-CELT-WB-10-1-24000-decode",
+      "repetition": 2,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-WB-10-1-24000-decode-2-after.json",
+      "sha256": "aa39c8ba6c8d744c29faaaa64a287b7afe0cf5403184bb32c64c2254bde0471c"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-decode",
+      "repetition": 0,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-decode-0-baseline.json",
+      "sha256": "9f9a020ab1f9ca0466c0e973f469ef5767b741c41426e942383f05f94bc6843f"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-decode",
+      "repetition": 0,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-decode-0-after.json",
+      "sha256": "94992515dd71b200a13df252763f425e033d77b76b8b3b540ae995a391188577"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-decode",
+      "repetition": 1,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-decode-1-baseline.json",
+      "sha256": "c10d30ef534a9759cc3996288dd0266dc5b42bd4662ee47326681dde267701d8"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-decode",
+      "repetition": 1,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-decode-1-after.json",
+      "sha256": "b3cb4f876c8c639570919ee1fc0638cc577eb7b3864cf13d1ba9faee72f813e7"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-decode",
+      "repetition": 2,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-decode-2-baseline.json",
+      "sha256": "8617857cdce62edb824c96689e37412768c5c60b467760b471cba4c0b5af2809"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-decode",
+      "repetition": 2,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-decode-2-after.json",
+      "sha256": "90a796fdd0027a0eeb390669567ffe243c3c8f418c3ebc5bb5d104fcb0fa9eca"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-plc-return",
+      "repetition": 0,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-plc-return-0-baseline.json",
+      "sha256": "85bb7d8892ec48ddd6332ad874e9a197294e95c56105bb61f276df7ae22b8bef"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-plc-return",
+      "repetition": 0,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-plc-return-0-after.json",
+      "sha256": "4781c7a646b3c7eb6b450b3e1a13dec8a6ef8c2db5cf5e211518863799905fa9"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-plc-return",
+      "repetition": 1,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-plc-return-1-baseline.json",
+      "sha256": "12f39266b31c139f5da317d0f6cf8a02efb6da4b4c0886855b3da574c8d6c403"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-plc-return",
+      "repetition": 1,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-plc-return-1-after.json",
+      "sha256": "dfccacd1fd291044bd6e11cf0453e3cefc4dc9338b389e936e795820f5b9e853"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-plc-return",
+      "repetition": 2,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-plc-return-2-baseline.json",
+      "sha256": "08b27afd4a8a5eeb7876d94975c7a4c32ea55a1ac839ca8da4312413d9299ef1"
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-plc-return",
+      "repetition": 2,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-CELT-FB-20-2-48000-plc-return-2-after.json",
+      "sha256": "1b0368abe0ce4685de2b524173227ccdd636eedc42c9404940d784129f125b55"
+    },
+    {
+      "case": "after-Hybrid-FB-20-2-48000-decode",
+      "repetition": 0,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-Hybrid-FB-20-2-48000-decode-0-baseline.json",
+      "sha256": "84788b6c86c3e41a409ad7df41be52139c6263496ee2b00700c614838f19536c"
+    },
+    {
+      "case": "after-Hybrid-FB-20-2-48000-decode",
+      "repetition": 0,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-Hybrid-FB-20-2-48000-decode-0-after.json",
+      "sha256": "1fcc9e1deb2836d1e91ff34c953123d385552792d66362405f904f81692ff7e0"
+    },
+    {
+      "case": "after-Hybrid-FB-20-2-48000-decode",
+      "repetition": 1,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-Hybrid-FB-20-2-48000-decode-1-baseline.json",
+      "sha256": "58efe8b18ce352d15f7c081d510f136e084e4b0cc51a6fdf7fa259c05c2be52a"
+    },
+    {
+      "case": "after-Hybrid-FB-20-2-48000-decode",
+      "repetition": 1,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-Hybrid-FB-20-2-48000-decode-1-after.json",
+      "sha256": "744732d3dd9fed6a88182690f6f1cd7359c15f5858f326e98dc78e3e2240fff2"
+    },
+    {
+      "case": "after-Hybrid-FB-20-2-48000-decode",
+      "repetition": 2,
+      "role": "baseline",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-Hybrid-FB-20-2-48000-decode-2-baseline.json",
+      "sha256": "404107516fb15bd2600fb01d700754bb6a2e37594bc27e7ed01bc7111d8ccc3d"
+    },
+    {
+      "case": "after-Hybrid-FB-20-2-48000-decode",
+      "repetition": 2,
+      "role": "after",
+      "artifact": "/private/tmp/snacka-parity-20261015/accepted-final/after-Hybrid-FB-20-2-48000-decode-2-after.json",
+      "sha256": "6d2d6e721f5ffbe0ad6e10aec8777da28bdb68d5f789e5b28c63642342bb56a1"
+    }
+  ],
+  "summary": [
+    {
+      "case": "after-SILK-WB-20-1-8000-decode",
+      "variant": "after",
+      "repetitions": [
+        {
+          "change": -0.2963588137910126,
+          "baseline": 1.9774062566503512,
+          "current": 1.3913844840465266,
+          "p95": 1.3904803560733519,
+          "p99": 1.3939163545393343
+        },
+        {
+          "change": -0.309397427048541,
+          "baseline": 2.0200542359960334,
+          "current": 1.3950546528803545,
+          "p95": 1.368154416306362,
+          "p99": 1.245785607853449
+        },
+        {
+          "change": -0.3136111471627454,
+          "baseline": 2.0443247232352095,
+          "current": 1.4032017016082534,
+          "p95": 1.3217412896972576,
+          "p99": 1.220129205141328
+        }
+      ],
+      "change": -0.309397427048541,
+      "baseline": 2.0200542359960334,
+      "current": 1.3950546528803545,
+      "p95": 1.368154416306362,
+      "p99": 1.245785607853449
+    },
+    {
+      "case": "after-SILK-WB-20-1-8000-fec-return",
+      "variant": "after",
+      "repetitions": [
+        {
+          "change": -0.3020314670018245,
+          "baseline": 1.9222484458559337,
+          "current": 1.3416689278120888,
+          "p95": 1.3318348926802421,
+          "p99": 1.3060521042084168
+        },
+        {
+          "change": -0.299313352476684,
+          "baseline": 1.9157971472737494,
+          "current": 1.3423734804579759,
+          "p95": 1.352014629831908,
+          "p99": 1.3399064646537158
+        },
+        {
+          "change": -0.3051207226976539,
+          "baseline": 1.9146908792174544,
+          "current": 1.3304790144080183,
+          "p95": 1.3374438226133074,
+          "p99": 1.285125198657955
+        }
+      ],
+      "change": -0.3020314670018245,
+      "baseline": 1.9157971472737494,
+      "current": 1.3416689278120888,
+      "p95": 1.3374438226133074,
+      "p99": 1.3060521042084168
+    },
+    {
+      "case": "after-SILK-WB-20-2-8000-decode",
+      "variant": "after",
+      "repetitions": [
+        {
+          "change": 0.0028290326370525865,
+          "baseline": 1.4267816800164306,
+          "current": 1.4308180919551456,
+          "p95": 1.3692465052846914,
+          "p99": 1.3426991481094006
+        },
+        {
+          "change": 0.009007872527025507,
+          "baseline": 1.416406412658755,
+          "current": 1.4291652210704464,
+          "p95": 1.3844249624652751,
+          "p99": 1.4284335428483828
+        },
+        {
+          "change": -0.002622192082150976,
+          "baseline": 1.4244366744366745,
+          "current": 1.4207015278674413,
+          "p95": 1.4001391927742937,
+          "p99": 1.3644904186761129
+        }
+      ],
+      "change": 0.0028290326370525865,
+      "baseline": 1.4244366744366745,
+      "current": 1.4291652210704464,
+      "p95": 1.3844249624652751,
+      "p99": 1.3644904186761129
+    },
+    {
+      "case": "after-SILK-WB-10-1-8000-plc-return",
+      "variant": "after",
+      "repetitions": [
+        {
+          "change": 0.004582194735947676,
+          "baseline": 1.2854388489208632,
+          "current": 1.2913289800477712,
+          "p95": 1.335449510722465,
+          "p99": 1.3072306944501229
+        },
+        {
+          "change": 0.009040262829824508,
+          "baseline": 1.2821436244280884,
+          "current": 1.293734539778502,
+          "p95": 1.2454927308297212,
+          "p99": 1.3608074942147126
+        },
+        {
+          "change": 0.002767733306764386,
+          "baseline": 1.2836499615083632,
+          "current": 1.2872027622610567,
+          "p95": 1.3004840271055178,
+          "p99": 1.3003788930563698
+        }
+      ],
+      "change": 0.004582194735947676,
+      "baseline": 1.2836499615083632,
+      "current": 1.2913289800477712,
+      "p95": 1.3004840271055178,
+      "p99": 1.3072306944501229
+    },
+    {
+      "case": "after-SILK-WB-60-2-8000-decode",
+      "variant": "after",
+      "repetitions": [
+        {
+          "change": -0.02590602673103859,
+          "baseline": 1.3714447592067989,
+          "current": 1.3359160746146448,
+          "p95": 1.3369347598070065,
+          "p99": 1.3506187879411462
+        },
+        {
+          "change": -0.03074863371433234,
+          "baseline": 1.369647088787506,
+          "current": 1.3275323121364775,
+          "p95": 1.3421039039799536,
+          "p99": 1.2751459941418124
+        },
+        {
+          "change": -0.011994817039402639,
+          "baseline": 1.371572588795017,
+          "current": 1.355120826536161,
+          "p95": 1.434813047483856,
+          "p99": 1.4774738205448632
+        }
+      ],
+      "change": -0.02590602673103859,
+      "baseline": 1.3714447592067989,
+      "current": 1.3359160746146448,
+      "p95": 1.3421039039799536,
+      "p99": 1.3506187879411462
+    },
+    {
+      "case": "after-SILK-NB-20-1-48000-decode",
+      "variant": "after",
+      "repetitions": [
+        {
+          "change": 0.0049010183373772165,
+          "baseline": 1.0144942081331336,
+          "current": 1.019466262850357,
+          "p95": 1.0079739116366662,
+          "p99": 1.1102886750555145
+        },
+        {
+          "change": 0.006141671758140843,
+          "baseline": 1.0025428527191007,
+          "current": 1.0087001418439716,
+          "p95": 1.0061609739267583,
+          "p99": 1.0226060800296548
+        },
+        {
+          "change": -0.0035089017554006396,
+          "baseline": 1.0164732182023477,
+          "current": 1.0129065135426798,
+          "p95": 0.9498830304120929,
+          "p99": 0.9392244467285533
+        }
+      ],
+      "change": 0.0049010183373772165,
+      "baseline": 1.0144942081331336,
+      "current": 1.0129065135426798,
+      "p95": 1.0061609739267583,
+      "p99": 1.0226060800296548
+    },
+    {
+      "case": "after-CELT-FB-2.5-1-48000-decode",
+      "variant": "after",
+      "repetitions": [
+        {
+          "change": -0.006712191867609629,
+          "baseline": 1.0393489846998298,
+          "current": 1.0323726748971194,
+          "p95": 1.1400075270260361,
+          "p99": 1.1638122791728684
+        },
+        {
+          "change": 0.0007283211532933542,
+          "baseline": 1.0325428511078834,
+          "current": 1.033294873908027,
+          "p95": 1.0755179603674498,
+          "p99": 1.0943599980051686
+        },
+        {
+          "change": 0.0047611190752534505,
+          "baseline": 1.0389061419435717,
+          "current": 1.0438524977933772,
+          "p95": 1.1567371205441492,
+          "p99": 1.108919366739929
+        }
+      ],
+      "change": 0.0007283211532933542,
+      "baseline": 1.0389061419435717,
+      "current": 1.033294873908027,
+      "p95": 1.1400075270260361,
+      "p99": 1.108919366739929
+    },
+    {
+      "case": "after-CELT-WB-10-1-24000-decode",
+      "variant": "after",
+      "repetitions": [
+        {
+          "change": -0.019077982038392283,
+          "baseline": 1.266133927083235,
+          "current": 1.241978646764142,
+          "p95": 1.2188738675958188,
+          "p99": 1.121119407751928
+        },
+        {
+          "change": -0.06395687400248629,
+          "baseline": 1.272631290385745,
+          "current": 1.1912377712949225,
+          "p95": 1.192475783568703,
+          "p99": 1.188348892691922
+        },
+        {
+          "change": -0.010791031140682139,
+          "baseline": 1.2061886187922268,
+          "current": 1.1931725998453035,
+          "p95": 1.194852548618987,
+          "p99": 1.1911582242818621
+        }
+      ],
+      "change": -0.019077982038392283,
+      "baseline": 1.266133927083235,
+      "current": 1.1931725998453035,
+      "p95": 1.194852548618987,
+      "p99": 1.188348892691922
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-decode",
+      "variant": "after",
+      "repetitions": [
+        {
+          "change": 0.0072407380728640724,
+          "baseline": 0.9891521558379855,
+          "current": 0.9963143475126172,
+          "p95": 1.0117044623262619,
+          "p99": 1.0332073793819696
+        },
+        {
+          "change": -0.01693340970224444,
+          "baseline": 1.017348160427315,
+          "current": 1.0001209872169745,
+          "p95": 1.0001083972298872,
+          "p99": 1.0029630228328956
+        },
+        {
+          "change": 0.015519824298138474,
+          "baseline": 0.9905563131906889,
+          "current": 1.0059295731288203,
+          "p95": 1.0148682628184105,
+          "p99": 1.004020919766763
+        }
+      ],
+      "change": 0.0072407380728640724,
+      "baseline": 0.9905563131906889,
+      "current": 1.0001209872169745,
+      "p95": 1.0117044623262619,
+      "p99": 1.004020919766763
+    },
+    {
+      "case": "after-CELT-FB-20-2-48000-plc-return",
+      "variant": "after",
+      "repetitions": [
+        {
+          "change": 0.015441418575092847,
+          "baseline": 1.0514433258320501,
+          "current": 1.0676791023342105,
+          "p95": 1.0782727616867525,
+          "p99": 1.0623267867989472
+        },
+        {
+          "change": 0.005493690095037085,
+          "baseline": 1.058471700968813,
+          "current": 1.0642866164683022,
+          "p95": 1.048535289540958,
+          "p99": 1.0599884948361464
+        },
+        {
+          "change": 0.0101656554720575,
+          "baseline": 1.0510633235596671,
+          "current": 1.0617480711862903,
+          "p95": 1.0655374484741476,
+          "p99": 1.12222077939228
+        }
+      ],
+      "change": 0.0101656554720575,
+      "baseline": 1.0514433258320501,
+      "current": 1.0642866164683022,
+      "p95": 1.0655374484741476,
+      "p99": 1.0623267867989472
+    },
+    {
+      "case": "after-Hybrid-FB-20-2-48000-decode",
+      "variant": "after",
+      "repetitions": [
+        {
+          "change": -0.005441801854091599,
+          "baseline": 1.1868186500162352,
+          "current": 1.1803602180861064,
+          "p95": 1.1840678739568524,
+          "p99": 1.189381489120259
+        },
+        {
+          "change": -0.008650657985497912,
+          "baseline": 1.1824853648518732,
+          "current": 1.172256088387683,
+          "p95": 1.1783333194146353,
+          "p99": 1.1568711475698363
+        },
+        {
+          "change": -0.01375535180589782,
+          "baseline": 1.1861674761592689,
+          "current": 1.1698513252239842,
+          "p95": 1.1840461716652582,
+          "p99": 1.206905931928034
+        }
+      ],
+      "change": -0.008650657985497912,
+      "baseline": 1.1861674761592689,
+      "current": 1.172256088387683,
+      "p95": 1.1840461716652582,
+      "p99": 1.189381489120259
+    }
+  ],
+  "functional_validation": {
+    "cases": 2130,
+    "unchanged_existing_packet_pcm_traces": 1080,
+    "actual_fec_cases": 70,
+    "source_unchanged": true,
+    "matrix_summary_artifact": "/private/tmp/snacka-parity-20261015/short-final-matrix/summary.json",
+    "matrix_summary_sha256": "71ed4cc05de00d6fd75d690942a1b0ed2940fb5e5b8155c42a7a370c74757859",
+    "official_runs": 24,
+    "official_packets": 40150,
+    "minimum_official_quality": 68.0,
+    "official_scope": "48kHz conformance; mono-selection change only affects below-native rates, which the generated matrix and independent scalar oracle cover"
+  },
+  "verification": {
+    "release-short-final.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/release-short-final.log",
+      "sha256": "177cef7e1d697f1e76ac0cf18fff84739cd200ad8b8d84a1e58332daaf383070"
+    },
+    "resample-debug-final.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/resample-debug-final.log",
+      "sha256": "1fb969eccf1f552fb1f2aaee2d2068b562621fbd1b16ce9c2397139bbc3652db"
+    },
+    "transform-debug-final.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/transform-debug-final.log",
+      "sha256": "bb88b85c398120791baec9a228159633fb1d5475ec1fb5840d64515d9cbf33f8"
+    },
+    "clippy-short-final.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/clippy-short-final.log",
+      "sha256": "098f37a0caae29bc998471d15da5dca996f4f5b0dd006229a4126e93f886faf6"
+    },
+    "clippy-default.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/clippy-default.log",
+      "sha256": "f0b48acd4dd247b868bdfd13870b4a7086dfc633b34d0593adebcdf3e7bff2e6"
+    },
+    "python-tests.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/python-tests.log",
+      "sha256": "4782fdf449e06eb2c8f37db3718089c4ad2c650fe52a5caaa419161b20f225b2"
+    },
+    "plans.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/plans.log",
+      "sha256": "755449344f94b67d971376f718da3c18c99a17ffa9525eced5dc8f5eccf5c7e1"
+    },
+    "mobile-short-final.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/mobile-short-final.log",
+      "sha256": "8f01e9ceafe6a30cf9dee1b1e0fbf409539162783d5860877c415e3fa3fb0287"
+    },
+    "fuzz-final.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/fuzz-final.log",
+      "sha256": "ff509eda544d336bca2fab5adb3ea05b7a5a134e6dea8d66b9792daeb528e6a4"
+    },
+    "call-build.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/call-build.log",
+      "sha256": "7cf3ee827f4837390f61d0ca1e772ffd2f7dd62b577f9ec5c02793ca3bc8bdc3"
+    },
+    "call-smoke.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/call-smoke.log",
+      "sha256": "4900e8c5f2662b0dec806368a466d32067264c884f61eae5aa875318e059ee32"
+    },
+    "smoke-worker-tests.log": {
+      "artifact": "/private/tmp/snacka-parity-20261015/smoke-worker-tests.log",
+      "sha256": "c83dde30640da11e998647e3b089e82a3da1da175b68b451498279d22093df38"
+    }
+  }
+}

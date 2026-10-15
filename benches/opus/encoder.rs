@@ -47,6 +47,9 @@ pub(super) fn parse_case(arguments: &mut impl Iterator<Item = String>) -> Case {
         "20" => FrameDuration::Ms20,
         "40" => FrameDuration::Ms40,
         "60" => FrameDuration::Ms60,
+        "80" => FrameDuration::Ms80,
+        "100" => FrameDuration::Ms100,
+        "120" => FrameDuration::Ms120,
         _ => panic!("invalid encoder duration"),
     };
     Case {
@@ -126,6 +129,9 @@ impl Case {
             FrameDuration::Ms20 => "20",
             FrameDuration::Ms40 => "40",
             FrameDuration::Ms60 => "60",
+            FrameDuration::Ms80 => "80",
+            FrameDuration::Ms100 => "100",
+            FrameDuration::Ms120 => "120",
         }
     }
 
@@ -275,6 +281,9 @@ pub(super) fn run(options: &Options) {
         FrameDuration::Ms20,
         FrameDuration::Ms40,
         FrameDuration::Ms60,
+        FrameDuration::Ms80,
+        FrameDuration::Ms100,
+        FrameDuration::Ms120,
     ];
     for (mode, bands) in [
         (

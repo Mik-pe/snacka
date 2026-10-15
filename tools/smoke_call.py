@@ -34,7 +34,13 @@ class ImpairedLink:
             while not self.stopped.is_set():
                 ready, _, _ = select.select(self.sockets, [], [], 0.05)
                 for source in ready:
-                    data, address = source.recvfrom(2048)
+                    try:
+                        data, address = source.recvfrom(2048)
+                    except (ConnectionRefusedError, ConnectionResetError):
+                        # A peer can bind or close while the proxy is running.
+                        # Winsock reports its ICMP port-unreachable on receive;
+                        # retry as the call client's handshake loop does.
+                        continue
                     index = self.sockets.index(source)
                     if address != self.destinations[index]:
                         continue

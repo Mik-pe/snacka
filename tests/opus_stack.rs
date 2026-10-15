@@ -66,7 +66,7 @@ fn public_opus_construction_and_reset_fit_a_one_mib_thread() {
                     let config = EncoderConfig::new(
                         64_000,
                         channels,
-                        FrameDuration::Ms60,
+                        FrameDuration::Ms120,
                         bandwidth,
                         Application::Voice,
                     )

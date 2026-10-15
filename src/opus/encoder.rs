@@ -14,6 +14,7 @@ use super::silk::{self, Downsampler, SilkEncoder};
 const MAX_SAMPLES: usize = 2880;
 const MAX_NATIVE_SAMPLES: usize = 960;
 const MAX_FRAME_BYTES: usize = 1275;
+const MAX_FRAMES: usize = 6;
 
 /// Encoding intent used when the configuration selects its mode automatically.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -41,6 +42,12 @@ pub enum FrameDuration {
     Ms40,
     /// 2880 samples per channel.
     Ms60,
+    /// 3840 samples per channel, composed from four 20 ms frames.
+    Ms80,
+    /// 4800 samples per channel, composed from five 20 ms frames.
+    Ms100,
+    /// 5760 samples per channel, composed from six 20 ms frames.
+    Ms120,
 }
 
 impl FrameDuration {
@@ -53,6 +60,9 @@ impl FrameDuration {
             Self::Ms20 => 960,
             Self::Ms40 => 1920,
             Self::Ms60 => 2880,
+            Self::Ms80 => 3840,
+            Self::Ms100 => 4800,
+            Self::Ms120 => 5760,
         }
     }
 }
@@ -211,6 +221,14 @@ impl EncoderConfig {
         (self.bitrate as usize * self.duration.samples()).div_ceil(48_000 * 8)
     }
 
+    fn frame_count(self) -> usize {
+        if self.mode() == Mode::Silk && self.duration.samples() <= MAX_SAMPLES {
+            1
+        } else {
+            self.duration.samples().div_ceil(960)
+        }
+    }
+
     fn validate(self) -> Result<(), Error> {
         let samples = self.duration.samples();
         let mode = self.mode();
@@ -225,11 +243,7 @@ impl EncoderConfig {
             ),
             Mode::Celt => self.bandwidth == Bandwidth::Mediumband,
         };
-        let frames = if mode == Mode::Silk {
-            1
-        } else {
-            samples.div_ceil(960)
-        };
+        let frames = self.frame_count();
         let overhead = if frames == 1 { 1 } else { 2 + 2 * (frames - 1) };
         let minimum_bytes = u64::from(self.bitrate) * samples as u64 / (48_000 * 8);
         if !(1..=2).contains(&self.channels)
@@ -307,7 +321,7 @@ pub struct Encoder {
     previous_bandwidth: Option<Bandwidth>,
     channel_pcm: [[f32; MAX_SAMPLES]; 2],
     native_pcm: [f32; MAX_NATIVE_SAMPLES * 2],
-    frames: [[u8; MAX_FRAME_BYTES + 1]; 3],
+    frames: [[u8; MAX_FRAME_BYTES + 1]; MAX_FRAMES],
     rate_remainder: u64,
     final_range: u32,
     dtx_state: dtx::State,
@@ -340,7 +354,7 @@ impl Encoder {
             previous_bandwidth: None,
             channel_pcm: [[0.0; MAX_SAMPLES]; 2],
             native_pcm: [0.0; MAX_NATIVE_SAMPLES * 2],
-            frames: [[0; MAX_FRAME_BYTES + 1]; 3],
+            frames: [[0; MAX_FRAME_BYTES + 1]; MAX_FRAMES],
             rate_remainder: 0,
             final_range: 0,
             dtx_state: dtx::State::new(),
@@ -360,7 +374,9 @@ impl Encoder {
     pub const fn final_range(&self) -> u32 {
         self.final_range
     }
-    /// Whether the previous packet actually carried previous-packet LBRR.
+    /// Whether the previous packet's first frame carried previous-audio LBRR.
+    /// For packets composed from several frames this recovers the lost tail;
+    /// earlier missing audio is concealed by [`super::Decoder::recover`].
     pub const fn has_fec(&self) -> bool {
         self.has_fec
     }
@@ -453,11 +469,7 @@ impl Encoder {
             return Err(Error::Output);
         }
         let mode = self.config.mode();
-        let count = if mode == Mode::Silk {
-            1
-        } else {
-            samples.div_ceil(960)
-        };
+        let count = self.config.frame_count();
         let frame_samples = samples / count;
         let overhead = if count == 1 { 1 } else { 2 + 2 * (count - 1) };
         if target_bytes <= overhead + count {
@@ -510,7 +522,7 @@ impl Encoder {
                 self.input_bandwidth = None;
             }
         }
-        let mut sizes = [0; 3];
+        let mut sizes = [0; MAX_FRAMES];
         let mut interval = 0;
         let mut has_fec = false;
         let mut transition_redundancy = false;
@@ -580,7 +592,9 @@ impl Encoder {
                     &self.native_pcm[..internal * channels],
                     target as u32,
                 )?;
-                has_fec |= statistics.redundancy;
+                if index == 0 {
+                    has_fec = statistics.redundancy;
+                }
                 encoder_transition::write_header(&mut range, mode, payload_bytes, transition)
                     .map_err(|_| Error::Coding)?;
             }
@@ -765,6 +779,98 @@ fn toc(mode: Mode, bandwidth: Bandwidth, samples: usize, channels: usize) -> Res
 mod tests {
     use super::*;
     use crate::opus::Decoder;
+
+    #[test]
+    fn long_packets_cover_all_modes_budgets_and_quiet_refreshes() {
+        for (mode, bandwidth) in [
+            (Mode::Silk, Bandwidth::Narrowband),
+            (Mode::Silk, Bandwidth::Mediumband),
+            (Mode::Silk, Bandwidth::Wideband),
+            (Mode::Hybrid, Bandwidth::Superwideband),
+            (Mode::Hybrid, Bandwidth::Fullband),
+            (Mode::Celt, Bandwidth::Narrowband),
+            (Mode::Celt, Bandwidth::Wideband),
+            (Mode::Celt, Bandwidth::Superwideband),
+            (Mode::Celt, Bandwidth::Fullband),
+        ] {
+            for duration in [
+                FrameDuration::Ms80,
+                FrameDuration::Ms100,
+                FrameDuration::Ms120,
+            ] {
+                for channels in [1, 2] {
+                    for rate in [RateControl::Constant, RateControl::Variable] {
+                        let config = EncoderConfig::new(
+                            64_123 * channels as u32,
+                            channels,
+                            duration,
+                            bandwidth,
+                            Application::Voice,
+                        )
+                        .unwrap()
+                        .with_mode(mode)
+                        .unwrap()
+                        .with_rate_control(rate)
+                        .with_dtx(true)
+                        .unwrap();
+                        let samples = duration.samples();
+                        let mut encoder = Encoder::new(config).unwrap();
+                        let mut decoder = Decoder::new(channels).unwrap();
+                        let mut packet = vec![0; config.max_packet_bytes() + 1];
+                        let mut output = vec![0.0; samples * channels];
+                        let mut input = vec![0.0; samples * channels];
+                        for (index, value) in input.iter_mut().enumerate() {
+                            *value = 0.2 * (index as f32 * 0.017).sin();
+                        }
+                        let mut total = 0;
+                        for index in 0..3 {
+                            let length = encoder.encode(&input, &mut packet).unwrap();
+                            let parsed = super::super::Packet::parse(&packet[..length]).unwrap();
+                            assert_eq!(parsed.samples(48_000).unwrap(), samples);
+                            assert_eq!(parsed.frame_count(), samples / 960);
+                            assert_eq!(parsed.toc().mode(), mode);
+                            assert_eq!(
+                                decoder.decode(&packet[..length], &mut output).unwrap(),
+                                samples
+                            );
+                            assert_eq!(decoder.final_range(), encoder.final_range());
+                            total += length;
+                            if rate == RateControl::Constant {
+                                assert_eq!(
+                                    total as u64,
+                                    u64::from(config.bitrate()) * samples as u64 * (index + 1)
+                                        / 384_000
+                                );
+                            }
+                        }
+                        input.fill(0.0);
+                        let mut suppressed = false;
+                        let mut refreshed = false;
+                        for _ in 0..12 {
+                            let length = encoder.encode(&input, &mut packet).unwrap();
+                            refreshed |= suppressed && !encoder.was_dtx();
+                            suppressed |= encoder.was_dtx();
+                            assert_eq!(
+                                decoder.decode(&packet[..length], &mut output).unwrap(),
+                                samples
+                            );
+                            assert_eq!(decoder.final_range(), encoder.final_range());
+                            assert!(output.iter().all(|value| value.is_finite()));
+                        }
+                        assert!(suppressed && refreshed);
+                        input.fill(0.15);
+                        let length = encoder.encode(&input, &mut packet).unwrap();
+                        assert!(!encoder.was_dtx());
+                        assert_eq!(
+                            decoder.decode(&packet[..length], &mut output).unwrap(),
+                            samples
+                        );
+                        assert_eq!(decoder.final_range(), encoder.final_range());
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn all_modes_have_valid_packet_geometry_and_matching_final_ranges() {

@@ -506,19 +506,28 @@ impl Synthesis {
                 self.overlap
                     .copy_from_slice(&self.transform.block[OVERLAP..2 * OVERLAP]);
             }
-        } else {
-            let padding = (n - OVERLAP) / 2;
+        } else if n < 480 {
+            // Short frames have little or no discarded padding. Keep their
+            // contiguous inverse and copy path instead of scattered synthesis.
             self.transform.plans[index].inverse_finite(
                 input,
                 &mut self.transform.block[..2 * n],
                 &mut self.transform.scratch[index],
             )?;
-            output.copy_from_slice(&self.transform.block[padding..padding + n]);
+            let offset = (n - OVERLAP) / 2;
+            output.copy_from_slice(&self.transform.block[offset..offset + n]);
             for (destination, &previous) in output.iter_mut().zip(&self.overlap) {
                 *destination += previous;
             }
             self.overlap
-                .copy_from_slice(&self.transform.block[padding + n..padding + n + OVERLAP]);
+                .copy_from_slice(&self.transform.block[offset + n..offset + n + OVERLAP]);
+        } else {
+            self.transform.plans[index].inverse_lapped_finite(
+                input,
+                output,
+                &mut self.overlap,
+                &mut self.transform.scratch[index],
+            )?;
         }
         self.zero_history = false;
         Ok(())
@@ -552,6 +561,87 @@ mod tests {
             let phase =
                 std::f64::consts::FRAC_PI_2 * ((reflected - padding) as f64 + 0.5) / OVERLAP as f64;
             (std::f64::consts::FRAC_PI_2 * phase.sin().powi(2)).sin()
+        }
+    }
+
+    #[test]
+    fn direct_lapped_inverse_preserves_pcm_and_history_bits() {
+        let mut actual = Synthesis::new();
+        let mut expected = Synthesis::new();
+        for frame in 0..96 {
+            let n = [120, 240, 480, 960][frame % 4];
+            let transient = frame % 8 >= 4;
+            let parameters = PostFilterParams::new(47 + frame, 0.375, frame % 3).unwrap();
+            let mut actual_output = vec![0.0; n];
+            let mut expected_output = actual_output.clone();
+            if frame % 11 == 0 {
+                let prediction = signal(n + OVERLAP);
+                actual.conceal(&prediction, &mut actual_output).unwrap();
+                expected.conceal(&prediction, &mut expected_output).unwrap();
+            } else if frame % 7 == 0 {
+                actual.inverse_zero(&mut actual_output, parameters).unwrap();
+                expected
+                    .inverse_zero(&mut expected_output, parameters)
+                    .unwrap();
+            } else {
+                let mut input = signal(n);
+                for sample in &mut input {
+                    *sample *= 1.0 + frame as f32 * 0.003;
+                }
+                actual
+                    .inverse(&input, &mut actual_output, transient, parameters)
+                    .unwrap();
+                let index = frame_index(n).unwrap();
+                if transient && n > OVERLAP {
+                    expected
+                        .transform(&input, &mut expected_output, transient, index)
+                        .unwrap();
+                } else {
+                    // Keep the full public-kernel materialization as an
+                    // independent reference for the direct lapped path.
+                    let padding = (n - OVERLAP) / 2;
+                    expected.transform.plans[index]
+                        .inverse_finite(
+                            &input,
+                            &mut expected.transform.block[..2 * n],
+                            &mut expected.transform.scratch[index],
+                        )
+                        .unwrap();
+                    expected_output
+                        .copy_from_slice(&expected.transform.block[padding..padding + n]);
+                    for (destination, &previous) in
+                        expected_output.iter_mut().zip(&expected.overlap)
+                    {
+                        *destination += previous;
+                    }
+                    expected.overlap.copy_from_slice(
+                        &expected.transform.block[padding + n..padding + n + OVERLAP],
+                    );
+                    expected.zero_history = false;
+                }
+                expected.post_process(&mut expected_output, parameters);
+            }
+            for (index, (actual, expected)) in
+                actual_output.iter().zip(&expected_output).enumerate()
+            {
+                assert_eq!(
+                    actual.to_bits(),
+                    expected.to_bits(),
+                    "frame={frame} n={n} transient={transient} index={index}"
+                );
+            }
+            assert_eq!(
+                actual.overlap.map(f32::to_bits),
+                expected.overlap.map(f32::to_bits),
+                "frame={frame} overlap"
+            );
+            assert_eq!(actual.emphasis.to_bits(), expected.emphasis.to_bits());
+            assert_eq!(
+                actual.filter.history.map(f32::to_bits),
+                expected.filter.history.map(f32::to_bits)
+            );
+            assert_eq!(actual.filter.cursor, expected.filter.cursor);
+            assert_eq!(actual.pending_filter, expected.pending_filter);
         }
     }
 
