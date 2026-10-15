@@ -22,6 +22,8 @@ const CHANNELS: i32 = 4022;
 const SIGNAL: i32 = 4024;
 const RESET: i32 = 4028;
 const FINAL_RANGE: i32 = 4031;
+const SET_GAIN: i32 = 4034;
+const GET_GAIN: i32 = 4045;
 
 // Only installed, documented opus.h and opus_multistream.h entry points.
 #[link(name = "opus")]
@@ -295,6 +297,23 @@ impl NativeDecoder {
         };
         assert_eq!(status, 0);
     }
+
+    fn set_gain_q8(&mut self, gain: i16) {
+        assert_eq!(self.kind, 0);
+        // SAFETY: Ordinary SET_GAIN takes a promoted int in the signed Q8 range.
+        let status = unsafe { opus_decoder_ctl(self.state.as_ptr(), SET_GAIN, i32::from(gain)) };
+        assert_eq!(status, 0);
+    }
+
+    fn gain_q8(&self) -> i32 {
+        assert_eq!(self.kind, 0);
+        let mut gain = 0;
+        // SAFETY: Ordinary GET_GAIN takes a live writable int pointer.
+        let status =
+            unsafe { opus_decoder_ctl(self.state.as_ptr(), GET_GAIN, &mut gain as *mut i32) };
+        assert_eq!(status, 0);
+        gain
+    }
 }
 
 impl Drop for NativeDecoder {
@@ -363,6 +382,258 @@ fn same_celt(owned: &[f32], native: &[f32], context: &str) {
         .map(|(a, b)| (a - b).abs())
         .fold(0.0, f32::max);
     assert!(error < 2e-4, "CELT PCM maximum error {error}: {context}");
+}
+
+struct GainDecoders {
+    owned: [Decoder; 2],
+    native: [NativeDecoder; 2],
+    output: [Vec<f32>; 4],
+    channels: usize,
+    gain: i16,
+}
+
+impl GainDecoders {
+    fn new(rate: u32, channels: usize) -> Self {
+        let pair = Self {
+            owned: std::array::from_fn(|_| Decoder::with_sample_rate(channels, rate).unwrap()),
+            native: std::array::from_fn(|_| NativeDecoder::new(rate, channels)),
+            output: std::array::from_fn(|_| vec![0.0; rate as usize * 120 / 1000 * channels + 7]),
+            channels,
+            gain: 0,
+        };
+        for decoder in &pair.owned {
+            assert_eq!(decoder.gain_q8(), 0);
+        }
+        for decoder in &pair.native {
+            assert_eq!(decoder.gain_q8(), 0);
+        }
+        pair
+    }
+
+    fn set_gain(&mut self, gain: i16) {
+        self.gain = gain;
+        self.owned[1].set_gain_q8(gain);
+        self.native[1].set_gain_q8(gain);
+        assert_eq!(self.owned[1].gain_q8(), gain);
+        assert_eq!(self.native[1].gain_q8(), i32::from(gain));
+    }
+
+    fn reset(&mut self) {
+        for decoder in &mut self.owned {
+            decoder.reset();
+        }
+        for decoder in &mut self.native {
+            decoder.reset();
+        }
+        assert_eq!(self.owned[1].gain_q8(), self.gain);
+        assert_eq!(self.native[1].gain_q8(), i32::from(self.gain));
+    }
+
+    fn check(&mut self, packet: Option<&[u8]>, samples: usize, fec: bool) -> Option<Recovery> {
+        // A NaN suffix detects accidental extra writes without constraining
+        // legitimate large positive-gain float output.
+        let sentinel = f32::from_bits(0x7fc0_1234);
+        for output in &mut self.output {
+            output.fill(sentinel);
+        }
+        let mut recovery = None;
+        for index in 0..2 {
+            let decoder = &mut self.owned[index];
+            let output = &mut self.output[index];
+            match (packet, fec) {
+                (Some(packet), true) => {
+                    let actual = decoder.recover(packet, samples, output).unwrap();
+                    if index == 0 {
+                        recovery = Some(actual);
+                    } else {
+                        assert_eq!(Some(actual), recovery);
+                    }
+                }
+                (Some(packet), false) => {
+                    assert_eq!(decoder.decode(packet, output).unwrap(), samples);
+                }
+                (None, _) => {
+                    assert_eq!(decoder.conceal(samples, output).unwrap(), samples);
+                }
+            }
+            assert_eq!(
+                self.native[index].decode(packet, samples, fec, &mut self.output[index + 2]),
+                samples
+            );
+        }
+        assert_eq!(self.owned[0].final_range(), self.owned[1].final_range());
+        assert_eq!(self.native[0].final_range(), self.native[1].final_range());
+        if !fec {
+            assert_eq!(self.owned[0].final_range(), self.native[0].final_range());
+        }
+        let count = samples * self.channels;
+        let factor = 10.0f64.powf(f64::from(self.gain) / (20.0 * 256.0));
+        for (plain, gained) in [(0, 1), (2, 3)] {
+            for (&a, &b) in self.output[plain][..count]
+                .iter()
+                .zip(&self.output[gained][..count])
+            {
+                assert!(a.is_finite() && b.is_finite());
+                if self.gain == 0 {
+                    assert_eq!(a.to_bits(), b.to_bits(), "gain leaked into codec history");
+                } else {
+                    // Public APIs specify the dB formula, not a particular
+                    // libm approximation. This independent f64 oracle allows
+                    // 8 ppm relative float error, including near-zero output.
+                    let expected = f64::from(a) * factor;
+                    assert!(
+                        (f64::from(b) - expected).abs() <= expected.abs() * 8e-6 + 1e-30,
+                        "gain {}: {a} -> {b}, expected {expected}, implementation {plain}",
+                        self.gain
+                    );
+                }
+            }
+        }
+        for output in &self.output {
+            assert!(
+                output[count..]
+                    .iter()
+                    .all(|v| v.to_bits() == sentinel.to_bits())
+            );
+        }
+        recovery
+    }
+
+    fn refusals_preserve_output_and_history(&mut self, packet: &[u8], samples: usize) {
+        let output = &mut self.output[1];
+        output.fill(13.0);
+        let range = self.owned[1].final_range();
+        assert_eq!(
+            self.owned[1].decode(packet, &mut output[..samples * self.channels - 1]),
+            Err(DecodeError::Output)
+        );
+        assert_eq!(
+            self.owned[1].conceal(samples - 1, output),
+            Err(DecodeError::Argument)
+        );
+        assert_eq!(
+            self.owned[1].recover(packet, samples - 1, output),
+            Err(DecodeError::Argument)
+        );
+        assert_eq!(
+            self.owned[1].recover(packet, samples, &mut output[..samples * self.channels - 1]),
+            Err(DecodeError::Output)
+        );
+        assert_eq!(self.owned[1].final_range(), range);
+        assert!(output.iter().all(|&v| v == 13.0));
+    }
+}
+
+#[test]
+fn ordinary_output_gain_matches_public_controls_and_preserves_history() {
+    let mut cases = 0;
+    let mut above_unity = false;
+    for (mode, app, bandwidth, bitrate) in [
+        (Mode::Silk, 2048, 1103, 24_000),
+        (Mode::Hybrid, 2048, 1105, 24_000),
+        (Mode::Celt, 2051, 1105, 64_000),
+    ] {
+        for coded_channels in [1, 2] {
+            let mut encoder = Encoder::new(
+                coded_channels,
+                app,
+                bandwidth,
+                bitrate * coded_channels as i32,
+            );
+            encoder.set(SIGNAL, 3001);
+            let packets: Vec<_> = (0..8)
+                .map(|index| encoder.encode(&voice(960, coded_channels, index * 960)))
+                .collect();
+            assert!(
+                packets
+                    .iter()
+                    .all(|p| Packet::parse(p).unwrap().toc().mode() == mode)
+            );
+            let mut repacketizer = Repacketizer::new();
+            for packet in &packets[..6] {
+                repacketizer.push(packet).unwrap();
+            }
+            let mut long_packet = vec![0; 8192];
+            let long_length = repacketizer.write(0..6, &mut long_packet).unwrap();
+            long_packet.truncate(long_length);
+            for rate in RATES {
+                for channels in [1, 2] {
+                    let samples = rate as usize / 50;
+                    let mut pair = GainDecoders::new(rate, channels);
+                    for (index, gain) in [0, i16::MIN, -3072, -1, 1, 3072, i16::MAX]
+                        .into_iter()
+                        .enumerate()
+                    {
+                        pair.set_gain(gain);
+                        pair.check(Some(&packets[index]), samples, false);
+                        above_unity |= pair.output[1][..samples * channels]
+                            .iter()
+                            .any(|v| v.abs() > 1.0);
+                        pair.check(None, samples, false);
+                        assert_eq!(
+                            pair.check(Some(&packets[index + 1]), samples, true),
+                            Some(Recovery::Concealed)
+                        );
+                        pair.set_gain(0);
+                        pair.check(Some(&packets[index + 1]), samples, false);
+                    }
+                    pair.set_gain(3072);
+                    pair.reset();
+                    pair.refusals_preserve_output_and_history(&packets[0], samples);
+                    pair.check(Some(&packets[0]), samples, false);
+                    pair.set_gain(0);
+                    pair.check(Some(&packets[1]), samples, false);
+                    pair.set_gain(i16::MAX);
+                    pair.reset();
+                    pair.check(Some(&long_packet), samples * 6, false);
+                    cases += 1;
+                }
+            }
+        }
+    }
+    assert_eq!(cases, 60);
+    assert!(above_unity, "positive gain must not clamp floating output");
+}
+
+#[test]
+fn ordinary_output_gain_applies_once_to_actual_fec_and_its_concealed_prefix() {
+    for coded_channels in [1, 2] {
+        let mut encoder = Encoder::new(coded_channels, 2048, 1103, 24_000 * coded_channels as i32);
+        encoder.set(SIGNAL, 3001);
+        encoder.set(FEC, 1);
+        encoder.set(LOSS, 30);
+        let packets: Vec<_> = (0..12)
+            .map(|index| encoder.encode(&voice(960, coded_channels, index * 960)))
+            .collect();
+        for rate in RATES {
+            for channels in [1, 2] {
+                let samples = rate as usize / 50;
+                let mut pair = GainDecoders::new(rate, channels);
+                pair.check(Some(&packets[0]), samples, false);
+                pair.check(Some(&packets[1]), samples, false);
+                pair.set_gain(3072);
+                // Two missing 20 ms packets: PLC for the older prefix and
+                // actual LBRR for the immediately preceding packet.
+                assert_eq!(
+                    pair.check(Some(&packets[4]), samples * 2, true),
+                    Some(Recovery::Fec)
+                );
+                assert!(
+                    pair.output[0][..samples * channels]
+                        .iter()
+                        .any(|&v| v != 0.0)
+                );
+                assert!(
+                    pair.output[0][samples * channels..samples * channels * 2]
+                        .iter()
+                        .any(|&v| v != 0.0)
+                );
+                pair.check(Some(&packets[4]), samples, false);
+                pair.set_gain(0);
+                pair.check(Some(&packets[5]), samples, false);
+            }
+        }
+    }
 }
 
 #[test]

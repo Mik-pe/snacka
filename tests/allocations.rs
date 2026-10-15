@@ -213,6 +213,7 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
     for (index, encoder) in encoders.iter_mut().enumerate() {
         let channels = index % 2 + 1;
         for frame in 0..64 {
+            universal[channels - 1].set_gain_q8(if frame & 1 == 0 { 3072 } else { 0 });
             encoder
                 .set_bitrate(if frame & 1 == 0 { 32_000 } else { 48_000 })
                 .unwrap();
@@ -248,6 +249,7 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
             .iter_mut()
             .zip(output_rates.into_iter().flat_map(|rate| [rate; 2]))
         {
+            decoder.set_gain_q8(if *reset { i16::MIN } else { 3072 });
             if *reset {
                 decoder.reset();
             }

@@ -53,6 +53,16 @@ one or two fixed output channels. `with_sample_rate` selects 8/12/16/24/48 kHz.
 Coded channel and mode changes retain the appropriate history. Mono output
 normally disables intensity phase inversion, matching common mobile decoder
 behavior; `set_phase_inversion` explicitly controls that preference.
+`set_gain_q8(i16)` controls ordinary decoder output gain in 1/256 dB units,
+matching the [public Opus decoder gain contract](https://opus-codec.org/docs/opus_api-1.6/group__opus__decoderctls.html)
+and default of zero. Gain is applied
+once after resampling to decoded, recovered and concealed samples; it changes
+neither codec history nor entropy intervals. `gain_q8()` reports the setting,
+which survives `reset()`. Zero gain bypasses the gain pass. Floating output is
+not clipped; a non-finite gain product returns `DecodeError::Corrupt`. A content
+error can advance history and write an output prefix; reset before continuing.
+Mapped and projection decoder controls are unchanged; Ogg header gain remains
+caller-owned and is not applied automatically.
 
 ```rust
 use snacka::opus::{Decoder, Encoder, EncoderConfig};

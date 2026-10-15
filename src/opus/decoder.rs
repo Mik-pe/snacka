@@ -373,6 +373,8 @@ fn silk_duration(samples: usize) -> Result<silk::PacketDuration, Error> {
 pub struct Decoder {
     channels: usize,
     sample_rate: u32,
+    gain_q8: i16,
+    gain_factor: f32,
     output_resampler: OutputResampler,
     silk: Box<SilkDecoder>,
     celt: Box<CeltDecoder>,
@@ -432,6 +434,8 @@ impl Decoder {
         Ok(Self {
             channels,
             sample_rate,
+            gain_q8: 0,
+            gain_factor: 1.0,
             output_resampler,
             silk: Box::new(SilkDecoder::new()),
             celt: Box::new(celt),
@@ -463,6 +467,8 @@ impl Decoder {
     /// Decode a complete raw Opus packet and return samples per channel.
     /// Empty or one-byte compressed frames invoke the decoder's concealment.
     /// Trailing output capacity remains untouched.
+    /// A content error can advance history and write an output prefix; reset
+    /// after [`Error::Corrupt`] before continuing with another packet.
     pub fn decode(&mut self, packet: &[u8], output: &mut [f32]) -> Result<usize, Error> {
         let packet = Packet::parse(packet)?;
         self.decode_parsed(&packet, output)
@@ -494,7 +500,7 @@ impl Decoder {
             } else {
                 self.decode_frame(bytes, toc, samples)?;
             }
-            self.write_output(samples, destination);
+            self.write_output(samples, destination)?;
         }
         Ok(total)
     }
@@ -511,7 +517,7 @@ impl Decoder {
             })
     }
 
-    fn write_output(&mut self, samples: usize, output: &mut [f32]) {
+    fn write_output(&mut self, samples: usize, output: &mut [f32]) -> Result<(), Error> {
         if self.frame_rate == self.sample_rate {
             let count = samples * self.sample_rate as usize / 48_000 * self.channels;
             output[..count].copy_from_slice(&self.frame[..count]);
@@ -525,6 +531,17 @@ impl Decoder {
             );
             self.output_history_bypassed = false;
         }
+        if self.gain_q8 != 0 {
+            let count = samples * self.sample_rate as usize / 48_000 * self.channels;
+            for sample in &mut output[..count] {
+                let gained = *sample * self.gain_factor;
+                if !gained.is_finite() {
+                    return Err(Error::Corrupt);
+                }
+                *sample = gained;
+            }
+        }
+        Ok(())
     }
 
     fn add_highband(&mut self, samples: usize) {
@@ -577,7 +594,7 @@ impl Decoder {
             self.conceal_frame(frame)?;
             let start = completed / ratio * self.channels;
             let end = (completed + frame) / ratio * self.channels;
-            self.write_output(frame, &mut output[start..end]);
+            self.write_output(frame, &mut output[start..end])?;
             completed += frame;
         }
         self.final_range = 0;
@@ -695,7 +712,7 @@ impl Decoder {
         self.write_output(
             recovered,
             &mut output[prefix * self.channels..samples * self.channels],
-        );
+        )?;
         Ok(Recovery::Fec)
     }
 
@@ -1049,6 +1066,7 @@ impl Decoder {
     }
 
     /// Clear both layers, interpolation state, concealment and transition memory.
+    /// Output gain and the phase-inversion preference are retained.
     pub fn reset(&mut self) {
         self.silk.reset();
         self.celt.reset();
@@ -1082,6 +1100,28 @@ impl Decoder {
         self.channels
     }
 
+    /// Set output gain in signed Q8 decibels (256 units per dB).
+    ///
+    /// The default is zero. The full `i16` range is supported, with a linear
+    /// factor of `10^(gain / 5120)`. Gain applies once after resampling to
+    /// decoded, recovered and concealed samples, without changing codec history
+    /// or the entropy interval. Floating output is not clipped to ±1; a
+    /// non-finite gain product is rejected as [`Error::Corrupt`].
+    /// [`Self::reset`] retains this setting.
+    pub fn set_gain_q8(&mut self, gain: i16) {
+        self.gain_q8 = gain;
+        self.gain_factor = if gain == 0 {
+            1.0
+        } else {
+            10.0f32.powf(f32::from(gain) / 5120.0)
+        };
+    }
+
+    /// Configured output gain in signed Q8 decibels (256 units per dB).
+    pub const fn gain_q8(&self) -> i16 {
+        self.gain_q8
+    }
+
     /// Permit opposite phase in CELT intensity-stereo bands.
     /// Enabled for stereo output by default, disabled for mono output to retain
     /// high-frequency energy while downmixing. SILK reconstruction is unaffected.
@@ -1099,6 +1139,29 @@ impl Decoder {
 mod tests {
     use super::super::celt::{CeltConfig, CeltEncoder};
     use super::*;
+
+    #[test]
+    fn gain_retains_float_headroom_and_rejects_numeric_overflow() {
+        let mut decoder = Decoder::new(1).unwrap();
+        let mut output = [17.0; 127];
+        decoder.frame[..120].fill(8.0);
+        decoder.set_gain_q8(i16::MAX);
+        decoder.write_output(120, &mut output).unwrap();
+        assert!(output[..120].iter().all(|&v| v.is_finite() && v > 1.0));
+        assert_eq!(&output[120..], &[17.0; 7]);
+        assert!(decoder.frame[..120].iter().all(|&v| v == 8.0));
+
+        // A corrupt numerical state cannot become successful infinite output.
+        // This directly exercises the output boundary, independently of how
+        // entropy, shape normalization and stable filters bound packet PCM.
+        decoder.frame[0] = f32::MAX;
+        assert_eq!(decoder.write_output(120, &mut output), Err(Error::Corrupt));
+        assert!(output.iter().all(|v| v.is_finite()));
+        decoder.set_gain_q8(0);
+        decoder.write_output(120, &mut output).unwrap();
+        assert_eq!(output[0], f32::MAX);
+        assert_eq!(&output[120..], &[17.0; 7]);
+    }
 
     #[test]
     fn hybrid_low_rate_transition_and_loss_keep_combined_filter_history() {
@@ -1218,7 +1281,7 @@ mod tests {
                         decoder
                             .render_lowband(internal, coded, samples, direct)
                             .unwrap();
-                        decoder.write_output(samples, &mut output);
+                        decoder.write_output(samples, &mut output).unwrap();
                         for i in 0..internal {
                             for (ch, expected) in expected[..channels].iter().enumerate() {
                                 assert_eq!(output[i * channels + ch], expected[i]);
@@ -1281,8 +1344,8 @@ mod tests {
                         .unwrap();
                     full.render_lowband(internal, coded_channels, samples, false)
                         .unwrap();
-                    direct.write_output(samples, &mut actual);
-                    full.write_output(samples, &mut expected);
+                    direct.write_output(samples, &mut actual).unwrap();
+                    full.write_output(samples, &mut expected).unwrap();
                     let count = samples * rate as usize / 48_000 * channels;
                     for (&actual, &expected) in actual[..count].iter().zip(&expected[..count]) {
                         assert!((actual - expected).abs() < 2.0e-7);
