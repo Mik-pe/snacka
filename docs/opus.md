@@ -274,6 +274,10 @@ Matched-packet decoder benchmarks feed the same packet sequence to both codecs,
 alternate their order and report paired batch-throughput p50/p95/p99. Generic
 encoder benchmarks check actual wire mode and byte budgets on identical PCM.
 Their CPU results do not establish equivalent encoder or concealment quality.
+With `reference-tests`, `--validate-only --encoder-case hybrid FB 120 2 64000`
+checks a selected encoder profile through both decoders without timers,
+warmups, calibration or batches. The [long-packet validation note](measurements/2026-10-15-opus-long-encoder-validation/README.md)
+records the 80/100/120 ms checks and preserves the earlier timing exclusions.
 The broader decoder matrix covers 2,130 mode/bandwidth/duration/channel/rate
 and decode/PLC/FEC-return cases, including aggregated packets through 120 ms.
 Its functional validation passed; final timing

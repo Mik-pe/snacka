@@ -172,6 +172,11 @@ fn row(case: Case, codec: &str, complexity: &str, result: Measurement) {
 }
 
 fn run_case(case: Case, options: &Options) {
+    if options.validate_only {
+        #[cfg(feature = "reference-tests")]
+        validate_case(case, options);
+        return;
+    }
     let input = inputs_for(case.duration.samples(), case.channels, case.signal, options);
     let mut native = Encoder::new(case.config()).unwrap();
     let mut native_packet = vec![0; case.bytes()];
@@ -246,11 +251,99 @@ fn run_case(case: Case, options: &Options) {
     }
 }
 
-pub(super) fn run(options: &Options) {
-    eprintln!(
-        "48 kHz public encoder; {} changing PCM frames; {WARMUP} warmups; {BATCHES} calibrated >=200 us batches; ratios use paired batch-average throughput, not single-frame tail latency",
-        options.frames
+#[cfg(feature = "reference-tests")]
+fn validate_case(case: Case, options: &Options) {
+    use snacka::opus::Decoder;
+
+    let samples = case.duration.samples();
+    let input = inputs_for(samples, case.channels, case.signal, options);
+    let mut owned = Encoder::new(case.config()).unwrap();
+    let mut reference = reference::Encoder::configured(
+        samples,
+        case.channels,
+        case.bitrate(),
+        case.bandwidth,
+        if case.mode == Mode::Celt { 2051 } else { 2048 },
+        case.mode != Mode::Celt,
     );
+    // Independent histories for each encoder's packets in each decoder.
+    let mut owned_decoders = [
+        Decoder::new(case.channels).unwrap(),
+        Decoder::new(case.channels).unwrap(),
+    ];
+    let mut reference_decoders = [
+        reference::Decoder::configured(samples, case.channels),
+        reference::Decoder::configured(samples, case.channels),
+    ];
+    let mut owned_packet = vec![0; case.bytes()];
+    let mut reference_packet = vec![0; case.bytes()];
+    let mut owned_pcm = vec![0.0; samples * case.channels];
+    let mut reference_pcm = vec![0.0; samples * case.channels];
+    for pcm in &input {
+        let owned_length = owned.encode(pcm, &mut owned_packet).unwrap();
+        let reference_length = reference.encode(pcm, &mut reference_packet);
+        for (index, (packet, range)) in [
+            (&owned_packet[..owned_length], owned.final_range()),
+            (
+                &reference_packet[..reference_length],
+                reference.final_range(),
+            ),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            case.check_packet(packet);
+            assert_eq!(
+                owned_decoders[index]
+                    .decode(packet, &mut owned_pcm)
+                    .unwrap(),
+                samples
+            );
+            assert_eq!(
+                reference_decoders[index].decode(packet, &mut reference_pcm),
+                samples
+            );
+            assert_eq!(
+                owned_decoders[index].final_range(),
+                range,
+                "owned decode entropy range, encoder={index}"
+            );
+            assert_eq!(
+                reference_decoders[index].final_range(),
+                range,
+                "reference decode entropy range, encoder={index}"
+            );
+            assert!(owned_pcm.iter().all(|sample| sample.is_finite()));
+            assert!(reference_pcm.iter().all(|sample| sample.is_finite()));
+        }
+    }
+    println!(
+        "validation,48000,{},{},{},{},{},{},{},{},{},{},PASS",
+        case.channels,
+        case.milliseconds(),
+        case.requested_bitrate(),
+        case.bitrate(),
+        case.bytes(),
+        case.mode_name(),
+        case.bandwidth_name(),
+        case.signal.name(),
+        input.len(),
+        input.len() * 4,
+    );
+}
+
+pub(super) fn run(options: &Options) {
+    if options.validate_only {
+        eprintln!(
+            "48 kHz public encoder validation; {} changing PCM frames; no timers, warmups, calibration or batches",
+            options.frames
+        );
+    } else {
+        eprintln!(
+            "48 kHz public encoder; {} changing PCM frames; {WARMUP} warmups; {BATCHES} calibrated >=200 us batches; ratios use paired batch-average throughput, not single-frame tail latency",
+            options.frames
+        );
+    }
     eprintln!(
         "architecture={},cpu_label={}; CBR/equal raw bytes; reference complexity10, VOIP/voice hint for SILK+Hybrid, RestrictedLowDelay for CELT; actual wire modes verified; equal bytes does not establish equal perceptual quality",
         std::env::consts::ARCH,
@@ -258,9 +351,15 @@ pub(super) fn run(options: &Options) {
     );
     #[cfg(feature = "reference-tests")]
     eprintln!("reference_version={}", reference::version());
-    println!(
-        "codec,operation,sample_rate,channels,frame_ms,requested_bitrate,packet_bitrate,packet_bytes,wire_mode,bandwidth,signal,complexity,batch_frames,batches,p50_batch_ns_per_frame,p95_batch_ns_per_frame,p99_batch_ns_per_frame,paired_encode_ratio_p50,paired_encode_ratio_p95,paired_encode_ratio_p99"
-    );
+    if options.validate_only {
+        println!(
+            "operation,sample_rate,channels,frame_ms,requested_bitrate,packet_bitrate,packet_bytes,wire_mode,bandwidth,signal,packets_per_encoder,decode_checks,result"
+        );
+    } else {
+        println!(
+            "codec,operation,sample_rate,channels,frame_ms,requested_bitrate,packet_bitrate,packet_bytes,wire_mode,bandwidth,signal,complexity,batch_frames,batches,p50_batch_ns_per_frame,p95_batch_ns_per_frame,p99_batch_ns_per_frame,paired_encode_ratio_p50,paired_encode_ratio_p95,paired_encode_ratio_p99"
+        );
+    }
     let signals: &[Signal] = if options.input.is_some() {
         &[Signal::File]
     } else if options.full {
