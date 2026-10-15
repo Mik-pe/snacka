@@ -311,6 +311,24 @@ impl ProjectionDecoder {
         self.decoder.gain_q8()
     }
 
+    /// Set every coded stream's CELT phase-inversion policy before demixing.
+    ///
+    /// Includes mono streams. Reset retains the setting, and the setter does not
+    /// clear prediction history. No separate phase operation is applied after
+    /// demixing. See [`MultistreamDecoder::set_phase_inversion`].
+    pub fn set_phase_inversion(&mut self, enabled: bool) {
+        self.decoder.set_phase_inversion(enabled);
+    }
+
+    /// First coded stream's phase-inversion policy.
+    ///
+    /// Initial policies can differ between coupled and mono streams. The setter
+    /// makes them uniform, so setting this returned value can change other
+    /// streams' initial policies. See [`MultistreamDecoder::phase_inversion`].
+    pub fn phase_inversion(&self) -> bool {
+        self.decoder.phase_inversion()
+    }
+
     fn check_output(&self, samples: usize, output: &[f32]) -> Result<(), Error> {
         let length = samples
             .checked_mul(self.channels())

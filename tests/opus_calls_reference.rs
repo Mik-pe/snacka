@@ -27,6 +27,8 @@ const FINAL_RANGE: i32 = 4031;
 const SET_GAIN: i32 = 4034;
 const GET_GAIN: i32 = 4045;
 const LAST_PACKET_DURATION: i32 = 4039;
+const SET_PHASE_DISABLED: i32 = 4046;
+const GET_PHASE_DISABLED: i32 = 4047;
 const DECODER_STATE: i32 = 5122;
 
 // Only installed, documented opus.h and opus_multistream.h entry points.
@@ -354,7 +356,59 @@ impl NativeDecoder {
         samples as usize
     }
 
+    fn set_phase_inversion(&mut self, enabled: bool) {
+        let disabled = i32::from(!enabled);
+        // SAFETY: SET_PHASE_INVERSION_DISABLED takes one promoted int on all
+        // three decoder APIs; the state stays owned and live.
+        let code = unsafe {
+            match self.kind {
+                2 => opus_projection_decoder_ctl(self.state.as_ptr(), SET_PHASE_DISABLED, disabled),
+                1 => {
+                    opus_multistream_decoder_ctl(self.state.as_ptr(), SET_PHASE_DISABLED, disabled)
+                }
+                _ => opus_decoder_ctl(self.state.as_ptr(), SET_PHASE_DISABLED, disabled),
+            }
+        };
+        assert_eq!(code, 0);
+    }
+
+    fn phase_inversion(&self) -> bool {
+        let mut disabled = -1;
+        // SAFETY: GET_PHASE_INVERSION_DISABLED writes a live int slot on each
+        // decoder API without transferring ownership.
+        let code = unsafe {
+            match self.kind {
+                2 => opus_projection_decoder_ctl(
+                    self.state.as_ptr(),
+                    GET_PHASE_DISABLED,
+                    &mut disabled as *mut i32,
+                ),
+                1 => opus_multistream_decoder_ctl(
+                    self.state.as_ptr(),
+                    GET_PHASE_DISABLED,
+                    &mut disabled as *mut i32,
+                ),
+                _ => opus_decoder_ctl(
+                    self.state.as_ptr(),
+                    GET_PHASE_DISABLED,
+                    &mut disabled as *mut i32,
+                ),
+            }
+        };
+        assert_eq!(code, 0);
+        assert!((0..=1).contains(&disabled));
+        disabled == 0
+    }
+
     fn stream_gain_q8(&self, stream: usize) -> i32 {
+        self.stream_control_i32(stream, GET_GAIN)
+    }
+
+    fn stream_phase_inversion(&self, stream: usize) -> bool {
+        self.stream_control_i32(stream, GET_PHASE_DISABLED) == 0
+    }
+
+    fn stream_control_i32(&self, stream: usize, request: i32) -> i32 {
         assert!(self.kind == 1 || self.kind == 2);
         let mut decoder = std::ptr::null_mut::<c_void>();
         // SAFETY: GET_DECODER_STATE takes an in-range stream index and a live
@@ -380,8 +434,9 @@ impl NativeDecoder {
         assert!(!decoder.is_null());
         let mut gain = 0;
         // SAFETY: The borrowed ordinary decoder remains live with its parent;
-        // GET_GAIN only writes the supplied int and does not transfer ownership.
-        let status = unsafe { opus_decoder_ctl(decoder, GET_GAIN, &mut gain as *mut i32) };
+        // GET_GAIN/GET_PHASE_INVERSION_DISABLED write the supplied int without
+        // transferring ownership.
+        let status = unsafe { opus_decoder_ctl(decoder, request, &mut gain as *mut i32) };
         assert_eq!(status, 0);
         gain
     }
@@ -1154,6 +1209,8 @@ fn owned_long_packets_match_native_durations_ranges_and_return_from_loss() {
 }
 
 trait ComposedGainDecoder {
+    fn set_phase_inversion(&mut self, enabled: bool);
+    fn phase_inversion(&self) -> bool;
     fn set_gain_q8(&mut self, gain: i16);
     fn gain_q8(&self) -> i16;
     fn reset(&mut self);
@@ -1171,6 +1228,12 @@ trait ComposedGainDecoder {
 macro_rules! composed_gain_decoder {
     ($codec:ty) => {
         impl ComposedGainDecoder for $codec {
+            fn set_phase_inversion(&mut self, enabled: bool) {
+                <$codec>::set_phase_inversion(self, enabled);
+            }
+            fn phase_inversion(&self) -> bool {
+                <$codec>::phase_inversion(self)
+            }
             fn set_gain_q8(&mut self, gain: i16) {
                 <$codec>::set_gain_q8(self, gain);
             }
@@ -2395,4 +2458,161 @@ fn owned_transition_payload_minimum_and_hybrid_maximum_decode_natively() {
             }
         }
     }
+}
+
+fn composed_phase_contract<D: ComposedGainDecoder>(
+    own: impl Fn(u32) -> D,
+    reference: impl Fn(u32) -> NativeDecoder,
+    streams: usize,
+    coupled: usize,
+) {
+    let frame = include_bytes!("../src/opus/testdata/stereo-phase.opus");
+    let mut packet = vec![0; 256];
+    let length = MultistreamPacket::write(&vec![frame.as_slice(); streams], &mut packet).unwrap();
+    packet.truncate(length);
+    for rate in RATES {
+        let mut owned = std::array::from_fn::<_, 3, _>(|_| own(rate));
+        let mut native = std::array::from_fn::<_, 3, _>(|_| reference(rate));
+        let policies = [None, Some(false), Some(true)];
+        for (index, policy) in policies.into_iter().enumerate() {
+            if let Some(enabled) = policy {
+                owned[index].set_phase_inversion(enabled);
+                native[index].set_phase_inversion(enabled);
+            }
+        }
+        let samples = rate as usize / 400;
+        let count = samples * native[0].channels;
+        let sentinel = f32::from_bits(0x7fc0_2345);
+        let mut a = std::array::from_fn::<_, 3, _>(|_| vec![sentinel; count + 7]);
+        let mut b = a.clone();
+        for step in 0..10 {
+            for (index, policy) in policies.into_iter().enumerate() {
+                if step == 9 {
+                    owned[index].reset();
+                    native[index].reset();
+                }
+                assert_eq!(
+                    owned[index].phase_inversion(),
+                    policy.unwrap_or(coupled != 0)
+                );
+                assert_eq!(
+                    native[index].phase_inversion(),
+                    owned[index].phase_inversion()
+                );
+                for stream in 0..streams {
+                    assert_eq!(
+                        native[index].stream_phase_inversion(stream),
+                        policy.unwrap_or(stream < coupled)
+                    );
+                }
+                a[index].fill(sentinel);
+                b[index].fill(sentinel);
+                match step {
+                    6 => assert_eq!(
+                        owned[index].conceal(samples, &mut a[index]).unwrap(),
+                        samples
+                    ),
+                    7 => assert_eq!(
+                        owned[index]
+                            .recover(&packet, samples, &mut a[index])
+                            .unwrap(),
+                        Recovery::Concealed
+                    ),
+                    _ => assert_eq!(
+                        owned[index].decode(&packet, &mut a[index]).unwrap(),
+                        samples
+                    ),
+                }
+                assert_eq!(
+                    native[index].decode(
+                        (step != 6).then_some(packet.as_slice()),
+                        samples,
+                        step == 7,
+                        &mut b[index]
+                    ),
+                    samples
+                );
+                assert!(
+                    a[index][..count]
+                        .iter()
+                        .chain(&b[index][..count])
+                        .all(|v| v.is_finite())
+                );
+                assert!(
+                    a[index][count..]
+                        .iter()
+                        .chain(&b[index][count..])
+                        .all(|v| v.to_bits() == sentinel.to_bits())
+                );
+                // Native and owned PLC differ. Compare the existing normal CELT
+                // witness only before loss and after a full reset.
+                if step < 6 || step == 9 {
+                    same_celt(
+                        &a[index][..count],
+                        &b[index][..count],
+                        "composed phase policy",
+                    );
+                }
+            }
+            assert!(
+                owned
+                    .iter()
+                    .all(|d| d.final_range() == owned[0].final_range())
+            );
+            assert!(
+                native
+                    .iter()
+                    .all(|d| d.final_range() == native[0].final_range())
+            );
+            if rate == 12_000 && step == 0 {
+                let difference = |x: &[f32], y: &[f32]| {
+                    x.iter()
+                        .zip(y)
+                        .map(|(x, y)| (x - y).abs())
+                        .fold(0.0, f32::max)
+                };
+                assert!(difference(&a[1][..count], &a[2][..count]) > 0.002);
+                assert!(difference(&b[1][..count], &b[2][..count]) > 0.002);
+                if coupled != 0 && streams > coupled {
+                    // First-stream getter is true initially, yet setting true
+                    // changes the initially-disabled mono stream policies.
+                    assert!(difference(&a[0][..count], &a[2][..count]) > 0.002);
+                    assert!(difference(&b[0][..count], &b[2][..count]) > 0.002);
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn mapped_and_projected_phase_controls_cover_mixed_defaults_and_real_downmix() {
+    let mono = ChannelMapping::mono_stereo(1).unwrap();
+    let mixed = ChannelMapping::new(3, 1, &[0, 1, 2, 255, 0]).unwrap();
+    composed_phase_contract(
+        |rate| MultistreamDecoder::with_sample_rate(mono, rate).unwrap(),
+        |rate| NativeDecoder::mapped(rate, mono),
+        1,
+        0,
+    );
+    composed_phase_contract(
+        |rate| MultistreamDecoder::with_sample_rate(mixed, rate).unwrap(),
+        |rate| NativeDecoder::mapped(rate, mixed),
+        3,
+        1,
+    );
+    let mapping = ProjectionMapping::new(
+        3,
+        1,
+        4,
+        vec![
+            16384, 16384, 0, 0, 16384, -16384, 0, 0, 0, 0, 32767, 0, 0, 0, 0, 32767,
+        ],
+    )
+    .unwrap();
+    composed_phase_contract(
+        |rate| ProjectionDecoder::with_sample_rate(mapping.clone(), rate).unwrap(),
+        |rate| NativeDecoder::projected(rate, &mapping),
+        3,
+        1,
+    );
 }

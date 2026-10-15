@@ -283,10 +283,12 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
         for (decoder, rate) in mapped.iter_mut().zip(output_rates) {
             let gain = if *reset { i16::MIN } else { 3072 };
             decoder.set_gain_q8(gain);
+            decoder.set_phase_inversion(!*reset);
             if *reset {
                 decoder.reset();
             }
             assert_eq!(decoder.gain_q8(), gain);
+            assert_eq!(decoder.phase_inversion(), !*reset);
             let samples = decoder.decode(packet, &mut mapped_output).unwrap();
             decoder
                 .conceal(rate as usize / 400, &mut mapped_output)
@@ -331,10 +333,12 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
         for (decoder, rate) in projected_gain.iter_mut().zip(output_rates) {
             let gain = if *reset { i16::MAX } else { 3072 };
             decoder.set_gain_q8(gain);
+            decoder.set_phase_inversion(!*reset);
             if *reset {
                 decoder.reset();
             }
             assert_eq!(decoder.gain_q8(), gain);
+            assert_eq!(decoder.phase_inversion(), !*reset);
             let samples = decoder.decode(packet, &mut mapped_output).unwrap();
             decoder
                 .conceal(rate as usize / 400, &mut mapped_output)

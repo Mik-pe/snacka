@@ -53,6 +53,13 @@ one or two fixed output channels. `with_sample_rate` selects 8/12/16/24/48 kHz.
 Coded channel and mode changes retain the appropriate history. Mono output
 normally disables intensity phase inversion, matching common mobile decoder
 behavior; `set_phase_inversion` explicitly controls that preference.
+Multistream and projection decoders expose the same setter for every coded
+stream, including mono and unmapped streams, before mapping or demixing. Reset
+retains each setting. Their `phase_inversion()` getter reports stream 0,
+matching the public native aggregate control. Fresh mixed layouts enable
+inversion in coupled streams and disable it in mono streams; setting the
+getter's returned value makes all streams uniform and can therefore change
+other streams' initial policies. The controls add no processing pass or state.
 `last_packet_samples()` reports the last successful decode, concealment or
 recovery interval in samples per channel at the configured output rate. It
 includes the whole multi-frame packet or the entire requested FEC interval,

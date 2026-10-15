@@ -586,6 +586,27 @@ impl MultistreamDecoder {
         self.decoders[0].gain_q8()
     }
 
+    /// Set every coded stream's CELT intensity-stereo phase-inversion policy.
+    ///
+    /// This includes mono and unmapped streams, before channel mapping. Disabling
+    /// inversion can preserve high-frequency energy when downmixing. Reset
+    /// retains the policy. No prediction history is cleared by this setter.
+    pub fn set_phase_inversion(&mut self, enabled: bool) {
+        for decoder in &mut self.decoders {
+            decoder.set_phase_inversion(enabled);
+        }
+    }
+
+    /// First coded stream's phase-inversion policy, as in the native aggregate CTL.
+    ///
+    /// Initially, coupled streams enable inversion and mono streams disable it.
+    /// A mixed layout can therefore contain different policies even when this
+    /// returns `true`. [`Self::set_phase_inversion`] sets every stream uniformly;
+    /// setting the returned value can change other streams' initial policies.
+    pub fn phase_inversion(&self) -> bool {
+        self.decoders[0].phase_inversion()
+    }
+
     /// Decode one complete multistream transport packet and return samples/channel.
     /// All coded streams are processed, even when their output is not mapped.
     pub fn decode(&mut self, bytes: &[u8], output: &mut [f32]) -> Result<usize, Error> {
@@ -694,6 +715,45 @@ impl MultistreamDecoder {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn phase_policy_reaches_unmapped_mono_history_and_survives_reset() {
+        let frame = include_bytes!("testdata/stereo-phase.opus");
+        let mapping = ChannelMapping::new(3, 1, &[0, 1, 2, 255, 0]).unwrap();
+        let mut packet = [0; 256];
+        let length = MultistreamPacket::write(&[frame, frame, frame], &mut packet).unwrap();
+        for rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
+            for enabled in [false, true] {
+                let mut mapped = MultistreamDecoder::with_sample_rate(mapping, rate).unwrap();
+                let mut last = Decoder::with_sample_rate(1, rate).unwrap();
+                assert!(mapped.phase_inversion());
+                assert!(!mapped.decoders[2].phase_inversion());
+                mapped.set_phase_inversion(enabled);
+                last.set_phase_inversion(enabled);
+                let samples = rate as usize / 400;
+                let mut actual = vec![0.0; samples * 5];
+                let mut expected = vec![0.0; samples];
+                for step in 0..4 {
+                    if step == 3 {
+                        mapped.reset();
+                        last.reset();
+                    }
+                    mapped.decode(&packet[..length], &mut actual).unwrap();
+                    last.decode(frame, &mut expected).unwrap();
+                    assert!(
+                        mapped
+                            .decoders
+                            .iter()
+                            .all(|d| d.phase_inversion() == enabled)
+                    );
+                    assert_eq!(mapped.phase_inversion(), enabled);
+                    // The final stream is omitted from mapped output, but its
+                    // real stereo-to-mono decode still obeys the uniform policy.
+                    assert_eq!(&mapped.scratch[..samples], expected);
+                }
+            }
+        }
+    }
 
     #[test]
     fn composition_writes_independent_self_delimiters_and_preserves_frames() {
