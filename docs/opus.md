@@ -186,6 +186,14 @@ content error. Packet framing, configuration and output-capacity errors are
 checked before history changes. The APIs are native Rust contracts; they do
 not mirror the foreign codec's controls or instrumentation.
 
+Valid-input budget robustness remains incomplete: dense or high-level SILK
+input can exhaust the regular-stage search and return `encoder::Error::Output`
+even with `max_packet_bytes()` of capacity. Reproductions include NB 12 kb/s
+10 ms clipping and WB 6 kb/s 20 ms speech. Increasing the output slice alone
+does not increase the configured packet budget, and input filtering can already
+have advanced when this internal search fails. These are encoder limitations,
+separate from transactional argument/capacity rejection and malformed decoding.
+
 Remaining encoder API gaps include automatic Ambisonics projection design,
 automatic surround bitrate allocation, and complexity, expected-loss and
 constrained-VBR controls. The current float PCM contract is normalized to ±1;
