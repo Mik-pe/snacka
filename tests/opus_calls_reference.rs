@@ -26,6 +26,7 @@ const RESET: i32 = 4028;
 const FINAL_RANGE: i32 = 4031;
 const SET_GAIN: i32 = 4034;
 const GET_GAIN: i32 = 4045;
+const LAST_PACKET_DURATION: i32 = 4039;
 const DECODER_STATE: i32 = 5122;
 
 // Only installed, documented opus.h and opus_multistream.h entry points.
@@ -336,6 +337,23 @@ impl NativeDecoder {
         gain
     }
 
+    fn last_packet_samples(&self) -> usize {
+        assert_eq!(self.kind, 0);
+        let mut samples = 0;
+        // SAFETY: Ordinary GET_LAST_PACKET_DURATION writes the live int slot;
+        // the returned duration is measured at the decoder's output rate.
+        let status = unsafe {
+            opus_decoder_ctl(
+                self.state.as_ptr(),
+                LAST_PACKET_DURATION,
+                &mut samples as *mut i32,
+            )
+        };
+        assert_eq!(status, 0);
+        assert!(samples >= 0);
+        samples as usize
+    }
+
     fn stream_gain_q8(&self, stream: usize) -> i32 {
         assert!(self.kind == 1 || self.kind == 2);
         let mut decoder = std::ptr::null_mut::<c_void>();
@@ -491,6 +509,10 @@ fn compare_implicit_short_to_plc(pair: &mut GainDecoders, short: &[u8], tail: Op
     assert_eq!(pair.owned[0].final_range(), pair.owned[1].final_range());
     assert_eq!(pair.native[0].final_range(), pair.native[1].final_range());
     assert_eq!(pair.owned[0].final_range(), pair.native[0].final_range());
+    assert_eq!(pair.owned[0].last_packet_samples(), count);
+    assert_eq!(pair.native[0].last_packet_samples(), count);
+    assert_eq!(pair.owned[1].last_packet_samples(), missing);
+    assert_eq!(pair.native[1].last_packet_samples(), missing);
     for (first, second) in [(0, 1), (2, 3)] {
         for (&a, &b) in pair.output[first][..count * pair.channels]
             .iter()
@@ -515,11 +537,7 @@ fn compare_implicit_short_to_plc(pair: &mut GainDecoders, short: &[u8], tail: Op
     assert!(pair.native.iter().all(|d| d.gain_q8() == 0));
 }
 
-#[test]
-fn implicit_short_frames_preserve_explicit_plc_and_coded_continuation() {
-    // Reuse the exact diagnostic Hybrid/CELT witnesses, including inter-coded
-    // continuations that expose history changes hidden by intra-coded packets.
-    // The adjacent JSON records the two existing stream hashes and indexes.
+fn short_frame_continuation_packets() -> Vec<&'static [u8]> {
     let data = include_bytes!("fixtures/opus-short-frame-continuation.bin");
     let mut packets = Vec::new();
     let mut position = 0;
@@ -530,6 +548,15 @@ fn implicit_short_frames_preserve_explicit_plc_and_coded_continuation() {
         position += length;
     }
     assert_eq!(packets.len(), 6);
+    packets
+}
+
+#[test]
+fn implicit_short_frames_preserve_explicit_plc_and_coded_continuation() {
+    // Reuse the exact diagnostic Hybrid/CELT witnesses, including inter-coded
+    // continuations that expose history changes hidden by intra-coded packets.
+    // The adjacent JSON records the two existing stream hashes and indexes.
+    let packets = short_frame_continuation_packets();
     let mut cases = 0;
     for bank in packets.as_chunks::<3>().0 {
         let continuation = Packet::parse(bank[2]).unwrap();
@@ -581,6 +608,44 @@ fn implicit_short_frames_preserve_explicit_plc_and_coded_continuation() {
     assert_eq!(cases, 360);
 }
 
+#[test]
+fn last_packet_samples_tracks_whole_packets_plc_and_refusals() {
+    let packets = short_frame_continuation_packets();
+    let long_packet = packets[5];
+    for rate in RATES {
+        for channels in [1, 2] {
+            let mut pair = GainDecoders::new(rate, channels);
+            let total = Packet::parse(long_packet).unwrap().samples(rate).unwrap();
+            pair.check(Some(long_packet), total, false);
+            let quantum = rate as usize / 400;
+            pair.check(None, quantum * 3, false);
+            pair.check(Some(&[0x60]), rate as usize / 100, false);
+            pair.check(Some(&[0xfc, 0]), rate as usize / 50, false);
+            pair.set_gain(3072);
+            for decoder in &mut pair.owned {
+                let previous = decoder.last_packet_samples();
+                decoder.set_phase_inversion(false);
+                assert_eq!(decoder.last_packet_samples(), previous);
+                let mut output = vec![13.0; total * channels + 7];
+                assert!(decoder.decode(&[3], &mut output).is_err());
+                assert_eq!(
+                    decoder.conceal(usize::MAX, &mut output),
+                    Err(DecodeError::Argument)
+                );
+                assert_eq!(
+                    decoder.recover(long_packet, usize::MAX, &mut output),
+                    Err(DecodeError::Argument)
+                );
+                assert_eq!(decoder.last_packet_samples(), previous);
+                assert!(output.iter().all(|&v| v == 13.0));
+            }
+            pair.refusals_preserve_output_and_history(long_packet, total);
+            pair.reset();
+            pair.check(Some(long_packet), total, false);
+        }
+    }
+}
+
 impl GainDecoders {
     fn new(rate: u32, channels: usize) -> Self {
         let pair = Self {
@@ -592,9 +657,11 @@ impl GainDecoders {
         };
         for decoder in &pair.owned {
             assert_eq!(decoder.gain_q8(), 0);
+            assert_eq!(decoder.last_packet_samples(), 0);
         }
         for decoder in &pair.native {
             assert_eq!(decoder.gain_q8(), 0);
+            assert_eq!(decoder.last_packet_samples(), 0);
         }
         pair
     }
@@ -610,9 +677,11 @@ impl GainDecoders {
     fn reset(&mut self) {
         for decoder in &mut self.owned {
             decoder.reset();
+            assert_eq!(decoder.last_packet_samples(), 0);
         }
         for decoder in &mut self.native {
             decoder.reset();
+            assert_eq!(decoder.last_packet_samples(), 0);
         }
         assert_eq!(self.owned[1].gain_q8(), self.gain);
         assert_eq!(self.native[1].gain_q8(), i32::from(self.gain));
@@ -652,6 +721,12 @@ impl GainDecoders {
         }
         assert_eq!(self.owned[0].final_range(), self.owned[1].final_range());
         assert_eq!(self.native[0].final_range(), self.native[1].final_range());
+        for decoder in &self.owned {
+            assert_eq!(decoder.last_packet_samples(), samples);
+        }
+        for decoder in &self.native {
+            assert_eq!(decoder.last_packet_samples(), samples);
+        }
         if !fec {
             assert_eq!(self.owned[0].final_range(), self.native[0].final_range());
         }
@@ -696,6 +771,7 @@ impl GainDecoders {
         let output = &mut self.output[1];
         output.fill(13.0);
         let range = self.owned[1].final_range();
+        let previous_samples = self.owned[1].last_packet_samples();
         assert_eq!(
             self.owned[1].decode(packet, &mut output[..samples * self.channels - 1]),
             Err(DecodeError::Output)
@@ -713,6 +789,7 @@ impl GainDecoders {
             Err(DecodeError::Output)
         );
         assert_eq!(self.owned[1].final_range(), range);
+        assert_eq!(self.owned[1].last_packet_samples(), previous_samples);
         assert!(output.iter().all(|&v| v == 13.0));
     }
 }
