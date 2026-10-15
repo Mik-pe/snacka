@@ -1,0 +1,10 @@
+{
+  "candidate_commit": "8f723ba1f35c053e1cc840f38a4b20446a127dde",
+  "started_writer": "terminal Output propagated",
+  "finish_after_error": "Output",
+  "retry_after_error": false,
+  "reset_then_sparse_layer": "decoded exact range",
+  "api_allocations": 0,
+  "stack_bytes": 1048576,
+  "source": "late_output.rs"
+}

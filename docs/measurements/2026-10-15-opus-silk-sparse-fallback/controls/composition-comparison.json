@@ -1,0 +1,151 @@
+{
+  "baseline": [
+    {
+      "name": "mapped-fallback-12000",
+      "packets": 0,
+      "failed_at": 0,
+      "error": "Encode(Output)",
+      "streams": 3,
+      "coupled": 0,
+      "mapping": [
+        2,
+        0,
+        1,
+        0,
+        255
+      ],
+      "output_channels": 5
+    },
+    {
+      "name": "projection-fallback-12000",
+      "packets": 0,
+      "failed_at": 0,
+      "error": "Encode(Output)",
+      "streams": 3,
+      "coupled": 1,
+      "mapping": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_channels": 4
+    },
+    {
+      "name": "mapped-fallback-16000",
+      "packets": 0,
+      "failed_at": 0,
+      "error": "Encode(Output)",
+      "streams": 3,
+      "coupled": 0,
+      "mapping": [
+        2,
+        0,
+        1,
+        0,
+        255
+      ],
+      "output_channels": 5
+    },
+    {
+      "name": "projection-fallback-16000",
+      "packets": 0,
+      "failed_at": 0,
+      "error": "Encode(Output)",
+      "streams": 3,
+      "coupled": 1,
+      "mapping": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_channels": 4
+    }
+  ],
+  "candidate": [
+    {
+      "name": "mapped-fallback-12000",
+      "packets": 16,
+      "failed_at": null,
+      "api_allocations": 0,
+      "stack_bytes": 1048576,
+      "streams": 3,
+      "coupled": 0,
+      "mapping": [
+        2,
+        0,
+        1,
+        0,
+        255
+      ],
+      "output_channels": 5,
+      "exact_transport": true,
+      "exact_stream_ranges": true,
+      "exact_pcm": true
+    },
+    {
+      "name": "projection-fallback-12000",
+      "packets": 16,
+      "failed_at": null,
+      "api_allocations": 0,
+      "stack_bytes": 1048576,
+      "streams": 3,
+      "coupled": 1,
+      "mapping": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_channels": 4,
+      "exact_transport": true,
+      "exact_stream_ranges": true,
+      "exact_pcm": true
+    },
+    {
+      "name": "mapped-fallback-16000",
+      "packets": 16,
+      "failed_at": null,
+      "api_allocations": 0,
+      "stack_bytes": 1048576,
+      "streams": 3,
+      "coupled": 0,
+      "mapping": [
+        2,
+        0,
+        1,
+        0,
+        255
+      ],
+      "output_channels": 5,
+      "exact_transport": true,
+      "exact_stream_ranges": true,
+      "exact_pcm": true
+    },
+    {
+      "name": "projection-fallback-16000",
+      "packets": 16,
+      "failed_at": null,
+      "api_allocations": 0,
+      "stack_bytes": 1048576,
+      "streams": 3,
+      "coupled": 1,
+      "mapping": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_channels": 4,
+      "exact_transport": true,
+      "exact_stream_ranges": true,
+      "exact_pcm": true
+    }
+  ],
+  "rescued_profiles": 4,
+  "native_packets": 64,
+  "api_allocations": 0,
+  "stack_bytes": 1048576,
+  "perceptual_quality": "unmeasured"
+}

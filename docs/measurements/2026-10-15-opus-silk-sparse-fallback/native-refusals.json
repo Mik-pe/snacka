@@ -1,0 +1,97 @@
+{
+  "source_commit": "8f723ba1f35c053e1cc840f38a4b20446a127dde",
+  "libopus": "libopus 1.6.1",
+  "scope": "Original two development refusals; native wire/finite/range proof and unscaled reconstruction diagnostics, not fresh perceptual acceptance",
+  "profiles": {
+    "nb": {
+      "candidate": {
+        "packets": 96,
+        "actual_toc_bytes": [
+          3
+        ],
+        "packet_lengths": [
+          15
+        ],
+        "finite_pcm": true,
+        "exact_encoder_final_ranges": true,
+        "range_sha256": "728b9b900d6eaf87de0522e06cdf4b74be909a5a84f67129b32c3a993d892a57",
+        "baseline_success_prefix_packets": 0,
+        "baseline_success_prefix_exact": true,
+        "owned_native_max_abs_pcm_error": 0.3829526901245117,
+        "packet_sha256": "c35feba0f62d5de7fe05b5193c21190357a997bf9c3fcbc2014f3d86dfdfa1f8",
+        "best_delay_48k_samples": 122,
+        "aligned_unscaled_snr_db": 1.1655599887873351,
+        "input_rms": 0.8660253865780602,
+        "output_rms": 0.28043967318551677,
+        "output_peak": 1.0,
+        "trim_samples": 1920,
+        "delay_search_max_samples": 1024
+      },
+      "native_reference": {
+        "packets": 96,
+        "actual_toc_bytes": [
+          0,
+          3
+        ],
+        "packet_lengths": [
+          15
+        ],
+        "finite_pcm": true,
+        "exact_encoder_final_ranges": false,
+        "range_sha256": "21af507cfed8f493f012c8442e5a45f813a8841310062622205f37aae25cd240",
+        "best_delay_48k_samples": 315,
+        "aligned_unscaled_snr_db": 4.58828490167272,
+        "input_rms": 0.8660253865780602,
+        "output_rms": 0.5550606132266389,
+        "output_peak": 1.0,
+        "trim_samples": 1920,
+        "delay_search_max_samples": 1024
+      }
+    },
+    "wb": {
+      "candidate": {
+        "packets": 75,
+        "actual_toc_bytes": [
+          75
+        ],
+        "packet_lengths": [
+          15
+        ],
+        "finite_pcm": true,
+        "exact_encoder_final_ranges": true,
+        "range_sha256": "15b073fb36db6785739a2c92910e5bd7387904fe958e05935c58331457c6d5f1",
+        "baseline_success_prefix_packets": 22,
+        "baseline_success_prefix_exact": true,
+        "owned_native_max_abs_pcm_error": 0.003418918699026108,
+        "packet_sha256": "af9092909e3a49f4ba18c79d185fc39f48d5131c52780b54b4c617e94348bd18",
+        "best_delay_48k_samples": 121,
+        "aligned_unscaled_snr_db": 1.212733834343824,
+        "input_rms": 0.05734144182063027,
+        "output_rms": 0.0289916825197406,
+        "output_peak": 0.710540771484375,
+        "trim_samples": 1920,
+        "delay_search_max_samples": 1024
+      },
+      "native_reference": {
+        "packets": 75,
+        "actual_toc_bytes": [
+          8,
+          11
+        ],
+        "packet_lengths": [
+          15
+        ],
+        "finite_pcm": true,
+        "exact_encoder_final_ranges": false,
+        "range_sha256": "6287f2828ca682046ee6e98f9a2a1d3d9b5863069bf9b6e8e50074bd2c30f6d2",
+        "best_delay_48k_samples": 317,
+        "aligned_unscaled_snr_db": 4.060293868367889,
+        "input_rms": 0.05734144182063027,
+        "output_rms": 0.04797358569551914,
+        "output_peak": 0.583221435546875,
+        "trim_samples": 1920,
+        "delay_search_max_samples": 1024
+      }
+    }
+  }
+}

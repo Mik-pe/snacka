@@ -1,0 +1,8534 @@
+[
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "5",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "40",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "60",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "80",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "100",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "NB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "SWB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 1,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "voice",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "noise",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "transient",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "silence",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "clipping",
+    "frames": 96
+  },
+  {
+    "scope": "generated",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "zeros",
+    "frames": 96
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-ffmm-b.wav",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 331,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-ffmm-b.f32",
+    "bitrate": 24000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-ffmm-b.wav",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "file",
+    "frames": 56,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-ffmm-b.f32",
+    "bitrate": 16000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-ffmm-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 166,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-ffmm-b.f32",
+    "bitrate": 8000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-ffmm-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 29,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-ffmm-b.f32",
+    "bitrate": 48000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-ffmm-b.wav",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 331,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-ffmm-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-ffmm-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "file",
+    "frames": 84,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-ffmm-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-ffmm-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 29,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-ffmm-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-ffmm-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "file",
+    "frames": 1321,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-ffmm-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-ffmm-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 166,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-ffmm-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-ffmm-b.wav",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 501,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-ffmm-b.f32",
+    "bitrate": 24000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-ffmm-b.wav",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "file",
+    "frames": 85,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-ffmm-b.f32",
+    "bitrate": 16000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-ffmm-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 251,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-ffmm-b.f32",
+    "bitrate": 8000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-ffmm-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 43,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-ffmm-b.f32",
+    "bitrate": 48000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-ffmm-b.wav",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 501,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-ffmm-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-ffmm-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "file",
+    "frames": 126,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-ffmm-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-ffmm-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 43,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-ffmm-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-ffmm-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "file",
+    "frames": 2001,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-ffmm-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-ffmm-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 251,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-ffmm-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-fjam-b.wav",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 241,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-fjam-b.f32",
+    "bitrate": 24000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-fjam-b.wav",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "file",
+    "frames": 41,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-fjam-b.f32",
+    "bitrate": 16000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-fjam-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 121,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-fjam-b.f32",
+    "bitrate": 8000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-fjam-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 21,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-fjam-b.f32",
+    "bitrate": 48000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-fjam-b.wav",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 241,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-fjam-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-fjam-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "file",
+    "frames": 61,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-fjam-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-fjam-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 21,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-fjam-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-fjam-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "file",
+    "frames": 961,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-fjam-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-fjam-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 121,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-fjam-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-fjam-b.wav",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 151,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-fjam-b.f32",
+    "bitrate": 24000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-fjam-b.wav",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "file",
+    "frames": 26,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-fjam-b.f32",
+    "bitrate": 16000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-fjam-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 76,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-fjam-b.f32",
+    "bitrate": 8000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-fjam-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 14,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-fjam-b.f32",
+    "bitrate": 48000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-fjam-b.wav",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 151,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-fjam-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-fjam-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "file",
+    "frames": 39,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-fjam-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-fjam-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 14,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-fjam-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-fjam-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "file",
+    "frames": 601,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-fjam-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-fjam-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 76,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-fjam-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblb-b.wav",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 271,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblb-b.f32",
+    "bitrate": 24000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblb-b.wav",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "file",
+    "frames": 46,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblb-b.f32",
+    "bitrate": 16000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblb-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 136,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblb-b.f32",
+    "bitrate": 8000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblb-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 24,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblb-b.f32",
+    "bitrate": 48000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblb-b.wav",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 271,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblb-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblb-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "file",
+    "frames": 69,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblb-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblb-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 24,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblb-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblb-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "file",
+    "frames": 1081,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblb-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblb-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 136,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblb-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblb-b.wav",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 251,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblb-b.f32",
+    "bitrate": 24000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblb-b.wav",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "file",
+    "frames": 43,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblb-b.f32",
+    "bitrate": 16000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblb-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 126,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblb-b.f32",
+    "bitrate": 8000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblb-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 22,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblb-b.f32",
+    "bitrate": 48000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblb-b.wav",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 251,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblb-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblb-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "file",
+    "frames": 64,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblb-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblb-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 22,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblb-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblb-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "file",
+    "frames": 1001,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblb-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblb-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 126,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblb-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblw-b.wav",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 171,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblw-b.f32",
+    "bitrate": 24000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblw-b.wav",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "file",
+    "frames": 30,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblw-b.f32",
+    "bitrate": 16000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblw-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 86,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblw-b.f32",
+    "bitrate": 8000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblw-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 16,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblw-b.f32",
+    "bitrate": 48000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblw-b.wav",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 171,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblw-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblw-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "file",
+    "frames": 44,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblw-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblw-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 16,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblw-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblw-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "file",
+    "frames": 681,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblw-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen1-mblw-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 86,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblw-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblw-b.wav",
+    "mode": "silk",
+    "band": "NB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 161,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblw-b.f32",
+    "bitrate": 24000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblw-b.wav",
+    "mode": "silk",
+    "band": "MB",
+    "ms": "60",
+    "channels": 1,
+    "signal": "file",
+    "frames": 28,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblw-b.f32",
+    "bitrate": 16000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblw-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 81,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblw-b.f32",
+    "bitrate": 8000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblw-b.wav",
+    "mode": "silk",
+    "band": "WB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 15,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblw-b.f32",
+    "bitrate": 48000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblw-b.wav",
+    "mode": "hybrid",
+    "band": "SWB",
+    "ms": "10",
+    "channels": 2,
+    "signal": "file",
+    "frames": 161,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblw-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblw-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "40",
+    "channels": 1,
+    "signal": "file",
+    "frames": 41,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblw-b.f32",
+    "bitrate": 32000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblw-b.wav",
+    "mode": "hybrid",
+    "band": "FB",
+    "ms": "120",
+    "channels": 2,
+    "signal": "file",
+    "frames": 15,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblw-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblw-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "2.5",
+    "channels": 2,
+    "signal": "file",
+    "frames": 641,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblw-b.f32",
+    "bitrate": 64000
+  },
+  {
+    "scope": "development",
+    "clip": "cen2-mblw-b.wav",
+    "mode": "celt",
+    "band": "FB",
+    "ms": "20",
+    "channels": 1,
+    "signal": "file",
+    "frames": 81,
+    "input": "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblw-b.f32",
+    "bitrate": 32000
+  }
+]
