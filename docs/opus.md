@@ -74,15 +74,31 @@ CELT-only APIs.
 
 Output floats remain finite but may exceed ±1 through ringing or gain. Limit
 or clip when converting to integer PCM. The encoder's own group delay is 120
-samples at 48 kHz. Lower input rates use an owned causal interpolation filter
-with 96 additional samples of delay in the 48 kHz processing domain (2 ms).
-`algorithmic_delay_samples()` expresses the total in configured input-rate
-samples: 36/54/72/108 samples at 8/12/16/24 kHz, and the unchanged 120 samples
-at 48 kHz. Raw users handle start delay and drain the delayed tail with enough
-padding. This is separate from decoder output filtering, packet buffering and
-transport jitter.
+samples at 48 kHz. `algorithmic_delay_samples()` expresses lookahead in
+configured input-rate samples: 36/54/72/108 samples at 8/12/16/24 kHz, and the
+unchanged 120 samples at 48 kHz. Raw users handle start delay and drain the
+delayed tail with enough padding. This is separate from decoder output filtering,
+packet buffering and transport jitter.
 
-Interpolation uses a 193-tap Blackman-windowed sinc, unit DC gain per rational
+Matching native-rate SILK input (8 kHz NB, 12 kHz MB, 16 kHz WB) uses an exact
+31/44/59-sample PCM shift. One native coding sample and the native decoder's
+4/9/12-sample alignment produce the declared 36/54/72-sample lookahead.
+This path avoids interpolation and decimation, preserves PCM bits before
+quantization and adds no ringing, clipping or frequency-dependent phase.
+Owned and libopus impulse peaks match those fixed delays. Decoder output-rate
+conversion has its own phase: the owned 48 kHz decoder's low-frequency moments
+differ from 216 output samples by +1.824/-2.784/-2.112 samples, while output
+below the coded native rate additionally uses the existing 1 ms FIR. These
+fixed filter properties are measured separately from native PCM lookahead.
+The [fixed-signal alignment checks](measurements/2026-10-15-opus-input-rates/native-alignment.csv)
+and [source manifest](measurements/2026-10-15-opus-input-rates/source.json)
+cover impulses and a 62.5 Hz tone at all fifteen native-input/output-rate pairs.
+Impulse peaks and low-frequency group delay are distinct measurements; these
+checks do not establish near-Nyquist codec quality or perceptual parity.
+
+Other lower-rate/mode combinations interpolate through the existing 48 kHz
+codec path, adding a 96-sample FIR delay there (2 ms). Interpolation uses a
+193-tap Blackman-windowed sinc, unit DC gain per rational
 phase and a cutoff at 90% of input Nyquist. Its bounded delay has a measurable
 transition band: for 8 kHz input, gain is approximately -0.34 dB at 3.2 kHz,
 -6.02 dB at 3.6 kHz and -16.36 dB at 3.84 kHz. Full-scale interpolation can

@@ -6,6 +6,7 @@ use std::fmt;
 use super::celt::{CeltConfig, CeltEncoder, CeltFrameDuration, CeltLayer};
 use super::dtx;
 use super::encoder_transition::{self, Position, Transition};
+use super::input_delay::NativeInputDelay;
 use super::input_resample::InputResampler;
 use super::packet::{Bandwidth, Mode};
 use super::range;
@@ -16,6 +17,7 @@ const MAX_SAMPLES: usize = 2880;
 const MAX_NATIVE_SAMPLES: usize = 960;
 const MAX_FRAME_BYTES: usize = 1275;
 const MAX_FRAMES: usize = 6;
+const INPUT_FILTER_TAIL: usize = 177;
 
 /// Encoding intent used when the configuration selects its mode automatically.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -354,6 +356,8 @@ pub struct Encoder {
     silk: Box<SilkEncoder>,
     downsamplers: [Downsampler; 2],
     input_resampler: InputResampler,
+    native_input_delay: NativeInputDelay,
+    direct_input_previous: bool,
     input_pcm: Box<[f32; MAX_SAMPLES * 2]>,
     input_bandwidth: Option<silk::Bandwidth>,
     previous_mode: Option<Mode>,
@@ -389,6 +393,8 @@ impl Encoder {
             silk: Box::new(silk),
             downsamplers: std::array::from_fn(|_| Downsampler::new(silk::Bandwidth::Wide)),
             input_resampler: InputResampler::new(config.sample_rate)?,
+            native_input_delay: NativeInputDelay::new(config.sample_rate),
+            direct_input_previous: false,
             input_pcm: Box::new([0.0; MAX_SAMPLES * 2]),
             input_bandwidth: None,
             previous_mode: None,
@@ -432,10 +438,11 @@ impl Encoder {
     /// Nominal input-to-decoded delay in samples at the configured input rate.
     ///
     /// At 48 kHz the unchanged codec delay is 120 samples. Lower input rates
-    /// add the causal interpolation filter's 96 samples at 48 kHz (2 ms), then
-    /// express the total in input-rate units. SILK filters have the same
-    /// low-frequency group delay; their phase varies with frequency. A decoder's
-    /// own output-rate filtering is separate from this encoder delay.
+    /// report 36/54/72/108 samples at 8/12/16/24 kHz. Matching native-rate SILK
+    /// uses an exact PCM shift; its coding sample and native decoder alignment
+    /// produce that declared delay. Other paths add a 96-sample interpolation
+    /// delay in the 48 kHz processing domain. Decoder output-rate filtering has
+    /// its own frequency-dependent phase, separate from this native PCM clock.
     pub const fn algorithmic_delay_samples(&self) -> usize {
         (120 + self.input_resampler.delay_samples_48khz()) * self.config.sample_rate as usize
             / 48_000
@@ -452,6 +459,8 @@ impl Encoder {
         self.celt.reset();
         self.silk.reset();
         self.input_resampler.reset();
+        self.native_input_delay.reset();
+        self.direct_input_previous = false;
         self.input_bandwidth = None;
         self.previous_mode = None;
         self.previous_bandwidth = None;
@@ -468,9 +477,8 @@ impl Encoder {
     /// Apply an already validated configuration without allocating.
     ///
     /// Bitrate and duration changes preserve prediction and transform history.
-    /// A changed channel layout or PCM rate restarts interpolation; a changed
-    /// SILK rate
-    /// restarts its rate-specific predictor on the next packet. Mode changes
+    /// A changed channel layout or PCM rate restarts input filtering; a changed
+    /// SILK rate restarts its rate-specific predictor on the next packet. Mode changes
     /// initialize the newly active codec layer when that packet is encoded.
     /// The fractional byte clock restarts when its rate or duration changes.
     pub fn reconfigure(&mut self, config: EncoderConfig) -> Result<(), Error> {
@@ -478,8 +486,15 @@ impl Encoder {
         if config.channels != self.config.channels {
             self.input_bandwidth = None;
             self.input_resampler.reset();
+            self.native_input_delay.reset();
+            self.direct_input_previous = false;
+        }
+        if config.sample_rate != self.config.sample_rate {
+            self.input_bandwidth = None;
+            self.direct_input_previous = false;
         }
         self.input_resampler.set_sample_rate(config.sample_rate)?;
+        self.native_input_delay.set_sample_rate(config.sample_rate);
         if config.bitrate != self.config.bitrate || config.duration != self.config.duration {
             self.rate_remainder = 0;
         }
@@ -525,6 +540,7 @@ impl Encoder {
         let mode = self.config.mode();
         let count = self.config.frame_count();
         let frame_samples = samples / count;
+        let direct_native = native_silk_input(self.config);
         let overhead = if count == 1 { 1 } else { 2 + 2 * (count - 1) };
         if target_bytes <= overhead + count {
             return Err(Error::Output);
@@ -585,20 +601,39 @@ impl Encoder {
             let input_frame_samples = frame_samples * self.config.sample_rate as usize / 48_000;
             let begin = index * input_frame_samples * channels;
             let direct_pcm = &input[begin..begin + input_frame_samples * channels];
-            if self.config.sample_rate != 48_000 {
-                self.input_resampler.process(
+            if self.direct_input_previous && !direct_native && mode != Mode::Celt {
+                self.prime_native_input(channels);
+            }
+            // Keep both input representations causal across wire-mode changes.
+            // The native shift is cheap even while another mode is active.
+            if self.native_input_delay.enabled() {
+                self.native_input_delay.process(
                     direct_pcm,
                     channels,
-                    &mut self.input_pcm[..frame_samples * channels],
+                    &mut self.native_pcm[..input_frame_samples * channels],
                 );
+            }
+            if self.config.sample_rate != 48_000 {
+                if direct_native && position.is_none() {
+                    self.input_resampler.advance_history(direct_pcm, channels);
+                } else {
+                    self.input_resampler.process(
+                        direct_pcm,
+                        channels,
+                        &mut self.input_pcm[..frame_samples * channels],
+                    );
+                }
             }
             let toc = toc(mode, self.config.bandwidth, frame_samples, channels)?;
             self.frames[index][0] = toc;
-            let internal = if mode != Mode::Celt {
+            let internal = if direct_native {
+                input_frame_samples
+            } else if mode != Mode::Celt {
                 self.prepare_native(direct_pcm, frame_samples, channels)?
             } else {
                 0
             };
+            self.direct_input_previous = direct_native;
             let pcm = if self.config.sample_rate == 48_000 {
                 direct_pcm
             } else {
@@ -743,6 +778,24 @@ impl Encoder {
         Ok(length)
     }
 
+    fn prime_native_input(&mut self, channels: usize) {
+        let bandwidth = silk_bandwidth(self.config.bandwidth);
+        let mut tail = [0.0; INPUT_FILTER_TAIL * 2];
+        self.input_resampler
+            .render_tail(&mut tail[..INPUT_FILTER_TAIL * channels], channels);
+        for channel in 0..channels {
+            for (index, frame) in tail[..INPUT_FILTER_TAIL * channels]
+                .chunks_exact(channels)
+                .enumerate()
+            {
+                self.channel_pcm[channel][index] = frame[channel];
+            }
+            self.downsamplers[channel].reset(bandwidth);
+            self.downsamplers[channel].prime(&self.channel_pcm[channel][..INPUT_FILTER_TAIL]);
+        }
+        self.input_bandwidth = Some(bandwidth);
+    }
+
     fn prepare_native(
         &mut self,
         direct_pcm: &[f32],
@@ -787,6 +840,16 @@ fn silk_bandwidth(bandwidth: Bandwidth) -> silk::Bandwidth {
         Bandwidth::Mediumband => silk::Bandwidth::Medium,
         _ => silk::Bandwidth::Wide,
     }
+}
+
+fn native_silk_input(config: EncoderConfig) -> bool {
+    config.mode() == Mode::Silk
+        && matches!(
+            (config.sample_rate, config.bandwidth),
+            (8_000, Bandwidth::Narrowband)
+                | (12_000, Bandwidth::Mediumband)
+                | (16_000, Bandwidth::Wideband)
+        )
 }
 fn silk_duration(samples: usize) -> Result<silk::PacketDuration, Error> {
     match samples {
@@ -851,6 +914,78 @@ fn toc(mode: Mode, bandwidth: Bandwidth, samples: usize, channels: usize) -> Res
 mod tests {
     use super::*;
     use crate::opus::Decoder;
+
+    #[test]
+    fn direct_native_silk_preserves_source_bits_and_mode_change_history() {
+        for (rate, bandwidth, delay) in [
+            (8_000, Bandwidth::Narrowband, 31),
+            (12_000, Bandwidth::Mediumband, 44),
+            (16_000, Bandwidth::Wideband, 59),
+        ] {
+            for channels in [1, 2] {
+                let config = EncoderConfig::new(
+                    96_000 * channels as u32,
+                    channels,
+                    FrameDuration::Ms20,
+                    bandwidth,
+                    Application::Voice,
+                )
+                .unwrap()
+                .with_sample_rate(rate)
+                .unwrap();
+                let mut encoder = Encoder::new(config).unwrap();
+                let mut packet = vec![0; config.max_packet_bytes()];
+                let mut source = Vec::new();
+                for (frame, mode) in [Mode::Silk, Mode::Hybrid, Mode::Celt, Mode::Silk]
+                    .into_iter()
+                    .enumerate()
+                {
+                    let next = EncoderConfig::new(
+                        config.bitrate(),
+                        channels,
+                        FrameDuration::Ms20,
+                        if mode == Mode::Silk {
+                            bandwidth
+                        } else {
+                            Bandwidth::Fullband
+                        },
+                        Application::Voice,
+                    )
+                    .unwrap()
+                    .with_sample_rate(rate)
+                    .unwrap()
+                    .with_mode(mode)
+                    .unwrap();
+                    encoder.reconfigure(next).unwrap();
+                    let input: Vec<f32> = (0..next.input_samples() * channels)
+                        .map(|index| {
+                            (((index + frame * next.input_samples() * channels) * 73 % 257) as f32
+                                - 128.0)
+                                / 256.0
+                        })
+                        .collect();
+                    source.extend_from_slice(&input);
+                    encoder.encode(&input, &mut packet).unwrap();
+                    if mode == Mode::Silk {
+                        for (index, &actual) in encoder.native_pcm[..input.len()].iter().enumerate()
+                        {
+                            let absolute = frame * input.len() + index;
+                            let expected = if absolute < delay * channels {
+                                0.0
+                            } else {
+                                source[absolute - delay * channels]
+                            };
+                            assert_eq!(
+                                actual.to_bits(),
+                                expected.to_bits(),
+                                "{rate} Hz, {channels} ch, frame {frame}, sample {index}"
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn long_packets_cover_all_modes_budgets_and_quiet_refreshes() {

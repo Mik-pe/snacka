@@ -122,6 +122,57 @@ impl InputResampler {
         Ok(())
     }
 
+    /// Retain raw PCM history when a native-rate path consumes this block.
+    ///
+    /// A later interpolation sees exactly the history it would have retained
+    /// after processing and discarding this block's output. Only the final
+    /// history-sized suffix needs copying, regardless of the block duration.
+    pub(super) fn advance_history(&mut self, input: &[f32], channels: usize) {
+        debug_assert!((1..=2).contains(&channels));
+        debug_assert!(input.len().is_multiple_of(channels));
+        if self.ratio == 1 {
+            return;
+        }
+        let frames = input.len() / channels;
+        let skipped = frames.saturating_sub(HISTORY);
+        self.position = (self.position + skipped) & HISTORY_MASK;
+        for input_frame in input[skipped * channels..].chunks_exact(channels) {
+            for (channel, &sample) in input_frame.iter().enumerate() {
+                self.history[channel][self.position] = sample;
+            }
+            self.position = (self.position + 1) & HISTORY_MASK;
+        }
+    }
+
+    /// Render a retained output suffix without advancing source/filter state.
+    ///
+    /// The direct native SILK path uses this to prime a fallback downsampler
+    /// before returning to interpolated processing. The caller requests only
+    /// a suffix whose source taps still fit in the fixed raw PCM history.
+    pub(super) fn render_tail(&self, output: &mut [f32], channels: usize) {
+        debug_assert!((1..=2).contains(&channels));
+        debug_assert!(output.len().is_multiple_of(channels));
+        debug_assert!(self.ratio != 1);
+        let frames = output.len() / channels;
+        let max_taps = self.phase_taps[..self.ratio].iter().copied().max().unwrap();
+        debug_assert!(max_taps + frames.div_ceil(self.ratio) <= HISTORY);
+        for (index, output_frame) in output.chunks_exact_mut(channels).enumerate() {
+            let back = frames - 1 - index;
+            let raw_lag = back / self.ratio;
+            let phase = self.ratio - 1 - back % self.ratio;
+            let source = self.position.wrapping_sub(1 + raw_lag);
+            let taps = self.phase_taps[phase];
+            for (channel, output_sample) in output_frame.iter_mut().enumerate() {
+                let mut sum = 0.0;
+                for (lag, &coefficient) in self.coefficients[phase][..taps].iter().enumerate() {
+                    let position = source.wrapping_sub(lag) & HISTORY_MASK;
+                    sum += self.history[channel][position] * coefficient;
+                }
+                *output_sample = sum.clamp(-1.0, 1.0);
+            }
+        }
+    }
+
     /// Interpolate validated interleaved mono or stereo PCM into an exact buffer.
     pub(super) fn process(&mut self, input: &[f32], channels: usize, output: &mut [f32]) {
         debug_assert!((1..=2).contains(&channels));
@@ -269,6 +320,75 @@ mod tests {
                 resampler.reset();
                 resampler.process(&input, channels, &mut actual);
                 assert_eq!(actual, expected);
+            }
+        }
+    }
+
+    #[test]
+    fn raw_history_advance_matches_discarded_filter_output_before_mode_switch() {
+        for rate in RATES {
+            for channels in 1..=2 {
+                let ratio = (48_000 / rate) as usize;
+                for prefix_frames in [0, 1, 63, 128, 129, 511] {
+                    let prefix = signal(prefix_frames, channels);
+                    let suffix = signal(197, channels);
+                    let mut filtered = InputResampler::new(rate).unwrap();
+                    let mut advanced = InputResampler::new(rate).unwrap();
+                    let mut discarded = vec![0.0; prefix.len() * ratio];
+                    filtered.process(&prefix, channels, &mut discarded);
+                    advanced.advance_history(&prefix, channels);
+                    advanced.advance_history(&[], channels);
+                    let mut expected = vec![0.0; suffix.len() * ratio];
+                    let mut actual = vec![0.0; expected.len()];
+                    filtered.process(&suffix, channels, &mut expected);
+                    advanced.process(&suffix, channels, &mut actual);
+                    assert_eq!(actual, expected, "{rate} Hz, prefix {prefix_frames}");
+
+                    // Start from a wrapped, populated history and replace it
+                    // in small blocks as native/CELT mode choices could do.
+                    filtered.process(&prefix, channels, &mut discarded);
+                    for block in prefix.chunks(17 * channels) {
+                        advanced.advance_history(block, channels);
+                    }
+                    filtered.process(&suffix, channels, &mut expected);
+                    advanced.process(&suffix, channels, &mut actual);
+                    assert_eq!(
+                        actual, expected,
+                        "{rate} Hz, chunked prefix {prefix_frames}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn retained_native_path_tail_matches_emitted_output_without_advancing_state() {
+        const TAIL: usize = 177;
+        for rate in [8_000, 12_000, 16_000] {
+            for channels in 1..=2 {
+                let ratio = (48_000 / rate) as usize;
+                for prefix_frames in [64, 128, 511] {
+                    let prefix = signal(prefix_frames, channels);
+                    let suffix = signal(197, channels);
+                    let mut filtered = InputResampler::new(rate).unwrap();
+                    let mut advanced = InputResampler::new(rate).unwrap();
+                    let mut emitted = vec![0.0; prefix.len() * ratio];
+                    filtered.process(&prefix, channels, &mut emitted);
+                    for block in prefix.chunks(17 * channels) {
+                        advanced.advance_history(block, channels);
+                    }
+                    let mut tail = vec![0.0; TAIL * channels];
+                    advanced.render_tail(&mut tail, channels);
+                    assert_eq!(tail, emitted[emitted.len() - tail.len()..]);
+                    let mut repeated = vec![0.0; tail.len()];
+                    advanced.render_tail(&mut repeated, channels);
+                    assert_eq!(repeated, tail);
+                    let mut actual = vec![0.0; suffix.len() * ratio];
+                    let mut expected = vec![0.0; actual.len()];
+                    advanced.process(&suffix, channels, &mut actual);
+                    filtered.process(&suffix, channels, &mut expected);
+                    assert_eq!(actual, expected, "{rate} Hz, prefix {prefix_frames}");
+                }
             }
         }
     }

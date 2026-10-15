@@ -597,6 +597,16 @@ impl Downsampler {
         self.factor
     }
 
+    /// Restore chronological recent input when leaving native-rate bypass.
+    /// Sampling intervals are whole native-rate blocks, so the next input is
+    /// still the phase-zero sample. No output or convolution is required here.
+    pub(crate) fn prime(&mut self, tail: &[f32]) {
+        debug_assert!(tail.len() < HISTORY);
+        self.history.fill(0.0);
+        self.history[HISTORY - tail.len()..].copy_from_slice(tail);
+        self.cursor = 0;
+    }
+
     /// Fractional low-frequency group delay in 48 kHz input samples.
     #[cfg(test)]
     pub(crate) const fn delay_samples(&self) -> f64 {
@@ -675,6 +685,32 @@ fn dot_reverse(history: &[f32], coefficients: &[f64], partial: &mut [f64; 4]) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn chronological_history_priming_retains_all_native_sampling_phases() {
+        let input: Vec<f32> = (0..3840)
+            .map(|index| ((index * 73 % 257) as f32 - 128.0) / 256.0)
+            .collect();
+        for bandwidth in [Bandwidth::Narrow, Bandwidth::Medium, Bandwidth::Wide] {
+            for prefix in [480, 960, 1920, 2880] {
+                let mut continuous = Downsampler::new(bandwidth);
+                let ratio = continuous.ratio();
+                let mut discard = vec![0.0; prefix / ratio];
+                continuous.process(&input[..prefix], &mut discard).unwrap();
+                let mut primed = Downsampler::new(bandwidth);
+                // A chronological FIR tail need not be a complete decimation
+                // block: it restores prior samples, not the sampling clock.
+                primed.prime(&input[prefix - TAPS..prefix]);
+                let mut expected = vec![0.0; (input.len() - prefix) / ratio];
+                let mut actual = expected.clone();
+                continuous.process(&input[prefix..], &mut expected).unwrap();
+                primed.process(&input[prefix..], &mut actual).unwrap();
+                for (&a, &b) in actual.iter().zip(&expected) {
+                    assert!((a - b).abs() < 1e-7, "{bandwidth:?}, {prefix}: {a} != {b}");
+                }
+            }
+        }
+    }
 
     #[test]
     fn literal_convolution_and_irregular_chunks_have_identical_history() {
