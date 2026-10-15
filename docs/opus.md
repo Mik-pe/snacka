@@ -71,6 +71,8 @@ The [gain contract and macOS cost record](measurements/2026-10-15-opus-decoder-g
 retains native functional checks and a frozen default-zero decoder cost run,
 including direct/normalized percentiles and tail regressions. Nonzero-gain CPU
 cost is unmeasured.
+The [mapped/projection gain record](measurements/2026-10-15-opus-mapped-projection-gain/README.md)
+records their separate native functional and allocation checks.
 
 ```rust
 use snacka::opus::{Decoder, Encoder, EncoderConfig};
