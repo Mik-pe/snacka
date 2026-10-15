@@ -8,7 +8,9 @@ C, FFI, CMake or build script.
 ## Codec and packet APIs
 
 `Encoder` writes SILK, Hybrid and CELT from normalized interleaved f32 PCM at
-48 kHz. `EncoderConfig` selects channels, bitrate, bandwidth, duration,
+8/12/16/24/48 kHz. `EncoderConfig` defaults to 48 kHz; `with_sample_rate`
+selects another standard input rate and `input_samples()` reports the required
+samples per channel for each packet. It selects channels, bitrate, bandwidth, duration,
 application, rate policy, in-band FEC and DTX. Voice mode chooses SILK or Hybrid;
 audio and low-delay preferences choose CELT. An explicit mode is available.
 Invalid mode/bandwidth/duration combinations are rejected during configuration.
@@ -72,18 +74,32 @@ CELT-only APIs.
 
 Output floats remain finite but may exceed ±1 through ringing or gain. Limit
 or clip when converting to integer PCM. The encoder's own group delay is 120
-samples at 48 kHz, exposed by `algorithmic_delay_samples`; raw users handle
-start delay and end padding. This is separate from packet buffering and
+samples at 48 kHz. Lower input rates use an owned causal interpolation filter
+with 96 additional samples of delay in the 48 kHz processing domain (2 ms).
+`algorithmic_delay_samples()` expresses the total in configured input-rate
+samples: 36/54/72/108 samples at 8/12/16/24 kHz, and the unchanged 120 samples
+at 48 kHz. Raw users handle start delay and drain the delayed tail with enough
+padding. This is separate from decoder output filtering, packet buffering and
 transport jitter.
+
+Interpolation uses a 193-tap Blackman-windowed sinc, unit DC gain per rational
+phase and a cutoff at 90% of input Nyquist. Its bounded delay has a measurable
+transition band: for 8 kHz input, gain is approximately -0.34 dB at 3.2 kHz,
+-6.02 dB at 3.6 kHz and -16.36 dB at 3.84 kHz. Full-scale interpolation can
+ring outside the normalized range; samples are saturated to ±1 before coding,
+which can add clipping distortion. Exact 48 kHz bypass never saturates or
+filters input. The explicit requested wire mode/bandwidth is retained at every
+input rate; interpolation cannot recover missing source frequencies. This adds
+rate support and does not establish reference perceptual-quality parity.
 
 `Packet::parse` inspects borrowed ordinary framing without allocating.
 Self-delimited parsing and `Repacketizer` support CBR/VBR, padding, arbitrary
 valid frame groupings and the full 120 ms packet limit. Parallel encoders and
 self-delimited packet composition remain available independently.
-`MultistreamEncoder` gathers mapped interleaved 48 kHz PCM into owned
-mono/stereo encoders and writes one transport packet. Supply one `EncoderConfig`
-per stream with equal packet durations and stereo configurations for the initial
-coupled streams. Modes, bandwidths, bitrates, rate policies, FEC and DTX may
+`MultistreamEncoder` gathers mapped interleaved PCM at any standard input rate
+into owned mono/stereo encoders and writes one transport packet. Supply one
+`EncoderConfig` per stream with equal packet durations/input rates and stereo
+configurations for the initial coupled streams. Modes, bandwidths, bitrates, rate policies, FEC and DTX may
 differ. Duplicate mapping entries encode the first input channel; 255 omits an
 input slot. Both channels of coupled streams must be mapped; unused mono streams
 encode silence. Allocate `max_packet_bytes()` of output before processing.
@@ -99,8 +115,8 @@ content error. Packet framing, configuration and output-capacity errors are
 checked before history changes. The APIs are native Rust contracts; they do
 not mirror the foreign codec's controls or instrumentation.
 
-Remaining encoder API gaps include input rates other than 48 kHz,
-projection/Ambisonics encoding, automatic surround bitrate allocation and
+Remaining encoder API gaps include projection/Ambisonics encoding, automatic
+surround bitrate allocation and
 complexity, expected-loss and constrained-VBR controls. The format and API
 extensions above do not close the separate CPU and perceptual-quality targets.
 

@@ -286,7 +286,8 @@ impl FusedIterator for Packets<'_> {}
 
 /// Stateful multistream encoder with explicit per-stream rate and codec policies.
 ///
-/// Input is normalized, interleaved 48 kHz PCM in the mapping's I/O channel order.
+/// Input is normalized, interleaved PCM at the configured standard Opus rate
+/// in the mapping's I/O channel order.
 /// When several input channels map to one coded channel, the first is encoded;
 /// the others are aliases on decoding. Mapping value 255 omits that input slot.
 /// Both channels of every coupled stream must be mapped. Unmapped mono streams
@@ -320,7 +321,8 @@ impl MultistreamEncoder {
     /// Prepare one encoder configuration for each stream in coded order.
     ///
     /// Initial coupled streams require stereo configurations; remaining streams
-    /// require mono. Every stream must use the same packet duration. Individual
+    /// require mono. Every stream must use the same packet duration and input
+    /// sample rate. Individual
     /// modes, bandwidths, bitrates, rate policies, FEC and DTX may differ.
     pub fn new(mapping: ChannelMapping, configs: &[EncoderConfig]) -> Result<Self, Error> {
         if configs.len() != usize::from(mapping.streams()) {
@@ -338,6 +340,9 @@ impl MultistreamEncoder {
             }
             if config.duration() != duration {
                 return Err(Error::Duration);
+            }
+            if config.sample_rate() != configs[0].sample_rate() {
+                return Err(EncodeError::Argument.into());
             }
         }
         let mut sources = [None; 255];
@@ -367,7 +372,7 @@ impl MultistreamEncoder {
             mapping,
             encoders,
             sources,
-            scratch: vec![0.0; 2 * duration.samples()],
+            scratch: vec![0.0; 2 * configs[0].input_samples()],
             packets,
             lengths: vec![0; configs.len()],
             max_packet_bytes,
@@ -377,6 +382,21 @@ impl MultistreamEncoder {
     /// Number of interleaved input channels, including omitted slots.
     pub const fn channels(&self) -> usize {
         self.mapping.output_channels()
+    }
+
+    /// Configured input PCM sample rate in hertz, shared by all streams.
+    pub fn sample_rate(&self) -> u32 {
+        self.encoders[0].sample_rate()
+    }
+
+    /// Required input samples per channel for one complete transport packet.
+    pub fn input_samples(&self) -> usize {
+        self.encoders[0].config().input_samples()
+    }
+
+    /// Nominal encoder delay in samples at the configured input rate.
+    pub fn algorithmic_delay_samples(&self) -> usize {
+        self.encoders[0].algorithmic_delay_samples()
     }
 
     /// Validated mapping from coded channels to input/output slots.
@@ -417,7 +437,7 @@ impl MultistreamEncoder {
     /// only required self-delimiters. Any removed per-stream padding is moved to
     /// the final stream, preserving aggregate constant-rate byte budgets.
     pub fn encode(&mut self, input: &[f32], output: &mut [u8]) -> Result<usize, Error> {
-        let samples = self.encoders[0].config().duration().samples();
+        let samples = self.input_samples();
         if input.len() != samples * self.channels()
             || input
                 .iter()

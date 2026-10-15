@@ -2,7 +2,7 @@
 //! Snacka-owned Opus encoding, decoding and Ogg file support (RFC 6716).
 //!
 //! Enabled by the dependency-free `opus` feature. [`Encoder`] writes standard
-//! mono/stereo SILK, Hybrid and CELT packets from 48 kHz PCM. [`Decoder`] reads
+//! mono/stereo SILK, Hybrid and CELT packets from 8/12/16/24/48 kHz PCM. [`Decoder`] reads
 //! all three modes at the five standard output rates, with loss/FEC recovery.
 //! Encoding and decoding allocate only during construction. [`ogg`] provides
 //! bounded streaming file handling outside the audio callback.
@@ -34,6 +34,7 @@ mod encoder;
 mod encoder_transition;
 mod energy;
 mod flags;
+mod input_resample;
 pub mod multistream;
 pub mod ogg;
 mod plc;
