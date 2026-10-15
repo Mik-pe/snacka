@@ -1,0 +1,15 @@
+{
+  "streams": 142,
+  "cases": 2130,
+  "full_json_equivalence": true,
+  "actual_fec_cases": 70,
+  "binaries": {
+    "before": "6402f83ce957b6074ee243084a70191351f6737e48082e7f35177dfadf26d19c",
+    "after": "cd79e82c29be4596f020a85f19aab4e17e0c4d7ce7f56f044212eff2df581d20"
+  },
+  "scope": "All cached generated geometries, five output rates, mono/stereo, decode/PLC/FEC; zero timed batches; baseline equality is not reference-quality acceptance.",
+  "build_manifest_sha256": "6e4e686bb4bde66058150207b1cb970ecaf7ef631630402ab8b45c256e3ff3d8",
+  "build_manifest": "/tmp/snacka-opus-goal-decoder-combined-fb5dc6c/manifest-production.json",
+  "before_synthesis_commit": "e831eca6ec987eb1110ba9a15d39b9e2a21eddbd",
+  "combined_snapshot_commit": "fb5dc6cb295f6fcb561b142d48a8e49f9a9312d0"
+}
