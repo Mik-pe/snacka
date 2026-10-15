@@ -18,6 +18,48 @@ fn check_packet(packet: &OggPacket, streams: u8) {
     assert!(MultistreamPacket::parse(&packet.data, streams).is_ok());
 }
 
+fn check_extensions(packet: &Packet<'_>) {
+    let mut extensions = packet.extensions();
+    // Fuzz-only output bound: tiny zero-byte templates can expand to 48 frames.
+    // The production iterator has no extension-count cap.
+    for _ in 0..64 {
+        let Some(item) = extensions.next() else {
+            break;
+        };
+        match item {
+            Ok(extension) => {
+                assert!(extension.frame_index < packet.frame_count());
+                assert!((3..=127).contains(&extension.id));
+                assert!(extension.payload.as_ptr() >= packet.padding().as_ptr());
+                assert!(extension.payload.as_ptr_range().end <= packet.padding().as_ptr_range().end);
+            }
+            Err(_) => {
+                assert!(extensions.next().is_none());
+                break;
+            }
+        }
+    }
+}
+
+fn check_padding(padding: &[u8], frames: usize) {
+    // Always valid base framing, with up to 512 independently mutated padding
+    // bytes. This reaches extension parsing even when arbitrary packets reject.
+    let mut packet = [0; 520];
+    packet[0] = 0x83; // 2.5 ms CELT frames, with zero-byte audio payloads.
+    packet[1] = 0x40 | frames as u8;
+    let mut cursor = 2;
+    let mut remaining = padding.len();
+    while remaining > 254 {
+        packet[cursor] = 255;
+        cursor += 1;
+        remaining -= 254;
+    }
+    packet[cursor] = remaining as u8;
+    cursor += 1;
+    packet[cursor..cursor + padding.len()].copy_from_slice(padding);
+    check_extensions(&Packet::parse(&packet[..cursor + padding.len()]).unwrap());
+}
+
 fn check_chain(bytes: &[u8]) -> usize {
     let mut packets = 0;
     if let Ok(mut reader) = OggChainReader::new(Cursor::new(bytes)) {
@@ -68,7 +110,18 @@ fn check_demux(bytes: &[u8]) -> usize {
 
 fuzz_target!(|bytes: &[u8]| {
     // Test framing and reach the entropy decoder with arbitrary valid framing.
-    let _ = Packet::parse(bytes);
+    if let Ok(packet) = Packet::parse(bytes) {
+        check_extensions(&packet);
+    }
+    let frames = 1 + usize::from(bytes.first().copied().unwrap_or(0) % 48);
+    check_padding(&bytes[..bytes.len().min(512)], frames);
+    // Keep two actual templates and an RTE structurally intact while fuzzing
+    // repeated lengths/payloads, including the final long's short-byte reserve.
+    let mut repeated = [0; 512];
+    repeated[..6].copy_from_slice(&[0x41, 1, 42, 7, 23, 4]);
+    let tail = bytes.len().min(repeated.len() - 6);
+    repeated[6..6 + tail].copy_from_slice(&bytes[..tail]);
+    check_padding(&repeated[..6 + tail], frames.max(2));
     if let Ok(head) = OpusHead::parse(bytes) {
         let gain = head.gain_factor();
         assert!(gain.is_finite() && gain > 0.0);

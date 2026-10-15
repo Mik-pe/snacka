@@ -24,6 +24,7 @@
 
 pub mod packet;
 pub use packet::{Bandwidth, Mode, Packet, PacketError, Toc};
+pub mod extensions;
 
 mod allocation;
 mod bands;
