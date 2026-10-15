@@ -60,6 +60,9 @@ matching the public native aggregate control. Fresh mixed layouts enable
 inversion in coupled streams and disable it in mono streams; setting the
 getter's returned value makes all streams uniform and can therefore change
 other streams' initial policies. The controls add no processing pass or state.
+The [mapped phase-control record](measurements/2026-10-15-opus-mapped-phase/README.md)
+retains the native-first contract, exact owned composition proof, all observed
+native waveform differences and the original test-helper failure.
 `last_packet_samples()` reports the last successful decode, concealment or
 recovery interval in samples per channel at the configured output rate. It
 includes the whole multi-frame packet or the entire requested FEC interval,

@@ -1,0 +1,123 @@
+{
+  "source_commit": "9e98c7a2bedc13b08c034c5dd8d2fbb69d073812",
+  "runner_sha256": "c0fb5a8847cc472832371206f6796e7f5bedae4f33d9a5e3756fbcf9a9ad3efe",
+  "environment": {
+    "RUSTC": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+    "RUSTDOC": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustdoc",
+    "RUSTC_WRAPPER": "",
+    "RUSTC_WORKSPACE_WRAPPER": "",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_INCREMENTAL": "false",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "false",
+    "RUSTFLAGS": "",
+    "CARGO_ENCODED_RUSTFLAGS": "-L/opt/homebrew/lib"
+  },
+  "lto_scope": "Cargo profile LTO=false: cross-crate LTO disabled; rustc may perform local ThinLTO across the16 units. No -C lto=off or target-cpu override supplied to Cargo.",
+  "checks": [
+    {
+      "name": "targeted-native-contracts",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--release",
+        "--features",
+        "opus,reference-tests",
+        "--target-dir",
+        "/tmp/snacka-opus-mapped-phase-check-target",
+        "--test",
+        "opus_calls_reference",
+        "--",
+        "--nocapture"
+      ],
+      "exitcode": 0,
+      "log_sha256": "b17298f7fc764a9ec71586abe00b49760d190d050da551621fc533f5449a58de"
+    },
+    {
+      "name": "targeted-allocation-and-stack",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--release",
+        "--features",
+        "opus,reference-tests",
+        "--target-dir",
+        "/tmp/snacka-opus-mapped-phase-check-target",
+        "--test",
+        "allocations",
+        "--test",
+        "opus_stack",
+        "--",
+        "--nocapture"
+      ],
+      "exitcode": 0,
+      "log_sha256": "f823ad3e0e82dbc9188b4b5ab84f76f456fa698abe2cf9247903a90097034cc2"
+    },
+    {
+      "name": "release-tests",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--release",
+        "--features",
+        "opus,reference-tests",
+        "--target-dir",
+        "/tmp/snacka-opus-mapped-phase-check-target"
+      ],
+      "exitcode": 0,
+      "log_sha256": "9632abc04a36932f3e63e250ec42d66094bcec134b151ac603adfb57efb9d117"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--release",
+        "--all-targets",
+        "--features",
+        "opus,reference-tests",
+        "--target-dir",
+        "/tmp/snacka-opus-mapped-phase-check-target",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitcode": 0,
+      "log_sha256": "d44cca103c441c598b8704fb2631b45de8074b4236ca54911820db12087c8b12"
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exitcode": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitcode": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "base_commit": "ec43d0c352a36a9a70ebe1fbd76d57efbf70a3e7",
+  "source_commit": "567d1b6de5c41593ce1a6437d633a1f01947f60f",
+  "baseline_89e2_production_equivalent": true,
+  "existing_method_bodies": {
+    "src/opus/multistream.rs": {
+      "new": "3739ef96f0022b42302dbace6ec196daf8b5fe42110fe49a17fe2aed044a9ae0",
+      "with_sample_rate": "9bb4ae03f44aa43edd7946a603f78a858c2890615333719e5bc2023be01808b5",
+      "channels": "fcde13da85842e6ad3af65131010b2607d3b37ae7ef0fe64f37d9a2a992ce191",
+      "sample_rate": "81451e1709a7b0308b197553866cc18f01fb4ed0b3b85c6f1454e11fafd35536",
+      "mapping": "dbe96c582f5273de782cae8789f432e0306babf1b97508e345cd31b1d2d9845f",
+      "final_range": "752c231b89758b0c0a6a70d2e4e5195fe4f7f9fed57eb37578d2cfd758435815",
+      "set_gain_q8": "8f460eb5bee4b95747f6b6491d6b2cdc517195dfa132e95e99a5d61ce1975c8c",
+      "gain_q8": "5481894cd6eb497e2c03cf3e44a22c753615b91ed189d051288a6af103c5ab76",
+      "decode": "6448bde96edfad9348f687df5ec1411d269a71850b8cad05695dc1bffcfa76ae",
+      "recover": "e333521f300016c5a47809111bde5bc0e5e69b1eafc65405e16ae9e4c04f9adf",
+      "conceal": "c48ec6e3977c15444abbc588ece9749792337d60967f39b16283cc2a67fe18de",
+      "reset": "e3369a750767f62a7e544b345c9a44ded83c091ce9e14f1533a4ea85ac85de35",
+      "check_output": "e4fd0ea04a2c7fba8f19f26e83efeaad2f34f0ec64ec58f9d6cf104759d3ed62",
+      "check_interval": "975be6e56c9705163d514e7ff276f89421a3bdbd1220feeea55c968da1356960",
+      "map_stream": "3d0df8c681f58cf87e4ab886cd8274038d73b399c47133018b46d16a401df4d8"
+    },
+    "src/opus/projection.rs": {
+      "new": "3739ef96f0022b42302dbace6ec196daf8b5fe42110fe49a17fe2aed044a9ae0",
+      "with_sample_rate": "7cdf9f55cbdc26d419ee34b542aa326d9f8dda6a9aa5afb3a106a7af7395edec",
+      "channels": "b84ad70bb43438aa0371ccdccc3218344f0a0b7b17d063172732afbd65a87bc1",
+      "sample_rate": "14ac1e265723140c8a6da4510eb13230fc7a57e9d2e478bf26f418807f93adca",
+      "mapping": "dbe96c582f5273de782cae8789f432e0306babf1b97508e345cd31b1d2d9845f",
+      "final_range": "e725998bee8f48872e5d86370ddc6dec16b0874f2e63810b720eaba5b54260c8",
+      "set_gain_q8": "1902f972b67f5490253931f7658c4552d85e4ecc6ac970fd7cd92e67a42bfed8",
+      "gain_q8": "7cafbc49a956b44c3abb1cecb7dccb42204972aed15241b0691521dbe3e3a87f",
+      "check_output": "688c196f6cf2c2c77a65ce07aae1019c45667f2e9774cf68f888e8626374a336",
+      "demix": "c56ec4e8421f3a710abde44ee718a14facbd7e2ec70eefb3d0805959429de9fe",
+      "decode": "79b17579bb07c91ef435bd189954231bbee832c1de4e1909cfa83437a77ae1bd",
+      "recover": "9a3a3cc8fc2cd5db63de9a97f80e7c4da7479dcbadefe1b3cde2267b4b61318b",
+      "conceal": "6802bf582cd698025bf8016bff2fd2383d7a830135e33b7c33ce1b3402bdbba8",
+      "reset": "d87004c88c2b0d852956f9293ef1e0de8796e4b12ed568bf88000f7ad5032bf9"
+    }
+  },
+  "fields": {
+    "src/opus/multistream.rs": {
+      "sha256": "bbab102194e59f7923c3ff20248990e6378981b0576c8c2324af4dcedc4d7373",
+      "unchanged": true
+    },
+    "src/opus/projection.rs": {
+      "sha256": "e6fb850ed663a5a4f289b35379b3aa59a41d4ef23c98836b05468e63a51e8fa1",
+      "unchanged": true
+    }
+  },
+  "new_methods": {
+    "src/opus/multistream.rs": [
+      "phase_inversion",
+      "set_phase_inversion"
+    ],
+    "src/opus/projection.rs": [
+      "phase_inversion",
+      "set_phase_inversion"
+    ]
+  },
+  "scope": "Text-level exact method-body and field equality, not native waveform/ASM/timing evidence.",
+  "changed_production_paths": [
+    "src/opus/multistream.rs",
+    "src/opus/projection.rs"
+  ]
+}

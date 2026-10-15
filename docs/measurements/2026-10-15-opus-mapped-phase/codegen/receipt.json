@@ -1,0 +1,77 @@
+{
+  "source_commit": "567d1b6de5c41593ce1a6437d633a1f01947f60f",
+  "layout_source_sha256": "bfcc732b2f1ea45f2ccf42d39023fceadb9818c97c4c9a71522067ab27cfaed9",
+  "roles": {
+    "before": {
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+        "--edition=2024",
+        "-O",
+        "-C",
+        "overflow-checks=yes",
+        "/tmp/snacka-opus-mapped-phase-evidence-20261015/codegen/layout.rs",
+        "--extern",
+        "snacka=/tmp/snacka-opus-decoder-last-samples-evidence-20261015/production/target/release/libsnacka.rlib",
+        "-L",
+        "dependency=/tmp/snacka-opus-decoder-last-samples-evidence-20261015/production/target/release/deps",
+        "-o",
+        "/tmp/snacka-opus-mapped-phase-evidence-20261015/codegen/layout-before"
+      ],
+      "library_sha256": "3212c3221bf4bd072ee0b64ecd14efce2d6b2037049ce352c7729cc08ce2efe2",
+      "layout": {
+        "ordinary": 4280,
+        "mapped": 336,
+        "projection": 672,
+        "align": [
+          8,
+          8,
+          8
+        ]
+      },
+      "otool": {
+        "sha256": "6565a6b96fc92074f50a44d470a77429b874529b11f4176be8cbccf0cb0a97f0",
+        "bytes": 4363848
+      },
+      "nm": {
+        "sha256": "90af205f63596b76f649a700fd3b7bf903306f49e2a12298522ac8cb3fc0da76",
+        "bytes": 438597
+      }
+    },
+    "after": {
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+        "--edition=2024",
+        "-O",
+        "-C",
+        "overflow-checks=yes",
+        "/tmp/snacka-opus-mapped-phase-evidence-20261015/codegen/layout.rs",
+        "--extern",
+        "snacka=/tmp/snacka-opus-mapped-phase-evidence-20261015/production/target/release/libsnacka.rlib",
+        "-L",
+        "dependency=/tmp/snacka-opus-mapped-phase-evidence-20261015/production/target/release/deps",
+        "-o",
+        "/tmp/snacka-opus-mapped-phase-evidence-20261015/codegen/layout-after"
+      ],
+      "library_sha256": "6613fe35ff005cd519c55964d94798458962cd5e36645b2e799922d350e18165",
+      "layout": {
+        "ordinary": 4280,
+        "mapped": 336,
+        "projection": 672,
+        "align": [
+          8,
+          8,
+          8
+        ]
+      },
+      "otool": {
+        "sha256": "25129c3f95d0018765201e01a85db4b1129592527b45fbbf3770a7d961c13055",
+        "bytes": 4364319
+      },
+      "nm": {
+        "sha256": "aa299b171b9c551806c8e799f1f24c18b0b294f8342cb1a614ceef5b0a9eae64",
+        "bytes": 438720
+      }
+    }
+  },
+  "scope": "Layout-only executable, no codec/native/timers. Disassembly from pinned production-only libraries."
+}

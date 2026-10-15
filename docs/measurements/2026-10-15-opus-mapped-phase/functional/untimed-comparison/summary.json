@@ -1,0 +1,15 @@
+{
+  "kind": "UNTIMED_COMPLETE_JSON_COMPARISON",
+  "source_commit": "567d1b6de5c41593ce1a6437d633a1f01947f60f",
+  "expected": 2130,
+  "attempted": 2130,
+  "exact": 2130,
+  "failed": 0,
+  "failures": [],
+  "timing_warmup_calibration": false,
+  "inputs_generated": false,
+  "workers": 4,
+  "integrity_unchanged": true,
+  "rows_sha256": "dfafec8ea811369437e8808f106e7028d0b3f2bfe5845af85fdb90a5949669c8",
+  "binding_sha256": "2282df0a3d713d124843414d770187959ccea45a6f61f0173bbf764cff0ceb80"
+}

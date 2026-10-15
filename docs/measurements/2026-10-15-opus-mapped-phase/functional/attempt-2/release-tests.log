@@ -1,0 +1,501 @@
+   Compiling snacka v0.2.0 (/private/tmp/snacka-opus-mapped-phase-20261015)
+    Finished `release` profile [optimized] target(s) in 5.68s
+     Running unittests src/lib.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/snacka-cbf4a24a65eade10)
+
+running 268 tests
+test concealment::tests::silent_and_canceling_windows_retain_the_waveform_fallback ... ok
+test harmonic::tests::harmonic_layout_has_unique_pairs_and_bounded_padding ... ok
+test codec::harmonic_protocol_tests::invalid_harmonic_pitch_gains_and_padding_preserve_nonzero_history ... ok
+test concealment::tests::normalized_pitch_correlation_matches_direct_f64_dot_products ... ok
+test harmonic::tests::sinusoidal_phase_and_amplitude_are_explicit_roundtrip_parameters ... ok
+test harmonic_joint::tests::block_inversion_refuses_nonfinite_nonpositive_and_overflowing_determinants ... ok
+test harmonic::tests::rounded_lag_reuse_preserves_all_scores_and_eight_pitch_finalists ... ok
+test harmonic::tests::batched_periodicity_preserves_every_score_and_duplicate_finalist ... ok
+test harmonic_joint::tests::no_eligible_original_render_skips_correction ... ok
+test harmonic_joint::tests::coordinate_steps_reduce_independently_evaluated_folded_residual ... ok
+test entropy::binary_tests::binary_256_matches_models_with_raw_bits_and_zero_extension ... ok
+test harmonic_joint::tests::paired_blocks_match_generic_bits_for_every_harmonic_pair ... ok
+test opus::allocation::tests::anti_collapse_requires_short_blocks_and_room ... ok
+test opus::allocation::tests::boost_trim_and_allocation_signals_roundtrip ... ok
+test harmonic_joint::tests::paired_corrections_match_generic_parameters_and_rollbacks ... ok
+test opus::allocation::tests::invalid_inputs_are_rejected_before_entropy_use ... ok
+test opus::allocation::tests::nearest_cache_preserves_all_choices_and_repeated_cost_ties ... ok
+test opus::allocation::tests::plans_conserve_band_budget_and_bound_fine_energy ... ok
+test opus::allocation::tests::pulse_costs_are_monotone_and_nearest_ties_choose_down ... ok
+test opus::allocation::tests::standard_geometry_and_single_bin_caps ... ok
+test opus::bands::tests::angle_models_cover_their_alphabets ... ok
+test opus::bands::tests::anti_collapse_restores_each_short_block_and_preserves_seed ... ok
+test opus::bands::tests::hybrid_start_17_matches_updated_reference_folding ... ok
+test opus::bands::tests::mono_phase_policy_consumes_inversion_without_cancelling_intensity ... ok
+test opus::bands::tests::normative_anti_collapse_oracle ... ok
+test opus::bands::tests::normative_shape_decoder_oracle ... ok
+test opus::bands::tests::rotation_chunk_lanes_preserve_each_ordered_pair ... ok
+test harmonic_joint::tests::quantized_trial_selection_preserves_the_original_candidate_floor ... ok
+test opus::bands::tests::shape_roundtrips_cover_recursion_tf_stereo_and_folding ... ok
+test opus::celt::tests::byte_rate_keeps_fractional_remainder_and_silence_decodes ... ok
+test opus::celt::tests::hybrid_layers_append_to_an_existing_interval_and_preserve_energy_history ... ok
+test opus::celt::tests::inactive_spectrum_storage_cannot_leak_across_geometry_or_channel_changes ... ok
+test opus::celt::tests::inaudible_hybrid_losses_discharge_overlap_without_new_noise ... ok
+test opus::celt::tests::two_frame_packets_preserve_sequence_and_report_the_last_range ... ok
+test opus::celt::tests::validation_preserves_history_and_reset_reproduces_packets ... ok
+test opus::decoder::output_rate_tests::output_phase_filter_switch_and_ring_wrap_match_literal_convolution ... ok
+test opus::decoder::output_rate_tests::primed_history_matches_full_rate_rendering_after_bypass ... ok
+test opus::decoder::tests::absent_fec_matches_explicit_concealment_and_keeps_current_packet_available ... ok
+test opus::decoder::tests::beginning_redundancy_cannot_leak_old_celt_history_into_hybrid ... ok
+test opus::decoder::tests::celt_packets_use_the_same_owned_layer_and_validate_before_history ... ok
+test opus::decoder::tests::explicit_loss_validates_before_state_and_preserves_periodic_audio ... ok
+test opus::decoder::tests::failed_processing_retains_last_completed_packet_samples ... ok
+test opus::celt::tests::all_frame_durations_channels_bandwidths_and_rates_roundtrip ... ok
+test opus::decoder::tests::gain_retains_float_headroom_and_rejects_numeric_overflow ... ok
+test opus::decoder::tests::fixed_output_channels_map_mono_and_stereo_spectra ... ok
+test harmonic_joint::tests::defining_cosine_energy_matches_independent_fold_for_boundary_and_noise_vectors ... ok
+test opus::decoder::tests::missing_frames_conceal_and_reset_is_silent ... ok
+test opus::decoder::tests::mono_intensity_stereo_preserves_energy_and_phase_preference_survives_reset ... ok
+test opus::decoder::tests::native_rate_delay_and_sparse_mixed_output_match_literal_history ... ok
+test opus::decoder::tests::native_filtering_and_primed_transitions_match_full_rate_composition ... ok
+test opus::decoder::tests::standard_output_rates_preserve_packet_timing_and_decimation_phase ... ok
+test opus::decoder::tests::hybrid_low_rate_transition_and_loss_keep_combined_filter_history ... ok
+test opus::dtx::tests::quiet_background_and_stereo_onsets_preserve_speech_and_restart_hangover ... ok
+test opus::decoder::tests::silk_redundancy_and_partial_losses_preserve_following_packet_ranges ... ok
+test harmonic::synthesis_lane_tests::lanes_preserve_scalar_float_bits_at_every_pitch ... ok
+test opus::encoder::tests::constant_rate_and_reconfiguration_keep_valid_streams ... ok
+test opus::encoder::tests::direct_native_silk_preserves_source_bits_and_mode_change_history ... ok
+test codec::harmonic_protocol_tests::harmonic_packets_match_independent_sinusoidal_and_cosine_equations ... ok
+test opus::encoder::tests::emitted_dtx_status_survives_immediate_and_queued_configuration_changes ... ok
+test opus::encoder::tests::all_modes_have_valid_packet_geometry_and_matching_final_ranges ... ok
+test opus::encoder::tests::minimum_floor_budget_and_invalid_io_are_rejected ... ok
+test opus::encoder::tests::prepared_silk_rate_changes_use_both_required_transition_halves ... ok
+test opus::encoder_transition::tests::compact_termination_never_moves_the_silk_boundary ... ok
+test opus::encoder_transition::tests::exact_implicit_and_explicit_lengths_cover_two_and_257_bytes ... ok
+test opus::encoder_transition::tests::signaling_threshold_and_invalid_arguments_preserve_arithmetic_state ... ok
+test opus::energy::tests::every_coarse_budget_alphabet_roundtrips ... ok
+test opus::energy::tests::final_bits_follow_priorities_and_keep_stereo_bands_whole ... ok
+test opus::energy::tests::fine_errors_leave_history_and_entropy_untouched ... ok
+test opus::energy::tests::intra_history_is_independent_and_inter_prediction_clamps_old_energy ... ok
+test opus::energy::tests::mono_and_stereo_histories_agree_after_every_refinement ... ok
+test opus::energy::tests::reconstructed_energy_matches_the_normative_reference ... ok
+test opus::flags::tests::flags_match_on_every_tf_choice_and_truncated_budget ... ok
+test opus::flags::tests::recognizes_standard_silence_codeword ... ok
+test opus::input_delay::tests::chunking_empty_calls_and_inactive_mode_priming_preserve_history ... ok
+test opus::input_delay::tests::every_rate_and_channel_matches_literal_integer_shift ... ok
+test opus::input_delay::tests::full_scale_pcm_preserves_bits_without_clipping_or_overshoot ... ok
+test opus::input_delay::tests::impulse_delay_plus_native_codec_delay_matches_declared_timing ... ok
+test opus::input_delay::tests::reset_and_sample_rate_changes_restart_only_when_requested ... ok
+test opus::input_delay::tests::sinusoidal_phase_and_gain_match_exact_delay_through_near_nyquist ... ok
+test opus::input_resample::tests::all_rates_match_literal_zero_stuffed_convolution ... ok
+test opus::input_resample::tests::bypass_preserves_every_bit_and_has_no_delay ... ok
+test opus::input_resample::tests::full_scale_steps_are_finite_normalized_and_empty_calls_do_not_change_state ... ok
+test opus::input_resample::tests::impulse_peaks_at_reported_delay_and_channels_remain_independent ... ok
+test opus::input_resample::tests::narrowband_transition_gain_and_near_nyquist_image_match_documented_bounds ... ok
+test opus::input_resample::tests::passband_tones_retain_gain_and_reject_interpolation_images ... ok
+test opus::input_resample::tests::rate_changes_reset_history_and_invalid_rates_are_transactional ... ok
+test opus::allocation::tests::interpolated_totals_are_monotone_in_budget ... ok
+test opus::input_resample::tests::retained_native_path_tail_matches_emitted_output_without_advancing_state ... ok
+test opus::input_resample::tests::settled_dc_has_unit_gain_for_every_phase_and_channel ... ok
+test opus::input_resample::tests::raw_history_advance_matches_discarded_filter_output_before_mode_switch ... ok
+test opus::multistream::tests::composition_rejects_late_errors_before_output_changes_and_handles_maximum_streams ... ok
+test opus::multistream::tests::composition_writes_independent_self_delimiters_and_preserves_frames ... ok
+test opus::multistream::tests::layouts_cover_aliases_omitted_channels_and_silence ... ok
+test opus::input_resample::tests::split_blocks_same_rate_update_and_reset_preserve_streaming_contract ... ok
+test opus::multistream::tests::mismatched_durations_and_all_truncated_transport_prefixes_are_rejected ... ok
+test opus::multistream::tests::mapped_dtx_loss_reset_and_refusal_preserve_output_contracts ... ok
+test opus::multistream::tests::stream_boundaries_allow_different_tocs_with_equal_duration ... ok
+test opus::ogg::tests::ambisonics_headers_cover_all_geometries_signed_matrices_and_bad_lengths ... ok
+test opus::multistream::tests::phase_policy_reaches_unmapped_mono_history_and_survives_reset ... ok
+test opus::ogg::tests::chained_streams_expose_independent_headers_skip_trim_and_reset_boundaries ... ok
+test opus::ogg::tests::crc_polynomial_and_literal_header_bytes ... ok
+test opus::ogg::tests::gain_comments_preserve_signed_q8_values_and_reject_invalid_tags ... ok
+test opus::ogg::tests::lacing_255_boundary_and_continuations_across_pages ... ok
+test opus::ogg::tests::malformed_pages_reject_crc_sequence_serial_flags_and_granules ... ok
+test opus::ogg::tests::mapped_headers_validate_layouts_and_compatible_minor_extensions ... ok
+test opus::ogg::tests::metadata_lengths_utf8_versions_and_resource_bounds_are_checked ... ok
+test opus::ogg::tests::multi_packet_pages_initial_offsets_and_eos_trims ... ok
+test opus::ogg::tests::multiplexed_corruption_missing_eos_and_wrong_stream_continuations_are_rejected ... ok
+test opus::ogg::tests::multiplexed_pages_keep_per_serial_continuations_metadata_and_trim ... ok
+test opus::ogg::tests::multistream_container_preserves_layout_durations_and_trim ... ok
+test opus::ogg::tests::short_underlying_reads_are_not_treated_as_eof ... ok
+test opus::ogg::tests::tags_can_span_pages_and_empty_audio_can_have_no_kept_samples ... ok
+test opus::dtx::tests::hangover_and_refresh_use_audio_time_at_every_packet_duration ... ok
+test opus::ogg::tests::writer_reader_skip_trim_variable_durations_and_metadata ... ok
+test opus::encoder::tests::dtx_preserves_duration_then_resumes_real_speech_and_periodic_refreshes ... ok
+test opus::encoder::tests::beginning_and_prepared_end_transitions_preserve_exact_following_ranges ... ok
+test opus::packet::tests::code_three_cbr_and_vbr_allow_empty_frames ... ok
+test opus::packet::tests::codes_zero_one_and_two_expose_exact_payloads ... ok
+test opus::packet::tests::enforces_frame_size_limit_for_every_implicit_length ... ok
+test opus::packet::tests::every_representable_vbr_frame_length ... ok
+test opus::packet::tests::every_toc_configuration_and_standard_rate ... ok
+test opus::packet::tests::full_size_packets_with_48_frames_keep_every_boundary ... ok
+test opus::packet::tests::iterator_is_exact_size_and_fused ... ok
+test opus::packet::tests::maximum_duration_for_every_configuration ... ok
+test opus::packet::tests::padding_is_reserved_before_frame_lengths_are_read ... ok
+test opus::packet::tests::rejects_malformed_headers_lengths_and_padding ... ok
+test opus::pcm::tests::all_preflight_errors_preserve_the_entire_destination ... ok
+test opus::pcm::tests::every_i16_value_round_trips_exactly ... ok
+test opus::pcm::tests::half_ties_use_even_for_both_signs_and_formats ... ok
+test opus::pcm::tests::integer_limits_saturate_without_overflow ... ok
+test opus::pcm::tests::signed24_extrema_and_extended_i32_scale_are_explicit ... ok
+test opus::pcm::tests::suffixes_and_empty_conversions_are_untouched ... ok
+test opus::plc::tests::cached_differences_preserve_signed_zero_clipping_and_ring_wrap ... ok
+test opus::plc::tests::paired_pitch_scores_preserve_scalar_order_for_all_coarse_lags ... ok
+test opus::plc::tests::periodic_shortcut_keeps_zero_bits_and_advances_noise_state ... ok
+test opus::plc::tests::reset_clears_forecast_and_long_loss_stays_bounded_and_fades ... ok
+test opus::projection::tests::geometry_limits_and_column_major_signed_math ... ok
+test opus::pvq::tests::all_small_codewords_have_exact_rank_and_pulse_count ... ok
+test opus::pvq::tests::codebook_counts_match_explicit_combinations ... ok
+test opus::pvq::tests::installed_reference_cwrs_vectors_match_exactly ... ok
+test opus::pvq::tests::large_valid_codebooks_survive_checked_arithmetic ... ok
+test opus::pvq::tests::multiple_vectors_share_one_entropy_frame ... ok
+test opus::pvq::tests::rejects_invalid_arguments_without_changing_output ... ok
+test opus::pvq::tests::quantization_preserves_pulses_signs_and_numeric_headroom ... ok
+test opus::pvq::tests::single_pass_norm_synthesis_preserves_exact_pcm ... ok
+test opus::packet::tests::arbitrary_bytes_do_not_panic_or_expose_invalid_frames ... ok
+test opus::range::tests::independent_icdf_laplace_reference_matches_packets_and_every_state ... ok
+test opus::range::tests::invalid_models_and_intervals_leave_coder_state_intact ... ok
+test opus::range::tests::inverse_tables_match_all_denominators_and_large_alphabets ... ok
+test opus::range::tests::laplace_extremes_clip_safely_and_all_integer_bins_round_trip ... ok
+test opus::range::tests::mapped_intervals_match_frequency_update_and_preserve_invalid_state ... ok
+test opus::repacketize::tests::every_configuration_obeys_120_ms_and_dtx_frame_limits ... ok
+test opus::repacketize::tests::minimal_framing_matches_public_libopus_goldens ... ok
+test opus::repacketize::tests::padding_matches_native_small_headers_and_all_lacing_boundaries ... ok
+test opus::repacketize::tests::refusal_preserves_builder_and_output_and_clear_allows_new_geometry ... ok
+test opus::repacketize::tests::self_delimiting_frames_and_ranges_preserve_payloads ... ok
+test opus::silk::analysis::tests::budget_retry_broadens_tonal_predictors_without_losing_stability ... ok
+test opus::silk::analysis::tests::half_angle_polynomials_match_direct_complex_lpc_equations ... ok
+test opus::silk::analysis::tests::spectral_analysis_is_stable_for_silence_tones_and_white_noise ... ok
+test opus::silk::analysis::tests::white_predictor_roots_are_uniform_and_round_trip_q12_predictors ... ok
+test opus::silk::decoder::tests::all_loss_geometries_are_bounded_and_partial_calls_keep_exact_sample_clock ... ok
+test opus::pvq::tests::sparse_zero_runs_preserve_every_codeword_and_exact_norm ... ok
+test opus::range::tests::inverse_laplace_matches_every_cumulative_bin_and_remainder ... ok
+test opus::silk::decoder::tests::invalid_capacity_and_geometry_preserve_entropy ... ok
+test opus::silk::decoder::tests::mono_delay_carries_across_internal_frames ... ok
+test opus::ogg::tests::writer_continues_large_audio_and_places_eos_only_on_completion ... ok
+test opus::silk::decoder::tests::complete_coded_layers_match_native_ranges_and_time_aligned_pcm ... ok
+test opus::silk::decoder::tests::stereo_unmixing_has_one_sample_delay_and_preserves_mid_side_energy ... ok
+test opus::silk::downsample::tests::chronological_history_priming_retains_all_native_sampling_phases ... ok
+test opus::silk::decoder::tests::fec_consumes_actual_native_redundancy_and_missing_flags_do_not_mutate_audio ... ok
+test opus::silk::downsample::tests::invalid_calls_preserve_output_and_future_state_extremes_stay_finite ... ok
+test opus::silk::downsample::tests::response_and_total_codec_delay_match_mathematical_design ... ok
+test opus::silk::downsample::tests::literal_convolution_and_irregular_chunks_have_identical_history ... ok
+test opus::silk::encode_pulses::tests::every_probability_cost_matches_independent_floating_logarithms ... ok
+test opus::silk::encode_pulses::tests::invalid_domain_and_length_preserve_encoder_and_destination ... ok
+test opus::silk::encoder::tests::impossible_sparse_budget_leaves_existing_entropy_prefix_and_history_untouched ... ok
+test opus::silk::encoder::tests::invalid_input_and_unfit_budget_do_not_emit_or_commit_history ... ok
+test opus::silk::encode_pulses::tests::all_external_decoder_pulse_vectors_reencode_exactly ... ok
+test opus::silk::encoder::tests::sparse_bank_is_bounded_and_never_relabels_active_audio_as_inactive ... ok
+test opus::silk::encoder::tests::sparse_cells_fit_active_clipped_nb_and_terminate_with_exact_ranges ... ok
+test opus::silk::encoder::tests::sparse_history_guard_checks_unclamped_predictor_and_shaping_state ... ok
+test opus::silk::decoder::tests::redundancy_tails_consume_full_symbols_but_emit_only_selected_time ... ok
+test opus::silk::encoder::tests::uncoded_side_frames_reset_history_before_reappearing_in_same_packet ... ok
+test opus::silk::excitation::tests::complete_pulses_and_entropy_state_match_independent_libopus ... ok
+test opus::silk::excitation::tests::invalid_capacity_and_seed_leave_buffers_and_range_untouched ... ok
+test opus::silk::excitation::tests::q23_reconstruction_matches_rfc_equations_with_modulo_seed ... ok
+test opus::silk::excitation::tests::zero_entropy_excitation_is_offset_noise_and_discards_mb_padding ... ok
+test opus::silk::encoder::tests::low_rate_formant_signal_has_bounded_reconstruction_error ... ok
+test opus::silk::frame::tests::every_linear_gain_matches_frozen_native_output ... ok
+test opus::silk::frame::tests::gains_decode_absolute_delta_and_cross_frame_clamp ... ok
+test opus::silk::frame::tests::missing_gain_history_rejects_before_consuming_entropy ... ok
+test opus::silk::frame::tests::pitch_absolute_fallback_and_omitted_scale_do_not_desynchronize ... ok
+test opus::silk::frame::tests::every_delta_stays_in_index_domain_and_matches_rfc_equation ... ok
+test opus::silk::frame::tests::pitch_contours_and_filter_books_cover_all_geometries ... ok
+test opus::silk::frame::tests::primary_pitch_history_is_not_contour_clamped ... ok
+test opus::silk::frame::tests::stereo_metadata_matches_external_libopus_packets_and_interval ... ok
+test opus::silk::frame::tests::stereo_weight_equations_and_mid_only_symbol_order ... ok
+test opus::silk::lpc::tests::interpolation_reset_and_invalid_indices_preserve_channel_history ... ok
+test opus::silk::lpc::tests::native_black_box_bitstreams_and_spectral_vectors_are_exact ... ok
+test opus::silk::frame::tests::pitch_contours_match_external_native_sweep ... ok
+test opus::silk::native_delay::tests::native_delay_is_literal_shift_and_chunk_independent ... ok
+test opus::silk::lpc::tests::arbitrary_q15_vectors_stabilize_and_produce_bounded_stable_predictors ... ok
+test opus::silk::pitch::tests::relaxed_pitch_search_keeps_filters_contractive_and_silence_unvoiced ... ok
+test opus::silk::pitch::tests::transmitted_pitch_filters_match_canonical_decoder ... ok
+test opus::silk::pitch::tests::batched_pitch_scores_match_independent_scalar_correlations ... ok
+test opus::silk::quantize::tests::error_coloring_only_follows_dark_nonzero_input ... ok
+test opus::silk::quantize::tests::direct_scalar_quantizer_is_nearest_at_every_wire_cell_boundary ... ok
+test opus::silk::quantize::tests::gain_wire_symbols_obey_decoder_clamps_and_conditional_steps ... ok
+test opus::silk::quantize::tests::scalar_quantizer_reconstruction_matches_decoder_seed_and_offset ... ok
+test opus::silk::quantize::tests::shaped_cells_are_nearest_in_independent_decoder_reconstruction ... ok
+test opus::silk::encoder::tests::real_audio_encodes_all_rates_durations_and_channels_with_exact_ranges ... ok
+test opus::silk::quantize::tests::sparse_cells_minimize_two_choice_distortion_with_a_nonzero_price ... ok
+test opus::silk::quantize::tests::sparse_and_zero_pulses_rebuild_causal_wire_history_and_separate_losses ... ok
+test opus::silk::redundancy::tests::all_activity_and_redundancy_masks_use_the_canonical_header_grammar ... ok
+test opus::silk::redundancy::tests::cache_reset_transitions_and_invalid_commit_cannot_relabel_old_audio ... ok
+test opus::silk::redundancy::tests::exact_gain_references_cover_the_complete_delta_alphabet ... ok
+test opus::silk::redundancy::tests::missing_intervals_reset_gain_pitch_and_scaling_contexts ... ok
+test opus::silk::resample::tests::alternating_extreme_domain_is_bounded_and_decays_after_reset ... ok
+test opus::ogg::tests::audio_limits_are_explicit_and_default_covers_255_maximum_streams ... ok
+test opus::silk::resample::tests::complex_response_matches_independent_black_box_observations ... ok
+test opus::silk::resample::tests::dc_gain_and_fractional_impulse_centroid_match_the_prescribed_delay ... ok
+test opus::silk::redundancy::tests::real_stereo_activity_gaps_keep_partial_lbrr_and_following_wire_order ... ok
+test opus::silk::resample::tests::fused_filter_batches_preserve_scalar_sums_across_wraps_and_phase_changes ... ok
+test opus::silk::resample::tests::fused_filters_match_the_literal_owned_chain_and_reconstruct_transition_tails ... ok
+test opus::silk::resample::tests::invalid_frames_preserve_output_history_and_future_audio ... ok
+test opus::silk::resample::tests::schur_stability_and_absolute_kernel_bounds_cover_the_numeric_domain ... ok
+test opus::silk::resample::tests::selected_rates_are_exact_full_rate_phases_across_chunks_and_rate_changes ... ok
+test opus::silk::resample::tests::streaming_matches_literal_double_precision_convolution_and_chunking ... ok
+test opus::silk::synthesis::tests::frame_slice_uses_original_subframe_and_excitation_positions ... ok
+test opus::silk::resample::tests::dense_full_native_band_keeps_passband_and_limits_sampling_images ... ok
+test opus::silk::synthesis::tests::lpc_feedback_uses_unclamped_history_including_frame_boundary ... ok
+test opus::silk::synthesis::tests::malformed_geometry_and_short_output_are_transactional ... ok
+test opus::silk::synthesis::tests::nonzero_ltp_repeats_pitch_impulse_with_zero_lpc ... ok
+test opus::silk::quantize::tests::every_gain_and_wire_pulse_cancels_exactly_in_residual_history ... ok
+test opus::silk::synthesis::tests::partial_concealment_advances_only_the_requested_predictor_samples ... ok
+test opus::silk::synthesis::tests::zero_prediction_is_scaled_excitation_for_both_signal_classes ... ok
+test opus::silk::tests::frame_types_respect_vad_and_all_normative_offsets ... ok
+test opus::silk::tests::invalid_header_channel_count_does_not_consume_bits ... ok
+test opus::silk::tests::vad_flags_match_direct_msb_header_extraction_for_all_geometries ... ok
+test opus::transform::tests::changing_frame_sizes_and_transients_reconstructs_with_120_sample_delay ... ok
+test opus::transform::tests::copied_analysis_history_preserves_future_coefficients ... ok
+test opus::silk::synthesis::tests::overlapping_rewhitening_preserves_every_pcm_and_history_bit ... ok
+test opus::transform::tests::exact_prediction_preserves_lapped_and_filter_history_across_losses ... ok
+test opus::transform::tests::direct_lapped_inverse_preserves_pcm_and_history_bits ... ok
+test opus::transform::tests::initial_zero_history_fastpath_matches_full_zero_scheduling ... ok
+test opus::transform::tests::pitch_parameters_follow_the_overlap_delay_when_frame_sizes_change ... ok
+test opus::transform::tests::pitch_prefilter_exactly_inverts_recursive_postfilter_during_transitions ... ok
+test opus::transform::tests::reset_and_invalid_calls_preserve_stream_contract ... ok
+test opus::transform::tests::zero_synthesis_matches_full_inverse_and_preserves_recovery_history ... ok
+test opus::transform::tests::inverse_scaling_and_alignment_match_literal_cosine_sum ... ok
+test pulse::tests::allocation_respects_every_supported_packet_budget ... ok
+test opus::silk::redundancy::tests::actual_previous_audio_is_recovered_and_following_payload_keeps_its_range ... ok
+test opus::silk::resample::tests::wide_8k_batched_windows_match_scalar_at_every_ring_cursor_and_clock ... ok
+test opus::transform::tests::long_and_interleaved_short_coefficients_match_literal_cosine_sum ... ok
+test pulse::tests::pulse_exchange_preserves_budget_signs_and_normalized_correlation ... ok
+test pulse::tests::pulse_exchange_repairs_an_overfilled_frequency ... ok
+test pulse::tests::quantized_shapes_keep_their_pulse_sum_and_signs ... ok
+test pulse::tests::signed_multisets_roundtrip_inside_their_exact_budget ... ok
+test transform::tests::precomputed_opus_plans_match_defining_rotations ... ok
+test pulse::tests::arbitrary_class_payloads_decode_bounded_integer_vectors ... ok
+test transform::tests::packed_windows_preserve_literal_bits_and_allocated_storage ... ok
+test harmonic_joint::tests::correction_retains_padding_and_rejects_unsafe_values_without_mutation ... ok
+test opus::encoder::tests::long_packets_cover_all_modes_budgets_and_quiet_refreshes ... ok
+test codec::harmonic_protocol_tests::harmonic_entropy_fits_every_supported_pitch_and_packet_budget ... ok
+test harmonic_joint::tests::analytic_folded_gram_and_rhs_match_direct_stored_window_trigonometry ... ok
+test harmonic::tests::accelerated_analysis_matches_direct_dot_products_for_every_pitch ... ok
+test pulse::tests::allocation_matches_exact_rational_priorities ... ok
+test pulse::tests::every_occupied_count_fits_its_joint_class_budget ... ok
+
+test result: ok. 268 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.29s
+
+     Running tests/adaptive.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/adaptive-7a30f740ea9fd469)
+
+running 8 tests
+test delay_growth_backs_off_without_loss_but_one_spike_does_not ... ok
+test bottleneck_step_down_and_recovery_keep_queue_and_rate_bounded ... ok
+test no_feedback_empty_reports_and_worker_stalls_cannot_probe_up ... ok
+test stable_link_recovers_slowly_and_obeys_a_live_ceiling ... ok
+test invalid_feedback_and_backwards_clock_do_not_change_state ... ok
+test feedback_frequency_does_not_multiply_reductions_and_small_windows_do_not_probe ... ok
+test fast_backoff_reduces_wire_rate_and_preserves_bounds ... ok
+test adaptive_targets_roundtrip_with_exact_fractional_budgets_at_both_frame_durations ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/allocations.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/allocations-337e29de5c483038)
+
+running 5 tests
+test adaptation_construction_feedback_updates_and_timeouts_never_allocate ... ok
+test opus_pcm_format_conversion_never_allocates ... ok
+test opus_call_controls_and_generated_redundancy_do_not_allocate ... ok
+test opus_processing_reset_and_rate_changes_do_not_allocate ... ok
+test steady_state_processing_never_allocates ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.75s
+
+     Running tests/codec.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/codec-6d3896685d236dd3)
+
+running 24 tests
+test complete_version_three_packets_are_rejected_without_consuming_history ... ok
+test every_single_bit_flip_is_rejected_without_changing_decoder_history ... ok
+test incompatible_versions_are_rejected_before_consuming_history ... ok
+test independent_tracks_and_wrong_duration_do_not_share_or_consume_history ... ok
+test invalid_input_and_insufficient_capacity_preserve_encoder_history ... ok
+test both_quantizers_and_gain_boundaries_match_independent_inverse_cosines ... ok
+test concealment_refusal_preserves_pitch_history_and_recovery ... ok
+test invalid_spectral_parameters_with_valid_checksums_preserve_state ... ok
+test missing_frames_require_explicit_concealment_and_recover_on_the_next_packet ... ok
+test invalid_pulse_gains_preserve_output_and_stream_history ... ok
+test loss_recovery_error_cannot_propagate_beyond_the_short_overlap ... ok
+test out_of_range_packet_lengths_preserve_decoder_history ... ok
+test concealed_periodic_audio_preserves_phase_and_long_losses_reach_exact_silence ... ok
+test silence_is_exact_and_a_finished_stream_can_be_reset_without_allocating ... ok
+test unknown_bandwidth_profiles_are_refused_without_consuming_history ... ok
+test checksum_rejects_contiguous_bit_flips_through_sixteen_bits_for_every_profile ... ok
+test bitrate_changes_keep_sequence_overlap_and_fractional_budget ... ok
+test all_packet_budgets_encode_dense_noise_transients_and_high_frequencies ... ok
+test adaptive_bandwidth_retains_high_frequency_audio_and_changes_without_reset ... ok
+test all_bandwidth_budgets_match_independently_constructed_cosine_packets ... ok
+test invalid_pulse_gains_at_each_precision_preserve_stream_history ... ok
+test native_codec_round_trips_both_frame_durations_at_every_target_bitrate ... ok
+test scalar_and_pulse_profiles_can_switch_without_resetting_nonzero_overlap ... ok
+test pulse_profiles_at_every_byte_budget_match_independent_inverse_cosines ... ok
+
+test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s
+
+     Running tests/entropy.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/entropy-a5355ba353477eae)
+
+running 10 tests
+test arithmetic_output_failure_preserves_readable_normalized_counters ... ok
+test boundary_uniform_values_and_32_raw_bits_round_trip ... ok
+test buffer_exhaustion_is_terminal ... ok
+test cropped_raw_suffix_preserves_interval_and_rejects_late_or_expanding_changes ... ok
+test fixed_budget_frames_keep_raw_suffix_at_the_end_and_zero_the_gap ... ok
+test invalid_arguments_do_not_consume_encoder_state ... ok
+test models_reject_zero_width_and_unsorted_intervals ... ok
+test raw_reads_are_bounded_and_refusal_preserves_state ... ok
+test mixed_symbols_raw_bits_and_uniform_integers_round_trip ... ok
+test independent_reference_frames_match_every_symbol_and_coder_state ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/harmonic_independent.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/harmonic_independent-3239ac9882f7d727)
+
+running 3 tests
+test all_f0_minimum_and_maximum_packets_decode_with_finite_bounded_audio ... ok
+test independently_coded_harmonics_match_direct_double_cosine_transforms ... ok
+test every_f0_payload_and_gain_grid_fits_actual_entropy_buffer ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.96s
+
+     Running tests/harmonic_opt_in.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/harmonic_opt_in-b5dd4f6c271430a8)
+
+running 1 test
+test harmonic_speech_is_opt_in_and_selects_voiced_packets_without_decoder_setting ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/opus_calls_reference.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/opus_calls_reference-5bdad610d008e817)
+
+running 20 tests
+test mapped_multistream_aliases_silence_and_xor_range_match_native ... ok
+test ambisonics_projection_signed_column_major_matrix_matches_native ... ok
+test mapped_and_projected_phase_controls_cover_mixed_defaults_and_real_downmix ... ok
+test last_packet_samples_tracks_whole_packets_plc_and_refusals ... ok
+test mode_and_coded_channel_changes_preserve_fixed_output_layout ... ok
+test owned_transition_payload_minimum_and_hybrid_maximum_decode_natively ... ok
+test ordinary_output_gain_applies_once_to_actual_fec_and_its_concealed_prefix ... ok
+test native_dtx_burst_loss_reset_and_refusal_keep_call_state ... ok
+test celt_mobile_rates_durations_bandwidths_and_channel_conversion ... ok
+test rectangular_ambisonics_projection_matches_native_coded_channels ... ok
+test projected_gain_matches_independent_gained_coded_channel_matrix ... ok
+test queued_silk_bandwidth_transitions_preserve_native_ranges_and_directions ... ok
+test repacketized_cbr_vbr_padding_and_maximum_duration_decode_natively ... ok
+test silk_hybrid_duration_loss_fec_and_following_packet_range ... ok
+test ordinary_output_gain_matches_public_controls_and_preserves_history ... ok
+test implicit_short_frames_preserve_explicit_plc_and_coded_continuation ... ok
+test owned_beginning_and_prepared_ending_transitions_decode_natively ... ok
+test mapped_and_projected_gain_controls_match_native_and_preserve_history ... ok
+test all_owned_celt_hybrid_silk_dtx_durations_refresh_and_resume_natively ... ok
+test owned_long_packets_match_native_durations_ranges_and_return_from_loss ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.38s
+
+     Running tests/opus_duration_switches.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/opus_duration_switches-80bbd5cd0d05ab07)
+
+running 2 tests
+test silk_duration_switches_recover_compatible_tails_and_conceal_changed_geometry ... ok
+test queued_celt_lp_switches_at_120_ms_preserve_emitted_geometry_and_following_ranges ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.39s
+
+     Running tests/opus_extensions.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/opus_extensions-d87e24961fffaaed)
+
+running 7 tests
+test independent_repeat_cases_cover_group_resets_and_final_short_reservation ... ok
+test ietf_appendix_vectors_preserve_order_within_each_frame ... ok
+test malformed_extensions_report_one_error_then_fuse_preserving_prefix ... ok
+test packet_padding_excludes_all_length_headers_and_following_streams ... ok
+test invalid_extensions_do_not_change_valid_base_audio_or_repacketization ... ok
+test every_id_and_explicit_length_boundaries_are_opaque_and_borrowed ... ok
+test adversarial_repeats_are_bounded_and_all_parser_paths_allocate_nothing ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/opus_input_rates.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/opus_input_rates-5090f289d6de2274)
+
+running 9 tests
+test input_rate_changes_reset_only_interpolation_and_queued_changes_take_effect_after_packet ... ok
+test dtx_clock_uses_packet_time_at_every_input_rate ... ok
+test processing_rate_changes_mapped_encoding_and_reset_do_not_allocate ... ok
+test rejected_inputs_preserve_filter_codec_and_fractional_clock_history ... ok
+test full_scale_overshoot_inputs_encode_without_late_input_errors ... ok
+test matching_native_silk_rates_and_all_bandwidth_transitions_decode ... ok
+test mapped_rates_aliases_silence_and_mismatched_configurations ... ok
+test native_silk_impulse_and_low_frequency_alignment_use_fixed_declared_delay ... ok
+test every_input_rate_mode_duration_channel_and_rate_policy_decodes ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.41s
+
+     Running tests/opus_multistream_encoder.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/opus_multistream_encoder-95bbf88e7140443b)
+
+running 8 tests
+test configuration_rejects_missing_streams_channels_durations_and_coupled_sources ... ok
+test unused_mono_stream_encodes_silence ... ok
+test invalid_pcm_and_capacity_leave_every_stream_history_and_output_unchanged ... ok
+test mapping_selects_first_alias_ignores_silent_slots_and_matches_independent_encoders ... ok
+test constant_rate_preserves_fractional_aggregate_budgets_and_self_delimiter_costs ... ok
+test processing_reset_and_status_do_not_allocate_and_dtx_requires_every_stream ... ok
+test active_constant_rate_stream_moves_padding_to_empty_final_dtx_stream ... ok
+test reference::owned_surround_and_aliased_packets_decode_in_libopus_with_exact_ranges ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/opus_pcm.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/opus_pcm-836e6ac42d0d0d21)
+
+running 2 tests
+test extended_i24_conversion_does_not_silently_clip_encoder_input ... ok
+test formats_compose_with_ordinary_mapped_and_projection_at_every_rate ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/opus_projection_encoder.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/opus_projection_encoder-919d2874cae2a69c)
+
+running 7 tests
+test malformed_matrices_and_stream_geometry_are_rejected_at_construction ... ok
+test late_mixture_overload_and_invalid_arguments_preserve_history_and_output ... ok
+test rectangular_pairs_and_silent_rows_match_an_independent_matrix_oracle ... ok
+test mixing_processing_reset_and_status_do_not_allocate ... ok
+test reference::q15_signed_endpoints_use_exact_denominator_in_owned_and_native_demixing ... ok
+test signed_projection_matches_independent_coded_pcm_and_stream_encoders ... ok
+test reference::family3_ogg_packets_decode_natively_with_serialized_matrices_and_trimming ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s
+
+     Running tests/opus_reference.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/opus_reference-11bd185e757f8ba9)
+
+running 3 tests
+test libopus_celt_duration_changes_preserve_decoder_state ... ok
+test native_celt_packets_match_libopus_range_and_pcm ... ok
+test libopus_celt_packets_match_native_range_and_pcm ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/opus_stack.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/opus_stack-e3e5f8306ad7de32)
+
+running 2 tests
+test duplex_codec_construction_and_processing_fit_a_one_mebibyte_stack ... ok
+test public_opus_construction_and_reset_fit_a_one_mib_thread ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/transform.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/transform-4bc83f323554b45e)
+
+running 5 tests
+test invalid_dimensions_and_samples_leave_output_unchanged ... ok
+test streaming_short_overlap_has_exactly_120_samples_of_delay ... ok
+test overlapping_inverse_blocks_reconstruct_audio_with_short_and_full_windows ... ok
+test fast_mdct_matches_the_defining_double_precision_cosine_sum ... ok
+test mixed_radix_fft_matches_independent_double_precision_dft ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+   Doc-tests snacka
+
+running 6 tests
+test src/opus/projection.rs - opus::projection::ProjectionEncoder (line 80) ... ok
+test src/opus/encoder.rs - opus::encoder::EncoderConfig::with_sample_rate (line 152) ... ok
+test src/opus/multistream.rs - opus::multistream::MultistreamEncoder (line 297) ... ok
+test src/opus/pcm.rs - opus::pcm (line 25) ... ok
+test src/adaptive.rs - adaptive (line 11) ... ok
+test src/opus/mod.rs - opus (line 14) ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.29s; merged doctests compilation took 0.14s

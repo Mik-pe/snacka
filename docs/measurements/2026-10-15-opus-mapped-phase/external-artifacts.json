@@ -1,0 +1,22 @@
+{
+  "/private/tmp/snacka-opus-mapped-phase-evidence-20261015/production/untimed-comparison/rows.jsonl": {
+    "sha256": "dfafec8ea811369437e8808f106e7028d0b3f2bfe5845af85fdb90a5949669c8",
+    "bytes": 9373736
+  },
+  "/private/tmp/snacka-opus-mapped-phase-evidence-20261015/codegen/before-otool.txt": {
+    "sha256": "6565a6b96fc92074f50a44d470a77429b874529b11f4176be8cbccf0cb0a97f0",
+    "bytes": 4363848
+  },
+  "/private/tmp/snacka-opus-mapped-phase-evidence-20261015/codegen/after-otool.txt": {
+    "sha256": "25129c3f95d0018765201e01a85db4b1129592527b45fbbf3770a7d961c13055",
+    "bytes": 4364319
+  },
+  "/private/tmp/snacka-opus-mapped-phase-evidence-20261015/codegen/before-nm.txt": {
+    "sha256": "90af205f63596b76f649a700fd3b7bf903306f49e2a12298522ac8cb3fc0da76",
+    "bytes": 438597
+  },
+  "/private/tmp/snacka-opus-mapped-phase-evidence-20261015/codegen/after-nm.txt": {
+    "sha256": "aa299b171b9c551806c8e799f1f24c18b0b294f8342cb1a614ceef5b0a9eae64",
+    "bytes": 438720
+  }
+}

@@ -1,0 +1,28 @@
+   Compiling snacka v0.2.0 (/private/tmp/snacka-opus-mapped-phase-20261015)
+    Finished `release` profile [optimized] target(s) in 1.92s
+     Running tests/opus_calls_reference.rs (/tmp/snacka-opus-mapped-phase-check-target/release/deps/opus_calls_reference-5bdad610d008e817)
+
+running 20 tests
+test mapped_multistream_aliases_silence_and_xor_range_match_native ... ok
+test ambisonics_projection_signed_column_major_matrix_matches_native ... ok
+test mapped_and_projected_phase_controls_cover_mixed_defaults_and_real_downmix ... ok
+test last_packet_samples_tracks_whole_packets_plc_and_refusals ... ok
+test mode_and_coded_channel_changes_preserve_fixed_output_layout ... ok
+test owned_transition_payload_minimum_and_hybrid_maximum_decode_natively ... ok
+test ordinary_output_gain_applies_once_to_actual_fec_and_its_concealed_prefix ... ok
+test native_dtx_burst_loss_reset_and_refusal_keep_call_state ... ok
+test celt_mobile_rates_durations_bandwidths_and_channel_conversion ... ok
+test rectangular_ambisonics_projection_matches_native_coded_channels ... ok
+test projected_gain_matches_independent_gained_coded_channel_matrix ... ok
+test queued_silk_bandwidth_transitions_preserve_native_ranges_and_directions ... ok
+test repacketized_cbr_vbr_padding_and_maximum_duration_decode_natively ... ok
+test ordinary_output_gain_matches_public_controls_and_preserves_history ... ok
+test silk_hybrid_duration_loss_fec_and_following_packet_range ... ok
+test implicit_short_frames_preserve_explicit_plc_and_coded_continuation ... ok
+test owned_beginning_and_prepared_ending_transitions_decode_natively ... ok
+test mapped_and_projected_gain_controls_match_native_and_preserve_history ... ok
+test all_owned_celt_hybrid_silk_dtx_durations_refresh_and_resume_natively ... ok
+test owned_long_packets_match_native_durations_ranges_and_return_from_loss ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.39s
+
