@@ -1,0 +1,38 @@
+{
+  "source_url": "https://downloads.xiph.org/releases/opus/opus-1.6.1.tar.gz",
+  "source_sha256": "6ffcb593207be92584df15b32466ed64bbec99109f007c82205f0194572411a1",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0\nCopyright (C) 2025 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: x86_64-unknown-linux-gnu\nrelease: 1.99.0\nLLVM version: 23.1.1\n",
+  "reference_builds": {
+    "core": {
+      "configure": [
+        "/tmp/snacka-opus-goal-x86-20261015/opus-1.6.1/configure",
+        "--prefix=/tmp/snacka-opus-goal-x86-20261015/reference-core",
+        "--enable-shared",
+        "--disable-static",
+        "--disable-doc",
+        "--disable-extra-programs"
+      ],
+      "CFLAGS": "-O3",
+      "library": "/tmp/snacka-opus-goal-x86-20261015/reference-core/lib/libopus.so.0.11.1",
+      "sha256": "9737e7fce1020ad0f20eb18c9e1e71ed4ccde0da8cfeec86ae61889751dff018"
+    },
+    "extensions": {
+      "configure": [
+        "/tmp/snacka-opus-goal-x86-20261015/opus-1.6.1/configure",
+        "--prefix=/tmp/snacka-opus-goal-x86-20261015/reference-extensions",
+        "--enable-shared",
+        "--disable-static",
+        "--disable-doc",
+        "--disable-extra-programs",
+        "--enable-dred",
+        "--enable-osce",
+        "--enable-qext"
+      ],
+      "CFLAGS": "-O3",
+      "library": "/tmp/snacka-opus-goal-x86-20261015/reference-extensions/lib/libopus.so.0.11.1",
+      "sha256": "e5e01e24e60d60ab48d60c40d84ff1e77e43c8fc46f22dfe19f818ed26f44eb3"
+    }
+  },
+  "scope": "External test oracles only; no runtime codec dependency. No reference algorithm source was read or copied."
+}

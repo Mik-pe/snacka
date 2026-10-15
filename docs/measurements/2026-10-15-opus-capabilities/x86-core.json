@@ -1,0 +1,190 @@
+{
+  "reference": "libopus 1.6.1",
+  "reference_library": "/tmp/snacka-opus-goal-x86-20261015/reference-core/lib/libopus.so.0.11.1",
+  "reference_sha256": "9737e7fce1020ad0f20eb18c9e1e71ed4ccde0da8cfeec86ae61889751dff018",
+  "platform": "Linux-7.0.0-15-generic-x86_64-with-glibc2.43",
+  "scope": "public symbol presence, constructor and control acceptance only; no extension processing or quality claim",
+  "api_reference": "https://opus-codec.org/docs/opus_api-1.6.pdf",
+  "features_reference": "https://opus-codec.org/demo/opus-1.6/",
+  "symbols": {
+    "opus_encode": true,
+    "opus_encode_float": true,
+    "opus_encode24": true,
+    "opus_decode": true,
+    "opus_decode_float": true,
+    "opus_decode24": true,
+    "opus_multistream_encode": true,
+    "opus_multistream_encode_float": true,
+    "opus_multistream_encode24": true,
+    "opus_multistream_decode": true,
+    "opus_multistream_decode_float": true,
+    "opus_multistream_decode24": true,
+    "opus_projection_encode": true,
+    "opus_projection_encode_float": true,
+    "opus_projection_encode24": true,
+    "opus_projection_decode": true,
+    "opus_projection_decode_float": true,
+    "opus_projection_decode24": true,
+    "opus_custom_encode": false,
+    "opus_custom_encode_float": false,
+    "opus_custom_encode24": false,
+    "opus_custom_decode": false,
+    "opus_custom_decode_float": false,
+    "opus_custom_decode24": false,
+    "opus_dred_decoder_create": true,
+    "opus_dred_parse": true,
+    "opus_dred_process": true,
+    "opus_decoder_dred_decode": true,
+    "opus_decoder_dred_decode_float": true,
+    "opus_decoder_dred_decode24": true
+  },
+  "sample_rates": {
+    "encoder": {
+      "8000": {
+        "code": 0,
+        "status": "ok",
+        "created": true
+      },
+      "12000": {
+        "code": 0,
+        "status": "ok",
+        "created": true
+      },
+      "16000": {
+        "code": 0,
+        "status": "ok",
+        "created": true
+      },
+      "24000": {
+        "code": 0,
+        "status": "ok",
+        "created": true
+      },
+      "48000": {
+        "code": 0,
+        "status": "ok",
+        "created": true
+      },
+      "96000": {
+        "code": -1,
+        "status": "bad_argument",
+        "created": false
+      }
+    },
+    "decoder": {
+      "8000": {
+        "code": 0,
+        "status": "ok",
+        "created": true
+      },
+      "12000": {
+        "code": 0,
+        "status": "ok",
+        "created": true
+      },
+      "16000": {
+        "code": 0,
+        "status": "ok",
+        "created": true
+      },
+      "24000": {
+        "code": 0,
+        "status": "ok",
+        "created": true
+      },
+      "48000": {
+        "code": 0,
+        "status": "ok",
+        "created": true
+      },
+      "96000": {
+        "code": -1,
+        "status": "bad_argument",
+        "created": false
+      }
+    }
+  },
+  "controls": {
+    "encoder_complexity": {
+      "requested_value": 10,
+      "set": {
+        "code": 0,
+        "status": "ok"
+      },
+      "get": {
+        "code": 0,
+        "status": "ok",
+        "value": 10
+      }
+    },
+    "constrained_vbr": {
+      "requested_value": 1,
+      "set": {
+        "code": 0,
+        "status": "ok"
+      },
+      "get": {
+        "code": 0,
+        "status": "ok",
+        "value": 1
+      }
+    },
+    "expected_loss_percent": {
+      "requested_value": 30,
+      "set": {
+        "code": 0,
+        "status": "ok"
+      },
+      "get": {
+        "code": 0,
+        "status": "ok",
+        "value": 30
+      }
+    },
+    "dred_duration": {
+      "requested_value": 10,
+      "set": {
+        "code": -5,
+        "status": "unimplemented"
+      }
+    },
+    "qext": {
+      "requested_value": 1,
+      "set": {
+        "code": -5,
+        "status": "unimplemented"
+      }
+    },
+    "decoder_complexity": {
+      "requested_value": 10,
+      "set": {
+        "code": 0,
+        "status": "ok"
+      },
+      "get": {
+        "code": 0,
+        "status": "ok",
+        "value": 10
+      }
+    },
+    "osce_bandwidth_extension": {
+      "requested_value": 1,
+      "set": {
+        "code": -5,
+        "status": "unimplemented"
+      }
+    },
+    "ignore_extensions": {
+      "requested_value": 1,
+      "set": {
+        "code": 0,
+        "status": "ok"
+      },
+      "get": {
+        "code": 0,
+        "status": "ok",
+        "value": 1
+      }
+    }
+  }
+}

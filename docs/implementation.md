@@ -23,6 +23,21 @@ aggregate medians alone do not close the goal. Current evidence and remaining
 gaps live in [Opus support](opus.md). The Rust API may compose format operations
 differently from the reference API.
 
+The active delivery objective is full Opus parity with libopus 1.6.1 in
+capabilities, processing cost and audio quality. Functional scope includes PCM
+formats and standard sample rates, ordinary/mapped/Ambisonics encoding and
+decoding, packet/container operations, loss recovery and encoder policies.
+The [1.6 API](https://opus-codec.org/docs/opus_api-1.6.pdf) and
+[extension descriptions](https://opus-codec.org/demo/opus-1.6/) also identify
+24-bit PCM, DRED, speech enhancement and Opus HD capabilities. Unsupported or
+unexercised extensions remain explicit gaps; their absence from one installed
+reference build does not close them.
+
+`tools/reference/inspect_opus_capabilities.py LIBOPUS --output OUT.json` records
+the reference library hash, exported APIs, sample-rate constructors and accepted
+controls. This inventories the selected build; symbol or control availability
+alone does not prove working encoding, decoding or quality.
+
 ## Performance goal
 
 Make Snacka as fast as libopus or faster without sacrificing correctness,
