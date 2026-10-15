@@ -293,6 +293,14 @@ RUSTFLAGS="-L /path/to/lib" cargo bench --locked --bench opus \
   --features opus,reference-tests
 ```
 
+Build-profile clarification: Cargo `lto = false` uses Thin local LTO across
+codegen units; `lto = "off"` disables it. Historical "no LTO" descriptions
+with a recorded Cargo value of `false` mean no cross-crate LTO. A standalone
+benchmark driver built with `rustc -C lto=off` does not change optimization
+already performed in its linked codec library. Reproduce the recorded library
+and driver commands separately; this terminology correction does not replace
+any archived build or measurement. See the [Cargo profile documentation](https://doc.rust-lang.org/cargo/reference/profiles.html#lto).
+
 Matched-packet decoder benchmarks feed the same packet sequence to both codecs,
 alternate their order and report paired batch-throughput p50/p95/p99. Generic
 encoder benchmarks check actual wire mode and byte budgets on identical PCM.
