@@ -110,14 +110,38 @@ when every stream suppresses. Construction allocates; encoding and reset do not.
 `MultistreamDecoder` and `ProjectionDecoder` decode mapped channels and signed
 Q15 Ambisonics demixing matrices, including channel aliases and silence.
 
+`ProjectionEncoder` encodes family-3 Ambisonics with an explicit pair of
+matrices. For `C` ACN/SN3D input channels and `K = streams + coupled` coded
+channels, its floating-point mixing matrix `A` has `K` rows and `C` columns;
+`ProjectionMapping` carries the signed Q15 demixing matrix `D`, with `C` rows
+and `K` columns. Both use column-major storage. Encoding applies `x = A * s`
+before the owned multistream encoders; decoding applies `s = D * x`. Square
+and rectangular pairs are supported, including silent mixed-order rows and
+optional non-diegetic stereo. Callers choose the pair; the encoder does not
+assume the matrices are inverses or design an automatic projection.
+
+Supply one stream configuration per mapping stream, with equal input rates
+and packet durations. `input_samples()`, `sample_rate()` and
+`algorithmic_delay_samples()` expose the configured PCM geometry and delay.
+Pass `encoder.mapping().clone()` to `OpusIdentification::projected` and write
+packets through `OggWriter::new_mapped`. Header gain and pre-skip remain caller
+choices; Ogg pre-skip uses 48 kHz units even when input PCM uses another rate.
+The complete source PCM and every mixed sample must be finite and within ±1.
+Overloaded projections fail before any stream history or output changes;
+matrix mixing never silently clips. The shared lower-rate interpolation
+limitations described above still apply after mixing. Processing, status and
+reset allocate nothing. Independent signed/rectangular matrix oracles and
+actual family-3 Ogg packets decoded by public libopus projection APIs cover all
+five input and output rates, including Q15 endpoints, gain and trimming.
+
 A malformed compressed frame can advance some history. Reset after a corrupt
 content error. Packet framing, configuration and output-capacity errors are
 checked before history changes. The APIs are native Rust contracts; they do
 not mirror the foreign codec's controls or instrumentation.
 
-Remaining encoder API gaps include projection/Ambisonics encoding, automatic
-surround bitrate allocation and
-complexity, expected-loss and constrained-VBR controls. The format and API
+Remaining encoder API gaps include automatic Ambisonics projection design,
+automatic surround bitrate allocation, and complexity, expected-loss and
+constrained-VBR controls. The format and API
 extensions above do not close the separate CPU and perceptual-quality targets.
 
 ## Loss recovery and calls

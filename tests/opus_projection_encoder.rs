@@ -95,9 +95,13 @@ fn configs(mode: Mode, duration: FrameDuration) -> [EncoderConfig; 3] {
 }
 
 fn signal(samples: usize, channels: usize, start: usize) -> Vec<f32> {
+    signal_at_rate(samples, channels, start, 48_000)
+}
+
+fn signal_at_rate(samples: usize, channels: usize, start: usize, rate: u32) -> Vec<f32> {
     (0..samples * channels)
         .map(|index| {
-            let time = (start + index / channels) as f32 / 48_000.0;
+            let time = (start + index / channels) as f32 / rate as f32;
             let frequency = 173.0 + (index % channels) as f32 * 109.0;
             let phase = std::f32::consts::TAU * frequency * time;
             0.12 * phase.sin() + 0.035 * (2.0 * phase).sin()
@@ -109,61 +113,70 @@ fn signal(samples: usize, channels: usize, start: usize) -> Vec<f32> {
 fn signed_projection_matches_independent_coded_pcm_and_stream_encoders() {
     for mode in [Mode::Silk, Mode::Hybrid, Mode::Celt] {
         for duration in [FrameDuration::Ms20, FrameDuration::Ms120] {
-            let (mapping, mixing) = square();
-            let settings = configs(mode, duration);
-            let mut projected =
-                ProjectionEncoder::new(mapping.clone(), mixing.clone(), &settings).unwrap();
-            let mut independent: Vec<_> = settings
-                .into_iter()
-                .map(|config| Encoder::new(config).unwrap())
-                .collect();
-            let samples = duration.samples();
-            let mut packet = vec![0xa5; projected.max_packet_bytes() + 17];
-            for index in 0..4 {
-                let input = signal(samples, 4, index * samples);
-                let length = projected.encode(&input, &mut packet).unwrap();
-                assert!(packet[length..].iter().all(|&byte| byte == 0xa5));
-                let parsed = MultistreamPacket::parse(&packet[..length], 3).unwrap();
-                for (stream, actual) in parsed.packets().enumerate() {
-                    let coded: &[usize] = match stream {
-                        0 => &[0, 1],
-                        1 => &[2],
-                        _ => &[3],
-                    };
-                    let mut pcm = Vec::with_capacity(samples * coded.len());
-                    for frame in input.as_chunks::<4>().0 {
-                        for &row in coded {
-                            let mixed: f64 = ROWS[row]
-                                .iter()
-                                .zip(frame)
-                                .map(|(&coefficient, &sample)| {
-                                    f64::from(coefficient) * f64::from(sample)
-                                })
-                                .sum();
-                            pcm.push(mixed as f32);
-                        }
-                    }
-                    let mut expected = vec![0; settings[stream].max_packet_bytes()];
-                    let bytes = independent[stream].encode(&pcm, &mut expected).unwrap();
-                    let expected = Packet::parse(&expected[..bytes]).unwrap();
-                    assert_eq!(actual.toc().config(), expected.toc().config());
-                    assert_eq!(
-                        actual.frames().collect::<Vec<_>>(),
-                        expected.frames().collect::<Vec<_>>()
-                    );
-                }
+            for input_rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
+                let (mapping, mixing) = square();
+                let settings = configs(mode, duration)
+                    .map(|config| config.with_sample_rate(input_rate).unwrap());
+                let mut projected =
+                    ProjectionEncoder::new(mapping.clone(), mixing.clone(), &settings).unwrap();
+                let mut independent: Vec<_> = settings
+                    .into_iter()
+                    .map(|config| Encoder::new(config).unwrap())
+                    .collect();
+                let samples = settings[0].input_samples();
+                assert_eq!(projected.sample_rate(), input_rate);
+                assert_eq!(projected.input_samples(), samples);
                 assert_eq!(
-                    projected.final_range(),
-                    independent
-                        .iter()
-                        .fold(0, |range, encoder| range ^ encoder.final_range())
+                    projected.algorithmic_delay_samples(),
+                    independent[0].algorithmic_delay_samples()
                 );
-                packet.fill(0xa5);
+                let mut packet = vec![0xa5; projected.max_packet_bytes() + 17];
+                for index in 0..4 {
+                    let input = signal_at_rate(samples, 4, index * samples, input_rate);
+                    let length = projected.encode(&input, &mut packet).unwrap();
+                    assert!(packet[length..].iter().all(|&byte| byte == 0xa5));
+                    let parsed = MultistreamPacket::parse(&packet[..length], 3).unwrap();
+                    for (stream, actual) in parsed.packets().enumerate() {
+                        let coded: &[usize] = match stream {
+                            0 => &[0, 1],
+                            1 => &[2],
+                            _ => &[3],
+                        };
+                        let mut pcm = Vec::with_capacity(samples * coded.len());
+                        for frame in input.as_chunks::<4>().0 {
+                            for &row in coded {
+                                let mixed: f64 = ROWS[row]
+                                    .iter()
+                                    .zip(frame)
+                                    .map(|(&coefficient, &sample)| {
+                                        f64::from(coefficient) * f64::from(sample)
+                                    })
+                                    .sum();
+                                pcm.push(mixed as f32);
+                            }
+                        }
+                        let mut expected = vec![0; settings[stream].max_packet_bytes()];
+                        let bytes = independent[stream].encode(&pcm, &mut expected).unwrap();
+                        let expected = Packet::parse(&expected[..bytes]).unwrap();
+                        assert_eq!(actual.toc().config(), expected.toc().config());
+                        assert_eq!(
+                            actual.frames().collect::<Vec<_>>(),
+                            expected.frames().collect::<Vec<_>>()
+                        );
+                    }
+                    assert_eq!(
+                        projected.final_range(),
+                        independent
+                            .iter()
+                            .fold(0, |range, encoder| range ^ encoder.final_range())
+                    );
+                    packet.fill(0xa5);
+                }
+                assert_eq!(projected.channels(), 4);
+                assert_eq!(projected.mapping(), &mapping);
+                assert_eq!(projected.mixing_matrix(), mixing);
+                assert!(projected.stream_encoder(3).is_none());
             }
-            assert_eq!(projected.channels(), 4);
-            assert_eq!(projected.mapping(), &mapping);
-            assert_eq!(projected.mixing_matrix(), mixing);
-            assert!(projected.stream_encoder(3).is_none());
         }
     }
 }
@@ -316,8 +329,14 @@ fn malformed_matrices_and_stream_geometry_are_rejected_at_construction() {
     bad = settings;
     bad[2] = configs(Mode::Celt, FrameDuration::Ms120)[2];
     assert!(matches!(
-        ProjectionEncoder::new(mapping, mixing, &bad),
+        ProjectionEncoder::new(mapping.clone(), mixing.clone(), &bad),
         Err(Error::Duration)
+    ));
+    bad = settings;
+    bad[2] = bad[2].with_sample_rate(8_000).unwrap();
+    assert!(matches!(
+        ProjectionEncoder::new(mapping, mixing, &bad),
+        Err(Error::Encode(EncodeError::Argument))
     ));
 }
 
@@ -504,96 +523,176 @@ mod reference {
     }
 
     #[test]
+    fn q15_signed_endpoints_use_exact_denominator_in_owned_and_native_demixing() {
+        let coefficients = [-32768, 32767, -16384, 8192];
+        let mut demixing = vec![0; 16];
+        let mut mixing = vec![0.0; 16];
+        for (index, (coefficient, projection)) in coefficients
+            .into_iter()
+            .zip([-1.0, 1.0, -2.0, 4.0])
+            .enumerate()
+        {
+            demixing[index * 4 + index] = coefficient;
+            mixing[index * 4 + index] = projection;
+        }
+        let mapping = ProjectionMapping::new(3, 1, 4, demixing).unwrap();
+        let header = OpusIdentification::projected(
+            OpusHead {
+                channels: 4,
+                pre_skip: 0,
+                input_sample_rate: 48_000,
+                output_gain_q8: 0,
+            },
+            mapping.clone(),
+        )
+        .unwrap()
+        .to_bytes()
+        .unwrap();
+        assert_eq!(&header[21..23], &[0, 128]);
+        assert_eq!(&header[31..33], &[255, 127]);
+        for input_rate in [8_000, 48_000] {
+            let settings = configs(Mode::Celt, FrameDuration::Ms20)
+                .map(|config| config.with_sample_rate(input_rate).unwrap());
+            let mut encoder =
+                ProjectionEncoder::new(mapping.clone(), mixing.clone(), &settings).unwrap();
+            let samples = encoder.input_samples();
+            let mut packet = vec![0; encoder.max_packet_bytes()];
+            let mut packets = Vec::new();
+            for index in 0..4 {
+                let input = signal_at_rate(samples, 4, index * samples, input_rate);
+                let length = encoder.encode(&input, &mut packet).unwrap();
+                packets.push((packet[..length].to_vec(), encoder.final_range()));
+            }
+            for output_rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
+                let mut owned =
+                    ProjectionDecoder::with_sample_rate(mapping.clone(), output_rate).unwrap();
+                let mut coded =
+                    MultistreamDecoder::with_sample_rate(*mapping.coded_layout(), output_rate)
+                        .unwrap();
+                let mut native = Native::from_opus_head(output_rate, &header);
+                let count = output_rate as usize / 50;
+                let mut a = vec![0.0; count * 4];
+                let mut b = a.clone();
+                let mut unprojected = a.clone();
+                for (packet, range) in &packets {
+                    assert_eq!(owned.decode(packet, &mut a).unwrap(), count);
+                    assert_eq!(coded.decode(packet, &mut unprojected).unwrap(), count);
+                    assert_eq!(native.decode(packet, count, &mut b), *range);
+                    assert_eq!(owned.final_range(), *range);
+                    for (index, ((&own, &foreign), &coded)) in
+                        a.iter().zip(&b).zip(&unprojected).enumerate()
+                    {
+                        let expected =
+                            f64::from(coded) * f64::from(coefficients[index % 4]) / 32768.0;
+                        assert!((f64::from(own) - expected).abs() < 1e-6);
+                        assert!((own - foreign).abs() < 1e-5);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
     fn family3_ogg_packets_decode_natively_with_serialized_matrices_and_trimming() {
         for mode in [Mode::Silk, Mode::Hybrid, Mode::Celt] {
             for duration in [FrameDuration::Ms20, FrameDuration::Ms120] {
-                let (mapping, mixing) = square();
-                let mut encoder =
-                    ProjectionEncoder::new(mapping, mixing, &configs(mode, duration)).unwrap();
-                let identification = OpusIdentification::projected(
-                    OpusHead {
-                        channels: 4,
-                        pre_skip: 120,
-                        input_sample_rate: 48_000,
-                        output_gain_q8: -512,
-                    },
-                    encoder.mapping().clone(),
-                )
-                .unwrap();
-                let samples = duration.samples();
-                let mut writer = OggWriter::new_mapped(
-                    Vec::new(),
-                    0x504a_0003,
-                    identification,
-                    &OpusTags::default(),
-                )
-                .unwrap();
-                let mut packet = vec![0; encoder.max_packet_bytes()];
-                let mut ranges = Vec::new();
-                let mut original = Vec::new();
-                for index in 0..4 {
-                    let input = signal(samples, 4, index * samples);
-                    let length = encoder.encode(&input, &mut packet).unwrap();
-                    ranges.push(encoder.final_range());
-                    writer.write_packet(&packet[..length]).unwrap();
-                    original.extend_from_slice(&input);
-                }
-                let valid = 4 * samples - 240;
-                let ogg = writer.finish(valid as u64).unwrap();
-                // Obtain the native decoder's C/N/M and D directly from the
-                // physical first page, independently of the owned header parser.
-                let laces = usize::from(ogg[26]);
-                assert_eq!(laces, 1);
-                let header_begin = 27 + laces;
-                let header = &ogg[header_begin..header_begin + usize::from(ogg[27])];
-                assert_eq!(&header[21..25], &[0, 64, 0, 64]);
-                for rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
-                    let mut reader = OggReader::new(Cursor::new(&ogg)).unwrap();
-                    assert_eq!(reader.identification().mapping_family, 3);
-                    assert_eq!(reader.identification().to_bytes().unwrap(), header);
-                    let mut native = Native::from_opus_head(rate, header);
-                    let mut owned =
-                        OggDecoder::with_sample_rate(reader.identification(), rate).unwrap();
-                    let count = samples * rate as usize / 48_000;
-                    let mut a = vec![0.0; count * 4];
-                    let mut b = a.clone();
-                    let mut kept = Vec::new();
-                    let gain = reader.head().gain_factor();
-                    let mut index = 0;
-                    while let Some(packet) = reader.next_packet().unwrap() {
-                        assert_eq!(packet.samples_48khz, samples);
-                        assert_eq!(owned.decode(&packet.data, &mut a).unwrap(), count);
-                        assert_eq!(native.decode(&packet.data, count, &mut b), ranges[index]);
-                        assert_eq!(owned.final_range(), ranges[index]);
-                        assert!(a.iter().chain(&b).all(|sample| sample.is_finite()));
-                        if mode == Mode::Celt {
-                            for (&owned, &native) in a.iter().zip(&b) {
-                                assert!((owned - native).abs() < 1e-5);
-                            }
-                        }
-                        let begin = packet.keep.start * rate as usize / 48_000;
-                        let end = packet.keep.end * rate as usize / 48_000;
-                        kept.extend(a[begin * 4..end * 4].iter().map(|sample| sample * gain));
-                        index += 1;
+                for input_rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
+                    let (mapping, mixing) = square();
+                    let settings = configs(mode, duration)
+                        .map(|config| config.with_sample_rate(input_rate).unwrap());
+                    let mut encoder = ProjectionEncoder::new(mapping, mixing, &settings).unwrap();
+                    let delay_48khz =
+                        encoder.algorithmic_delay_samples() * 48_000 / input_rate as usize;
+                    let identification = OpusIdentification::projected(
+                        OpusHead {
+                            channels: 4,
+                            pre_skip: delay_48khz as u16,
+                            input_sample_rate: input_rate,
+                            output_gain_q8: -512,
+                        },
+                        encoder.mapping().clone(),
+                    )
+                    .unwrap();
+                    let samples = duration.samples();
+                    let mut writer = OggWriter::new_mapped(
+                        Vec::new(),
+                        0x504a_0003,
+                        identification,
+                        &OpusTags::default(),
+                    )
+                    .unwrap();
+                    let mut packet = vec![0; encoder.max_packet_bytes()];
+                    let mut ranges = Vec::new();
+                    let mut original = Vec::new();
+                    for index in 0..4 {
+                        let input = signal_at_rate(
+                            encoder.input_samples(),
+                            4,
+                            index * encoder.input_samples(),
+                            input_rate,
+                        );
+                        let length = encoder.encode(&input, &mut packet).unwrap();
+                        ranges.push(encoder.final_range());
+                        writer.write_packet(&packet[..length]).unwrap();
+                        original.extend_from_slice(&input);
                     }
-                    assert_eq!(index, ranges.len());
-                    assert_eq!(kept.len(), valid * rate as usize / 48_000 * 4);
-                    if mode == Mode::Celt && rate == 48_000 {
-                        let (error, energy) = original[..kept.len()].iter().zip(&kept).fold(
-                            (0.0f64, 0.0f64),
-                            |(error, energy), (&source, &decoded)| {
-                                let source = f64::from(source * gain);
-                                (
-                                    error + (source - f64::from(decoded)).powi(2),
-                                    energy + source * source,
-                                )
-                            },
-                        );
-                        assert!(
-                            error / energy < 0.1,
-                            "projection roundtrip relative error {}",
-                            error / energy
-                        );
+                    let valid = 4 * samples - 2 * delay_48khz;
+                    let ogg = writer.finish(valid as u64).unwrap();
+                    // Obtain the native decoder's C/N/M and D directly from the
+                    // physical first page, independently of the owned header parser.
+                    let laces = usize::from(ogg[26]);
+                    assert_eq!(laces, 1);
+                    let header_begin = 27 + laces;
+                    let header = &ogg[header_begin..header_begin + usize::from(ogg[27])];
+                    assert_eq!(&header[21..25], &[0, 64, 0, 64]);
+                    for rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
+                        let mut reader = OggReader::new(Cursor::new(&ogg)).unwrap();
+                        assert_eq!(reader.identification().mapping_family, 3);
+                        assert_eq!(reader.identification().to_bytes().unwrap(), header);
+                        let mut native = Native::from_opus_head(rate, header);
+                        let mut owned =
+                            OggDecoder::with_sample_rate(reader.identification(), rate).unwrap();
+                        let count = samples * rate as usize / 48_000;
+                        let mut a = vec![0.0; count * 4];
+                        let mut b = a.clone();
+                        let mut kept = Vec::new();
+                        let gain = reader.head().gain_factor();
+                        let mut index = 0;
+                        while let Some(packet) = reader.next_packet().unwrap() {
+                            assert_eq!(packet.samples_48khz, samples);
+                            assert_eq!(owned.decode(&packet.data, &mut a).unwrap(), count);
+                            assert_eq!(native.decode(&packet.data, count, &mut b), ranges[index]);
+                            assert_eq!(owned.final_range(), ranges[index]);
+                            assert!(a.iter().chain(&b).all(|sample| sample.is_finite()));
+                            if mode == Mode::Celt {
+                                for (&owned, &native) in a.iter().zip(&b) {
+                                    assert!((owned - native).abs() < 1e-5);
+                                }
+                            }
+                            let begin = packet.keep.start * rate as usize / 48_000;
+                            let end = packet.keep.end * rate as usize / 48_000;
+                            kept.extend(a[begin * 4..end * 4].iter().map(|sample| sample * gain));
+                            index += 1;
+                        }
+                        assert_eq!(index, ranges.len());
+                        assert_eq!(kept.len(), valid * rate as usize / 48_000 * 4);
+                        if mode == Mode::Celt && rate == input_rate {
+                            let (error, energy) = original[..kept.len()].iter().zip(&kept).fold(
+                                (0.0f64, 0.0f64),
+                                |(error, energy), (&source, &decoded)| {
+                                    let source = f64::from(source * gain);
+                                    (
+                                        error + (source - f64::from(decoded)).powi(2),
+                                        energy + source * source,
+                                    )
+                                },
+                            );
+                            assert!(
+                                error / energy < 0.1,
+                                "projection roundtrip relative error {}",
+                                error / energy
+                            );
+                        }
                     }
                 }
             }

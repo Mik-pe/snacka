@@ -63,9 +63,10 @@ impl ProjectionMapping {
 
 /// Stateful family-3 encoder with an explicit projection and demixing pair.
 ///
-/// The input is normalized interleaved 48 kHz ACN/SN3D Ambisonics, followed by
-/// optional non-diegetic stereo. For `C` input channels and `K = streams +
-/// coupled` coded channels, encoding applies `x = A * s`: `A` has `K` rows and
+/// The input is normalized interleaved ACN/SN3D Ambisonics at the configured
+/// standard Opus input rate, followed by optional non-diegetic stereo. For `C`
+/// input channels and `K = streams + coupled` coded channels, encoding applies
+/// `x = A * s`: `A` has `K` rows and
 /// `C` columns. The associated [`ProjectionMapping`] supplies the on-wire `D`
 /// matrix for decoding `s = D * x`. RFC 8486 standardizes `D`, not the choice
 /// of `A`; callers select their projection, including lossy rectangular pairs.
@@ -74,7 +75,22 @@ impl ProjectionMapping {
 /// Construction allocates all codec, matrix and PCM memory. Encoding, status
 /// inspection and reset do not allocate. Matrix sums use f64 before conversion
 /// to the coded channels' f32 PCM. Overloaded mixtures are rejected before any
-/// codec history advances; the encoder never clips the projection.
+/// codec history advances; the matrix stage never clips PCM.
+///
+/// ```
+/// use snacka::opus::EncoderConfig;
+/// use snacka::opus::projection::{ProjectionEncoder, ProjectionMapping};
+///
+/// // Zeroth-order Ambisonics: invert polarity when coding and restore it
+/// // with an exactly representable signed Q15 demixing coefficient.
+/// let mapping = ProjectionMapping::new(1, 0, 1, vec![-32768]).unwrap();
+/// let mut encoder = ProjectionEncoder::new(mapping, vec![-1.0],
+///     &[EncoderConfig::default()]).unwrap();
+/// let input = vec![0.1; encoder.input_samples()];
+/// let mut packet = vec![0; encoder.max_packet_bytes()];
+/// let length = encoder.encode(&input, &mut packet).unwrap();
+/// assert!(length <= packet.len());
+/// ```
 pub struct ProjectionEncoder {
     encoder: MultistreamEncoder,
     mapping: ProjectionMapping,
@@ -90,8 +106,8 @@ impl ProjectionEncoder {
     /// `mixing` is finite column-major `K`-by-`C` data, with `K` coefficients
     /// per input channel. The mapping's signed Q15 demixing matrix is `C`-by-`K`.
     /// The matrices need not be inverses or square. All configurations must have
-    /// the same packet duration; the initial coupled streams require stereo
-    /// configurations and the remaining streams require mono configurations.
+    /// the same input sample rate and packet duration. Initial coupled streams
+    /// require stereo configurations; remaining streams require mono.
     pub fn new(
         mapping: ProjectionMapping,
         mixing: Vec<f32>,
@@ -104,7 +120,7 @@ impl ProjectionEncoder {
             return Err(Error::Mapping);
         }
         let encoder = MultistreamEncoder::new(*mapping.coded_layout(), configs)?;
-        let samples = configs[0].duration().samples();
+        let samples = encoder.input_samples();
         let mut sources = vec![Vec::new(); coded];
         for (input, coefficients) in mixing.chunks_exact(coded).enumerate() {
             for (row, &coefficient) in coefficients.iter().enumerate() {
@@ -126,6 +142,21 @@ impl ProjectionEncoder {
     /// Input ACN/SN3D and optional stereo channel count.
     pub const fn channels(&self) -> usize {
         self.mapping.channels()
+    }
+
+    /// Configured input sample rate in hertz.
+    pub fn sample_rate(&self) -> u32 {
+        self.encoder.sample_rate()
+    }
+
+    /// Required input samples per channel for one complete projected packet.
+    pub const fn input_samples(&self) -> usize {
+        self.samples
+    }
+
+    /// Nominal encoder delay in samples at the configured input rate.
+    pub fn algorithmic_delay_samples(&self) -> usize {
+        self.encoder.algorithmic_delay_samples()
     }
 
     /// On-wire demixing metadata for [`super::ogg::OpusIdentification::projected`].
@@ -158,7 +189,7 @@ impl ProjectionEncoder {
         self.encoder.was_dtx()
     }
 
-    /// Project and encode one configured interval from normalized 48 kHz PCM.
+    /// Project and encode one configured interval from normalized interleaved PCM.
     ///
     /// Invalid input geometry, non-finite samples, insufficient output capacity
     /// or any mixed sample outside `[-1, 1]` leave output and codec history
