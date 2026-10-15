@@ -1,0 +1,3 @@
+/tmp/snacka-opus-silk-sparse-cpu-20261015/throughput-candidate:
+	/opt/homebrew/opt/opus/lib/libopus.0.dylib (compatibility version 12.0.0, current version 12.1.0)
+	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)

@@ -1,6 +1,6 @@
 # Bounded SILK refusal fallback, 2026-10-15
 
-Experimental source: `8f723ba1f35c053e1cc840f38a4b20446a127dde`, frozen before the full comparison. Baseline: `cca87dd757d96623b91bff81d34a021e5a3e2792`. This local experiment addresses valid-input `Output` refusals. It has not received callback-cost acceptance or been admitted to main. It does not establish perceptual parity.
+Experimental source: `8f723ba1f35c053e1cc840f38a4b20446a127dde`, frozen before the full comparison. Baseline: `cca87dd757d96623b91bff81d34a021e5a3e2792`. This local experiment addresses valid-input `Output` refusals. Root has accepted the bounded functional correction and its disclosed CPU cost after local integrated checks. Source-only integration commit `76224786eef73423a51b16f17c126ec07c534d24` passes 380 tests across 18 suites, formatting and strict release Clippy. Exact-head package/push is handled separately; this report does not claim remote publication. It does not establish perceptual parity.
 
 ## Frozen algorithm
 
@@ -43,7 +43,7 @@ The same two original development signals retain a substantial quality deficit. 
 
 Native-rate attribution on exactly the same packets finds NB own/native RMSE 0.000983 at 8 kHz and 0.014256 at 48 kHz. Owned 48 kHz peak is 1.38295 while native peak is 1.0. Only 255/46080 output samples exceed ±1; those samples carry 98.4565% of squared peer error. A diagnostic-only clamp reduces RMSE to 0.002147, leaving a measurable residual. WB RMSE is 0.000351 at 16 kHz and 0.000352 at 48 kHz, with no overshoot. Best peer alignment is zero in every tested output rate. Source review identifies bounded native synthesis followed by the independently fitted, unclamped interpolation filter; no clamp or codec change was introduced. The peer attribution folder retains per-packet statistics, RMS, alignment conventions, source/binary hashes and exact reproduction.
 
-No callback timing has been performed. Normal-success throughput and worst-case fallback callback cost still require a separately coordinated quiet macOS M5 window. No fresh English or reserved Swedish corpus was inspected or scored.
+The [completed quiet M5 cost report](cpu/README.md) retains every throughput regression and all 33,088 individual intervals. Old-success median cost changes range from +0.060% to +2.723%. No observed callback exceeds its period; the worst fraction is 27.35%, and the largest absolute call is 23.568 ms on a 120 ms packet. Sixteen repeated deterministic contexts in one process per role are not independent host/scheduler replicates or universal real-time bounds. Root functional admission follows the local integrated-check checkpoint recorded above; publication is a separate step. No fresh English or reserved Swedish corpus was inspected or scored.
 
 ## Reproduction and artifacts
 
