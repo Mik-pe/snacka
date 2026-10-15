@@ -3,6 +3,8 @@
 //!
 //! Repacketization changes transport framing without decoding or re-encoding
 //! audio. Borrowed input packets must remain available while the builder exists.
+//! Only base audio frames are retained; input padding and its extensions are
+//! discarded, and any padding requested on output contains zero bytes.
 
 use super::packet::{MAX_FRAMES, MAX_PACKET_SAMPLES_48KHZ, Packet, PacketError, Toc};
 use std::fmt;

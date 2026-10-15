@@ -374,6 +374,22 @@ impl<'a> Packet<'a> {
         self.padding
     }
 
+    /// Trailing padding bytes, excluding the packet's padding length headers.
+    ///
+    /// Optional extensions may occupy this region. Their validity is separate
+    /// from base packet framing and can be inspected with [`Self::extensions`].
+    pub fn padding(&self) -> &'a [u8] {
+        &self.bytes[self.bytes.len() - self.padding..]
+    }
+
+    /// Inspect optional padding extensions without allocating or changing audio.
+    ///
+    /// Invalid extension framing is reported by the iterator, and does not make
+    /// this packet's base audio invalid. This does not enable any audio extension.
+    pub fn extensions(&self) -> super::extensions::Extensions<'a> {
+        super::extensions::Extensions::from_packet(self.padding(), self.count)
+    }
+
     /// Samples per channel in each frame at the requested output rate.
     pub const fn frame_samples(&self, sample_rate: u32) -> Result<usize, PacketError> {
         self.toc.frame_samples(sample_rate)
