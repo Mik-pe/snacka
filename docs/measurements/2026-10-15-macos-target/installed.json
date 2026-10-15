@@ -1,0 +1,289 @@
+{
+  "scope": "read-only compiler target queries; no build, execution, timing or codec parity evidence",
+  "source_revision": "5fc1b43d535d7d8277be456a6ea8fb15c473f916",
+  "source_tree_definition": "git ls-tree -r -z HEAD -- src Cargo.toml Cargo.lock",
+  "source_tree_sha256": "65650fe5a69b8dce1ab8806e22c42115c3f949ff74b4c5ec8b585e3c4d04cb18",
+  "source_tree_dirty": false,
+  "collector_sha256": "e2acce3cd527559c84cb2f33f05ae35a18cf996385de30faec00f964ed514158",
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "rustc_sha256": "dd6f58440b3418aa9157ae3f05d71eecff741ca41bc4eec120e7e8f2d933b9a0",
+  "rustc_version": {
+    "command": [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "--version",
+      "--verbose"
+    ],
+    "stdout_sha256": "352d6857968e80a6357a926ac685b9b07f77c479aaafde33e73a53945e802909",
+    "stdout": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: aarch64-apple-darwin\nrelease: 1.99.0\nLLVM version: 23.1.1\n",
+    "stderr": "",
+    "bootstrap_for_query_only": false
+  },
+  "target_specification": {
+    "command": [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "-Z",
+      "unstable-options",
+      "--print",
+      "target-spec-json",
+      "--target",
+      "aarch64-apple-darwin"
+    ],
+    "stdout_sha256": "edf2d0641ab1a7a7642175c969a60d688745cb548da20193494daf3c5f870a19",
+    "stderr": "",
+    "bootstrap_for_query_only": true,
+    "value": {
+      "abi-return-struct-as-int": true,
+      "arch": "aarch64",
+      "archive-format": "darwin",
+      "binary-format": "mach-o",
+      "cpu": "apple-m1",
+      "crt-objects-fallback": "false",
+      "data-layout": "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32",
+      "debuginfo-kind": "dwarf-dsym",
+      "dll-suffix": ".dylib",
+      "dynamic-linking": true,
+      "eh-frame-header": false,
+      "emit-debug-gdb-scripts": false,
+      "frame-pointer": "non-leaf",
+      "function-sections": false,
+      "has-rpath": true,
+      "has-thread-local": true,
+      "is-like-darwin": true,
+      "link-env": [
+        "ZERO_AR_DATE=1"
+      ],
+      "link-env-remove": [
+        "IPHONEOS_DEPLOYMENT_TARGET",
+        "TVOS_DEPLOYMENT_TARGET",
+        "XROS_DEPLOYMENT_TARGET"
+      ],
+      "linker-flavor": "darwin-cc",
+      "linker-is-gnu": false,
+      "lld-flavor": "darwin",
+      "llvm-target": "arm64-apple-macosx",
+      "max-atomic-width": 128,
+      "metadata": {
+        "description": "ARM64 Apple macOS (11.0+, Big Sur+)",
+        "host_tools": true,
+        "std": true,
+        "tier": 1
+      },
+      "os": "macos",
+      "split-debuginfo": "packed",
+      "stack-probes": {
+        "kind": "inline"
+      },
+      "supported-sanitizers": [
+        "address",
+        "thread",
+        "cfi",
+        "realtime"
+      ],
+      "supported-split-debuginfo": [
+        "packed",
+        "unpacked",
+        "off"
+      ],
+      "supports-xray": true,
+      "target-family": [
+        "unix"
+      ],
+      "target-mcount": "\u0001mcount",
+      "target-pointer-width": 64,
+      "vendor": "apple"
+    }
+  },
+  "cpu_inventory": {
+    "command": [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "--print",
+      "target-cpus",
+      "--target",
+      "aarch64-apple-darwin"
+    ],
+    "stdout_sha256": "507c9f9f44fab4d126ca636bd00ad8c13906d386502bc57c635ddc3890f215ed",
+    "stderr": "",
+    "bootstrap_for_query_only": false
+  },
+  "native_cpu": "apple-m5",
+  "deployment_target": {
+    "command": [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "--print",
+      "deployment-target",
+      "--target",
+      "aarch64-apple-darwin"
+    ],
+    "stdout_sha256": "c17944cbdc62cc8b3ffbabcaf23da05b281609a50fe02f0d0cbf1447405cb223",
+    "stdout": "MACOSX_DEPLOYMENT_TARGET=11.0\n",
+    "stderr": "",
+    "bootstrap_for_query_only": false
+  },
+  "target_cfg": {
+    "default": {
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+        "--print",
+        "cfg",
+        "--target",
+        "aarch64-apple-darwin"
+      ],
+      "stdout_sha256": "adcd4b01da46c1516fd65b93201d2784971bbb6e573402098d5a9234b8121cef",
+      "stderr": "",
+      "bootstrap_for_query_only": false,
+      "features": [
+        "aes",
+        "crc",
+        "dit",
+        "dotprod",
+        "dpb",
+        "dpb2",
+        "fcma",
+        "fhm",
+        "flagm",
+        "fp16",
+        "frintts",
+        "jsconv",
+        "lor",
+        "lse",
+        "neon",
+        "paca",
+        "pacg",
+        "pan",
+        "pmuv3",
+        "ras",
+        "rcpc",
+        "rcpc2",
+        "rdm",
+        "sb",
+        "sha2",
+        "sha3",
+        "ssbs",
+        "vh"
+      ]
+    },
+    "apple-m1": {
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+        "--print",
+        "cfg",
+        "--target",
+        "aarch64-apple-darwin",
+        "-C",
+        "target-cpu=apple-m1"
+      ],
+      "stdout_sha256": "adcd4b01da46c1516fd65b93201d2784971bbb6e573402098d5a9234b8121cef",
+      "stderr": "",
+      "bootstrap_for_query_only": false,
+      "features": [
+        "aes",
+        "crc",
+        "dit",
+        "dotprod",
+        "dpb",
+        "dpb2",
+        "fcma",
+        "fhm",
+        "flagm",
+        "fp16",
+        "frintts",
+        "jsconv",
+        "lor",
+        "lse",
+        "neon",
+        "paca",
+        "pacg",
+        "pan",
+        "pmuv3",
+        "ras",
+        "rcpc",
+        "rcpc2",
+        "rdm",
+        "sb",
+        "sha2",
+        "sha3",
+        "ssbs",
+        "vh"
+      ]
+    },
+    "native": {
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+        "--print",
+        "cfg",
+        "--target",
+        "aarch64-apple-darwin",
+        "-C",
+        "target-cpu=native"
+      ],
+      "stdout_sha256": "ebca1f550089a3bbbca8fd662c47b6a53a563bd1ac079b5efc4f52eff688d1df",
+      "stderr": "",
+      "bootstrap_for_query_only": false,
+      "features": [
+        "aes",
+        "bf16",
+        "bti",
+        "crc",
+        "dit",
+        "dotprod",
+        "dpb",
+        "dpb2",
+        "fcma",
+        "fhm",
+        "flagm",
+        "fp16",
+        "frintts",
+        "i8mm",
+        "jsconv",
+        "lor",
+        "lse",
+        "mte",
+        "neon",
+        "paca",
+        "pacg",
+        "pan",
+        "pmuv3",
+        "ras",
+        "rcpc",
+        "rcpc2",
+        "rdm",
+        "sb",
+        "sha2",
+        "sha3",
+        "ssbs",
+        "vh"
+      ]
+    },
+    "generic": {
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+        "--print",
+        "cfg",
+        "--target",
+        "aarch64-apple-darwin",
+        "-C",
+        "target-cpu=generic"
+      ],
+      "stdout_sha256": "0e9999313f655ed60d38eda852916cb034deae535b955390cc14b83f0b797ab7",
+      "stderr": "",
+      "bootstrap_for_query_only": false,
+      "features": [
+        "neon"
+      ]
+    }
+  },
+  "default_equals_explicit_m1_cfg": true,
+  "native_extra_cfg_features": [
+    "bf16",
+    "bti",
+    "i8mm",
+    "mte"
+  ],
+  "native_missing_cfg_features": [],
+  "rust_target_source": "https://github.com/rust-lang/rust/blob/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/compiler/rustc_target/src/spec/targets/aarch64_apple_darwin.rs",
+  "environment": {
+    "MACOSX_DEPLOYMENT_TARGET": null,
+    "SDKROOT": null,
+    "DEVELOPER_DIR": null
+  }
+}
