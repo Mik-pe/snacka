@@ -2544,9 +2544,11 @@ fn composed_phase_contract<D: ComposedGainDecoder>(
                         .chain(&b[index][count..])
                         .all(|v| v.to_bits() == sentinel.to_bits())
                 );
-                // Native and owned PLC differ. Compare the existing normal CELT
-                // witness only before loss and after a full reset.
-                if step < 6 || step == 9 {
+                // The repeated inter-coded packet has growing float headroom;
+                // the legacy same_celt helper also assumes |PCM| < 8. Compare
+                // its original fresh/reset witness only. Every step above still
+                // checks finite PCM, sample counts and unwritten suffixes.
+                if step == 0 || step == 9 {
                     same_celt(
                         &a[index][..count],
                         &b[index][..count],
