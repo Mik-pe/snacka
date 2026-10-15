@@ -294,6 +294,23 @@ impl ProjectionDecoder {
         self.decoder.final_range()
     }
 
+    /// Set output gain in signed Q8 decibels (256 units per dB).
+    ///
+    /// The default is zero, and the full `i16` range is supported. Gain applies
+    /// once in each owned stream after resampling and before demixing, including
+    /// decoded, recovered and concealed samples. No separate gain is applied to
+    /// the demixed output. Floating output is not clipped; codec history and
+    /// entropy intervals are unchanged. [`Self::reset`] retains this setting.
+    /// Ogg header gain remains a separate caller-owned playback choice.
+    pub fn set_gain_q8(&mut self, gain: i16) {
+        self.decoder.set_gain_q8(gain);
+    }
+
+    /// Uniform coded-stream gain in signed Q8 decibels (256 units per dB).
+    pub fn gain_q8(&self) -> i16 {
+        self.decoder.gain_q8()
+    }
+
     fn check_output(&self, samples: usize, output: &[f32]) -> Result<(), Error> {
         let length = samples
             .checked_mul(self.channels())
@@ -354,7 +371,7 @@ impl ProjectionDecoder {
         Ok(samples)
     }
 
-    /// Clear coded prediction state and scratch samples, preserving the matrix.
+    /// Clear coded prediction state and scratch samples, retaining matrix and gain.
     pub fn reset(&mut self) {
         self.decoder.reset();
         self.pcm.fill(0.0);

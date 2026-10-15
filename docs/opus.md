@@ -53,7 +53,8 @@ one or two fixed output channels. `with_sample_rate` selects 8/12/16/24/48 kHz.
 Coded channel and mode changes retain the appropriate history. Mono output
 normally disables intensity phase inversion, matching common mobile decoder
 behavior; `set_phase_inversion` explicitly controls that preference.
-`set_gain_q8(i16)` controls ordinary decoder output gain in 1/256 dB units,
+`set_gain_q8(i16)` controls ordinary, multistream and projection decoder output
+gain in 1/256 dB units,
 matching the [public Opus decoder gain contract](https://opus-codec.org/docs/opus_api-1.6/group__opus__decoderctls.html)
 and default of zero. Gain is applied
 once after resampling to decoded, recovered and concealed samples; it changes
@@ -61,8 +62,11 @@ neither codec history nor entropy intervals. `gain_q8()` reports the setting,
 which survives `reset()`. Zero gain bypasses the gain pass. Floating output is
 not clipped; a non-finite gain product returns `DecodeError::Corrupt`. A content
 error can advance history and write an output prefix; reset before continuing.
-Mapped and projection decoder controls are unchanged; Ogg header gain remains
-caller-owned and is not applied automatically.
+Multistream gain is uniform across every owned stream, including unmapped
+streams, and applies before channel mapping. Projection delegates the same
+control to its coded streams before demixing. These controls add no processing
+pass or separate gain storage. Ogg header gain remains caller-owned and is not
+applied automatically.
 The [gain contract and macOS cost record](measurements/2026-10-15-opus-decoder-gain/README.md)
 retains native functional checks and a frozen default-zero decoder cost run,
 including direct/normalized percentiles and tail regressions. Nonzero-gain CPU

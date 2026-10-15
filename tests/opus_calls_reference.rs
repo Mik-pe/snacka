@@ -5,7 +5,9 @@
 
 use std::{ffi::c_void, ptr::NonNull};
 
-use snacka::opus::multistream::{ChannelMapping, MultistreamDecoder};
+use snacka::opus::multistream::{
+    ChannelMapping, Error as MultistreamError, MultistreamDecoder, MultistreamPacket,
+};
 use snacka::opus::projection::{ProjectionDecoder, ProjectionMapping};
 use snacka::opus::repacketize::Repacketizer;
 use snacka::opus::{DecodeError, Decoder, Mode, Packet, Recovery};
@@ -24,6 +26,7 @@ const RESET: i32 = 4028;
 const FINAL_RANGE: i32 = 4031;
 const SET_GAIN: i32 = 4034;
 const GET_GAIN: i32 = 4045;
+const DECODER_STATE: i32 = 5122;
 
 // Only installed, documented opus.h and opus_multistream.h entry points.
 #[link(name = "opus")]
@@ -299,18 +302,68 @@ impl NativeDecoder {
     }
 
     fn set_gain_q8(&mut self, gain: i16) {
-        assert_eq!(self.kind, 0);
-        // SAFETY: Ordinary SET_GAIN takes a promoted int in the signed Q8 range.
-        let status = unsafe { opus_decoder_ctl(self.state.as_ptr(), SET_GAIN, i32::from(gain)) };
+        // SAFETY: SET_GAIN takes a promoted int in the signed Q8 range on
+        // ordinary, multistream and projection decoders.
+        let status = unsafe {
+            match self.kind {
+                2 => opus_projection_decoder_ctl(self.state.as_ptr(), SET_GAIN, i32::from(gain)),
+                1 => opus_multistream_decoder_ctl(self.state.as_ptr(), SET_GAIN, i32::from(gain)),
+                _ => opus_decoder_ctl(self.state.as_ptr(), SET_GAIN, i32::from(gain)),
+            }
+        };
         assert_eq!(status, 0);
     }
 
     fn gain_q8(&self) -> i32 {
-        assert_eq!(self.kind, 0);
         let mut gain = 0;
-        // SAFETY: Ordinary GET_GAIN takes a live writable int pointer.
-        let status =
-            unsafe { opus_decoder_ctl(self.state.as_ptr(), GET_GAIN, &mut gain as *mut i32) };
+        // SAFETY: GET_GAIN takes a live writable int pointer on each decoder API.
+        let status = unsafe {
+            match self.kind {
+                2 => opus_projection_decoder_ctl(
+                    self.state.as_ptr(),
+                    GET_GAIN,
+                    &mut gain as *mut i32,
+                ),
+                1 => opus_multistream_decoder_ctl(
+                    self.state.as_ptr(),
+                    GET_GAIN,
+                    &mut gain as *mut i32,
+                ),
+                _ => opus_decoder_ctl(self.state.as_ptr(), GET_GAIN, &mut gain as *mut i32),
+            }
+        };
+        assert_eq!(status, 0);
+        gain
+    }
+
+    fn stream_gain_q8(&self, stream: usize) -> i32 {
+        assert!(self.kind == 1 || self.kind == 2);
+        let mut decoder = std::ptr::null_mut::<c_void>();
+        // SAFETY: GET_DECODER_STATE takes an in-range stream index and a live
+        // writable decoder-pointer slot. The parent owns the returned child.
+        let status = unsafe {
+            if self.kind == 2 {
+                opus_projection_decoder_ctl(
+                    self.state.as_ptr(),
+                    DECODER_STATE,
+                    stream as i32,
+                    &mut decoder,
+                )
+            } else {
+                opus_multistream_decoder_ctl(
+                    self.state.as_ptr(),
+                    DECODER_STATE,
+                    stream as i32,
+                    &mut decoder,
+                )
+            }
+        };
+        assert_eq!(status, 0);
+        assert!(!decoder.is_null());
+        let mut gain = 0;
+        // SAFETY: The borrowed ordinary decoder remains live with its parent;
+        // GET_GAIN only writes the supplied int and does not transfer ownership.
+        let status = unsafe { opus_decoder_ctl(decoder, GET_GAIN, &mut gain as *mut i32) };
         assert_eq!(status, 0);
         gain
     }
@@ -1017,6 +1070,426 @@ fn owned_long_packets_match_native_durations_ranges_and_return_from_loss() {
                         }
                     }
                     assert_eq!(recovered, mode != Mode::Celt);
+                }
+            }
+        }
+    }
+}
+
+trait ComposedGainDecoder {
+    fn set_gain_q8(&mut self, gain: i16);
+    fn gain_q8(&self) -> i16;
+    fn reset(&mut self);
+    fn final_range(&self) -> u32;
+    fn decode(&mut self, packet: &[u8], output: &mut [f32]) -> Result<usize, MultistreamError>;
+    fn conceal(&mut self, samples: usize, output: &mut [f32]) -> Result<usize, MultistreamError>;
+    fn recover(
+        &mut self,
+        packet: &[u8],
+        samples: usize,
+        output: &mut [f32],
+    ) -> Result<Recovery, MultistreamError>;
+}
+
+macro_rules! composed_gain_decoder {
+    ($codec:ty) => {
+        impl ComposedGainDecoder for $codec {
+            fn set_gain_q8(&mut self, gain: i16) {
+                <$codec>::set_gain_q8(self, gain);
+            }
+            fn gain_q8(&self) -> i16 {
+                <$codec>::gain_q8(self)
+            }
+            fn reset(&mut self) {
+                <$codec>::reset(self);
+            }
+            fn final_range(&self) -> u32 {
+                <$codec>::final_range(self)
+            }
+            fn decode(
+                &mut self,
+                packet: &[u8],
+                output: &mut [f32],
+            ) -> Result<usize, MultistreamError> {
+                <$codec>::decode(self, packet, output)
+            }
+            fn conceal(
+                &mut self,
+                samples: usize,
+                output: &mut [f32],
+            ) -> Result<usize, MultistreamError> {
+                <$codec>::conceal(self, samples, output)
+            }
+            fn recover(
+                &mut self,
+                packet: &[u8],
+                samples: usize,
+                output: &mut [f32],
+            ) -> Result<Recovery, MultistreamError> {
+                <$codec>::recover(self, packet, samples, output)
+            }
+        }
+    };
+}
+composed_gain_decoder!(MultistreamDecoder);
+composed_gain_decoder!(ProjectionDecoder);
+
+fn composed_gain_operation<D: ComposedGainDecoder>(
+    owned: &mut [D; 2],
+    native: &mut [NativeDecoder; 2],
+    output: &mut [Vec<f32>; 4],
+    packet: Option<&[u8]>,
+    samples: usize,
+    fec: bool,
+) -> Option<Recovery> {
+    let sentinel = f32::from_bits(0x7fc0_1234);
+    for buffer in &mut *output {
+        buffer.fill(sentinel);
+    }
+    let mut recovery = None;
+    for index in 0..2 {
+        match (packet, fec) {
+            (Some(packet), true) => {
+                let actual = owned[index]
+                    .recover(packet, samples, &mut output[index])
+                    .unwrap();
+                if index == 0 {
+                    recovery = Some(actual);
+                } else {
+                    assert_eq!(Some(actual), recovery);
+                }
+            }
+            (Some(packet), false) => {
+                assert_eq!(
+                    owned[index].decode(packet, &mut output[index]).unwrap(),
+                    samples
+                );
+            }
+            (None, _) => {
+                assert_eq!(
+                    owned[index].conceal(samples, &mut output[index]).unwrap(),
+                    samples
+                );
+            }
+        }
+        assert_eq!(
+            native[index].decode(packet, samples, fec, &mut output[index + 2]),
+            samples
+        );
+    }
+    assert_eq!(owned[0].final_range(), owned[1].final_range());
+    assert_eq!(native[0].final_range(), native[1].final_range());
+    if !fec {
+        assert_eq!(owned[0].final_range(), native[0].final_range());
+    }
+    let count = samples * native[0].channels;
+    let gain = owned[1].gain_q8();
+    let factor = 10.0f64.powf(f64::from(gain) / 5120.0);
+    for (plain, gained) in [(0, 1), (2, 3)] {
+        let scale = output[plain][..count]
+            .iter()
+            .map(|sample| f64::from(sample.abs()))
+            .fold(0.0, f64::max)
+            * factor;
+        for (&a, &b) in output[plain][..count].iter().zip(&output[gained][..count]) {
+            assert!(a.is_finite() && b.is_finite());
+            if gain == 0 {
+                assert_eq!(
+                    a.to_bits(),
+                    b.to_bits(),
+                    "gain changed composed codec history"
+                );
+            } else {
+                let expected = f64::from(a) * factor;
+                // A projected output can nearly cancel. Include the other
+                // output rows' scale rather than dividing by that near-zero
+                // result; the independent oracle below checks gained coded
+                // channels against the owned demix contract using contribution
+                // bounds, without requiring native floating-point bit order.
+                assert!((f64::from(b) - expected).abs() <= (expected.abs() + scale) * 8e-6 + 1e-30);
+            }
+        }
+    }
+    for buffer in output {
+        assert!(
+            buffer[count..]
+                .iter()
+                .all(|v| v.to_bits() == sentinel.to_bits())
+        );
+    }
+    recovery
+}
+
+fn composed_gain_contract<D: ComposedGainDecoder>(
+    owned: impl Fn(u32) -> D,
+    native: impl Fn(u32) -> NativeDecoder,
+    packets: &[Vec<u8>],
+    actual_fec: bool,
+    silent_channel: Option<usize>,
+    alias: Option<(usize, usize)>,
+) {
+    let mut above_unity = false;
+    for rate in RATES {
+        let samples = rate as usize / 50;
+        for gain in [0, i16::MIN, -3072, -1, 1, 3072, i16::MAX] {
+            let mut owned = std::array::from_fn(|_| owned(rate));
+            let mut native = std::array::from_fn(|_| native(rate));
+            assert!(owned.iter().all(|d| d.gain_q8() == 0));
+            assert!(native.iter().all(|d| d.gain_q8() == 0));
+            let channels = native[0].channels;
+            let mut output = std::array::from_fn(|_| vec![0.0; samples * 2 * channels + 7]);
+            owned[1].set_gain_q8(gain);
+            native[1].set_gain_q8(gain);
+            for reset in [false, true] {
+                if reset {
+                    for decoder in &mut owned {
+                        decoder.reset();
+                    }
+                    for decoder in &mut native {
+                        decoder.reset();
+                    }
+                }
+                assert_eq!(owned[1].gain_q8(), gain);
+                assert_eq!(native[1].gain_q8(), i32::from(gain));
+                for stream in 0..3 {
+                    assert_eq!(native[0].stream_gain_q8(stream), 0);
+                    assert_eq!(native[1].stream_gain_q8(stream), i32::from(gain));
+                }
+                for packet in &packets[..2] {
+                    composed_gain_operation(
+                        &mut owned,
+                        &mut native,
+                        &mut output,
+                        Some(packet),
+                        samples,
+                        false,
+                    );
+                }
+                composed_gain_operation(&mut owned, &mut native, &mut output, None, samples, false);
+                assert_eq!(
+                    composed_gain_operation(
+                        &mut owned,
+                        &mut native,
+                        &mut output,
+                        Some(&packets[5]),
+                        samples * 2,
+                        true
+                    ),
+                    Some(if actual_fec {
+                        Recovery::Fec
+                    } else {
+                        Recovery::Concealed
+                    })
+                );
+                if actual_fec {
+                    for plain in [0, 2] {
+                        assert!(
+                            output[plain][..samples * channels]
+                                .iter()
+                                .any(|&v| v != 0.0)
+                        );
+                        assert!(
+                            output[plain][samples * channels..samples * channels * 2]
+                                .iter()
+                                .any(|&v| v != 0.0)
+                        );
+                    }
+                }
+                composed_gain_operation(
+                    &mut owned,
+                    &mut native,
+                    &mut output,
+                    Some(&packets[5]),
+                    samples,
+                    false,
+                );
+                above_unity |= output[1][..samples * channels]
+                    .iter()
+                    .any(|v| v.abs() > 1.0);
+                for buffer in &output {
+                    for frame in buffer[..samples * channels].chunks_exact(channels) {
+                        if let Some(channel) = silent_channel {
+                            assert_eq!(frame[channel], 0.0);
+                        }
+                        if let Some((first, second)) = alias {
+                            assert_eq!(frame[first].to_bits(), frame[second].to_bits());
+                        }
+                    }
+                }
+                let before = output[1].clone();
+                let range = owned[1].final_range();
+                assert!(
+                    owned[1]
+                        .decode(&packets[0], &mut output[1][..samples * channels - 1])
+                        .is_err()
+                );
+                assert_eq!(owned[1].final_range(), range);
+                assert!(
+                    output[1]
+                        .iter()
+                        .zip(&before)
+                        .all(|(a, b)| a.to_bits() == b.to_bits())
+                );
+            }
+            owned[1].set_gain_q8(0);
+            native[1].set_gain_q8(0);
+            composed_gain_operation(
+                &mut owned,
+                &mut native,
+                &mut output,
+                Some(&packets[6]),
+                samples,
+                false,
+            );
+        }
+    }
+    assert!(
+        above_unity,
+        "composed float output gain must preserve headroom"
+    );
+}
+
+#[test]
+fn mapped_and_projected_gain_controls_match_native_and_preserve_history() {
+    // Stream 2 is entirely omitted; the coupled stream, channel alias and
+    // explicit silent output exercise gain before the existing mapping stage.
+    let mapped = ChannelMapping::new(3, 1, &[2, 0, 1, 255, 0]).unwrap();
+    let projected = ProjectionMapping::new(
+        3,
+        1,
+        4,
+        vec![
+            16384, 8192, 0, -16384, -8192, 16384, 0, 0, 0, 4096, 0, -32768, 32767, 0, 0, 8192,
+        ],
+    )
+    .unwrap();
+    for actual_fec in [false, true] {
+        let packets = if actual_fec {
+            let mut encoders = [2, 1, 1].map(|channels| {
+                let encoder = Encoder::new(channels, 2048, 1103, 24_000 * channels as i32);
+                encoder.set(SIGNAL, 3001);
+                encoder.set(FEC, 1);
+                encoder.set(LOSS, 30);
+                encoder
+            });
+            (0..8)
+                .map(|frame| {
+                    let streams: Vec<_> = encoders
+                        .iter_mut()
+                        .map(|encoder| encoder.encode(&voice(960, encoder.channels, frame * 960)))
+                        .collect();
+                    let streams: Vec<_> = streams.iter().map(Vec::as_slice).collect();
+                    let mut packet = vec![0; 8192];
+                    let length = MultistreamPacket::write(&streams, &mut packet).unwrap();
+                    packet.truncate(length);
+                    packet
+                })
+                .collect()
+        } else {
+            multistream_celt_packets(8)
+        };
+        composed_gain_contract(
+            |rate| MultistreamDecoder::with_sample_rate(mapped, rate).unwrap(),
+            |rate| NativeDecoder::mapped(rate, mapped),
+            &packets,
+            actual_fec,
+            Some(3),
+            Some((1, 4)),
+        );
+        composed_gain_contract(
+            |rate| ProjectionDecoder::with_sample_rate(projected.clone(), rate).unwrap(),
+            |rate| NativeDecoder::projected(rate, &projected),
+            &packets,
+            actual_fec,
+            Some(2),
+            None,
+        );
+    }
+}
+
+#[test]
+fn projected_gain_matches_independent_gained_coded_channel_matrix() {
+    let packets = multistream_celt_packets(3);
+    for channels in [3, 4, 6] {
+        let matrix = (0..4)
+            .flat_map(|column| {
+                (0..channels).map(move |row| {
+                    if row == 1 {
+                        0
+                    } else {
+                        [32767, -32768, 16384, -8192][(column + row) % 4]
+                    }
+                })
+            })
+            .collect();
+        let mapping = ProjectionMapping::new(3, 1, channels as u8, matrix).unwrap();
+        for rate in RATES {
+            let samples = rate as usize / 50;
+            for gain in [0, i16::MIN, -3072, 3072, i16::MAX] {
+                let mut coded =
+                    MultistreamDecoder::with_sample_rate(*mapping.coded_layout(), rate).unwrap();
+                let mut projected =
+                    ProjectionDecoder::with_sample_rate(mapping.clone(), rate).unwrap();
+                coded.set_gain_q8(gain);
+                projected.set_gain_q8(gain);
+                // Native rectangular projection behavior has separate documented
+                // limitations. Use its actual projection API only for C == K.
+                let mut native = (channels == 4).then(|| {
+                    let mut coded = NativeDecoder::mapped(rate, *mapping.coded_layout());
+                    let mut projected = NativeDecoder::projected(rate, &mapping);
+                    coded.set_gain_q8(gain);
+                    projected.set_gain_q8(gain);
+                    (coded, projected)
+                });
+                let mut input = vec![0.0; samples * 4];
+                let mut native_input = input.clone();
+                let mut output = vec![123.0; samples * channels + 7];
+                let mut native_output = output.clone();
+                for packet in &packets {
+                    assert_eq!(coded.decode(packet, &mut input).unwrap(), samples);
+                    assert_eq!(projected.decode(packet, &mut output).unwrap(), samples);
+                    assert_eq!(coded.final_range(), projected.final_range());
+                    if let Some((coded, projected)) = &mut native {
+                        assert_eq!(
+                            coded.decode(Some(packet), samples, false, &mut native_input),
+                            samples
+                        );
+                        assert_eq!(
+                            projected.decode(Some(packet), samples, false, &mut native_output),
+                            samples
+                        );
+                        assert_eq!(projected.final_range(), coded.final_range());
+                    }
+                    for (coded_pcm, projected_pcm) in std::iter::once((&input, &output))
+                        .chain(native.as_ref().map(|_| (&native_input, &native_output)))
+                    {
+                        for (frame, actual) in coded_pcm
+                            .as_chunks::<4>()
+                            .0
+                            .iter()
+                            .zip(projected_pcm[..samples * channels].chunks_exact(channels))
+                        {
+                            for (row, &actual) in actual.iter().enumerate() {
+                                let terms = (0..4).map(|column| {
+                                    f64::from(frame[column])
+                                        * f64::from(mapping.matrix()[column * channels + row])
+                                        / 32768.0
+                                });
+                                let expected = terms.clone().sum::<f64>();
+                                let magnitude = terms.map(f64::abs).sum::<f64>();
+                                assert!(actual.is_finite());
+                                assert!(
+                                    (f64::from(actual) - expected).abs()
+                                        <= magnitude * f64::from(f32::EPSILON) * 8.0 + 1e-30
+                                );
+                            }
+                        }
+                        assert!(
+                            projected_pcm[samples * channels..]
+                                .iter()
+                                .all(|&v| v == 123.0)
+                        );
+                    }
                 }
             }
         }
