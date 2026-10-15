@@ -64,6 +64,9 @@ pub(super) struct Quantized {
     pub(super) gain_index: i32,
     pub(super) history: History,
     pub(super) distortion: f64,
+    // Only sparse candidates compare clamped encoder reconstruction. Keep the
+    // original unbounded quantization statistic separate for every policy.
+    pub(super) ranking_error: Option<f64>,
 }
 
 fn delta(previous: i32, index: i32) -> i32 {
@@ -124,13 +127,52 @@ pub(super) fn quantize(samples: &[f32], parameters: Parameters<'_>) -> Quantized
     // Analysis produces the two standardized predictor orders. Dispatch once
     // so the sample loop has a fixed dot-product width.
     match parameters.coefficients.len() {
-        10 => quantize_order::<10>(samples, parameters),
-        16 => quantize_order::<16>(samples, parameters),
+        10 => quantize_order::<10, 0>(samples, parameters, 0.0),
+        16 => quantize_order::<16, 0>(samples, parameters, 0.0),
         _ => unreachable!("validated SILK predictor order"),
     }
 }
 
-fn quantize_order<const ORDER: usize>(samples: &[f32], parameters: Parameters<'_>) -> Quantized {
+/// Rate-constrained candidates used only after every ordinary model has failed.
+/// `None` chooses zero wire pulses, which still carry the prescribed offset
+/// excitation. Each choice updates all causal reconstruction and seed history.
+pub(super) fn quantize_sparse(
+    samples: &[f32],
+    parameters: Parameters<'_>,
+    penalty: Option<f64>,
+) -> Quantized {
+    match (parameters.coefficients.len(), penalty) {
+        (10, Some(penalty)) => {
+            debug_assert!(penalty.is_finite() && penalty > 0.0);
+            quantize_order::<10, 1>(samples, parameters, penalty)
+        }
+        (16, Some(penalty)) => {
+            debug_assert!(penalty.is_finite() && penalty > 0.0);
+            quantize_order::<16, 1>(samples, parameters, penalty)
+        }
+        (10, None) => quantize_order::<10, 2>(samples, parameters, 0.0),
+        (16, None) => quantize_order::<16, 2>(samples, parameters, 0.0),
+        _ => unreachable!("validated SILK predictor order"),
+    }
+}
+
+fn sparse_pulse(center: f64, penalty: f64) -> i16 {
+    let nearest = nearest_pulse(center);
+    let value = f64::from(nearest) - f64::from(nearest.signum()) * (20.0 / 256.0);
+    // This is center^2 - (center-value)^2 without subtracting two large,
+    // nearly equal squared errors. It compares the same two wire cells.
+    if value * (2.0 * center - value) > penalty {
+        nearest
+    } else {
+        0
+    }
+}
+
+fn quantize_order<const ORDER: usize, const MODE: u8>(
+    samples: &[f32],
+    parameters: Parameters<'_>,
+    penalty: f64,
+) -> Quantized {
     let Parameters {
         frame,
         kind,
@@ -167,6 +209,7 @@ fn quantize_order<const ORDER: usize>(samples: &[f32], parameters: Parameters<'_
     let mut seed = u32::from(seed);
     let mut pulses = [0; MAX_SAMPLES];
     let mut distortion = 0.0;
+    let mut ranking_error = 0.0;
     let mut outputs = [0.0; OUTPUT_HISTORY + MAX_SAMPLES];
     outputs[..OUTPUT_HISTORY].copy_from_slice(&previous.output);
     let mut residual = [0.0; OUTPUT_HISTORY + MAX_SAMPLES];
@@ -202,7 +245,14 @@ fn quantize_order<const ORDER: usize>(samples: &[f32], parameters: Parameters<'_
         let target = unshaped_target + noise_pole * history.shaping_error;
         seed = seed.wrapping_mul(196_314_165).wrapping_add(907_633_515);
         let modulation = if seed & 0x8000_0000 == 0 { 1.0 } else { -1.0 };
-        let chosen = nearest_pulse(target * 32_768.0 * modulation / gain - offset);
+        // Const specialization leaves the successful ordinary sample loop's
+        // nearest-cell arithmetic unchanged, with no runtime sparsity branch.
+        let chosen = match MODE {
+            0 => nearest_pulse(target * 32_768.0 * modulation / gain - offset),
+            1 => sparse_pulse(target * 32_768.0 * modulation / gain - offset, penalty),
+            2 => 0,
+            _ => unreachable!("three encoder quantization policies"),
+        };
         let excitation =
             (f64::from(chosen) - f64::from(chosen.signum()) * (20.0 / 256.0) + offset) * modulation;
         let reconstructed = excitation * gain / 32_768.0;
@@ -217,6 +267,11 @@ fn quantize_order<const ORDER: usize>(samples: &[f32], parameters: Parameters<'_
         history.lpc[0] = predicted + gain * residual[position];
         history.shaping_error = history.lpc[0] - f64::from(sample);
         outputs[position] = history.lpc[0].clamp(-1.0, 1.0);
+        if MODE != 0 {
+            // Fallback comparison uses the actual bounded PCM domain even
+            // when a coarse cell's unclamped LPC reconstruction overshoots.
+            ranking_error += (f64::from(sample) - outputs[position]).powi(2);
+        }
     }
     // The final MB tail is coded as zero, but never contributes predictor
     // history: only the meaningful samples pass through the quantizer.
@@ -232,6 +287,7 @@ fn quantize_order<const ORDER: usize>(samples: &[f32], parameters: Parameters<'_
         gain_index,
         history,
         distortion,
+        ranking_error: if MODE == 0 { None } else { Some(ranking_error) },
     }
 }
 
@@ -400,6 +456,170 @@ mod tests {
         let mut impulse = [0.0; 80];
         impulse[40] = 0.1;
         assert_eq!(noise_pole(&impulse, 3000.0), 0.0);
+    }
+
+    #[test]
+    fn sparse_cells_minimize_two_choice_distortion_with_a_nonzero_price() {
+        for penalty in [0.5, 1.25, 4.0] {
+            for index in -20_000..=20_000 {
+                let center = f64::from(index) / 256.0;
+                let nearest = nearest_pulse(center);
+                let actual = sparse_pulse(center, penalty);
+                assert!(actual == 0 || actual == nearest);
+                let reconstruct =
+                    |pulse: i16| f64::from(pulse) - f64::from(pulse.signum()) * (20.0 / 256.0);
+                let objective = |pulse: i16| {
+                    (center - reconstruct(pulse)).powi(2) + if pulse == 0 { 0.0 } else { penalty }
+                };
+                let chosen = objective(actual);
+                let tolerance = 1e-12 * (1.0 + chosen);
+                assert!(chosen <= objective(0) + tolerance);
+                assert!(chosen <= objective(nearest) + tolerance);
+            }
+        }
+        // The ordinary negative central-cell tie stays untouched. A positive
+        // sparse price can prefer zero at that same equal-distortion boundary.
+        let boundary = -(1.0 - 20.0 / 256.0) * 0.5;
+        assert_eq!(nearest_pulse(boundary), -1);
+        assert_eq!(sparse_pulse(boundary, 0.5), 0);
+    }
+
+    #[test]
+    fn sparse_and_zero_pulses_rebuild_causal_wire_history_and_separate_losses() {
+        use super::super::frame_tables::LTP_TAPS0;
+        use super::super::synthesis::{Parameters as SynthesisParameters, Synthesis};
+
+        for bandwidth in [Bandwidth::Narrow, Bandwidth::Medium, Bandwidth::Wide] {
+            for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+                let frame = Frame {
+                    bandwidth,
+                    duration,
+                };
+                let rate = match bandwidth {
+                    Bandwidth::Narrow => 8,
+                    Bandwidth::Medium => 12,
+                    Bandwidth::Wide => 16,
+                };
+                let order = if bandwidth == Bandwidth::Wide { 16 } else { 10 };
+                let mut coefficients = [0; 16];
+                coefficients[0] = 1200;
+                coefficients[1] = -180;
+                for voiced in [false, true] {
+                    for penalty in [Some(0.5), Some(1.25), Some(4.0), None] {
+                        let kind = FrameType {
+                            signal: if voiced {
+                                SignalType::Voiced
+                            } else {
+                                SignalType::Unvoiced
+                            },
+                            offset: QuantizationOffset::Low,
+                        };
+                        let pitch = if voiced {
+                            Pitch {
+                                lag: 6 * rate,
+                                book: 0,
+                                indices: [0; 4],
+                                taps: [LTP_TAPS0[0].map(|value| i16::from(value) * 128); 4],
+                            }
+                        } else {
+                            Pitch::NONE
+                        };
+                        let mut history = History::new();
+                        let mut synthesis = Synthesis::new();
+                        let mut expected_history = [0.0f32; OUTPUT_HISTORY + MAX_SAMPLES];
+                        for packet in 0..3 {
+                            let samples: [f32; MAX_SAMPLES] = std::array::from_fn(|i| {
+                                if (packet * frame.samples() + i) % 7 < 3 {
+                                    1.0
+                                } else {
+                                    -1.0
+                                }
+                            });
+                            let parameters = Parameters {
+                                frame,
+                                kind,
+                                coefficients: &coefficients[..order],
+                                previous: history,
+                                requested_gain: [40, 63, 0][packet],
+                                conditional: packet > 0,
+                                seed: 2,
+                                pitch,
+                                low_rate: true,
+                            };
+                            let chosen = if packet == 0 {
+                                let result = quantize(&samples[..frame.samples()], parameters);
+                                assert!(result.ranking_error.is_none());
+                                result
+                            } else {
+                                quantize_sparse(&samples[..frame.samples()], parameters, penalty)
+                            };
+                            if packet > 0 && penalty.is_none() {
+                                assert!(chosen.pulses.iter().all(|&value| value == 0));
+                            }
+                            assert!(chosen.pulses[frame.samples()..].iter().all(|&x| x == 0));
+                            let mut excitation = [0; MAX_SAMPLES];
+                            reconstruct_excitation(
+                                &chosen.pulses[..frame.coded_samples()],
+                                kind,
+                                2,
+                                &mut excitation[..frame.coded_samples()],
+                            )
+                            .unwrap();
+                            if packet > 0 && penalty.is_none() {
+                                assert!(
+                                    excitation[..frame.samples()]
+                                        .iter()
+                                        .all(|&value| value != 0)
+                                );
+                            }
+                            let mut decoded = [0.0; MAX_SAMPLES];
+                            synthesis
+                                .frame(
+                                    frame,
+                                    &SynthesisParameters {
+                                        gains_q16: [gain_q16(chosen.gain_index); 4],
+                                        lpc_q12: [coefficients; 2],
+                                        interpolation: 4,
+                                        voiced,
+                                        pitch_lags: [pitch.lag; 4],
+                                        ltp_q14: pitch.taps,
+                                        ltp_scale_q14: 15565,
+                                    },
+                                    &excitation,
+                                    &mut decoded,
+                                )
+                                .unwrap();
+                            expected_history[OUTPUT_HISTORY..OUTPUT_HISTORY + frame.samples()]
+                                .copy_from_slice(&decoded[..frame.samples()]);
+                            expected_history
+                                .copy_within(frame.samples()..frame.samples() + OUTPUT_HISTORY, 0);
+                            for (&actual, &expected) in
+                                chosen.history.output.iter().zip(&expected_history)
+                            {
+                                assert!((actual - f64::from(expected)).abs() < 3e-5);
+                            }
+                            if let Some(ranking_error) = chosen.ranking_error {
+                                let expected = samples[..frame.samples()]
+                                    .iter()
+                                    .zip(&decoded)
+                                    .map(|(&input, &output)| {
+                                        (f64::from(input) - f64::from(output)).powi(2)
+                                    })
+                                    .sum::<f64>();
+                                assert!((ranking_error - expected).abs() < 5e-5 * (1.0 + expected));
+                                // Clipping can only improve reconstruction for
+                                // original samples that lie in the valid range.
+                                assert!(
+                                    ranking_error
+                                        <= chosen.distortion + 1e-10 * (1.0 + chosen.distortion)
+                                );
+                            }
+                            history = chosen.history;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     #[test]
