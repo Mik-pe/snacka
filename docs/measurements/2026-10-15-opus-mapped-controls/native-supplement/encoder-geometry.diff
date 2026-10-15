@@ -1,0 +1,25 @@
+--- original
++++ supplement-fullymapped
+@@ -40,9 +40,10 @@
+     fn new(kind: Kind, rate: i32, out: &mut File) -> Option<Self> {
+         let mut error = 0;
+         let (mut streams, mut coupled) = (3, 1);
+-        // Mapped input has one alias, one silent slot, and an omitted mono stream.
+-        let mapping = [0, 1, 2, 255, 0];
+-        let channels = if matches!(kind, Kind::Mapped) { 5 } else { 4 };
++        // Supplemental mapped input has every coded channel, an alias and a silent slot.
++        // The original omitted-stream constructor failures remain retained.
++        let mapping = [0, 1, 2, 3, 255, 0];
++        let channels = if matches!(kind, Kind::Mapped) { 6 } else { 4 };
+         // SAFETY: Complete live constructor arguments and writable scalar slots.
+         let state = unsafe { match kind {
+             Kind::Mapped => opus_multistream_encoder_create(rate, channels, streams, coupled, mapping.as_ptr(), 2048, &mut error),
+@@ -177,7 +178,7 @@
+         Stage { name: "return-cbr", mono_bitrate: 48_000, bandwidth: 1103, vbr: 0, fec: 0, loss: 0, dtx: 0, application: 2048, quiet: false, frames: 4 },
+     ];
+     for rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
+-        for kind in [Kind::Mapped, Kind::Projected] {
++        for kind in [Kind::Mapped] {
+             let Some(encoder) = Native::new(kind, rate, &mut out) else { continue; };
+             let mut decoder = Decoder::new(&encoder, &mut out);
+             encoder.snapshot("fresh", &mut out);

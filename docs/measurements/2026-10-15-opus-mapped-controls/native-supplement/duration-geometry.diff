@@ -1,0 +1,110 @@
+--- original-v2
++++ supplement-square
+@@ -1,4 +1,4 @@
+-"""V2 PRE-DATA SOURCE-ONLY: public duration observations, no encoder or timers.
++"""SUPPLEMENT SQUARE GEOMETRY ONLY: public duration observations, no encoder or timers.
+ 
+ Do not execute before root releases the CPU, reviews this source and freezes its
+ source/tool/library/header/old-fixture manifest. There is no native selection or
+@@ -27,13 +27,9 @@
+     ('zero8', bytes(8)),
+     ('ones8', bytes([255]) * 8),
+ )
+-# All have two private streams, first coupled/stereo, second mono. The omitted
+-# layout deliberately gives stream0 no output destination. Projection is 3->4.
+-LAYOUTS = (
+-    ('mapped', 'mixed', (0, 1, 2, 255, 0)),
+-    ('mapped', 'first-unmapped', (2, 255)),
+-    ('projection', 'rectangular', (0, 1, 2, 255)),
+-)
++# Supplemental supported square projection: three streams, first stereo and
++# two mono; C=K=4. Original rectangular constructor failures remain retained.
++LAYOUTS = (('projection', 'square', (0, 1, 2, 3)),)
+ 
+ 
+ def declare(lib):
+@@ -85,7 +81,7 @@
+ 
+ 
+ def transport(pair):
+-    return packet_from_frames(pair[0], True) + packet_from_frames(pair[1])
++    return b''.join(packet_from_frames(packet, index + 1 < len(pair)) for index, packet in enumerate(pair))
+ 
+ 
+ def parse_packet(lib, payload, label):
+@@ -125,6 +121,7 @@
+         self.family, self.layout = family, layout
+         self.rate, self.mode, self.channels = rate, mode, len(mapping)
+         self.state, self.serial = None, 0
++        self.streams = 3 if family == 'projection' else 2
+         self.prefix = 'opus_' + family if family == 'projection' else 'opus_multistream'
+         self.context = {'family': family, 'layout': layout, 'rate': rate, 'mode': mode}
+         error = I(-999)
+@@ -133,11 +130,11 @@
+             state = lib.opus_multistream_decoder_create(rate, len(mapping), 2, 1, data, C.byref(error))
+         else:
+             # The existing owned/public projection contract is column-major,
+-            # signed Q15 little-endian; fourth output row is silent.
+-            coefficients = [32767, 0, 0, 0, 0, -32768, 0, 0, 0, 0, 32767, 0]
+-            matrix = struct.pack('<12h', *coefficients)
++            # signed Q15 little-endian; all four coded channels have output rows.
++            coefficients = [32767, 0, 0, 0, 0, -32768, 0, 0, 0, 0, 32767, 0, 0, 0, 0, 32767]
++            matrix = struct.pack('<16h', *coefficients)
+             data = C.create_string_buffer(matrix)
+-            state = lib.opus_projection_decoder_create(rate, 4, 2, 1, data, len(matrix), C.byref(error))
++            state = lib.opus_projection_decoder_create(rate, 4, 3, 1, data, len(matrix), C.byref(error))
+         classification = ('usable' if state and error.value == 0 else
+                           'unsupported' if error.value == -5 else
+                           'invalid-success-null' if error.value == 0 else 'error')
+@@ -168,7 +165,7 @@
+ 
+     def snapshot(self):
+         result = {'aggregate': self.values(self.prefix, self.state), 'children': []}
+-        for index in (0, 1):
++        for index in range(self.streams):
+             code, child = self.child(index)
+             result['children'].append({'stream': index, 'state_code': code, 'nonnull': bool(child),
+                                        'status': self.values('opus', child) if code == 0 and child else None})
+@@ -245,7 +242,7 @@
+     with (args.new_output_dir / 'events.jsonl').open('x') as SINK:
+         lib = C.CDLL(str(args.native_library.resolve()))
+         declare(lib)
+-        emit({'kind': 'version', 'revision': 'v2-pre-data-child-ctl-reset-scope', 'native_library': str(args.native_library),
++        emit({'kind': 'version', 'revision': 'supplement-square-C4-K4-streams3-coupled1', 'native_library': str(args.native_library),
+               'version': lib.opus_get_version_string().decode(),
+               'scope': 'native duration selection and fixed old-packet trajectories; no timers/quality/atomic transport claim'})
+         banks = {(mode, coded): load_bank(lib, args.old_fixture_dir / f'{mode}-{coded}.packets', f'{mode}-{coded}')
+@@ -261,7 +258,7 @@
+                 candidates[(mode, label)] = candidate
+         summary = []
+         for mode in MODES:
+-            pair = lambda index: (banks[(mode, 2)][index], banks[(mode, 1)][index])
++            pair = lambda index: (banks[(mode, 2)][index], banks[(mode, 1)][index], banks[(mode, 1)][index])
+             for rate in RATES:
+                 quantum, maximum = rate // 400, rate * 120 // 1000
+                 for family, layout, mapping in LAYOUTS:
+@@ -286,12 +283,12 @@
+                         decoder.step('requested-fec-40ms-prefix-plus-tail', transport(pair(4)), rate // 25, fec=True)
+                         decoder.step('normal-following-recovery-20ms', transport(pair(4)), maximum)
+                         decoder.step('plc-40ms', None, rate // 25)
+-                        decoder.step('48-implicit-2.5ms-frames-120ms', transport(((0xE4, [b''] * 48), (0xE0, [b''] * 48))), maximum)
+-                        decoder.step('early-malformed-final-framing', packet_from_frames(pair(0)[0], True) + b'\x03', maximum)
++                        decoder.step('48-implicit-2.5ms-frames-120ms', transport(((0xE4, [b''] * 48), (0xE0, [b''] * 48), (0xE0, [b''] * 48))), maximum)
++                        decoder.step('early-malformed-final-framing', b''.join(packet_from_frames(packet, True) for packet in pair(0)[:-1]) + b'\x03', maximum)
+                         decoder.step('early-normal-capacity-one-sample', transport(pair(0)), 1)
+                         decoder.step('early-invalid-plc-duration', None, quantum - 1)
+                         decoder.reset('trajectory-reset')
+-                        decoder.step('fresh-implicit-hybrid-10ms', transport(((0x64, [b'']), (0x60, [b'']))), maximum)
++                        decoder.step('fresh-implicit-hybrid-10ms', transport(((0x64, [b'']), (0x60, [b'']), (0x60, [b'']))), maximum)
+                         decoder.step('coded-after-implicit-short-20ms', transport(pair(0)), maximum)
+                         partial_count = 0
+                         for label, _ in LATE_PAYLOADS:
+@@ -300,7 +297,7 @@
+                             decoder.reset('late-' + label + '-reset')
+                             decoder.step('late-' + label + '-prime20', transport(pair(0)), maximum)
+                             decoder.step('late-' + label + '-prime7.5', None, quantum * 3)
+-                            row = decoder.step('late-' + label, transport((pair(1)[0], candidates[(mode, label)])), maximum)
++                            row = decoder.step('late-' + label, transport((pair(1)[0], candidates[(mode, label)], pair(1)[2])), maximum)
+                             proved = bool(row and row['code'] < 0 and
+                                           child_samples(row['before'], 0) == quantum * 3 and
+                                           child_samples(row['before'], 1) == quantum * 3 and

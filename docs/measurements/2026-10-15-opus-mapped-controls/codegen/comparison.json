@@ -1,0 +1,420 @@
+{
+  "scope": "Existing mapped/projection production object instruction text, perfunction address stripped, last branch destinations made function-relative; unlinked self-target relocation slots markedRELOC_SELF; LLVM local suffix and own Rust crate-build disambiguator normalized in keys/operands. Branch bit-index immediates and other instructions retained. This does not independently establish linked relocation target equality. Not CPU evidence.",
+  "existing_functions": [
+    {
+      "symbol": "__RNvMs0_NtNtCsCRATE_6snacka4opus10projectionNtB5_17ProjectionDecoder11final_range",
+      "before_instructions": 46,
+      "after_instructions": 46,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "7b9afbdd5575ffedc9c2e1e363e0f46e408fc539178c1f81f066392763531c3e",
+      "after_instruction_sha256": "7b9afbdd5575ffedc9c2e1e363e0f46e408fc539178c1f81f066392763531c3e",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs0_NtNtCsCRATE_6snacka4opus10projectionNtB5_17ProjectionDecoder11set_gain_q8",
+      "before_instructions": 103,
+      "after_instructions": 103,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "774c6d118cc11b4a3f009a53d6e2a0a43d43bca538da995ae44b529d48663d6b",
+      "after_instruction_sha256": "774c6d118cc11b4a3f009a53d6e2a0a43d43bca538da995ae44b529d48663d6b",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs0_NtNtCsCRATE_6snacka4opus10projectionNtB5_17ProjectionDecoder16with_sample_rate",
+      "before_instructions": 241,
+      "after_instructions": 241,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "2c57165a8cefc72ead4821cbccf3266262d90620011d2904226d6c9f3c3b96b2",
+      "after_instruction_sha256": "2c57165a8cefc72ead4821cbccf3266262d90620011d2904226d6c9f3c3b96b2",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs0_NtNtCsCRATE_6snacka4opus10projectionNtB5_17ProjectionDecoder19set_phase_inversion",
+      "before_instructions": 16,
+      "after_instructions": 16,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "bf58e17bf431897b27396652e5497a54d31463d4778f95dd3d2ceb5330776069",
+      "after_instruction_sha256": "bf58e17bf431897b27396652e5497a54d31463d4778f95dd3d2ceb5330776069",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs0_NtNtCsCRATE_6snacka4opus10projectionNtB5_17ProjectionDecoder3new",
+      "before_instructions": 2,
+      "after_instructions": 2,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "bfe25caede262c556091f939553f75cd7b5edb43f13066a47bcf64f8d3616bdf",
+      "after_instruction_sha256": "bfe25caede262c556091f939553f75cd7b5edb43f13066a47bcf64f8d3616bdf",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs0_NtNtCsCRATE_6snacka4opus10projectionNtB5_17ProjectionDecoder5demix.llvm.HASH",
+      "before_instructions": 113,
+      "after_instructions": 113,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "b07e70b48bd57e2e9e0507798c2e0bb33eea23a7ec5b1d4e1c64fe97b58cf3ce",
+      "after_instruction_sha256": "b07e70b48bd57e2e9e0507798c2e0bb33eea23a7ec5b1d4e1c64fe97b58cf3ce",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs0_NtNtCsCRATE_6snacka4opus10projectionNtB5_17ProjectionDecoder5reset",
+      "before_instructions": 15,
+      "after_instructions": 15,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "d6ebc4288d7b9458200ef71e595b6a69e7d99302539ee9aa78bb045cdf4fdc61",
+      "after_instruction_sha256": "d6ebc4288d7b9458200ef71e595b6a69e7d99302539ee9aa78bb045cdf4fdc61",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs0_NtNtCsCRATE_6snacka4opus10projectionNtB5_17ProjectionDecoder6decode",
+      "before_instructions": 103,
+      "after_instructions": 103,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "897e044c1080dcf2b121c4ebdaf217d31ea28fdefbbbeb63da233bf2ee18b4c0",
+      "after_instruction_sha256": "897e044c1080dcf2b121c4ebdaf217d31ea28fdefbbbeb63da233bf2ee18b4c0",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs0_NtNtCsCRATE_6snacka4opus10projectionNtB5_17ProjectionDecoder7conceal",
+      "before_instructions": 53,
+      "after_instructions": 53,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "f48ace18915f80baa39aeac696953650db1d6bc77e4cf3a9a786c8619e76b2ef",
+      "after_instruction_sha256": "f48ace18915f80baa39aeac696953650db1d6bc77e4cf3a9a786c8619e76b2ef",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs0_NtNtCsCRATE_6snacka4opus10projectionNtB5_17ProjectionDecoder7recover",
+      "before_instructions": 42,
+      "after_instructions": 42,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "e0f7488b1825df8a31cc4a7beb6910c102e97cb3c5595187a5e770bd36968fcb",
+      "after_instruction_sha256": "e0f7488b1825df8a31cc4a7beb6910c102e97cb3c5595187a5e770bd36968fcb",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7encoderNtB5_7Encoder11reconfigure",
+      "before_instructions": 215,
+      "after_instructions": 215,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "b145cb22b0d0f7379920f12b4bc3e0c397c349ac47f5a5ee292a602031a79b14",
+      "after_instruction_sha256": "b145cb22b0d0f7379920f12b4bc3e0c397c349ac47f5a5ee292a602031a79b14",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7encoderNtB5_7Encoder19prepare_reconfigure",
+      "before_instructions": 22,
+      "after_instructions": 22,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "384a8adb99a2e1917decdec671dacc8c128dc2dc04e217e20dcd6cb656007c2d",
+      "after_instruction_sha256": "384a8adb99a2e1917decdec671dacc8c128dc2dc04e217e20dcd6cb656007c2d",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7encoderNtB5_7Encoder3new",
+      "before_instructions": 374,
+      "after_instructions": 374,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "a1fde1199c1705dafaa6d1cce8f7f995e7410a8acd90446c1f22a1677e2199c1",
+      "after_instruction_sha256": "a1fde1199c1705dafaa6d1cce8f7f995e7410a8acd90446c1f22a1677e2199c1",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7encoderNtB5_7Encoder5reset",
+      "before_instructions": 194,
+      "after_instructions": 194,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "8e169a070c927902abafa0f5a902ce1333c801da2acf96b938c4f7695f357bff",
+      "after_instruction_sha256": "8e169a070c927902abafa0f5a902ce1333c801da2acf96b938c4f7695f357bff",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7encoderNtB5_7Encoder6encode",
+      "before_instructions": 2120,
+      "after_instructions": 2120,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "d7d21a5b652c6f3b932dc67ff85011843c3fe1f02df1868f760b670165a81808",
+      "after_instruction_sha256": "d7d21a5b652c6f3b932dc67ff85011843c3fe1f02df1868f760b670165a81808",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs8_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamEncoder11final_range",
+      "before_instructions": 56,
+      "after_instructions": 56,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "79b8b9e8902b5a601da0d9c34d1276af4f796633f2933834ab0a2edd7f26608b",
+      "after_instruction_sha256": "79b8b9e8902b5a601da0d9c34d1276af4f796633f2933834ab0a2edd7f26608b",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs8_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamEncoder25algorithmic_delay_samples",
+      "before_instructions": 24,
+      "after_instructions": 24,
+      "instruction_text_equal": false,
+      "before_instruction_sha256": "8b1a4c68749b1edf0861308973270386be3f20b36bf757243180253f11933acb",
+      "after_instruction_sha256": "353f41bdfdbcf4d6f67b72529009b81b7c6b109d55d4a441de7cc0271f94a896",
+      "first_differences": [
+        {
+          "index": 19,
+          "before": "adrp\tx2, 0 ; 0x3000",
+          "after": "adrp\tx2, 0 ; 0x4000"
+        }
+      ]
+    },
+    {
+      "symbol": "__RNvMs8_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamEncoder3new",
+      "before_instructions": 603,
+      "after_instructions": 603,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "4768923009494456049cf3cef5b305d70b9c150551bbdf98d44043bdcffb1522",
+      "after_instruction_sha256": "4768923009494456049cf3cef5b305d70b9c150551bbdf98d44043bdcffb1522",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs8_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamEncoder5reset",
+      "before_instructions": 31,
+      "after_instructions": 31,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "3a36db78596b1e873447f113f6c58823a3944cc340a17752ff35ca7791841499",
+      "after_instruction_sha256": "3a36db78596b1e873447f113f6c58823a3944cc340a17752ff35ca7791841499",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs8_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamEncoder6encode",
+      "before_instructions": 514,
+      "after_instructions": 514,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "9ad5764c28b6dc9dbffb71696fee16f226762e231aff3738cdc059609824e7fd",
+      "after_instruction_sha256": "9ad5764c28b6dc9dbffb71696fee16f226762e231aff3738cdc059609824e7fd",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs8_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamEncoder7was_dtx",
+      "before_instructions": 19,
+      "after_instructions": 19,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "7c4fb5a354259a19cca64b5c7135ace0b17cca65ea8b18796c3f20242b320e94",
+      "after_instruction_sha256": "7c4fb5a354259a19cca64b5c7135ace0b17cca65ea8b18796c3f20242b320e94",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs9_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamDecoder10map_stream.llvm.HASH",
+      "before_instructions": 162,
+      "after_instructions": 162,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "f4812b926d03c83e79e72f0a12874929d32a395a11bd3fe84c737fe8eda9667d",
+      "after_instruction_sha256": "f4812b926d03c83e79e72f0a12874929d32a395a11bd3fe84c737fe8eda9667d",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs9_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamDecoder11final_range",
+      "before_instructions": 46,
+      "after_instructions": 46,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "7b9afbdd5575ffedc9c2e1e363e0f46e408fc539178c1f81f066392763531c3e",
+      "after_instruction_sha256": "7b9afbdd5575ffedc9c2e1e363e0f46e408fc539178c1f81f066392763531c3e",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs9_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamDecoder16with_sample_rate",
+      "before_instructions": 326,
+      "after_instructions": 326,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "da4c545e8a1f3b1c08dd6457ba94a7292c3c7036b911d8ca5d9c8eee925a28c3",
+      "after_instruction_sha256": "da4c545e8a1f3b1c08dd6457ba94a7292c3c7036b911d8ca5d9c8eee925a28c3",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs9_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamDecoder3new",
+      "before_instructions": 2,
+      "after_instructions": 2,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "bfe25caede262c556091f939553f75cd7b5edb43f13066a47bcf64f8d3616bdf",
+      "after_instruction_sha256": "bfe25caede262c556091f939553f75cd7b5edb43f13066a47bcf64f8d3616bdf",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs9_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamDecoder5reset",
+      "before_instructions": 220,
+      "after_instructions": 220,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "60cd33148e646549e2857cb2bac4c092c8858975f701c24ad3e8f211b69eb393",
+      "after_instruction_sha256": "60cd33148e646549e2857cb2bac4c092c8858975f701c24ad3e8f211b69eb393",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs9_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamDecoder6decode",
+      "before_instructions": 196,
+      "after_instructions": 196,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "a59ac607d121822b0e9f8e221c0f349be0e55e74b1f9ec14be3ce8f48e625f12",
+      "after_instruction_sha256": "a59ac607d121822b0e9f8e221c0f349be0e55e74b1f9ec14be3ce8f48e625f12",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs9_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamDecoder7conceal",
+      "before_instructions": 99,
+      "after_instructions": 99,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "fd6c6ad42e9c9d9101e48637454f196aa44404757cea51078e0d12e075e9f0fa",
+      "after_instruction_sha256": "fd6c6ad42e9c9d9101e48637454f196aa44404757cea51078e0d12e075e9f0fa",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs9_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamDecoder7recover",
+      "before_instructions": 168,
+      "after_instructions": 168,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "bbbd4f222f44ece310d867e4d8e408b6ec4bf18efe81cc6aeb5063449bb19734",
+      "after_instruction_sha256": "bbbd4f222f44ece310d867e4d8e408b6ec4bf18efe81cc6aeb5063449bb19734",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder12add_highband",
+      "before_instructions": 117,
+      "after_instructions": 117,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "1f08ddfc4cd35c0af76739163591911e65f873703c48c28ca0a9bc170d12d7ee",
+      "after_instruction_sha256": "1f08ddfc4cd35c0af76739163591911e65f873703c48c28ca0a9bc170d12d7ee",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder12write_output",
+      "before_instructions": 6417,
+      "after_instructions": 6417,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "0d7fad90a8c943bf2fe1957b92aac783fa658b866ec163aa36644e950d44c2db",
+      "after_instruction_sha256": "0d7fad90a8c943bf2fe1957b92aac783fa658b866ec163aa36644e950d44c2db",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder13conceal_frame",
+      "before_instructions": 352,
+      "after_instructions": 352,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "9687c90ec09f6a78522e5b9569122f7d1f9a14160388544eedf69c2da380b858",
+      "after_instruction_sha256": "9687c90ec09f6a78522e5b9569122f7d1f9a14160388544eedf69c2da380b858",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder13decode_parsed",
+      "before_instructions": 1011,
+      "after_instructions": 1011,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "e289e7b03093dd0a2cb86301e6b8a4ecb7643d79569f215075c26ae363961e32",
+      "after_instruction_sha256": "e289e7b03093dd0a2cb86301e6b8a4ecb7643d79569f215075c26ae363961e32",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder14recover_parsed",
+      "before_instructions": 442,
+      "after_instructions": 442,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "9800ea3d8edf5da25e438fcbdd53a489fc2b8b877e679f5bd3970bf21829d5a9",
+      "after_instruction_sha256": "9800ea3d8edf5da25e438fcbdd53a489fc2b8b877e679f5bd3970bf21829d5a9",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder14render_lowband",
+      "before_instructions": 558,
+      "after_instructions": 558,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "f04d85b7fa25aa792fd2698a763f1d039f31db7b768f9bffdc946870470942ff",
+      "after_instruction_sha256": "f04d85b7fa25aa792fd2698a763f1d039f31db7b768f9bffdc946870470942ff",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder15prepare_lowband",
+      "before_instructions": 136,
+      "after_instructions": 136,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "abccacefd900d1730153f7aea7f52d6a2253d2fe0a09513365933b316446539b",
+      "after_instruction_sha256": "abccacefd900d1730153f7aea7f52d6a2253d2fe0a09513365933b316446539b",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder16decode_redundant",
+      "before_instructions": 128,
+      "after_instructions": 128,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "de032448ad3923f5220a8b96a0f2937e8cabac044c7baecaa53ff21140450689",
+      "after_instruction_sha256": "de032448ad3923f5220a8b96a0f2937e8cabac044c7baecaa53ff21140450689",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder16with_sample_rate",
+      "before_instructions": 854,
+      "after_instructions": 854,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "842fb3c83afe98225d1d398da71b8c18e226f7376668d894571e5594a1204b78",
+      "after_instruction_sha256": "842fb3c83afe98225d1d398da71b8c18e226f7376668d894571e5594a1204b78",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder18conceal_unrecorded.llvm.HASH",
+      "before_instructions": 162,
+      "after_instructions": 162,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "aeab29cad773103ccbeec3350abec5cdb362162aef3906238189262bbb8dc765",
+      "after_instruction_sha256": "aeab29cad773103ccbeec3350abec5cdb362162aef3906238189262bbb8dc765",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder3new",
+      "before_instructions": 2,
+      "after_instructions": 2,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "bfe25caede262c556091f939553f75cd7b5edb43f13066a47bcf64f8d3616bdf",
+      "after_instruction_sha256": "bfe25caede262c556091f939553f75cd7b5edb43f13066a47bcf64f8d3616bdf",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder5reset",
+      "before_instructions": 176,
+      "after_instructions": 176,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "f5549cc8fc376a0c2f7d854ef8c5fad52a10e46e57d1b8dc49166deb18c3af17",
+      "after_instruction_sha256": "f5549cc8fc376a0c2f7d854ef8c5fad52a10e46e57d1b8dc49166deb18c3af17",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder6decode",
+      "before_instructions": 60,
+      "after_instructions": 60,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "77da71b84c49bda2c7d549511b019711a401ac304ff15cbe8328b8385101d6fc",
+      "after_instruction_sha256": "77da71b84c49bda2c7d549511b019711a401ac304ff15cbe8328b8385101d6fc",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder7conceal",
+      "before_instructions": 26,
+      "after_instructions": 26,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "829ff8b77dfee5fd1ef128b0ecbd6ebe84e5808882c608b0f33bdba2699c755c",
+      "after_instruction_sha256": "829ff8b77dfee5fd1ef128b0ecbd6ebe84e5808882c608b0f33bdba2699c755c",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder7recover",
+      "before_instructions": 59,
+      "after_instructions": 59,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "f65c56cb90961c82e7212e744736ea28a8995bd18f2944962b00d754a7d83836",
+      "after_instruction_sha256": "f65c56cb90961c82e7212e744736ea28a8995bd18f2944962b00d754a7d83836",
+      "first_differences": []
+    },
+    {
+      "symbol": "__RNvMs5_NtNtCsCRATE_6snacka4opus7decoderNtB5_7Decoder8crosslap",
+      "before_instructions": 324,
+      "after_instructions": 324,
+      "instruction_text_equal": true,
+      "before_instruction_sha256": "cf1f838b181d697896a22daf95c5d976958d65da4d23519ef94fe7df99ada3ea",
+      "after_instruction_sha256": "cf1f838b181d697896a22daf95c5d976958d65da4d23519ef94fe7df99ada3ea",
+      "first_differences": []
+    }
+  ],
+  "new_symbols": [
+    "__RNvMs8_NtNtCsCRATE_6snacka4opus11multistreamNtB5_18MultistreamEncoder11reconfigure"
+  ],
+  "all_existing_equal": false
+}

@@ -1,0 +1,6 @@
+error: Cargo.toml: can't find `monitor` example at `examples/monitor.rs` or `examples/monitor/main.rs`. Please specify example.path if you want to use a non-default path.
+error: Cargo.toml: can't find `opus_call` example at `examples/opus_call.rs` or `examples/opus_call/main.rs`. Please specify example.path if you want to use a non-default path.
+error: Cargo.toml: can't find `opus_roundtrip` example at `examples/opus_roundtrip.rs` or `examples/opus_roundtrip/main.rs`. Please specify example.path if you want to use a non-default path.
+error: Cargo.toml: can't find `kernels` bench at `benches/kernels.rs` or `benches/kernels/main.rs`. Please specify bench.path if you want to use a non-default path.
+error: Cargo.toml: can't find `opus` bench at `benches/opus.rs` or `benches/opus/main.rs`. Please specify bench.path if you want to use a non-default path.
+error: could not parse `snacka` (manifest) due to 5 previous errors

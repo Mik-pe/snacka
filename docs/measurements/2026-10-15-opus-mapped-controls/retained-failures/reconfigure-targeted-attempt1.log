@@ -1,0 +1,34 @@
+   Compiling snacka v0.2.0 (/private/tmp/snacka-opus-mapped-controls-worktree-20261015)
+    Finished `release` profile [optimized] target(s) in 3.22s
+     Running tests/opus_multistream_encoder.rs (/tmp/snacka-opus-mapped-controls-20261015/target-tests/release/deps/opus_multistream_encoder-7f93750656f179fe)
+
+running 11 tests
+test configuration_rejects_missing_streams_channels_durations_and_coupled_sources ... ok
+test unused_mono_stream_encodes_silence ... ok
+test invalid_pcm_and_capacity_leave_every_stream_history_and_output_unchanged ... ok
+test enabling_fec_recovers_a_real_tail_and_disabling_preserves_previous_status_without_allocation ... ok
+test constant_rate_preserves_fractional_aggregate_budgets_and_self_delimiter_costs ... ok
+test mapping_selects_first_alias_ignores_silent_slots_and_matches_independent_encoders ... ok
+test immediate_reconfiguration_matches_ordinary_histories_across_modes_and_rates ... FAILED
+test processing_reset_and_status_do_not_allocate_and_dtx_requires_every_stream ... ok
+test active_constant_rate_stream_moves_padding_to_empty_final_dtx_stream ... ok
+test list_refusals_are_atomic_and_original_per_stream_ceilings_allow_regrowth ... ok
+test reference::owned_surround_and_aliased_packets_decode_in_libopus_with_exact_ranges ... ok
+
+failures:
+
+---- immediate_reconfiguration_matches_ordinary_histories_across_modes_and_rates stdout ----
+
+thread 'immediate_reconfiguration_matches_ordinary_histories_across_modes_and_rates' (261141044) panicked at tests/opus_multistream_encoder.rs:173:5:
+assertion `left == right` failed
+  left: 482
+ right: 371
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    immediate_reconfiguration_matches_ordinary_histories_across_modes_and_rates
+
+test result: FAILED. 10 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+
+error: test failed, to rerun pass `--test opus_multistream_encoder`

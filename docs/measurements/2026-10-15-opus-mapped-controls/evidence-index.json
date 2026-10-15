@@ -1,0 +1,247 @@
+{
+  "base": "963b903173ff3a55cb60cfa22b189c5d76e78d48",
+  "source_commits": [
+    "795a465",
+    "6b50c8ed55eb9a3a978b2ff097f9dd00e171ba00"
+  ],
+  "scope": "CompactfunctionalAPIevidence; rawPCM/packet/matrix data remain externally pinned. No cost, quality or fullparity admission.",
+  "files": [
+    {
+      "path": "codegen/compare.py",
+      "sha256": "b6fe1b78ecad23aa9ddb920e43054e1623d1f8b280f6eff2b7da09466a493151",
+      "bytes": 2675
+    },
+    {
+      "path": "codegen/comparison.json",
+      "sha256": "555b447b2f9972ba7977ec392493be4db8c65be08d32d032aaaffd54ef0ac579",
+      "bytes": 20864
+    },
+    {
+      "path": "codegen/layout-receipt.json",
+      "sha256": "d546cc81ee3d9ed9e05cd76e86730417040afb20e9bd700f6630d3b746e9a782",
+      "bytes": 1887
+    },
+    {
+      "path": "codegen/layout.rs",
+      "sha256": "a841d827ddc3116ea4d412af91eaff1778390de3d5d1ec0918872d7365e1db43",
+      "bytes": 623
+    },
+    {
+      "path": "native-original/duration-selection.json",
+      "sha256": "f810d77a92fe2747761a76aaec881fa3e96b566836a9c1c29e0d9fa07d01b404",
+      "bytes": 34611
+    },
+    {
+      "path": "native-original/freeze-precompile.json",
+      "sha256": "f811de782b38bfc1c642c22740325c07a0d1a09cfb8590377503bacccc2b95fb",
+      "bytes": 37840
+    },
+    {
+      "path": "native-original/freeze-prenative.json",
+      "sha256": "82c91a7f3704c46fb01af33bb0a2bb0490b4f8e6ebe5c573fac3b7b555003c6f",
+      "bytes": 2624
+    },
+    {
+      "path": "native-original/native-gate-summary.json",
+      "sha256": "d574b57b3679bd90c614d96154edd683cd5321ab4ff98da015af984906d8730d",
+      "bytes": 12784
+    },
+    {
+      "path": "native-original/native_duration_oracle.py",
+      "sha256": "04defc7165ae22fceb9b2bdab6a008ce91fdaf4c03d44e30512514071d0aea01",
+      "bytes": 17684
+    },
+    {
+      "path": "native-original/native_reconfigure_oracle.rs",
+      "sha256": "600069ac3b9aec6556154c214eac4a4719653bf703c145a673ebc699eba82b20",
+      "bytes": 16974
+    },
+    {
+      "path": "native-supplement/duration-geometry.diff",
+      "sha256": "740a74be066517b06e96479fd054d38301b9671859d6e86d952bad5d6c780eca",
+      "bytes": 6965
+    },
+    {
+      "path": "native-supplement/duration-selection.json",
+      "sha256": "12b0b575e742c267a5fd43184d821c162f083697db6988e78c68cc059f9fc8ee",
+      "bytes": 14075
+    },
+    {
+      "path": "native-supplement/encoder-geometry.diff",
+      "sha256": "598e723b2a2e0c8d7bcf4ff7e7e8da813a5f006962b2e9a7b88d9c0df07a9b66",
+      "bytes": 1490
+    },
+    {
+      "path": "native-supplement/freeze-precompile.json",
+      "sha256": "b293b91b093b586f874f14928fcdd6e138d6f3d7f61205798c16127fb086526e",
+      "bytes": 12478
+    },
+    {
+      "path": "native-supplement/freeze-prenative.json",
+      "sha256": "f34197ace2868f96cbad8d9b0b4288e8e321564aea66b01304397c6343f217f6",
+      "bytes": 2929
+    },
+    {
+      "path": "native-supplement/native-gate-summary.json",
+      "sha256": "f651957ec55d95a9162f33d99d058cf40baed0757bafab59366204f6846ce732",
+      "bytes": 1226
+    },
+    {
+      "path": "native-supplement/native_duration_oracle.py",
+      "sha256": "9c8b34e1d66fde5859a7fad2740ebda1f66f5bf7bdc30dfc1bf741a3ada4c0a6",
+      "bytes": 17833
+    },
+    {
+      "path": "native-supplement/native_reconfigure_oracle.rs",
+      "sha256": "dbb1d2ebd02ba07e318f2d9b82b8d40043632cc7561797fa8ff20789726265c4",
+      "bytes": 17043
+    },
+    {
+      "path": "production/baseline-binding.json",
+      "sha256": "cfa52de680990e051366b83cd47836fa8bbe477742d1563ad1ec9b0ac8f23693",
+      "bytes": 14761
+    },
+    {
+      "path": "production/binding-before-run.json",
+      "sha256": "d9a54afb4b28a06393dd97d2d608bc149995a0c6ac0272d5172587a3e9b303b3",
+      "bytes": 995
+    },
+    {
+      "path": "production/bridge-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "production/library-build.log",
+      "sha256": "4d8f5e9657595454661e3b518cca51e264be2aaea569e54341dc61eed5f59fec",
+      "bytes": 1953
+    },
+    {
+      "path": "production/manifest-before-build.json",
+      "sha256": "330980aec45ef867563c49819ac69a0d4342e823f42d8af64887137566b0f164",
+      "bytes": 12642
+    },
+    {
+      "path": "production/manifest.json",
+      "sha256": "37533b2af2894748a29383a85768a68f7ea5459cfe18eba4e8db831b8b2927b7",
+      "bytes": 13244
+    },
+    {
+      "path": "production/replay-proof.py",
+      "sha256": "7bb949b3b8d3033367c11240201eb1495e4c1d6da498d73e72db48dba2212fd0",
+      "bytes": 14763
+    },
+    {
+      "path": "production/summary.json",
+      "sha256": "6bf5b054d8b8503bfddf80a8ec374c052b01f70eb2a4c73c5640884efbd02c0e",
+      "bytes": 1253
+    },
+    {
+      "path": "retained-failures/clippy-attempt1.log",
+      "sha256": "a3a299d3b4bbcd5026efa700edf3bd2a40aad6b5edd3ba5338bb00b5cf565b14",
+      "bytes": 796
+    },
+    {
+      "path": "retained-failures/getter-targeted-attempt1.log",
+      "sha256": "9e599f1c5e643b25ff8b5aedf41f9ae6787f04d797a2836d5dc8c93b51620b1c",
+      "bytes": 1955
+    },
+    {
+      "path": "retained-failures/missing-cargo-target-context.log",
+      "sha256": "ae25a4f1231684ccbe7dbf548518773fd7e70702d5493fad2ef4a7f03cb760c8",
+      "bytes": 929
+    },
+    {
+      "path": "retained-failures/reconfigure-targeted-attempt1.log",
+      "sha256": "474025292e9fb4815816d48607006529312bcd3b9d12499fe85a954e1389f5c2",
+      "bytes": 1926
+    },
+    {
+      "path": "validation/clippy-attempt2.log",
+      "sha256": "09ab19e952a8765b62eb66c6b2f34cf7cfbd0ab09713301114fc78e22081950c",
+      "bytes": 150
+    },
+    {
+      "path": "validation/fmt.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "validation/full-release-final.log",
+      "sha256": "14f8413e6bdaa1c75b64068882265031b1991896c9b694e8efbabd613c8e7709",
+      "bytes": 39731
+    },
+    {
+      "path": "validation/gates.json",
+      "sha256": "a1ba45a2a5edeb26490eb4071871b3f40caa53917694a73359fd603cc376f4cb",
+      "bytes": 463
+    },
+    {
+      "path": "validation/processing-source-audit.json",
+      "sha256": "09c4fab11697e41b778bbc2d168d6031e776dcb683028de757dc0759a355df91",
+      "bytes": 10407
+    },
+    {
+      "path": "validation/source_audit.py",
+      "sha256": "75c6f34b3064305bbe9a6b7eeb375a09ad36183540c23cb3eaa4a24ab3aea143",
+      "bytes": 2655
+    }
+  ],
+  "external": [
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-20261015/duration-raw-manifest.json",
+      "sha256": "ab002a9f0d61081f0cb24f22c39c9e8d637f8eb3b2c3d6af0d0c3cfd49dbaa42",
+      "bytes": 393047
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-20261015/encoder-raw-manifest.json",
+      "sha256": "389a6f5cd04a86da10a40fdb0677e72033e9db57c3ba17460f481273caea6163",
+      "bytes": 87873
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-20261015/duration-raw-independent-audit.json",
+      "sha256": "cd75f48242c72aa2dc9544bfa0260929ebb97441cfdb606b8a6b59df2b3d5630",
+      "bytes": 354107
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-20261015/duration-negative-calls.json",
+      "sha256": "47a35db056ba06eed992866da255b772a6a300c7fe2419d12a397682b2f54e08",
+      "bytes": 220191
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-20261015/getter-targeted-attempt2.log",
+      "sha256": "0629a441bb856caa4acb39af047346175295be572cb6ee5feb840a1726bccf40",
+      "bytes": 28325
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-20261015/reconfigure-targeted-attempt2.log",
+      "sha256": "b0855b6c45cfa09130bfd78f6aefc6a959ec30bb9b5f7717dd74b06d9edc4627",
+      "bytes": 2217
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-supplement-20261015/duration-square-run-raw-manifest.json",
+      "sha256": "74e268db439a2c87c57c70dd159ffd39962deec32cbc886fa6b121b6156cd429",
+      "bytes": 201487
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-supplement-20261015/encoder-fullymapped-run-raw-manifest.json",
+      "sha256": "5fd7a6222df432fe6f60a7a9231539946bd79d9f6d5dfbc8f6e5c0e5611cae4f",
+      "bytes": 92749
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-supplement-20261015/duration-raw-independent-audit.json",
+      "sha256": "2cb3ce404bd5f221e7679b8e72e0cf7082788f0c869e6d3fb9c334129ca17545",
+      "bytes": 125343
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-20261015/production/manifest.json",
+      "sha256": "91353503b7f5326b09f30b4c850842b60cf931533e19311d9f07ff3295500354",
+      "qualification": "Implicit-CGU artifact retained unrun; rejected before complete2130proof."
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-20261015/production-cgu16/untimed-comparison/rows.jsonl",
+      "sha256": "8e35f8dd3a8515a5ba06fe8f59b2c75b27477c3f5e0177c4fa3a39d36cb77838",
+      "qualification": "2130completeJSONrows; rawstdout/stderr paths and hashes included perrow."
+    }
+  ]
+}

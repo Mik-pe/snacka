@@ -1,0 +1,183 @@
+{
+  "baseline_main": "963b903173ff3a55cb60cfa22b189c5d76e78d48",
+  "source_commit": "6b50c8ed55eb9a3a978b2ff097f9dd00e171ba00",
+  "baseline_manifest": {
+    "path": "/tmp/snacka-opus-mapped-phase-evidence-20261015/production/manifest.json",
+    "sha256": "00f34c438102eb12daabea71dcd3356463a48092b9c8def312515df881b7df53"
+  },
+  "source_directory": "/tmp/snacka-opus-mapped-controls-20261015/production-cgu16/source",
+  "source_files": {
+    "Cargo.toml": "60a0cbbc0220f4951c3b0bc90f7f2b4fb455a763a7debf3bfb830e93ebf0306b",
+    "Cargo.lock": "ea4659d4176642f085e36c3fd2d912e9c7e5ea80eb4fd21013a62303e6fc9b0a",
+    "src/adaptive.rs": "24ff58d6d449cc00c803413659a810f151399e9280332345d829702e430a90b1",
+    "src/codec.rs": "b5557458bc2642baf4ab20741d31359773d6371c4083346d37b73d953e3d0216",
+    "src/concealment.rs": "0b024870fc663fc17eda2de8a93a20c2dbf5b0ff82a295a97040c2b00bc73d4c",
+    "src/entropy.rs": "6947a47169e142db7ed7bb66000d7670d7991ebb62774f988c546161cb60f870",
+    "src/harmonic.rs": "0eddd938566232bd91b5eba280c26a8d79a14b8edf3bb69071853a283625addc",
+    "src/harmonic_joint.rs": "0d20737869f3e0a96033625b573c0736b865235be393157bd76cad0d6426af98",
+    "src/lib.rs": "1a0067c4819386fa7894223e72f26583b249c7c4ff0b7483e16e4b82210ca7d9",
+    "src/opus/allocation.rs": "afc13c6a8416d9c55a248f6910ffe3cb226518b913b9b8e5621bc9bc169b65bd",
+    "src/opus/bands.rs": "04b8459203e8cb2fff91338ce45bfbe805754f0d0e558f4433436342421d3a19",
+    "src/opus/celt.rs": "40296bafa476bed9bb9e3d95072493519c797d99651d0df9e6de169b13ad11e5",
+    "src/opus/decoder.rs": "053f0ffc9404cc804977ee43bbec1d93e2d61d9ffe8f303b01b2d1787ab97807",
+    "src/opus/dtx.rs": "ba949ad11da2a05a383f5ea6e4f2982f2319610d6899df8b3eef8edbbd2698e3",
+    "src/opus/encoder.rs": "7f35e176f64401f019935e5ac09207444ec084a083ea430031b0d280ee25e98a",
+    "src/opus/encoder_transition.rs": "7264620efaac530e4f5921217169517097de861557eceb73b48973a19f84c12b",
+    "src/opus/energy.rs": "5a7bd73ce9ac609e9644f62347579ff223522a11bf2e3a2f6e41bc950d1300e7",
+    "src/opus/extensions.rs": "8e12094d3b6d97450773e34415bb98d3aa3dc00c5114d391fc874b25dcef32f1",
+    "src/opus/flags.rs": "a92b363574a9d02c80eb26fb0da27a5207a5b356e40a38e626055558488e6114",
+    "src/opus/input_delay.rs": "838812a1ed6fa7779ff9e380f1d9e7c65f6b227aeecb5afb49391c91010c5423",
+    "src/opus/input_resample.rs": "534ba9ffdb1aefd97105aecb8878d4cbbff01f4766e33048d8e63b86f44c328d",
+    "src/opus/mod.rs": "ca3d15e99f2dc599bdf876b91f961da62acb7b7c9d2a5925ba0b0782f5d4c098",
+    "src/opus/multistream.rs": "e51615887326d56e4ba6b2cc37d2dbd7ba0038de4842453b4e8e50967912f4c5",
+    "src/opus/ogg.rs": "0f60441c53191ae673802834f90f92510897a54845709b538a09e638496de61a",
+    "src/opus/packet.rs": "4d09c1ddb0663900d5fc07d439d422524f9ab5f5e78786a6180e8719fb77ef73",
+    "src/opus/pcm.rs": "0b8e10deda345c9396df63fe9a1adb053b3fb958c181332d8ecf6fd8f26dedb7",
+    "src/opus/plc.rs": "01878472ebb71e6d7128c63bd216ce703a4e32ee5a42f63e74b9c19ca0e6aa4f",
+    "src/opus/projection.rs": "9850d30668d1a4d970d5b2c85047c30609d19d1ba390addac4d6686b5e720dbd",
+    "src/opus/pvq.rs": "8f29af81d9a7d4645801134ef16075c6afd19aca258f8810d515288f4c0ea719",
+    "src/opus/range.rs": "39ea920cc34b87fcaf1c66e321997208dbf3c72f8d07d3680a36fa84b22bac52",
+    "src/opus/repacketize.rs": "edb3a942965ab67d37a7aaa58ebe299d91d59824a89591362c0ebfc98311d758",
+    "src/opus/silk/analysis.rs": "6a01ced7bd24935bcae58faf2853993462e55b1ffd74d03fd25d97cf4f237228",
+    "src/opus/silk/decoder.rs": "18a3ce0c5761d249e88e08c42f97a92bb8e28f774da71e76adf3cab1b19a1096",
+    "src/opus/silk/downsample.rs": "b6a417b879676aec7c66fc57b5d5d57a7d14a97a7628937f0307167d97d025a2",
+    "src/opus/silk/encode_pulses.rs": "465bb35c14e5d5353ae8ed55b4edfb09880cbd84da5c0342bd4586abe087e2b5",
+    "src/opus/silk/encoder.rs": "3187424a35f6549663ad22a63718fcfdb865d240bd5bc5a51cc2e892dc6daa4e",
+    "src/opus/silk/excitation.rs": "c799d9527087b9b572a98561f8acd842e7ea8b3e1dce8e6be77e96696a534d74",
+    "src/opus/silk/frame.rs": "1082d999010f2fcabcfa611d217d85be0f6b095851d1d8e783ace277a0e3cce7",
+    "src/opus/silk/frame_tables.rs": "e390dfd6d528855e1738a057d70c4e5e5a4037a9f9088235518c6c1168d84c8e",
+    "src/opus/silk/lpc.rs": "50b5795a1aba85e03a4f50a4e1726329d70593fa24eae30cf2f6160ce4929a8c",
+    "src/opus/silk/mod.rs": "17d626560769390127288e431728c974f816e9e9076a0d4548c3f8a40d4b886f",
+    "src/opus/silk/native_delay.rs": "2e640e1b6616b04b8b86044d9c513ba7f2ff8c33f766d86f558cf0f2af5ef6d5",
+    "src/opus/silk/pitch.rs": "4a84ff4061a96f26fc0ee0213a07090444288e32b5db2d883a52106f0b4aa34d",
+    "src/opus/silk/quantize.rs": "0e9da11f452d34b54d9b9706017a05e162786f2164f4cedb2229ca8a2483e699",
+    "src/opus/silk/redundancy.rs": "ef5fbf9610565982cca6ed26d9cb35f1d5bad905abae274e5848e07a8a464c84",
+    "src/opus/silk/resample.rs": "c48df83f22656d9443e4216958ebeaef8addda308fc3b12edd20db5c6a53a927",
+    "src/opus/silk/synthesis.rs": "96a4d2c3a25afff84f15e00da5ed2d2ced7ffc8f3e06f79891443c5ab803d23e",
+    "src/opus/silk/tables.rs": "fb5cb883d311e92f057427b0eda15a2d6b241fbe95b0d6afc9abaab504f647be",
+    "src/opus/testdata/bands-anticollapse-rfc6716.bin": "bd7b0124b4fc5894bbcdbdc1507494c835e94dc87496116dbbfe489200a4daaf",
+    "src/opus/testdata/bands-hybrid-libopus-1.6.1.bin": "6500c20f67896d1036fb986698d34613bb4b726d9cc4906501ef34d2d2710a7b",
+    "src/opus/testdata/bands-rfc6716.bin": "6fd6d99a689a281e40e6adf62e800dad7fe8fbc8b3afb3637840e4f1767fc5f0",
+    "src/opus/testdata/celt-to-hybrid.opus": "ebb6decc71aa8eabcac9b18bbb45a7190e595b596e9d9830cb5b2d38c985724a",
+    "src/opus/testdata/pvq-libopus-1.6.1.bin": "d2d44c6bff33f925b38cb312be2378538d63c9f217b64ccffa95762e7964c1ec",
+    "src/opus/testdata/range-libopus-1.6.1.bin": "ad5fb80a26dddad0508038264854bc044d83ee83e0a6d2e5aaf14ec9b704c8d8",
+    "src/opus/testdata/resampler-response.bin": "b3766c8a4c84b423f338748aab547003c23c68816a7f9b642d003590677d10e2",
+    "src/opus/testdata/stereo-phase.opus": "732d0c956a54fded13ba78967ffd12a3b84f6babf0b8125c2ecf0f6337686ddb",
+    "src/opus/transform.rs": "91227d0e98735ca7521a5ede5efa4f148aab38fde18cce8bd524942a8a0568b3",
+    "src/pulse.rs": "ed639fb3441c37d8251849bc5b6ffb2958558ce1d74d89726ddb7684eac971d3",
+    "src/pulse_classes.rs": "b5abb1763796c54d33081fdabb64ca5f5db2ea3bbb9cf96e6d3f506647d112eb",
+    "src/transform/precomputed.rs": "f0145aaad4597883043f79d5f5e61ebbff3eb3c297b24923ef3b69c4b0012267",
+    "src/transform.rs": "6eb0c854413afa5fd8b4f5d69254c57c134e9217797081ef8502dbe50d23125a"
+  },
+  "candidate_patch_sha256": "f3437b4cd3b1ae43cada886eb2cbe4b1e00ba3e01693fb3d4653a5f552f6291d",
+  "library_command": [
+    "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+    "build",
+    "--locked",
+    "--release",
+    "--lib",
+    "--features",
+    "opus",
+    "-vv"
+  ],
+  "bridge_command": [
+    "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+    "--edition=2024",
+    "-O",
+    "-C",
+    "overflow-checks=yes",
+    "/tmp/snacka-opus-mapped-controls-20261015/production-cgu16/source/tools/reference/benchmark_opus_decode.rs",
+    "--extern",
+    "snacka=/tmp/snacka-opus-mapped-controls-20261015/production-cgu16/target/release/libsnacka.rlib",
+    "-L",
+    "dependency=/tmp/snacka-opus-mapped-controls-20261015/production-cgu16/target/release/deps",
+    "-L",
+    "native=/opt/homebrew/lib",
+    "-o",
+    "/tmp/snacka-opus-mapped-controls-20261015/production-cgu16/benchmark-opus-decode"
+  ],
+  "tools": {
+    "cargo": {
+      "path": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+      "sha256": "fc7aa5077deca8abc0651f329e8ec1d968f520e996a93b428f9935014362b382",
+      "version": "cargo 1.99.0 (5f94df478 2026-08-27)\nrelease: 1.99.0\ncommit-hash: 5f94df4789f005f9a352888e8355ffc645b7ed0e\ncommit-date: 2026-08-27\nhost: aarch64-apple-darwin\nlibgit2: 1.9.6 (sys:0.21.0 vendored)\nlibcurl: 8.7.1 (sys:0.4.90+curl-8.21.0 system ssl:(SecureTransport) LibreSSL/3.3.6)\nssl: OpenSSL 3.6.3 9 Jun 2026\nos: Mac OS 27.0.0 [64-bit]\n"
+    },
+    "rustc": {
+      "path": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "sha256": "dd6f58440b3418aa9157ae3f05d71eecff741ca41bc4eec120e7e8f2d933b9a0",
+      "version": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: aarch64-apple-darwin\nrelease: 1.99.0\nLLVM version: 23.1.1\n"
+    },
+    "rustdoc": {
+      "path": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustdoc",
+      "sha256": "6fbad8d9ad24774d81de7314568739cf9ed1d46636bd2d65156694637897aeab",
+      "version": "rustdoc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustdoc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: aarch64-apple-darwin\nrelease: 1.99.0\nLLVM version: 23.1.1\n"
+    }
+  },
+  "native": {
+    "requested_path": "/opt/homebrew/lib/libopus.dylib",
+    "real_path": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+    "sha256": "98dcd3cc62c6cf913b789051536ab246c56cc163c74bd8b4968ac467ec74b68b",
+    "version": "libopus 1.6.1",
+    "linked_install_names": [
+      "/opt/homebrew/opt/opus/lib/libopus.0.dylib"
+    ]
+  },
+  "environment": {
+    "removed_variable_names": [
+      "MallocNanoZone"
+    ],
+    "RUSTC": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+    "RUSTDOC": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustdoc",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_TARGET_DIR": "/tmp/snacka-opus-mapped-controls-20261015/production-cgu16/target",
+    "RUSTUP_TOOLCHAIN": "1.99.0-aarch64-apple-darwin",
+    "RUSTFLAGS": "UNSET",
+    "wrappers": "UNSET"
+  },
+  "profile": "Cargo release default16CGU/localThin/defaultCPU/opt3/overflowon; opus-only lib, separate from reference-test builds",
+  "cargo_target_context": {
+    "benches/kernels.rs": "84feab8bdf7523148f2bee98f53130e75b554d43bb5a0605e85afccaa33b2698",
+    "benches/opus.rs": "81e85f9558b0566bf28080c6c6b44c10a25e2145d68ee863c8174e1b3025d095",
+    "benches/opus/encoder.rs": "ea47717b3b04299f4fafc70bfce0889175c7dfa3c43599447682b643014295ee",
+    "benches/opus/frame_samples.rs": "278ae862573989afa6561501c62a9c6fa7e6dd916e90f332c22be645ed882d8c",
+    "examples/call/connection.rs": "587261b99859ba04f23133de99ca07e585561dfe30f94f10fa355af0ee03624a",
+    "examples/call/editor.rs": "077367ade0a495cecb30818dc5ea9fddd16a049bcd5e74efa6f7023aad11c8f2",
+    "examples/call/jitter.rs": "91e60b0b9838136fdfb8337894e5b5aa51f5bc6bf514f645af418443777e2810",
+    "examples/call/main.rs": "9933829eae65b4603f5c6fbead4894db205391e6d15e335f2a94fad090b8b7b6",
+    "examples/call/processing.rs": "c6d273b24a5a116196f3251075bfdca1f986972362b4a6efbda27db3dc99d010",
+    "examples/call/profile.rs": "301157779fb5c6f45c43932b2dcee7ff9c706f1a74b02831864698d6bd56a17f",
+    "examples/call/rate.rs": "a7d9b89bf7507f982f1f6a0b13ecfda884aec461c9ee6a5812b7254f18bddcec",
+    "examples/call/ui.rs": "04fa40351e676e97dc6d7d348527d0f28fed682b51c559e3f9171b1ae0e1ba81",
+    "examples/call_common/relay.rs": "6e46a8443cb059472cdba4cebc7d4100a819ebf3f2c20820aacdbcc2858d1819",
+    "examples/call_common/transport.rs": "0c37fab20cb13cb8b77a5620957b7fb607432324d8b21554e64312ae37d168e9",
+    "examples/call_relay/main.rs": "04aa3a4455109d0a675b2ca966b5e35438c33fb712332867ce800b4f11979f7a",
+    "examples/cpu_probe.rs": "b9c61ab124f979aa18063e2a4ce27a3b1aabf46471e196b62b52e9a0ccd1c6e1",
+    "examples/entropy_vectors.rs": "e91d80dbcede0174074fc7891a9c08bf8db68f2f97aae32c5f1081656556fa89",
+    "examples/monitor/audio.rs": "7a85a7c326a75effd3062954fed22210476b5abc00d8721f2ad7786c2fbbf661",
+    "examples/monitor/main.rs": "d5f310e0093ffffd811cda29ea418b4501857fcbb6c7c0dd4a63811d07c8a6e2",
+    "examples/monitor/processor.rs": "a60139cd72f6acd9916dcd73e7c7310f01567585f62cfb431d5b942b75579a38",
+    "examples/monitor/resample.rs": "2c596251690b7edc865fdb8060369f689b54f224f9b940562bc96b743e9c2593",
+    "examples/monitor/ui.rs": "a49874f47fa21f38b3d194e195b64fcb439900b5e73c56f4a61a1ed3c664fcd1",
+    "examples/opus_call.rs": "2e29c6f20888213d76936747093f8b774eae18fa52890c69184798909c1e1b4d",
+    "examples/opus_roundtrip.rs": "aad7883e86a8f43865b5ad1678a6e7035106bbdccc31cbd888ba439693bc1515",
+    "examples/roundtrip.rs": "cc7d00a39f05f4b4df994687fc237be923b7e2c64459b37b04e78e11e425db3e"
+  },
+  "scope": "untimed2130B0 default codec hashes/metadata; no timing/quality/PCM-parity claim",
+  "freezer": {
+    "path": "/tmp/snacka-mapped-controls-production-cgu16.py",
+    "sha256": "cf92c28d29dbdd92675195c221e054fd1f10dc0ecceaa4cceb350a0213678cc8"
+  },
+  "library": {
+    "path": "/tmp/snacka-opus-mapped-controls-20261015/production-cgu16/target/release/libsnacka.rlib",
+    "sha256": "c9b1e40fe390011c106bd2d12ef9460e4d9b89f86d5b0203291e79cde6547c79"
+  },
+  "binary": {
+    "path": "/tmp/snacka-opus-mapped-controls-20261015/production-cgu16/benchmark-opus-decode",
+    "sha256": "5f800bbb52a170811a4909ef750da285340aae43fc73154db506f14520ca6d78"
+  },
+  "logs": {
+    "library-build.log": "4d8f5e9657595454661e3b518cca51e264be2aaea569e54341dc61eed5f59fec",
+    "bridge-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

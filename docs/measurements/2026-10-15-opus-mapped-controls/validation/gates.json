@@ -1,0 +1,16 @@
+{
+  "source_commit": "6b50c8ed55eb9a3a978b2ff097f9dd00e171ba00",
+  "tests": {
+    "suites": 18,
+    "passed": 395,
+    "failed": 0,
+    "ignored": 0
+  },
+  "full_release_exit": 0,
+  "strict_release_all_target_clippy_exit": 0,
+  "fmt_exit": 0,
+  "package_fixture": "tests/fixtures/opus-short-frame-continuation.bin",
+  "package_fixture_sha256": "10c34e86d48eca7ab7d535e9563d910e9228ecb79cf4b203b77db59bb312fe0b",
+  "no_new_timing": true,
+  "source_frozen": true
+}

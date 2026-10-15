@@ -1,0 +1,882 @@
+[
+  {
+    "rate": 8000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      160,
+      160
+    ],
+    "expected_children": [
+      0,
+      160,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 8000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "children": [
+      320,
+      0,
+      320
+    ],
+    "expected_children": [
+      320,
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 12000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      240,
+      240
+    ],
+    "expected_children": [
+      0,
+      240,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 12000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "children": [
+      480,
+      0,
+      480
+    ],
+    "expected_children": [
+      480,
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 16000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      320,
+      320
+    ],
+    "expected_children": [
+      0,
+      320,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 16000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "children": [
+      640,
+      0,
+      640
+    ],
+    "expected_children": [
+      640,
+      0,
+      640
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 24000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      480,
+      480
+    ],
+    "expected_children": [
+      0,
+      480,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 24000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "children": [
+      960,
+      0,
+      960
+    ],
+    "expected_children": [
+      960,
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 48000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      960,
+      960
+    ],
+    "expected_children": [
+      0,
+      960,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 48000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "children": [
+      1920,
+      0,
+      1920
+    ],
+    "expected_children": [
+      1920,
+      0,
+      1920
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 8000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      160,
+      160
+    ],
+    "expected_children": [
+      0,
+      160,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 8000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "children": [
+      320,
+      0,
+      320
+    ],
+    "expected_children": [
+      320,
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 12000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      240,
+      240
+    ],
+    "expected_children": [
+      0,
+      240,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 12000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "children": [
+      480,
+      0,
+      480
+    ],
+    "expected_children": [
+      480,
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 16000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      320,
+      320
+    ],
+    "expected_children": [
+      0,
+      320,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 16000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "children": [
+      640,
+      0,
+      640
+    ],
+    "expected_children": [
+      640,
+      0,
+      640
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 24000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      480,
+      480
+    ],
+    "expected_children": [
+      0,
+      480,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 24000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "children": [
+      960,
+      0,
+      960
+    ],
+    "expected_children": [
+      960,
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 48000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      960,
+      960
+    ],
+    "expected_children": [
+      0,
+      960,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 48000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "children": [
+      1920,
+      0,
+      1920
+    ],
+    "expected_children": [
+      1920,
+      0,
+      1920
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 8000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      160,
+      160
+    ],
+    "expected_children": [
+      0,
+      160,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 8000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "children": [
+      320,
+      0,
+      320
+    ],
+    "expected_children": [
+      320,
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 12000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      240,
+      240
+    ],
+    "expected_children": [
+      0,
+      240,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 12000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "children": [
+      480,
+      0,
+      480
+    ],
+    "expected_children": [
+      480,
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 16000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      320,
+      320
+    ],
+    "expected_children": [
+      0,
+      320,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 16000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "children": [
+      640,
+      0,
+      640
+    ],
+    "expected_children": [
+      640,
+      0,
+      640
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 24000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      480,
+      480
+    ],
+    "expected_children": [
+      0,
+      480,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 24000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "children": [
+      960,
+      0,
+      960
+    ],
+    "expected_children": [
+      960,
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 48000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      960,
+      960
+    ],
+    "expected_children": [
+      0,
+      960,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 48000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "children": [
+      1920,
+      0,
+      1920
+    ],
+    "expected_children": [
+      1920,
+      0,
+      1920
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 8000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      160,
+      160
+    ],
+    "expected_children": [
+      0,
+      160,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 8000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "children": [
+      320,
+      0,
+      320
+    ],
+    "expected_children": [
+      320,
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 12000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      240,
+      240
+    ],
+    "expected_children": [
+      0,
+      240,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 12000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "children": [
+      480,
+      0,
+      480
+    ],
+    "expected_children": [
+      480,
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 16000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      320,
+      320
+    ],
+    "expected_children": [
+      0,
+      320,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 16000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "children": [
+      640,
+      0,
+      640
+    ],
+    "expected_children": [
+      640,
+      0,
+      640
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 24000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      480,
+      480
+    ],
+    "expected_children": [
+      0,
+      480,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 24000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "children": [
+      960,
+      0,
+      960
+    ],
+    "expected_children": [
+      960,
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 48000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "children": [
+      0,
+      960,
+      960
+    ],
+    "expected_children": [
+      0,
+      960,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  },
+  {
+    "rate": 48000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "children": [
+      1920,
+      0,
+      1920
+    ],
+    "expected_children": [
+      1920,
+      0,
+      1920
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "first_child_match": true
+  }
+]
