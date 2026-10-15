@@ -28,6 +28,7 @@ jobs:
       - run: cargo test --locked --release --features opus
       - run: cargo test --locked --release --features opus --example opus_roundtrip
       - run: python -m unittest discover -s tools/reference -p test_check_opus_vectors.py
+      - run: python -m unittest discover -s tools -p test_smoke_call.py
       - if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libasound2-dev pkg-config
       - run: cargo clippy --locked --all-targets --features live-audio -- -D warnings

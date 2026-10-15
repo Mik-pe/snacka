@@ -6,8 +6,8 @@ then validate and measure the same packets and loss history on both decoders.
 All artifacts remain outside Git. The reference library is used by this tester
 only; Snacka's production dependency graph remains entirely owned Rust.
 
-Full coverage: SILK NB/MB/WB 10/20/40/60 ms, Hybrid SWB/FB 10/20/40/60 ms,
-CELT NB/WB/SWB/FB 2.5/5/10/20 ms; mono/stereo; all five output rates; normal,
+Full coverage: SILK NB/MB/WB and Hybrid SWB/FB 10/20/40/60/80/100/120 ms,
+CELT NB/WB/SWB/FB 2.5/5/10/20/40/60/80/100/120 ms; mono/stereo; all five output rates; normal,
 two losses followed by PLC return, and PLC plus FEC followed by normal return.
 No geometry failure is silently omitted. Percentiles are batch averages, not
 individual frame deadline tails. Full defaults use 1000 alternating paired
@@ -48,9 +48,9 @@ def sources(root):
 
 def geometries():
     for mode, bands, durations in (
-        ("SILK", ("NB", "MB", "WB"), (10, 20, 40, 60)),
-        ("Hybrid", ("SWB", "FB"), (10, 20, 40, 60)),
-        ("CELT", ("NB", "WB", "SWB", "FB"), (2.5, 5, 10, 20)),
+        ("SILK", ("NB", "MB", "WB"), (10, 20, 40, 60, 80, 100, 120)),
+        ("Hybrid", ("SWB", "FB"), (10, 20, 40, 60, 80, 100, 120)),
+        ("CELT", ("NB", "WB", "SWB", "FB"), (2.5, 5, 10, 20, 40, 60, 80, 100, 120)),
     ):
         for band in bands:
             for duration in durations:
@@ -185,6 +185,7 @@ def main():
         "reference_library": str(library_path), "reference_sha256": sha256(library_path),
         "rustc": subprocess.check_output(["rustc", "--version"], text=True).strip(),
         "platform": platform.platform(), "machine": platform.machine(),
+        "macos_qos_requested": os.environ.get("SNACKA_BENCH_QOS", "system-default"),
         "binary_sha256": sha256(binary), "sources": initial_sources,
         "binary_source_binding": "matching build source/reference SHA256 manifest",
         "timed_batches_per_case": batches, "minimum_batch_ns": 200000,

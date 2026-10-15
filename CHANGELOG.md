@@ -2,6 +2,10 @@
 
 ## 0.2.0
 
+- Add a stateful mapped multistream encoder with allocation-free processing and
+  aggregate packet budget preservation, plus ordinary 80/100/120 ms packets.
+- Make `has_fec` report previous-packet recovery from the first frame instead of
+  redundancy internal to a multi-frame packet.
 - Add the owned SILK/Hybrid encoder and a common configurable Opus encoder,
   including voiced prediction, real in-band FEC, DTX and transition redundancy.
 - Add all five standard decoder output rates, history-based packet-loss

@@ -7,7 +7,7 @@
 
 use super::packet::{Packet, PacketError};
 use super::repacketize::Repacketizer;
-use super::{DecodeError, Decoder, Recovery};
+use super::{DecodeError, Decoder, EncodeError, Encoder, EncoderConfig, Recovery};
 use std::fmt;
 use std::iter::FusedIterator;
 
@@ -26,6 +26,8 @@ pub enum Error {
     Output,
     /// One constituent decoder rejected its contents or output arguments.
     Decode(DecodeError),
+    /// One constituent encoder rejected its configuration or input.
+    Encode(EncodeError),
 }
 
 impl fmt::Display for Error {
@@ -37,6 +39,7 @@ impl fmt::Display for Error {
             Self::Duration => formatter.write_str("Opus multistream packet durations differ"),
             Self::Output => formatter.write_str("Opus multistream packet output is too small"),
             Self::Decode(error) => error.fmt(formatter),
+            Self::Encode(error) => error.fmt(formatter),
         }
     }
 }
@@ -49,6 +52,11 @@ impl From<PacketError> for Error {
 impl From<DecodeError> for Error {
     fn from(error: DecodeError) -> Self {
         Self::Decode(error)
+    }
+}
+impl From<EncodeError> for Error {
+    fn from(error: EncodeError) -> Self {
+        Self::Encode(error)
     }
 }
 
@@ -275,6 +283,199 @@ impl<'a> Iterator for Packets<'a> {
 }
 impl ExactSizeIterator for Packets<'_> {}
 impl FusedIterator for Packets<'_> {}
+
+/// Stateful multistream encoder with explicit per-stream rate and codec policies.
+///
+/// Input is normalized, interleaved 48 kHz PCM in the mapping's I/O channel order.
+/// When several input channels map to one coded channel, the first is encoded;
+/// the others are aliases on decoding. Mapping value 255 omits that input slot.
+/// Both channels of every coupled stream must be mapped. Unmapped mono streams
+/// encode silence. Construction allocates all codec and working memory;
+/// encoding, status inspection and reset do not allocate.
+///
+/// ```
+/// use snacka::opus::{Application, Bandwidth, EncoderConfig, FrameDuration};
+/// use snacka::opus::multistream::{ChannelMapping, MultistreamEncoder};
+///
+/// let mapping = ChannelMapping::new(2, 1, &[0, 1, 2]).unwrap();
+/// let stereo = EncoderConfig::new(64_000, 2, FrameDuration::Ms20,
+///     Bandwidth::Fullband, Application::Audio).unwrap();
+/// let mut encoder = MultistreamEncoder::new(mapping,
+///     &[stereo, EncoderConfig::default()]).unwrap();
+/// let mut packet = vec![0; encoder.max_packet_bytes()];
+/// let length = encoder.encode(&[0.0; 960 * 3], &mut packet).unwrap();
+/// assert!(length <= packet.len());
+/// ```
+pub struct MultistreamEncoder {
+    mapping: ChannelMapping,
+    encoders: Vec<Encoder>,
+    sources: [Option<usize>; 255],
+    scratch: Vec<f32>,
+    packets: Vec<Vec<u8>>,
+    lengths: Vec<usize>,
+    max_packet_bytes: usize,
+}
+
+impl MultistreamEncoder {
+    /// Prepare one encoder configuration for each stream in coded order.
+    ///
+    /// Initial coupled streams require stereo configurations; remaining streams
+    /// require mono. Every stream must use the same packet duration. Individual
+    /// modes, bandwidths, bitrates, rate policies, FEC and DTX may differ.
+    pub fn new(mapping: ChannelMapping, configs: &[EncoderConfig]) -> Result<Self, Error> {
+        if configs.len() != usize::from(mapping.streams()) {
+            return Err(Error::Streams);
+        }
+        let duration = configs[0].duration();
+        for (stream, config) in configs.iter().enumerate() {
+            let channels = if stream < usize::from(mapping.coupled_streams()) {
+                2
+            } else {
+                1
+            };
+            if config.channels() != channels {
+                return Err(Error::Mapping);
+            }
+            if config.duration() != duration {
+                return Err(Error::Duration);
+            }
+        }
+        let mut sources = [None; 255];
+        for (input, &coded) in mapping.channels().iter().enumerate() {
+            if coded != 255 && sources[usize::from(coded)].is_none() {
+                sources[usize::from(coded)] = Some(input);
+            }
+        }
+        if sources[..2 * usize::from(mapping.coupled_streams())]
+            .iter()
+            .any(Option::is_none)
+        {
+            return Err(Error::Mapping);
+        }
+        let max_packet_bytes = configs
+            .iter()
+            .map(|config| config.max_packet_bytes())
+            .sum::<usize>()
+            + 2 * (configs.len() - 1);
+        let mut encoders = Vec::with_capacity(configs.len());
+        let mut packets = Vec::with_capacity(configs.len());
+        for &config in configs {
+            encoders.push(Encoder::new(config)?);
+            packets.push(vec![0; config.max_packet_bytes()]);
+        }
+        Ok(Self {
+            mapping,
+            encoders,
+            sources,
+            scratch: vec![0.0; 2 * duration.samples()],
+            packets,
+            lengths: vec![0; configs.len()],
+            max_packet_bytes,
+        })
+    }
+
+    /// Number of interleaved input channels, including omitted slots.
+    pub const fn channels(&self) -> usize {
+        self.mapping.output_channels()
+    }
+
+    /// Validated mapping from coded channels to input/output slots.
+    pub const fn mapping(&self) -> &ChannelMapping {
+        &self.mapping
+    }
+
+    /// Inspect one constituent encoder without changing its geometry or history.
+    pub fn stream_encoder(&self, stream: usize) -> Option<&Encoder> {
+        self.encoders.get(stream)
+    }
+
+    /// Output capacity required before encoding, including self-delimiter ceilings.
+    /// Actual packets may be shorter under variable rate or DTX policies.
+    pub const fn max_packet_bytes(&self) -> usize {
+        self.max_packet_bytes
+    }
+
+    /// XOR of constituent final entropy ranges, matching multistream decoding.
+    pub fn final_range(&self) -> u32 {
+        self.encoders
+            .iter()
+            .fold(0, |range, encoder| range ^ encoder.final_range())
+    }
+
+    /// Whether every stream suppressed its previous packet as a quiet interval.
+    /// Such a complete transport packet may be omitted while advancing time.
+    pub fn was_dtx(&self) -> bool {
+        self.encoders.iter().all(Encoder::was_dtx)
+    }
+
+    /// Encode one complete transport packet from the configured PCM geometry.
+    ///
+    /// PCM and [`Self::max_packet_bytes`] capacity are checked before any stream
+    /// history changes. A subsequent layer failure can advance earlier streams;
+    /// reset before continuing. Bytes beyond the returned length are untouched.
+    /// Composition retains the sum of the emitted stream packet lengths, adding
+    /// only required self-delimiters. Any removed per-stream padding is moved to
+    /// the final stream, preserving aggregate constant-rate byte budgets.
+    pub fn encode(&mut self, input: &[f32], output: &mut [u8]) -> Result<usize, Error> {
+        let samples = self.encoders[0].config().duration().samples();
+        if input.len() != samples * self.channels()
+            || input
+                .iter()
+                .any(|sample| !sample.is_finite() || !(-1.0..=1.0).contains(sample))
+        {
+            return Err(EncodeError::Input.into());
+        }
+        if output.len() < self.max_packet_bytes {
+            return Err(Error::Output);
+        }
+        let coupled = usize::from(self.mapping.coupled_streams());
+        for stream in 0..self.encoders.len() {
+            let channels = self.encoders[stream].config().channels();
+            let first_channel = if stream < coupled {
+                2 * stream
+            } else {
+                stream + coupled
+            };
+            for coded in 0..channels {
+                for (sample, frame) in input.chunks_exact(self.channels()).enumerate() {
+                    self.scratch[sample * channels + coded] =
+                        self.sources[first_channel + coded].map_or(0.0, |source| frame[source]);
+                }
+            }
+            self.lengths[stream] = self.encoders[stream].encode(
+                &self.scratch[..samples * channels],
+                &mut self.packets[stream],
+            )?;
+        }
+        let mut padding = 0;
+        let mut position = 0;
+        for stream in 0..self.encoders.len() {
+            let mut builder = Repacketizer::new();
+            builder
+                .push(&self.packets[stream][..self.lengths[stream]])
+                .map_err(writer_error)?;
+            let frames = 0..builder.frame_count();
+            let compact = builder.output_size(frames.clone()).map_err(writer_error)?;
+            padding += self.lengths[stream] - compact;
+            position += if stream + 1 == self.encoders.len() {
+                builder.write_padded(frames, &mut output[position..], compact + padding)
+            } else {
+                builder.write_self_delimited(frames, &mut output[position..])
+            }
+            .map_err(writer_error)?;
+        }
+        Ok(position)
+    }
+
+    /// Clear all stream history and scratch PCM while retaining configuration.
+    pub fn reset(&mut self) {
+        for encoder in &mut self.encoders {
+            encoder.reset();
+        }
+        self.scratch.fill(0.0);
+        self.lengths.fill(0);
+    }
+}
 
 /// Stateful multistream decoder with channel mapping and all standard Opus rates.
 ///

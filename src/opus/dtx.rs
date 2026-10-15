@@ -85,7 +85,7 @@ mod tests {
 
     #[test]
     fn hangover_and_refresh_use_audio_time_at_every_packet_duration() {
-        for samples in [120, 240, 480, 960, 1920, 2880] {
+        for samples in [120, 240, 480, 960, 1920, 2880, 3840, 4800, 5760] {
             for channels in [1, 2] {
                 let mut state = State::new();
                 let quiet = vec![0.0; samples * channels];

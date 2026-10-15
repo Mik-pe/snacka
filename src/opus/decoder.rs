@@ -879,6 +879,7 @@ impl Decoder {
                     &channel_pcm[..internal],
                     &mut self.lowband[channel][..rendered],
                     plan,
+                    self.channels == 1 && internal >= 320,
                 )?;
             }
         }

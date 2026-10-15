@@ -39,8 +39,9 @@ keep the goal open.
 - Encoding: identical changing PCM, actual wire mode, bandwidth, frame duration,
   channel count and complete packet byte budget; record reference complexity.
 - Decoding and loss recovery: identical packets, output rates, channel counts
-  and loss schedules, covering SILK, Hybrid and CELT. Run the full 1,080-case
-  decoder matrix, including ordinary decode, PLC return and FEC return.
+  and loss schedules, covering SILK, Hybrid and CELT. Run the full 2,130-case
+  decoder matrix, including ordinary decode, PLC return, FEC return and
+  aggregated packets through 120 ms.
 - Evidence: serialize measurements on frozen sources, alternate codec order
   and retain raw results, source hashes, toolchain, build flags, libopus version
   and host details. Repeat final measurements to confirm parity. Track ARM64

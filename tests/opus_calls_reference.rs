@@ -507,6 +507,112 @@ fn repacketized_cbr_vbr_padding_and_maximum_duration_decode_natively() {
 }
 
 #[test]
+fn owned_long_packets_match_native_durations_ranges_and_return_from_loss() {
+    use snacka::opus::{
+        Application, Bandwidth, Encoder as OwnedEncoder, EncoderConfig, FrameDuration, RateControl,
+    };
+    for (mode, bandwidth) in [
+        (Mode::Silk, Bandwidth::Narrowband),
+        (Mode::Silk, Bandwidth::Mediumband),
+        (Mode::Silk, Bandwidth::Wideband),
+        (Mode::Hybrid, Bandwidth::Superwideband),
+        (Mode::Hybrid, Bandwidth::Fullband),
+        (Mode::Celt, Bandwidth::Narrowband),
+        (Mode::Celt, Bandwidth::Wideband),
+        (Mode::Celt, Bandwidth::Superwideband),
+        (Mode::Celt, Bandwidth::Fullband),
+    ] {
+        for channels in [1, 2] {
+            for duration in [
+                FrameDuration::Ms80,
+                FrameDuration::Ms100,
+                FrameDuration::Ms120,
+            ] {
+                for policy in [RateControl::Constant, RateControl::Variable] {
+                    let config = EncoderConfig::new(
+                        64_000 * channels as u32,
+                        channels,
+                        duration,
+                        bandwidth,
+                        Application::Voice,
+                    )
+                    .unwrap()
+                    .with_mode(mode)
+                    .unwrap()
+                    .with_rate_control(policy);
+                    let config = if mode == Mode::Celt {
+                        config
+                    } else {
+                        config.with_fec(true).unwrap()
+                    };
+                    let mut encoder = OwnedEncoder::new(config).unwrap();
+                    let samples = duration.samples();
+                    let mut packet = vec![0; config.max_packet_bytes()];
+                    let mut decoders: Vec<_> = RATES
+                        .into_iter()
+                        .map(|rate| {
+                            (
+                                Decoder::with_sample_rate(channels, rate).unwrap(),
+                                NativeDecoder::new(rate, channels),
+                            )
+                        })
+                        .collect();
+                    let mut a = vec![0.0; samples * channels];
+                    let mut b = a.clone();
+                    let mut recovered = false;
+                    for index in 0..8 {
+                        let length = encoder
+                            .encode(&voice(samples, channels, index * samples), &mut packet)
+                            .unwrap();
+                        if index == 0 {
+                            assert!(
+                                !encoder.has_fec(),
+                                "intra-packet LBRR is not previous-packet recovery"
+                            );
+                        }
+                        for (&rate, (owned, native)) in RATES.iter().zip(&mut decoders) {
+                            let expected = samples * rate as usize / 48_000;
+                            if index == 5 {
+                                continue;
+                            }
+                            if index == 6 {
+                                let recovery =
+                                    owned.recover(&packet[..length], expected, &mut a).unwrap();
+                                recovered |= recovery == Recovery::Fec;
+                                assert_eq!(
+                                    native.decode(Some(&packet[..length]), expected, true, &mut b),
+                                    expected
+                                );
+                                assert_eq!(encoder.has_fec(), recovery == Recovery::Fec);
+                            }
+                            if index == 3 {
+                                assert_eq!(owned.conceal(expected, &mut a).unwrap(), expected);
+                                assert_eq!(native.decode(None, expected, false, &mut b), expected);
+                                continue;
+                            }
+                            assert_eq!(owned.decode(&packet[..length], &mut a).unwrap(), expected);
+                            assert_eq!(
+                                native.decode(Some(&packet[..length]), expected, false, &mut b),
+                                expected
+                            );
+                            assert_eq!(owned.final_range(), encoder.final_range());
+                            assert_eq!(native.final_range(), encoder.final_range());
+                            assert!(
+                                a[..expected * channels]
+                                    .iter()
+                                    .chain(&b[..expected * channels])
+                                    .all(|value| value.is_finite())
+                            );
+                        }
+                    }
+                    assert_eq!(recovered, mode != Mode::Celt);
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn mapped_multistream_aliases_silence_and_xor_range_match_native() {
     let mapping = ChannelMapping::new(3, 1, &[0, 2, 1, 3, 255, 0]).unwrap();
     let packets = multistream_celt_packets(5);

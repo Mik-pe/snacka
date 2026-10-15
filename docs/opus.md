@@ -13,8 +13,10 @@ application, rate policy, in-band FEC and DTX. Voice mode chooses SILK or Hybrid
 audio and low-delay preferences choose CELT. An explicit mode is available.
 Invalid mode/bandwidth/duration combinations are rejected during configuration.
 
-The encoder supports one or two channels and 2.5/5/10/20/40/60 ms packet
-choices, with SILK/Hybrid starting at 10 ms. It analyzes LPC/NLSF and voiced
+The ordinary encoder supports one or two channels and
+2.5/5/10/20/40/60/80/100/120 ms packet choices, with SILK/Hybrid starting at
+10 ms. Packets longer than 60 ms compose four, five or six 20 ms frames;
+existing shorter packet choices retain their framing. It analyzes LPC/NLSF and voiced
 pitch/LTP prediction, quantizes excitation and codes the standard entropy
 models. Hybrid combines its SILK lowband and CELT highband in the same range
 coder. Constant rate pads the complete packet; variable rate compacts the
@@ -32,7 +34,10 @@ handles the mode change.
 The encoder keeps a coarse independently quantized shadow of eligible speech;
 `has_fec` reports actual emission. Changes in frame geometry and timeline gaps
 clear incompatible cached redundancy. CELT has no SILK LBRR and rejects that
-configuration.
+configuration. For packets containing several frames, `has_fec` describes the
+first frame's redundancy for the previous packet. Recovery conceals the earlier
+missing interval and recovers its available tail; redundancy in later frames
+does not make the first packet of a stream recover earlier audio.
 
 `with_dtx(true)` enables conservative quiet admission, a 200 ms hangover and
 coded inactive refreshes approximately every 400 ms. It emits valid empty
@@ -74,8 +79,18 @@ transport jitter.
 `Packet::parse` inspects borrowed ordinary framing without allocating.
 Self-delimited parsing and `Repacketizer` support CBR/VBR, padding, arbitrary
 valid frame groupings and the full 120 ms packet limit. Parallel encoders and
-self-delimited packet composition can produce multistream transport without
-requiring a C-style multistream encoder API. `ChannelMapping`,
+self-delimited packet composition remain available independently.
+`MultistreamEncoder` gathers mapped interleaved 48 kHz PCM into owned
+mono/stereo encoders and writes one transport packet. Supply one `EncoderConfig`
+per stream with equal packet durations and stereo configurations for the initial
+coupled streams. Modes, bandwidths, bitrates, rate policies, FEC and DTX may
+differ. Duplicate mapping entries encode the first input channel; 255 omits an
+input slot. Both channels of coupled streams must be mapped; unused mono streams
+encode silence. Allocate `max_packet_bytes()` of output before processing.
+Composition preserves aggregate emitted stream byte budgets plus self-delimiter
+bytes, moving removed padding into the last stream. `was_dtx()` is true only
+when every stream suppresses. Construction allocates; encoding and reset do not.
+`ChannelMapping`,
 `MultistreamDecoder` and `ProjectionDecoder` decode mapped channels and signed
 Q15 Ambisonics demixing matrices, including channel aliases and silence.
 
@@ -83,6 +98,11 @@ A malformed compressed frame can advance some history. Reset after a corrupt
 content error. Packet framing, configuration and output-capacity errors are
 checked before history changes. The APIs are native Rust contracts; they do
 not mirror the foreign codec's controls or instrumentation.
+
+Remaining encoder API gaps include input rates other than 48 kHz,
+projection/Ambisonics encoding, automatic surround bitrate allocation and
+complexity, expected-loss and constrained-VBR controls. The format and API
+extensions above do not close the separate CPU and perceptual-quality targets.
 
 ## Loss recovery and calls
 
@@ -157,9 +177,79 @@ Matched-packet decoder benchmarks feed the same packet sequence to both codecs,
 alternate their order and report paired batch-throughput p50/p95/p99. Generic
 encoder benchmarks check actual wire mode and byte budgets on identical PCM.
 Their CPU results do not establish equivalent encoder or concealment quality.
-The broader decoder matrix covers 1,080 mode/bandwidth/duration/channel/rate
-and decode/PLC/FEC-return cases. Its functional validation passed; final timing
+The broader decoder matrix covers 2,130 mode/bandwidth/duration/channel/rate
+and decode/PLC/FEC-return cases, including aggregated packets through 120 ms.
+Its functional validation passed; final timing
 must bind to the measured source snapshot.
+
+### Packet coverage and decoder follow-up, 2026-10-15
+
+The ordinary encoder now supports 80/100/120 ms packets, and
+`MultistreamEncoder` composes mapped streams without processing allocations.
+New native-reference checks cover all three long durations, both channel counts,
+CBR/VBR, all five decoder rates, PLC and previous-packet FEC. Separate duration
+switches cover redundancy cache invalidation and queued mode transitions.
+Multistream checks include 252 native-decoded packets across 84 geometries,
+aliases, silence, fractional budgets, DTX and transactional argument errors.
+
+The complete generated decoder matrix passes all 2,130 cases, including 70
+cases with actual FEC. All 1,080 cases shared with `87062cd` retain identical
+packet and owned PCM fingerprints. Independent scalar and full-transform oracles
+also check the new resampler batching and direct lapped synthesis bit for bit.
+All 317 release/reference tests pass. The 24 official-vector runs pass again
+over 40,150 packets, with minimum quality score 68.0; this does not meet the
+recommended score of 90 in every case. Clippy, allocation/stack checks, transform
+reproduction, mobile cross-checks and a 61-second sanitizer fuzz run also pass.
+
+The [source manifest](measurements/2026-10-15-opus-coverage-decoder/source.json),
+[summary](measurements/2026-10-15-opus-coverage-decoder/summary.csv) and
+[all repetitions](measurements/2026-10-15-opus-coverage-decoder/repetitions.csv)
+record a separate selected CPU run against main `87062cd` on Apple M5/macOS 27
+with libopus 1.6.1 and Rust 1.99.0. Both snapshots use the same timing bridge,
+16 codegen units, overflow checks, no LTO/native-CPU flags, disabled wrappers
+and incremental compilation. Each of three before/after repetitions reverses
+executable order; each executable alternates Snacka/libopus for 1,000 batches.
+Every measured batch meets the 200 microsecond minimum. macOS user-initiated
+QoS is requested; CPU affinity, frequency and unrelated host load are uncontrolled.
+Changes are medians of paired normalized changes; reported ratios are medians
+over executable runs. The CSV retains the range across repetitions.
+
+| Complete decoder case | Normalized p50 change | Current/libopus p50 |
+| --- | ---: | ---: |
+| SILK WB, 20 ms mono, 8 kHz | -30.94% | 1.395 |
+| Same, FEC return | -30.20% | 1.342 |
+| SILK WB, 10 ms mono, 8 kHz, PLC return | +0.46% | 1.291 |
+| CELT WB, 10 ms mono, 24 kHz | -1.91% | 1.193 |
+| CELT FB, 20 ms stereo, 48 kHz | +0.72% | 1.000 |
+| Same, PLC return | +1.02% | 1.064 |
+
+The other five case medians range from -2.59% to +0.49%; all results, including
+regressions, remain in the summary. SILK batches four independent FIR outputs
+only for mono WB-to-8-kHz blocks of at least 20 ms, preserving each accumulation
+order. Shorter blocks and stereo keep scalar filtering. CELT's 10/20 ms
+long-window inverse writes live PCM and the next overlap directly; 2.5/5 ms
+retain full materialization. These selected
+continuous cached-stream measurements do not establish callback deadlines or
+full performance acceptance. **All eleven cases still exceed libopus at one or
+more aggregated percentiles; full speed, API and perceptual parity remain open.**
+
+Reproduce on a macOS ARM64 host with libopus installed under `/opt/homebrew/lib`.
+Use a fresh artifact directory outside the checkout and the direct Rust toolchain:
+
+```sh
+export SNACKA_BENCH_CHECKOUT="$PWD"
+export SNACKA_BENCH_ARTIFACTS=/tmp/snacka-opus-reproduction
+export SNACKA_RUST_TOOLCHAIN_BIN="$HOME/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin"
+mkdir -p "$SNACKA_BENCH_ARTIFACTS/baseline"
+git archive 87062cd | tar -x -C "$SNACKA_BENCH_ARTIFACTS/baseline"
+python3 "$SNACKA_BENCH_ARTIFACTS/baseline/tools/reference/benchmark_opus_matrix.py" \
+  /opt/homebrew/lib/libopus.dylib --validate-only \
+  --output-dir "$SNACKA_BENCH_ARTIFACTS/baseline-matrix"
+python3 docs/measurements/2026-10-15-opus-coverage-decoder/recorded-build.py
+python3 docs/measurements/2026-10-15-opus-coverage-decoder/recorded-run.py
+```
+
+### Earlier ARM64 measurements
 
 A serialized, frozen-source encoder run on Apple M5/macOS 27 against libopus
 1.6.1 on 2026-10-14 covered 88 matched mode/bandwidth/duration/channel cases.

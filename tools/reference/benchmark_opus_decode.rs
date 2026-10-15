@@ -30,6 +30,8 @@
 //! The `matrix` command adds paired mono/stereo measurements at every output
 //! rate, ordered packet loss, FEC and return from loss. Its batch percentiles
 //! describe continuous stream work, not individual-frame deadline tails.
+//! On macOS, `SNACKA_BENCH_QOS=user-initiated` requests that QoS class on the
+//! measuring thread before validation or timing; this does not pin a CPU.
 
 use snacka::opus::{Decoder, Mode, Packet};
 use std::{
@@ -341,6 +343,16 @@ fn timed(stream: &Stream, codec: &str, warmup: usize, passes: usize) {
     );
 }
 fn main() {
+    #[cfg(target_os = "macos")]
+    if let Ok(qos) = env::var("SNACKA_BENCH_QOS") {
+        assert_eq!(qos, "user-initiated", "unsupported benchmark QoS");
+        unsafe extern "C" {
+            fn pthread_set_qos_class_self_np(class: u32, priority: c_int) -> c_int;
+        }
+        // SAFETY: Apple's public pthread/qos.h accepts QOS_CLASS_USER_INITIATED
+        // (0x19, sys/qos.h) and relative priority zero for the calling thread.
+        assert_eq!(unsafe { pthread_set_qos_class_self_np(0x19, 0) }, 0);
+    }
     let args: Vec<_> = env::args().collect();
     if args.get(1).map(String::as_str) == Some("matrix") {
         matrix::main(&args[2..]);
@@ -703,7 +715,7 @@ mod matrix {
         let mut operation_error_energy = [0.0f64; 4];
         let mut operation_reference_energy = [0.0f64; 4];
         let mut bands = [0usize; 5];
-        let mut durations = [0usize; 6];
+        let mut durations = [0usize; 9];
         let mut coded_channels = [0usize; 2];
         for record in &stream.records {
             let packet = Packet::parse(&record.packet).unwrap();
@@ -721,7 +733,10 @@ mod matrix {
                 960 => 3,
                 1920 => 4,
                 2880 => 5,
-                _ => panic!("matrix supports 2.5 through 60 ms packets"),
+                3840 => 6,
+                4800 => 7,
+                5760 => 8,
+                _ => panic!("matrix supports 2.5 through 120 ms packets"),
             }] += 1;
             coded_channels[usize::from(packet.toc().channels()) - 1] += 1;
         }
@@ -776,15 +791,27 @@ mod matrix {
         let mut own_ns = Vec::with_capacity(batches);
         let mut native_ns = Vec::with_capacity(batches);
         if batches != 0 {
+            // Let the measuring thread and CPU reach their sustained state
+            // before choosing a batch size. Calibrating a cold/slow core can
+            // otherwise leave later batches below the requested time floor.
+            let warmup = Instant::now();
+            while warmup.elapsed().as_millis() < 100 {
+                owned_pass(&mut owned, &stream, rate, &actions, &mut left, 1);
+                native_pass(&mut native, &stream, rate, &actions, &mut right, 1);
+            }
             // Calibration is outside measurements. Both sides receive the same
             // number of repeated cached streams within each paired batch.
             loop {
-                let start = Instant::now();
-                owned_pass(&mut owned, &stream, rate, &actions, &mut left, repeats);
-                let a = start.elapsed().as_nanos() as u64;
-                let start = Instant::now();
-                native_pass(&mut native, &stream, rate, &actions, &mut right, repeats);
-                let b = start.elapsed().as_nanos() as u64;
+                let mut a = u64::MAX;
+                let mut b = u64::MAX;
+                for _ in 0..3 {
+                    let start = Instant::now();
+                    owned_pass(&mut owned, &stream, rate, &actions, &mut left, repeats);
+                    a = a.min(start.elapsed().as_nanos() as u64);
+                    let start = Instant::now();
+                    native_pass(&mut native, &stream, rate, &actions, &mut right, repeats);
+                    b = b.min(start.elapsed().as_nanos() as u64);
+                }
                 if a.min(b) >= minimum * 3 {
                     break;
                 }
@@ -861,7 +888,7 @@ mod matrix {
             .collect::<Vec<_>>()
             .join(",");
         println!(
-            "{{\"kind\":\"paired_decoder_matrix\",\"libopus_version\":{},\"sample_rate\":{rate},\"channels\":{channels},\"schedule\":{},\"timed_batches\":{batches},\"requested_minimum_batch_ns\":{minimum},\"fec_events\":{fec_events},\"all_sample_counts_match\":true,\"ordinary_and_plc_final_ranges_match\":true,\"recovery_intervals\":[{recovery_ranges}],\"recovery_interval_scope\":\"owned consumed Header/LBRR prefix; reference FEC debug state may include Hybrid PLC RNG; comparison is reported, ordinary following packet remains exact\",\"bandwidth_packet_counts\":{bands:?},\"duration_packet_counts_2_5_5_10_20_40_60\":{durations:?},\"coded_channel_packet_counts\":{coded_channels:?},\"reference_pcm_error_rms\":{},\"reference_pcm_rms\":{},\"reference_pcm_max_error\":{max_error},\"pcm_by_operation_kind\":{{{pcm_by_operation}}},\"pcm_diagnostic_scope\":\"unshifted PCM by current operation; coded packets can follow differing PLC histories; error metrics are not quality acceptance\",\"scope\":\"continuous ordered cached streams; no constructor, reset, IO, validation or final-range calls in timers; alternating codec order\",{}{timing}}}",
+            "{{\"kind\":\"paired_decoder_matrix\",\"libopus_version\":{},\"sample_rate\":{rate},\"channels\":{channels},\"schedule\":{},\"timed_batches\":{batches},\"requested_minimum_batch_ns\":{minimum},\"fec_events\":{fec_events},\"all_sample_counts_match\":true,\"ordinary_and_plc_final_ranges_match\":true,\"recovery_intervals\":[{recovery_ranges}],\"recovery_interval_scope\":\"owned consumed Header/LBRR prefix; reference FEC debug state may include Hybrid PLC RNG; comparison is reported, ordinary following packet remains exact\",\"bandwidth_packet_counts\":{bands:?},\"duration_packet_counts_2_5_5_10_20_40_60_80_100_120\":{durations:?},\"coded_channel_packet_counts\":{coded_channels:?},\"reference_pcm_error_rms\":{},\"reference_pcm_rms\":{},\"reference_pcm_max_error\":{max_error},\"pcm_by_operation_kind\":{{{pcm_by_operation}}},\"pcm_diagnostic_scope\":\"unshifted PCM by current operation; coded packets can follow differing PLC histories; error metrics are not quality acceptance\",\"scope\":\"continuous ordered cached streams; no constructor, reset, IO, validation or final-range calls in timers; alternating codec order\",{}{timing}}}",
             json_string(&version()),
             json_string(schedule),
             (error_energy / compared as f64).sqrt(),
