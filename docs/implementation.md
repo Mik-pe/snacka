@@ -158,10 +158,10 @@ frame switching or production quality claim.
 2. Improve packet-loss concealment and transitions using reproducible isolated
    and burst loss traces. Prevent clicks and limit error propagation without
    requiring reliable transport.
-3. Profile complete processing on ARM64 and x86-64, including mobile hardware,
-   initialization, stream storage, individual callback tails under load and
-   battery use. Optimize measured bottlenecks while retaining independent
-   mathematical accuracy tests.
+3. Profile complete processing on macOS ARM64, including initialization, stream
+   storage, individual callback tails under load and power use. Optimize
+   measured bottlenecks while retaining independent mathematical accuracy tests.
+   Revisit other hosts after the macOS priority is met.
 4. Explore small causal neural postfilters only after the DSP baseline and
    evaluation pipeline are credible. Integrate models only with measured
    benefit, appropriate training data and compatible weight licensing. No
