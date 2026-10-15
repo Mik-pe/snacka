@@ -22,7 +22,7 @@ pub enum Error {
     Packet(PacketError),
     /// Encoded stream packets have different durations.
     Duration,
-    /// The packet composition output is too small.
+    /// Packet output or prepared per-stream packet storage is too small.
     Output,
     /// One constituent decoder rejected its contents or output arguments.
     Decode(DecodeError),
@@ -407,6 +407,65 @@ impl MultistreamEncoder {
     /// Inspect one constituent encoder without changing its geometry or history.
     pub fn stream_encoder(&self, stream: usize) -> Option<&Encoder> {
         self.encoders.get(stream)
+    }
+
+    /// Apply one validated policy per coded stream without allocating.
+    ///
+    /// Mapping, coded channel counts, input sample rate and packet duration stay
+    /// fixed. Bitrate, bandwidth, application preference, explicit wire mode,
+    /// rate policy, FEC and DTX may change within the prepared storage. An
+    /// explicit mode overrides the application preference; see
+    /// [`EncoderConfig::mode`] and [`EncoderConfig::with_mode`]. Each target's
+    /// [`EncoderConfig::max_packet_bytes`] must not exceed that stream's original
+    /// packet-buffer length; a larger target returns [`Error::Output`]. Shrinking
+    /// then restoring a budget within that original ceiling is supported.
+    ///
+    /// The complete list's validity and geometry are checked before capacity,
+    /// and every check precedes mutation. Rejection preserves all configurations,
+    /// prediction history and previous-packet outcomes. Accepted changes reuse
+    /// [`Encoder::reconfigure`], including its fractional-clock, FEC-cache and
+    /// DTX-clock rules, without reconstructing or resetting the codec owners.
+    /// Immediate reconfiguration also clears each child's pending policy.
+    /// Previous-packet ranges, FEC and DTX outcomes remain observable.
+    ///
+    /// This applies immediately, before the next packet; it does not queue end
+    /// transition redundancy. Allocate output for the updated
+    /// [`Self::max_packet_bytes`] before calling [`Self::encode`].
+    pub fn reconfigure(&mut self, configs: &[EncoderConfig]) -> Result<(), Error> {
+        if configs.len() != self.encoders.len() {
+            return Err(Error::Streams);
+        }
+        let current = self.encoders[0].config();
+        for (stream, &config) in configs.iter().enumerate() {
+            config.validate()?;
+            if config.channels() != self.encoders[stream].config().channels() {
+                return Err(Error::Mapping);
+            }
+            if config.duration() != current.duration() {
+                return Err(Error::Duration);
+            }
+            if config.sample_rate() != current.sample_rate() {
+                return Err(EncodeError::Argument.into());
+            }
+        }
+        for (&config, packet) in configs.iter().zip(&self.packets) {
+            if config.max_packet_bytes() > packet.len() {
+                return Err(Error::Output);
+            }
+        }
+        let max_packet_bytes = configs
+            .iter()
+            .map(|config| config.max_packet_bytes())
+            .sum::<usize>()
+            + 2 * (configs.len() - 1);
+        for (encoder, &config) in self.encoders.iter_mut().zip(configs) {
+            // All ordinary validation and the unchanged channel/rate geometry
+            // were checked above. The current ordinary reconfigure has no
+            // remaining failure path under these conditions.
+            encoder.reconfigure(config)?;
+        }
+        self.max_packet_bytes = max_packet_bytes;
+        Ok(())
     }
 
     /// Output capacity required before encoding, including self-delimiter ceilings.

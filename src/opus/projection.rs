@@ -174,6 +174,18 @@ impl ProjectionEncoder {
         self.encoder.stream_encoder(stream)
     }
 
+    /// Apply one immediate policy per coded stream without allocating.
+    ///
+    /// The mixing/demixing matrices, mapping, coded channel counts, input rate
+    /// and packet duration remain fixed. The complete list is checked before
+    /// mutation; each requested packet budget must fit its originally prepared
+    /// stream buffer. Accepted changes preserve the ordinary codec histories
+    /// and previous-packet outcomes, with the existing FEC/DTX clock semantics.
+    /// See [`MultistreamEncoder::reconfigure`] for the capacity and error rules.
+    pub fn reconfigure(&mut self, configs: &[EncoderConfig]) -> Result<(), Error> {
+        self.encoder.reconfigure(configs)
+    }
+
     /// Required output capacity, including every stream's self-delimiter ceiling.
     pub const fn max_packet_bytes(&self) -> usize {
         self.encoder.max_packet_bytes()
