@@ -1,0 +1,21 @@
+{
+  "source_commit": "8f723ba1f35c053e1cc840f38a4b20446a127dde",
+  "baseline_commit": "cca87dd757d96623b91bff81d34a021e5a3e2792",
+  "cases": 924,
+  "traces": 2800,
+  "whole_success_traces": 2578,
+  "whole_success_packets": 267374,
+  "prefix_traces_before_old_refusal": 222,
+  "prefix_packets": 1530,
+  "baseline_refusal_traces": 222,
+  "candidate_refusal_traces": 0,
+  "candidate_full_packets": 288686,
+  "exact_whole_success_traces": 2578,
+  "exact_prefix_traces": 222,
+  "regressions": [],
+  "scope": "924 historical geometries/signals; no attenuation/retry. Exact entire baseline-success traces, otherwise exact packets/metadata/ordinary-PLC-FEC output only before first baseline refusal. Candidate full traces are separately validated, not compared after old refusals.",
+  "all_exact": true,
+  "rows_sha256": "3af8f878284d2b5a393a42248f8d8f9a0dd30c628111437c8ae14cf47fd77a4c",
+  "probe_sha256": "6b3d6db5e171f4cf0003d1344ffa917e3d95037599189d8c1c5bd41b06080e0e",
+  "runner_sha256": "89c388d073854a5d7f61792179b093f07a537909d7effb80af5c034deb86b715"
+}

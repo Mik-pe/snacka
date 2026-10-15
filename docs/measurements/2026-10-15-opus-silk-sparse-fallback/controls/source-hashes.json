@@ -1,0 +1,19 @@
+{
+  "baseline_commit": "cca87dd",
+  "candidate_commit": "8f723ba1f35c053e1cc840f38a4b20446a127dde",
+  "sha256": {
+    "/tmp/snacka-opus-silk-sparse-fallback-20261015/src/opus/silk/encoder.rs": "3187424a35f6549663ad22a63718fcfdb865d240bd5bc5a51cc2e892dc6daa4e",
+    "/tmp/snacka-opus-silk-sparse-fallback-20261015/src/opus/silk/quantize.rs": "0e9da11f452d34b54d9b9706017a05e162786f2164f4cedb2229ca8a2483e699",
+    "/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/controls/normal.rs": "6d42805c7044b805dc1953781dd84c327b817d4ea2eadb25618a725b36309a3c",
+    "/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/controls/fallback.rs": "5e29b40e0b38a749f5aa6feb7bedca0c43dd63dbf8b18a760617cc1c787cd637",
+    "/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/controls/composition.rs": "240d4346c17da8f4d1c788402a62f1a60a4fe0aca64139097840dd26b8b92db1",
+    "/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/controls/late_output.rs": "81b5952bb1d595c562e62f3ec52c91ad1df1892ab3bd62e22268650afc25833c",
+    "/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/controls/compare_normal.py": "dd68238eadf2da371732de363b4206db13b53399394e9d69a3d7dcb8b106edda",
+    "/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/controls/compare_fallback.py": "c493a1d8fc62ad97fa69eeb485d56c374798038ddc87d3861d8ecb9a897125d6",
+    "/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/controls/compare_composition.py": "e96640bf65cb6d61d5036cfe14696411fc06fae276d4d51b53b1df1e890359b1",
+    "/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/controls/native_compositions.py": "9071a04008aced40341cf82f5d7276833249d8deb138b3234172c32102f59e08",
+    "/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/controls/reproduce.sh": "329470ad8c264be9352ba15aa34bfd0d50925dab684cca0e0e727886ccb23214",
+    "/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/libsnacka_baseline_cca.rlib": "26b742d82012354d48c0c693e05f6f2759d172266a3a918d669d437784552656",
+    "/tmp/snacka-opus-silk-sparse-fallback-artifacts-20261015/libsnacka_sparse.rlib": "d2bcfa54991cb2e7f29bde23ac7fe90c5533ea7d9ff61bcddf492dee3a638ff1"
+  }
+}

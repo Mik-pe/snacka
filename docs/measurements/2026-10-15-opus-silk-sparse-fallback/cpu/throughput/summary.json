@@ -1,0 +1,340 @@
+{
+  "source_candidate": "8f723ba1f35c053e1cc840f38a4b20446a127dde",
+  "source_baseline": "cca87dd757d96623b91bff81d34a021e5a3e2792",
+  "method": "3ABBAquartets/case; pairednative normalization controls CPU drift; batch percentiles are not individual callback tails",
+  "effects": [
+    {
+      "case": "nb10m12",
+      "repetition": 0,
+      "paired_normalized_change_percent": 2.7230209874278044,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "nb10s24",
+      "repetition": 0,
+      "paired_normalized_change_percent": 1.9354836860910885,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "mb20m16",
+      "repetition": 0,
+      "paired_normalized_change_percent": 1.866119089732865,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb10m24",
+      "repetition": 0,
+      "paired_normalized_change_percent": 0.674815797603534,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb20m12",
+      "repetition": 0,
+      "paired_normalized_change_percent": 1.1753841005892385,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb20s48",
+      "repetition": 0,
+      "paired_normalized_change_percent": 1.2140881460963149,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb20m24fec",
+      "repetition": 0,
+      "paired_normalized_change_percent": 1.002013665370427,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    {
+      "case": "wb60s48fec",
+      "repetition": 0,
+      "paired_normalized_change_percent": 1.2638526609259904,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    {
+      "case": "hybrid20m32fec",
+      "repetition": 0,
+      "paired_normalized_change_percent": 0.3175040795967643,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    {
+      "case": "celt20m32",
+      "repetition": 0,
+      "paired_normalized_change_percent": 0.06037343138292073,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "nb10m12",
+      "repetition": 1,
+      "paired_normalized_change_percent": 1.0659279183607318,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "nb10s24",
+      "repetition": 1,
+      "paired_normalized_change_percent": 1.1608649307645047,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "mb20m16",
+      "repetition": 1,
+      "paired_normalized_change_percent": -0.28243427471090765,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb10m24",
+      "repetition": 1,
+      "paired_normalized_change_percent": 0.1980615551163023,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb20m12",
+      "repetition": 1,
+      "paired_normalized_change_percent": 1.3356429809803005,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb20s48",
+      "repetition": 1,
+      "paired_normalized_change_percent": 1.6121839967093932,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb20m24fec",
+      "repetition": 1,
+      "paired_normalized_change_percent": 0.72523993919138,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    {
+      "case": "wb60s48fec",
+      "repetition": 1,
+      "paired_normalized_change_percent": -0.5746609562775284,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    {
+      "case": "hybrid20m32fec",
+      "repetition": 1,
+      "paired_normalized_change_percent": 3.135336003792877,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    {
+      "case": "celt20m32",
+      "repetition": 1,
+      "paired_normalized_change_percent": -1.146740104991395,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "nb10m12",
+      "repetition": 2,
+      "paired_normalized_change_percent": 4.196711572263823,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "nb10s24",
+      "repetition": 2,
+      "paired_normalized_change_percent": -0.515758063092786,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "mb20m16",
+      "repetition": 2,
+      "paired_normalized_change_percent": 0.20436508335999193,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb10m24",
+      "repetition": 2,
+      "paired_normalized_change_percent": 1.7064650444136964,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb20m12",
+      "repetition": 2,
+      "paired_normalized_change_percent": 1.5792354260345087,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb20s48",
+      "repetition": 2,
+      "paired_normalized_change_percent": 1.2031531765368975,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    {
+      "case": "wb20m24fec",
+      "repetition": 2,
+      "paired_normalized_change_percent": 0.6508025274279294,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    {
+      "case": "wb60s48fec",
+      "repetition": 2,
+      "paired_normalized_change_percent": 0.7313992130991709,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    {
+      "case": "hybrid20m32fec",
+      "repetition": 2,
+      "paired_normalized_change_percent": 0.41436812485169394,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    {
+      "case": "celt20m32",
+      "repetition": 2,
+      "paired_normalized_change_percent": 0.10233543021855862,
+      "all_native_wire_matched": true,
+      "native_fec_workload_equal": true
+    }
+  ],
+  "by_case": {
+    "nb10m12": {
+      "replicate_changes_percent": [
+        2.7230209874278044,
+        1.0659279183607318,
+        4.196711572263823
+      ],
+      "median_change_percent": 2.7230209874278044,
+      "min_change_percent": 1.0659279183607318,
+      "max_change_percent": 4.196711572263823,
+      "native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    "nb10s24": {
+      "replicate_changes_percent": [
+        1.9354836860910885,
+        1.1608649307645047,
+        -0.515758063092786
+      ],
+      "median_change_percent": 1.1608649307645047,
+      "min_change_percent": -0.515758063092786,
+      "max_change_percent": 1.9354836860910885,
+      "native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    "mb20m16": {
+      "replicate_changes_percent": [
+        1.866119089732865,
+        -0.28243427471090765,
+        0.20436508335999193
+      ],
+      "median_change_percent": 0.20436508335999193,
+      "min_change_percent": -0.28243427471090765,
+      "max_change_percent": 1.866119089732865,
+      "native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    "wb10m24": {
+      "replicate_changes_percent": [
+        0.674815797603534,
+        0.1980615551163023,
+        1.7064650444136964
+      ],
+      "median_change_percent": 0.674815797603534,
+      "min_change_percent": 0.1980615551163023,
+      "max_change_percent": 1.7064650444136964,
+      "native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    "wb20m12": {
+      "replicate_changes_percent": [
+        1.1753841005892385,
+        1.3356429809803005,
+        1.5792354260345087
+      ],
+      "median_change_percent": 1.3356429809803005,
+      "min_change_percent": 1.1753841005892385,
+      "max_change_percent": 1.5792354260345087,
+      "native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    "wb20s48": {
+      "replicate_changes_percent": [
+        1.2140881460963149,
+        1.6121839967093932,
+        1.2031531765368975
+      ],
+      "median_change_percent": 1.2140881460963149,
+      "min_change_percent": 1.2031531765368975,
+      "max_change_percent": 1.6121839967093932,
+      "native_wire_matched": true,
+      "native_fec_workload_equal": true
+    },
+    "wb20m24fec": {
+      "replicate_changes_percent": [
+        1.002013665370427,
+        0.72523993919138,
+        0.6508025274279294
+      ],
+      "median_change_percent": 0.72523993919138,
+      "min_change_percent": 0.6508025274279294,
+      "max_change_percent": 1.002013665370427,
+      "native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    "wb60s48fec": {
+      "replicate_changes_percent": [
+        1.2638526609259904,
+        -0.5746609562775284,
+        0.7313992130991709
+      ],
+      "median_change_percent": 0.7313992130991709,
+      "min_change_percent": -0.5746609562775284,
+      "max_change_percent": 1.2638526609259904,
+      "native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    "hybrid20m32fec": {
+      "replicate_changes_percent": [
+        0.3175040795967643,
+        3.135336003792877,
+        0.41436812485169394
+      ],
+      "median_change_percent": 0.41436812485169394,
+      "min_change_percent": 0.3175040795967643,
+      "max_change_percent": 3.135336003792877,
+      "native_wire_matched": true,
+      "native_fec_workload_equal": false
+    },
+    "celt20m32": {
+      "replicate_changes_percent": [
+        0.06037343138292073,
+        -1.146740104991395,
+        0.10233543021855862
+      ],
+      "median_change_percent": 0.06037343138292073,
+      "min_change_percent": -1.146740104991395,
+      "max_change_percent": 0.10233543021855862,
+      "native_wire_matched": true,
+      "native_fec_workload_equal": true
+    }
+  },
+  "rows_sha256": "a2a64d12cf18428a56b5f5e6fc913c7635e56ac49778fd97d1528f300042e2b1"
+}

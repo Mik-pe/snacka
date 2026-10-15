@@ -186,13 +186,16 @@ content error. Packet framing, configuration and output-capacity errors are
 checked before history changes. The APIs are native Rust contracts; they do
 not mirror the foreign codec's controls or instrumentation.
 
-Valid-input budget robustness remains incomplete: dense or high-level SILK
-input can exhaust the regular-stage search and return `encoder::Error::Output`
-even with `max_packet_bytes()` of capacity. Reproductions include NB 12 kb/s
-10 ms clipping and WB 6 kb/s 20 ms speech. Increasing the output slice alone
-does not increase the configured packet budget, and input filtering can already
-have advanced when this internal search fails. These are encoder limitations,
-separate from transactional argument/capacity rejection and malformed decoding.
+Valid-input budget robustness is not universal. The measured baseline's regular
+SILK search rejects NB 12 kb/s 10 ms clipping and WB 6 kb/s 20 ms speech even
+with `max_packet_bytes()` of capacity. A [bounded sparse fallback](
+measurements/2026-10-15-opus-silk-sparse-fallback/README.md) removes those failures and completes all 288,686 full-amplitude packets
+in its declared matrix. It preserves all successful baseline streams and the
+prefixes before old refusals. Retained prior LBRR or minimum syntax can still
+leave insufficient room. Increasing output capacity alone does not increase
+the configured budget, and input filtering can already have advanced when an
+internal search fails. These limits are separate from transactional
+argument/capacity rejection and malformed decoding.
 
 Remaining encoder API gaps include automatic Ambisonics projection design,
 automatic surround bitrate allocation, and complexity, expected-loss and
@@ -403,6 +406,33 @@ geometries across six generated signals, plus eight development speech clips,
 retain exact packet, PCM, range, recovery and post-refusal continuation traces.
 Existing valid-input bitrate refusals remain explicit. Full CPU and perceptual
 parity remain open.
+
+### Bounded SILK refusal fallback, 2026-10-15
+
+The [frozen source and cost report](
+measurements/2026-10-15-opus-silk-sparse-fallback/cpu/README.md) records a
+functional correction with disclosed CPU cost. Only the complete ordinary
+search's refusal enables at most 96 causal sparse trials per native stage.
+All 267,374 packets from entirely successful baseline traces and 1,530 packets
+before old refusals remain exact; the candidate completes all 288,686 original
+full-amplitude packets. Post-refusal histories are independently validated.
+
+This correction has measured overhead: ten old-success throughput controls have
+median normalized changes from +0.060% to +2.723%, with all repetitions retained.
+It is not a performance win or a strict no-regression result. In a separate
+73-profile, 16-context individual-call run, all 33,088 intervals meet their
+configured period. Candidate maximum duration is 23.568 ms on a 120 ms packet;
+its largest period fraction is 2.735 ms / 10 ms, or 27.35%. These are observations
+from one process per role on one quiet M5 host; the contexts are repeated
+deterministic histories, not independent scheduler repetitions or a universal
+real-time bound. Normal callback p50 differences are not causal speed evidence.
+
+The reference uses restricted-SILK application 2052, unlike older VOIP-based
+measurements. Three FEC controls have unequal native redundancy availability,
+so their absolute parity ratios are suppressed. Native bandwidth also differs
+for the original WB 6 kb/s quality diagnostic. Quality parity, universal low-rate
+acceptance and a prior-LBRR deferral retry remain open. This report does not
+establish full functional, speed or perceptual parity.
 
 ### Earlier ARM64 measurements
 
