@@ -249,6 +249,16 @@ python3 docs/measurements/2026-10-15-opus-coverage-decoder/recorded-build.py
 python3 docs/measurements/2026-10-15-opus-coverage-decoder/recorded-run.py
 ```
 
+### SILK whitening reuse, 2026-10-15
+
+A [frozen combined-source follow-up](measurements/2026-10-15-silk-whitening-reuse/README.md)
+isolates exact whitening reuse across overlapping voiced subframes. Nine active
+decoder cases improved normalized p50 by 0.76–4.96%; the tenth case is an inert
+CELT control. The report retains all repetitions, tail regressions, complete
+build/source hashes and reproduction runners. The untimed 2,130-case matrix
+matches the identical source with only synthesis restored. Timed coverage is
+limited to ten cases; native speed and perceptual parity remain open.
+
 ### Earlier ARM64 measurements
 
 A serialized, frozen-source encoder run on Apple M5/macOS 27 against libopus
