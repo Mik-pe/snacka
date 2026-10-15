@@ -1,0 +1,66 @@
+{
+  "probe_source_sha256": "ccc6011089849110a6022c2f8ba37db30da7484c94380a26f1918c5d373a2bd6",
+  "commands": [
+    [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "--edition=2024",
+      "-O",
+      "-C",
+      "overflow-checks=yes",
+      "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/codegen/layout.rs",
+      "--extern",
+      "snacka=/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/target/release/libsnacka.rlib",
+      "-L",
+      "dependency=/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/target/release/deps",
+      "-o",
+      "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/codegen/layout-before"
+    ],
+    [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "--edition=2024",
+      "-O",
+      "-C",
+      "overflow-checks=yes",
+      "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/codegen/layout.rs",
+      "--extern",
+      "snacka=/tmp/snacka-opus-decoder-last-samples-evidence-20261015/production/target/release/libsnacka.rlib",
+      "-L",
+      "dependency=/tmp/snacka-opus-decoder-last-samples-evidence-20261015/production/target/release/deps",
+      "-o",
+      "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/codegen/layout-after"
+    ]
+  ],
+  "results": {
+    "before": {
+      "size": 4272,
+      "align": 8,
+      "library_sha256": "42245f5df07b92e67042235722657b721f77f730b5eb63a905d8d2e5ae160ce1",
+      "nm": {
+        "returncode": 0,
+        "sha256": "eb61fde315317faba53c785d824f592d87ad0f419daa6d6091a06857c6531573",
+        "bytes": 438363
+      },
+      "otool": {
+        "returncode": 0,
+        "sha256": "116e537b2a81feea2bd170e05d13ff35b7e62ab3c92ea24f84206273f70756b5",
+        "bytes": 4363016
+      }
+    },
+    "after": {
+      "size": 4280,
+      "align": 8,
+      "library_sha256": "3212c3221bf4bd072ee0b64ecd14efce2d6b2037049ce352c7729cc08ce2efe2",
+      "nm": {
+        "returncode": 0,
+        "sha256": "90af205f63596b76f649a700fd3b7bf903306f49e2a12298522ac8cb3fc0da76",
+        "bytes": 438597
+      },
+      "otool": {
+        "returncode": 0,
+        "sha256": "6565a6b96fc92074f50a44d470a77429b874529b11f4176be8cbccf0cb0a97f0",
+        "bytes": 4363848
+      }
+    }
+  },
+  "scope": "Layout-only external probe, no codec/native calls or timers; object disassembly is original production artifact."
+}

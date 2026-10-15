@@ -1,0 +1,384 @@
+{
+  "version": {
+    "oracle": "libopus 1.6.1",
+    "scope": "ordinary public duration/status only; no timing or quality acceptance"
+  },
+  "event_rows": 1120,
+  "instances": 80,
+  "events": {
+    "fresh": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": 0,
+          "before48k": null,
+          "after48k": 0,
+          "count": 80
+        }
+      ]
+    },
+    "coded-20ms-0": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": 160,
+          "before48k": 0,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 240,
+          "before48k": 0,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 320,
+          "before48k": 0,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 480,
+          "before48k": 0,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 960,
+          "before48k": 0,
+          "after48k": 960,
+          "count": 16
+        }
+      ]
+    },
+    "coded-20ms-1": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": 160,
+          "before48k": 960,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 240,
+          "before48k": 960,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 320,
+          "before48k": 960,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 480,
+          "before48k": 960,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 960,
+          "before48k": 960,
+          "after48k": 960,
+          "count": 16
+        }
+      ]
+    },
+    "plc-7.5ms": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": 60,
+          "before48k": 960,
+          "after48k": 360,
+          "count": 16
+        },
+        {
+          "return_code": 90,
+          "before48k": 960,
+          "after48k": 360,
+          "count": 16
+        },
+        {
+          "return_code": 120,
+          "before48k": 960,
+          "after48k": 360,
+          "count": 16
+        },
+        {
+          "return_code": 180,
+          "before48k": 960,
+          "after48k": 360,
+          "count": 16
+        },
+        {
+          "return_code": 360,
+          "before48k": 960,
+          "after48k": 360,
+          "count": 16
+        }
+      ]
+    },
+    "recovery-request-40ms-prefix-plus-tail": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": 320,
+          "before48k": 360,
+          "after48k": 1920,
+          "count": 16
+        },
+        {
+          "return_code": 480,
+          "before48k": 360,
+          "after48k": 1920,
+          "count": 16
+        },
+        {
+          "return_code": 640,
+          "before48k": 360,
+          "after48k": 1920,
+          "count": 16
+        },
+        {
+          "return_code": 960,
+          "before48k": 360,
+          "after48k": 1920,
+          "count": 16
+        },
+        {
+          "return_code": 1920,
+          "before48k": 360,
+          "after48k": 1920,
+          "count": 16
+        }
+      ]
+    },
+    "normal-following-recovery-20ms": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": 160,
+          "before48k": 1920,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 240,
+          "before48k": 1920,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 320,
+          "before48k": 1920,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 480,
+          "before48k": 1920,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 960,
+          "before48k": 1920,
+          "after48k": 960,
+          "count": 16
+        }
+      ]
+    },
+    "plc-40ms": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": 320,
+          "before48k": 960,
+          "after48k": 1920,
+          "count": 16
+        },
+        {
+          "return_code": 480,
+          "before48k": 960,
+          "after48k": 1920,
+          "count": 16
+        },
+        {
+          "return_code": 640,
+          "before48k": 960,
+          "after48k": 1920,
+          "count": 16
+        },
+        {
+          "return_code": 960,
+          "before48k": 960,
+          "after48k": 1920,
+          "count": 16
+        },
+        {
+          "return_code": 1920,
+          "before48k": 960,
+          "after48k": 1920,
+          "count": 16
+        }
+      ]
+    },
+    "48-implicit-2.5ms-frames-total-120ms": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": 960,
+          "before48k": 1920,
+          "after48k": 5760,
+          "count": 16
+        },
+        {
+          "return_code": 1440,
+          "before48k": 1920,
+          "after48k": 5760,
+          "count": 16
+        },
+        {
+          "return_code": 1920,
+          "before48k": 1920,
+          "after48k": 5760,
+          "count": 16
+        },
+        {
+          "return_code": 2880,
+          "before48k": 1920,
+          "after48k": 5760,
+          "count": 16
+        },
+        {
+          "return_code": 5760,
+          "before48k": 1920,
+          "after48k": 5760,
+          "count": 16
+        }
+      ]
+    },
+    "malformed-framing": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": -4,
+          "before48k": 5760,
+          "after48k": 5760,
+          "count": 80
+        }
+      ]
+    },
+    "normal-advertised-capacity-one-sample": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": -2,
+          "before48k": 5760,
+          "after48k": 5760,
+          "count": 80
+        }
+      ]
+    },
+    "invalid-plc-duration": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": -1,
+          "before48k": 5760,
+          "after48k": 5760,
+          "count": 80
+        }
+      ]
+    },
+    "reset": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": 0,
+          "before48k": null,
+          "after48k": 0,
+          "count": 80
+        }
+      ]
+    },
+    "fresh-implicit-hybrid-10ms": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": 80,
+          "before48k": 0,
+          "after48k": 480,
+          "count": 16
+        },
+        {
+          "return_code": 120,
+          "before48k": 0,
+          "after48k": 480,
+          "count": 16
+        },
+        {
+          "return_code": 160,
+          "before48k": 0,
+          "after48k": 480,
+          "count": 16
+        },
+        {
+          "return_code": 240,
+          "before48k": 0,
+          "after48k": 480,
+          "count": 16
+        },
+        {
+          "return_code": 480,
+          "before48k": 0,
+          "after48k": 480,
+          "count": 16
+        }
+      ]
+    },
+    "coded-after-implicit-short-20ms": {
+      "rows": 80,
+      "return_before_after_normalized48k_histogram": [
+        {
+          "return_code": 160,
+          "before48k": 480,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 240,
+          "before48k": 480,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 320,
+          "before48k": 480,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 480,
+          "before48k": 480,
+          "after48k": 960,
+          "count": 16
+        },
+        {
+          "return_code": 960,
+          "before48k": 480,
+          "after48k": 960,
+          "count": 16
+        }
+      ]
+    }
+  },
+  "unexpected_status_changes_on_error": [],
+  "failed_ctl_rows": [],
+  "nonfinite_success_rows": [],
+  "suffix_changed_rows": []
+}

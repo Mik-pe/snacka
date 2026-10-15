@@ -1,0 +1,9 @@
+{
+  "source_commit": "89e2b209184b43de3e69c37ad33f6b00976254f9",
+  "reviewer": "/root/pcm_api/pcm_review",
+  "source_audit": "PASS: production onlydecoder.rs metadata/outerstatus/helpers; DSP/write_output unchanged.",
+  "cost_static_review": "PASS exactsource706917/plan2081d3/runner49cc67; no executions.",
+  "cost_raw_math_audit": "PASS84processes/21quartets/0failures,168000raw,min581791ns; all nearest-rank percentiles/geometric changes/medians exact.",
+  "cost_artifact_audit": "PASS84unique planned roles in order;84stdout+84empty stderr/169raw_results pins;122sourcefilepins,2rlibs,2bins,3tools,bridge,native,6inputs;12Hybridroles eachoneFEC.",
+  "scope": "Read-only source/data arithmetic/integrity; no codec/build/native/timing executions. No speed/no-tail/callback deadline claim."
+}

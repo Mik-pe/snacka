@@ -1,0 +1,15 @@
+{
+  "compile_exitcode": 0,
+  "binary_sha256": "169cb15f795e9a0944e12f172c63410e76148f3a52376f9b3f274c2e48978073",
+  "linked_libraries": "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/native-duration-oracle:\n\t/opt/homebrew/opt/opus/lib/libopus.0.dylib (compatibility version 12.0.0, current version 12.1.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)\n",
+  "before_manifest_sha256": "308e5612c8f25c31a3e0f6a056ca0c60df684ffeae72b12978ef2c5f9fd2a11f",
+  "oracle_source_sha256": "688a2bcab8d3a792790d115dc97a96dcb39e55263f764ebf675f90b25135d8a4",
+  "native_library_sha256": "98dcd3cc62c6cf913b789051536ab246c56cc163c74bd8b4968ac467ec74b68b",
+  "scope": "Compiled and native linkage pinned before the sole native oracle execution.",
+  "run_exitcode": 0,
+  "event_rows": 1121,
+  "events_sha256": "2702f5369be387a5d043f430a2ab7957e78dce1fd9da85a7256b1127fb9fea04",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_library_unchanged": true,
+  "inputs_unchanged": true
+}

@@ -1,0 +1,228 @@
+{
+  "status": "PINNED_BEFORE_COMPILE_OR_NATIVE_EXECUTION",
+  "baseline_commit": "dccf36b564afb819e5f206f24ec8a2aa34121ef6",
+  "source_uncommitted": true,
+  "plan_sha256": "b5b6ce514e3013ab8cb6bc2c3f9a95796b965dbd43386e32a7ec40c7f94ed026",
+  "oracle_source_sha256": "688a2bcab8d3a792790d115dc97a96dcb39e55263f764ebf675f90b25135d8a4",
+  "source_original_paths_verified_identical": true,
+  "native_library": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+  "native_library_sha256": "98dcd3cc62c6cf913b789051536ab246c56cc163c74bd8b4968ac467ec74b68b",
+  "witnesses": {
+    "silk-1.packets": {
+      "source_path": "/tmp/snacka-opus-decoder-last-packet-samples-20261015/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-1.packets",
+      "frozen_path": "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/inputs/silk-1.packets",
+      "bytes": 768,
+      "sha256": "798d3ca7d0f16da195d0edff77b0677d67edb67b3fd2dbd8bcc4dfe9005bab4b",
+      "packet_lengths": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ]
+    },
+    "silk-2.packets": {
+      "source_path": "/tmp/snacka-opus-decoder-last-packet-samples-20261015/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-2.packets",
+      "frozen_path": "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/inputs/silk-2.packets",
+      "bytes": 1488,
+      "sha256": "778207e72a859def2b98108b0d16635f3b8e171659cbdd9a77d369be30203327",
+      "packet_lengths": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ]
+    },
+    "hybrid-1.packets": {
+      "source_path": "/tmp/snacka-opus-decoder-last-packet-samples-20261015/docs/measurements/2026-10-15-opus-decoder-gain/functional/hybrid-1.packets",
+      "frozen_path": "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/inputs/hybrid-1.packets",
+      "bytes": 768,
+      "sha256": "a25d92edcd1bc7e18b29d088242aa864e7606197b1f02f6635f8a7c9b2c19075",
+      "packet_lengths": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ]
+    },
+    "hybrid-2.packets": {
+      "source_path": "/tmp/snacka-opus-decoder-last-packet-samples-20261015/docs/measurements/2026-10-15-opus-decoder-gain/functional/hybrid-2.packets",
+      "frozen_path": "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/inputs/hybrid-2.packets",
+      "bytes": 1488,
+      "sha256": "74d37d9da2e2daa6b43421c2617a83867ca6c7a834c557449b395d5908257c3a",
+      "packet_lengths": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ]
+    },
+    "celt-1.packets": {
+      "source_path": "/tmp/snacka-opus-decoder-last-packet-samples-20261015/docs/measurements/2026-10-15-opus-decoder-gain/functional/celt-1.packets",
+      "frozen_path": "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/inputs/celt-1.packets",
+      "bytes": 1968,
+      "sha256": "5b6e396a63d3bca18c123a1ee5d51ddcf55d3838a533e768ce2499a230ae8641",
+      "packet_lengths": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ]
+    },
+    "celt-2.packets": {
+      "source_path": "/tmp/snacka-opus-decoder-last-packet-samples-20261015/docs/measurements/2026-10-15-opus-decoder-gain/functional/celt-2.packets",
+      "frozen_path": "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/inputs/celt-2.packets",
+      "bytes": 3888,
+      "sha256": "0c7cbde910c284e94d52f6ce9360141d62906b4dd235c2fda60960d66d7c107e",
+      "packet_lengths": [
+        320,
+        320,
+        320,
+        320,
+        320,
+        320,
+        320,
+        320,
+        320,
+        320,
+        320,
+        320
+      ]
+    },
+    "silk-fec-1.packets": {
+      "source_path": "/tmp/snacka-opus-decoder-last-packet-samples-20261015/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-fec-1.packets",
+      "frozen_path": "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/inputs/silk-fec-1.packets",
+      "bytes": 768,
+      "sha256": "f03cd7df2cf73175ab01890566b2caddd53a46d2a240d3f663983b6a90f7c937",
+      "packet_lengths": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ]
+    },
+    "silk-fec-2.packets": {
+      "source_path": "/tmp/snacka-opus-decoder-last-packet-samples-20261015/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-fec-2.packets",
+      "frozen_path": "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/inputs/silk-fec-2.packets",
+      "bytes": 1488,
+      "sha256": "05cb79bd429e8346293671baf1cc5ef05c725435a3bd6ef1f39fc7b6a9dd6db0",
+      "packet_lengths": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ]
+    }
+  },
+  "public_headers_sha256": {
+    "/opt/homebrew/include/opus/opus.h": "036f6a6e83a20e943505743e113e90d6278cbe8240f7d5bb90b3f86261e783e3",
+    "/opt/homebrew/include/opus/opus_defines.h": "bbd4d4e3ba99f6982b1c8d8f5541814ad77d8e8babf3cc788cf23d517b2ca9d6"
+  },
+  "tool_sha256": {
+    "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc": "dd6f58440b3418aa9157ae3f05d71eecff741ca41bc4eec120e7e8f2d933b9a0",
+    "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo": "fc7aa5077deca8abc0651f329e8ec1d968f520e996a93b428f9935014362b382",
+    "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustdoc": "6fbad8d9ad24774d81de7314568739cf9ed1d46636bd2d65156694637897aeab",
+    "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustfmt": "5f552ee4d89172baa898b816c56dd5448f4060436d979ba8690d6007833996dd"
+  },
+  "rustc_version": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: aarch64-apple-darwin\nrelease: 1.99.0\nLLVM version: 23.1.1\n",
+  "cargo_files_sha256": {
+    "Cargo.toml": "60a0cbbc0220f4951c3b0bc90f7f2b4fb455a763a7debf3bfb830e93ebf0306b",
+    "Cargo.lock": "ea4659d4176642f085e36c3fd2d912e9c7e5ea80eb4fd21013a62303e6fc9b0a"
+  },
+  "draft_source_sha256": {
+    "src/opus/decoder.rs": "5f8de1052e29fbc23c8179a0c30136bc9566509df5b8cf06e95a994869f1109f",
+    "tests/opus_calls_reference.rs": "d9a7f1f84300640130d73be3f882493374c0f05feda1a63412aafadf2126a317",
+    "tests/allocations.rs": "58e79bc2f1590282bb3c9fba86c7a2fcf5a7a21b44bd64456f31917239188647",
+    "docs/opus.md": "8bbd5e7747a597dc3f6ace6f53140b1b87e361c581439084f82f40373790dfac"
+  },
+  "compile_command": [
+    "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+    "--edition=2024",
+    "-C",
+    "opt-level=3",
+    "-C",
+    "codegen-units=16",
+    "-C",
+    "lto=off",
+    "-C",
+    "overflow-checks=yes",
+    "-C",
+    "debuginfo=0",
+    "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/native_duration_oracle.rs",
+    "-L",
+    "native=/opt/homebrew/lib",
+    "-o",
+    "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/native-duration-oracle"
+  ],
+  "run_command": [
+    "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/native-duration-oracle",
+    "/tmp/snacka-opus-decoder-last-samples-evidence-20261015/frozen-oracle/inputs"
+  ],
+  "environment_overrides": {
+    "RUSTC_WRAPPER": "",
+    "RUSTC_WORKSPACE_WRAPPER": "",
+    "CARGO_INCREMENTAL": "0",
+    "RUSTFLAGS": "",
+    "CARGO_ENCODED_RUSTFLAGS": ""
+  },
+  "expected_instances": 80,
+  "expected_codec_calls": 960,
+  "expected_event_rows": 1120,
+  "expected_total_json_rows": 1121,
+  "scope": "Native-only public API metadata observations; no Snacka link, new packets, timing or quality acceptance."
+}

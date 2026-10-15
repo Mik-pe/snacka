@@ -58,7 +58,11 @@ recovery interval in samples per channel at the configured output rate. It
 includes the whole multi-frame packet or the entire requested FEC interval,
 including any concealed prefix. Construction and reset report zero. Errors
 retain the preceding count; this metadata guarantee does not make content
-errors transactional for codec history or written PCM.
+errors transactional for codec history or written PCM. The
+[status contract and M5 cost record](measurements/2026-10-15-opus-last-packet-samples/README.md)
+retains native status checks, the complete unchanged-output proof and all
+selected direct/normalized percentiles, including tail increases.
+
 `set_gain_q8(i16)` controls ordinary, multistream and projection decoder output
 gain in 1/256 dB units,
 matching the [public Opus decoder gain contract](https://opus-codec.org/docs/opus_api-1.6/group__opus__decoderctls.html)

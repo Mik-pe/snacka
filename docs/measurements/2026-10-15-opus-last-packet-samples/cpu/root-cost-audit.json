@@ -1,0 +1,14 @@
+{
+  "status": "ROOT_COST_RAW_AUDIT_PASS",
+  "utc": "2026-10-15T12:20:16.490948+00:00",
+  "processes": 84,
+  "quartets": 21,
+  "raw_values": 168000,
+  "minimum_observed_batch_ns": 581791,
+  "recomputed_process_fields": 756,
+  "recomputed_quartet_fields": 126,
+  "raw_files": 169,
+  "source_before": "4340e8d16a9251cf83a6635fe01c64dc1f0aa469",
+  "source_after": "89e2b209184b43de3e69c37ad33f6b00976254f9",
+  "scope": "All observations retained; validation success does not imply no performance regression, tail, quality or full-parity acceptance."
+}

@@ -1,0 +1,15 @@
+{
+  "status": "ROOT_COST_QUIET_START",
+  "utc": "2026-10-15T12:15:45.008105+00:00",
+  "source_sha256": "706917cc45bc943de410726cb787f2fbebe0d19e626039c7539d2ea2b3e0afa2",
+  "plan_sha256": "2081d3d23ffa465f0924e8a5f8ecc46a4dc1b441976fd60808d1576542a6c993",
+  "runner_sha256": "49cc6774ab0452845ce38af517078ca5486a2e6bca0713c211de3a66ebed37be",
+  "cases": 7,
+  "quartets": 3,
+  "roles": 84,
+  "batches_per_codec": 1000,
+  "minimum_actual_batch_ns": 200000,
+  "python_optimize": 0,
+  "host_blocked_rows": [],
+  "scope": "functional API maintenance cost; no automatic no-regression/speed/quality/parity admission; all direct+normalized quartets/tails retained"
+}
