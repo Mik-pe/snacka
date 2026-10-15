@@ -1,0 +1,113 @@
+{
+  "source_url": "https://downloads.xiph.org/releases/opus/opus-1.6.1.tar.gz",
+  "source_sha256": "6ffcb593207be92584df15b32466ed64bbec99109f007c82205f0194572411a1",
+  "source_version": "1.6.1",
+  "host": {
+    "uname": "Darwin mikpe-pro-24629.local 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:02:59 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T8142 arm64",
+    "macos": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0\nBuildVersion:\t\t26A428",
+    "cpu": "Apple M5"
+  },
+  "compiler": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin27.0.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+  "compiler_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+  "sdk": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk",
+  "make": "GNU Make 3.81",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: aarch64-apple-darwin\nrelease: 1.99.0\nLLVM version: 23.1.1",
+  "python": "Python 3.14.8",
+  "reference_build": {
+    "working_directory": "/tmp/snacka-macos-opus161-all3-20261015/build",
+    "explicit_environment": {
+      "CC": "clang",
+      "CFLAGS": "-O3"
+    },
+    "configure": [
+      "../opus-1.6.1/configure",
+      "--prefix=/tmp/snacka-macos-opus161-all3-20261015/reference",
+      "--enable-shared",
+      "--disable-static",
+      "--disable-doc",
+      "--disable-extra-programs",
+      "--enable-dred",
+      "--enable-osce",
+      "--enable-qext"
+    ],
+    "effective_make_variables": {
+      "CC": "clang",
+      "CFLAGS": "-O3 -fvisibility=hidden -D_FORTIFY_SOURCE=2 -W -Wall -Wextra -Wcast-align -Wnested-externs -Wshadow -Wstrict-prototypes",
+      "CPPFLAGS": "",
+      "LDFLAGS": ""
+    },
+    "build": [
+      "make",
+      "-j4"
+    ],
+    "install": [
+      "make",
+      "install"
+    ],
+    "config_sha256": "8f2f3a68bd971f44cd2b000bf922e7c682c0056d6c6c9d5a828c1d20a8747be1",
+    "enabled_defines": [
+      "ENABLE_DEEP_PLC",
+      "ENABLE_DRED",
+      "ENABLE_HARDENING",
+      "ENABLE_OSCE",
+      "ENABLE_OSCE_BWE",
+      "ENABLE_QEXT",
+      "ENABLE_RES24",
+      "OPUS_ARM_MAY_HAVE_DOTPROD",
+      "OPUS_ARM_MAY_HAVE_NEON_INTR",
+      "OPUS_ARM_PRESUME_AARCH64_NEON_INTR",
+      "OPUS_ARM_PRESUME_DOTPROD",
+      "OPUS_ARM_PRESUME_NEON_INTR"
+    ],
+    "library": "/tmp/snacka-macos-opus161-all3-20261015/reference/lib/libopus.0.dylib",
+    "library_sha256": "2e0d6bd7e55b6e9db8a596ab86acaf2353639899fe7d38be908a49ec397bdacd",
+    "library_format": "/tmp/snacka-macos-opus161-all3-20261015/reference/lib/libopus.0.dylib: Mach-O 64-bit dynamically linked shared library arm64",
+    "dynamic_dependencies": "/tmp/snacka-macos-opus161-all3-20261015/reference/lib/libopus.0.dylib:\n\t/tmp/snacka-macos-opus161-all3-20261015/reference/lib/libopus.0.dylib (compatibility version 12.0.0, current version 12.1.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)",
+    "log_sha256": {
+      "configure.log": "85418b8024a1e9b42c0ed906bee75dd5501d9da7e0223fed8079d23c01e7179b",
+      "make.log": "6f3cb22a22c466482697c950c1154a1c5a7808ced4c78ed26ace62f0ddd89426",
+      "install.log": "d52c9e1a99ef535dacdd534a88b39d5252f243686bc7eeed23f91bf815a3a5fc"
+    }
+  },
+  "public_headers_sha256": {
+    "include/opus.h": "036f6a6e83a20e943505743e113e90d6278cbe8240f7d5bb90b3f86261e783e3",
+    "include/opus_defines.h": "bbd4d4e3ba99f6982b1c8d8f5541814ad77d8e8babf3cc788cf23d517b2ca9d6",
+    "include/opus_types.h": "19cb301ea1eedbcbdbb5049363de061893bf11c20e505a657b69ce6ffa5b11fa"
+  },
+  "probe_source_base_commit": "5fc1b43d535d7d8277be456a6ea8fb15c473f916",
+  "probe_sources_sha256": {
+    "tools/reference/probe_opus_extensions.py": "4bc023665ac263c7ec4a07a34965151ae5fde037a158594f74c254bbd226273a",
+    "tools/reference/extension_probe.rs": "ac63084114f27e1a517cda11787792408fd7771ec860eb1c3819a422f3456a22",
+    "src/opus/packet.rs": "4d09c1ddb0663900d5fc07d439d422524f9ab5f5e78786a6180e8719fb77ef73",
+    "src/opus/extensions.rs": "8e12094d3b6d97450773e34415bb98d3aa3dc00c5114d391fc874b25dcef32f1",
+    "tools/reference/check_opus_rtp.py": "364043bd1ff5fba36541f6c23773b4851d335e2d9888791668bf5c1d6cf8ca1c"
+  },
+  "probe_command": [
+    "python3",
+    "tools/reference/probe_opus_extensions.py",
+    "/tmp/snacka-macos-opus161-all3-20261015/reference/lib/libopus.0.dylib",
+    "--output",
+    "/tmp/snacka-macos-opus161-all3-20261015/probe"
+  ],
+  "license_inventory": {
+    "scope": "Release-package notice inventory, not a legal compatibility finding or approval gate; no model weights imported into Snacka.",
+    "notices_sha256": {
+      "COPYING": "01e1167d54a096d123cf6dfbbeb19587278845c6481d2d66d545669846079551",
+      "README": "9bdf02594da8c33af8b7bdb7a2ac98f6fdc6abc71d5fb198e7b186286a681dca",
+      "dnn/README.md": "6ae93dd98265b0a429d5e5714b1875424bb8345800347304ee2a03385f076bdf"
+    },
+    "package_copying": "Package-wide COPYING permits source/binary redistribution with notice retention, binary-material notices, non-endorsement and disclaimer conditions.",
+    "readme": "Top-level README points to COPYING, states DRED implementation open-sourced, and states the license/IP position did not change for 1.5.",
+    "dnn_readme": "Calls the C/Python software BSD licensed; discusses separately downloaded models but does not provide standalone checkpoint redistribution terms.",
+    "generated_model_leading_notices": {
+      "dnn/dred_rdovae_dec_data.c": "Auto generated from checkpoint checkpoint_epoch_1.pth",
+      "dnn/dred_rdovae_enc_data.c": "Auto generated from checkpoint checkpoint_epoch_1.pth",
+      "dnn/fargan_data.c": "No leading comment before first code directive.",
+      "dnn/nolace_data.c": "Auto generated from checkpoint nolace_small.pth (sha1: 953bf5854e1a33e8892da48a29b19aff3a272902)",
+      "dnn/bbwenet_data.c": "Auto generated from checkpoint bbwenet_v2.pth (sha1: d0cf1f15f0b755a519b90a9e2f3972f7e0a5ac30)"
+    },
+    "not_established": "No separate checkpoint-specific redistribution notice found in these release notices/leading comments. This package inventory does not establish terms for the separately hosted normative dred_unquantized_weights.bin."
+  },
+  "scope": "External public-API oracle only. No foreign codec algorithm implementation bodies inspected or copied. No performance, perceptual quality, owned optional-feature implementation, or final-draft conformance claim.",
+  "probe_repeat_validation": "Two independent process runs produced byte-identical observed.json, including record/PCM hashes."
+}

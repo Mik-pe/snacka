@@ -1,0 +1,432 @@
+{
+  "reference": "libopus 1.6.1",
+  "library_sha256": "2e0d6bd7e55b6e9db8a596ab86acaf2353639899fe7d38be908a49ec397bdacd",
+  "scope": "public API execution and actual generated wire payloads only; no owned extension codec, quality or performance parity",
+  "dred": {
+    "packets": 64,
+    "record_sha256": "b06120c9bf1f5c9478274c1b654849fa8c8f5d608091cad1b3c631fc983e14f8",
+    "modes": [
+      "Silk"
+    ],
+    "bandwidths": [
+      "Wideband"
+    ],
+    "extension_ids": [
+      126
+    ],
+    "packets_with_extensions": 63,
+    "first": [
+      {
+        "packet": 1,
+        "frames": 1,
+        "padding": 33,
+        "toc": 75,
+        "mode": "Silk",
+        "bandwidth": "Wideband",
+        "extensions": [
+          {
+            "frame": 0,
+            "id": 126,
+            "length": 32,
+            "prefix_hex": "440c4630e87739be0aaff743808930aa"
+          }
+        ],
+        "error": null,
+        "packet_sha256": "4a7252f6b60116162f1e7ff8b8e05f018e5a89989bb3e82c770db639184b1e59"
+      },
+      {
+        "packet": 2,
+        "frames": 1,
+        "padding": 26,
+        "toc": 75,
+        "mode": "Silk",
+        "bandwidth": "Wideband",
+        "extensions": [
+          {
+            "frame": 0,
+            "id": 126,
+            "length": 25,
+            "prefix_hex": "440c4631010deee10b252461a654cda1"
+          }
+        ],
+        "error": null,
+        "packet_sha256": "40b85b6b4736c1e65b7f28446721a7ada3ab653ae073e277f11a152b6d845ade"
+      }
+    ],
+    "last": [
+      {
+        "packet": 63,
+        "frames": 1,
+        "padding": 63,
+        "toc": 75,
+        "mode": "Silk",
+        "bandwidth": "Wideband",
+        "extensions": [
+          {
+            "frame": 0,
+            "id": 126,
+            "length": 62,
+            "prefix_hex": "440c46312f53267d77a164fb5414b358"
+          }
+        ],
+        "error": null,
+        "packet_sha256": "1b940f860afe061dcd49860f1b7418433590869439ba1c05d73c7b6f08e064c9"
+      }
+    ],
+    "framing_errors": [],
+    "experimental_prefixes_hex": [
+      "440c"
+    ],
+    "configuration": {
+      "sample_rate": 48000,
+      "channels": 1,
+      "duration_ms": 20,
+      "bitrate": 64000,
+      "complexity": 10,
+      "loss_percent": 30,
+      "bandwidth": "wideband",
+      "signal": "voice",
+      "dred_duration_10ms_frames": 50
+    },
+    "recovery": {
+      "omitted_packet": 39,
+      "carrier_packet": 40,
+      "parse_offset": 23760,
+      "dred_end": 0,
+      "samples": 960,
+      "versus_plc": {
+        "identical": false,
+        "max_absolute_difference": 0.142364501953125,
+        "left_sha256": "c44b11dd3735dfb2d5d36ff2dbd828af5bd0687c54cd70faf3bbdba4b3e117fc",
+        "right_sha256": "b5bca06cb14149ba5c325b46bc610ce31b81a9700bdb4560f758c2a9caf5256b"
+      },
+      "following_normal_decode_samples": 960
+    }
+  },
+  "qext": [
+    {
+      "packets": 8,
+      "record_sha256": "783be3184ad1c39d31eb968979f27c1a1394c247326de6b1c2315ae376498354",
+      "modes": [
+        "Celt"
+      ],
+      "bandwidths": [
+        "Fullband"
+      ],
+      "extension_ids": [
+        124
+      ],
+      "packets_with_extensions": 8,
+      "first": [
+        {
+          "packet": 0,
+          "frames": 1,
+          "padding": 1284,
+          "toc": 255,
+          "mode": "Celt",
+          "bandwidth": "Fullband",
+          "extensions": [
+            {
+              "frame": 0,
+              "id": 124,
+              "length": 1283,
+              "prefix_hex": "6a2a2480e74245af95def6925f9c37cd"
+            }
+          ],
+          "error": null,
+          "packet_sha256": "484685d5a6fbd3c1d17eb9bb4573d1a6c0c16330bf419b379ec3ab1b3768b55f"
+        },
+        {
+          "packet": 1,
+          "frames": 1,
+          "padding": 1284,
+          "toc": 255,
+          "mode": "Celt",
+          "bandwidth": "Fullband",
+          "extensions": [
+            {
+              "frame": 0,
+              "id": 124,
+              "length": 1283,
+              "prefix_hex": "6aa770515b34867dbe83d0db6dcf53d5"
+            }
+          ],
+          "error": null,
+          "packet_sha256": "1f33bd1861a4f1a59f09ff70a37a4c2bac88809c07642655ad5cdb0f60a4d3eb"
+        }
+      ],
+      "last": [
+        {
+          "packet": 7,
+          "frames": 1,
+          "padding": 1284,
+          "toc": 255,
+          "mode": "Celt",
+          "bandwidth": "Fullband",
+          "extensions": [
+            {
+              "frame": 0,
+              "id": 124,
+              "length": 1283,
+              "prefix_hex": "7ffcc57e42de6124a6bd62f1805bfc07"
+            }
+          ],
+          "error": null,
+          "packet_sha256": "2feab66c3c694320a0806b4f4cfe546d097d51bb03b081839350fc708a3e4a6a"
+        }
+      ],
+      "framing_errors": [],
+      "extended_vs_ignore_extensions": {
+        "identical": false,
+        "max_absolute_difference": 0.0017596185207366943,
+        "left_sha256": "ccbe76357b99f2b1dce8287d16bf3815a12564aa50dc54187aa9390d70580c6d",
+        "right_sha256": "87d66f937beba71836a351ebba168c468d6e69a8b038ab8f8648c21ea2775d69"
+      },
+      "sample_rate": 48000,
+      "configuration": {
+        "channels": 2,
+        "duration_ms": 20,
+        "bitrate": 1024000,
+        "application": "restricted_lowdelay",
+        "vbr": false,
+        "qext": true
+      },
+      "version_note": "raw prefix recorded; QEXT entropy payload has no assumed DRED-style model version"
+    },
+    {
+      "packets": 8,
+      "record_sha256": "5b44dbe92615f5d74d98bf40494bb20db338c5fda5abc8d0048378d0bab82834",
+      "modes": [
+        "Celt"
+      ],
+      "bandwidths": [
+        "Fullband"
+      ],
+      "extension_ids": [
+        124
+      ],
+      "packets_with_extensions": 8,
+      "first": [
+        {
+          "packet": 0,
+          "frames": 1,
+          "padding": 1284,
+          "toc": 255,
+          "mode": "Celt",
+          "bandwidth": "Fullband",
+          "extensions": [
+            {
+              "frame": 0,
+              "id": 124,
+              "length": 1283,
+              "prefix_hex": "fb6a7ad5f779ef9177eb3e60cd053a68"
+            }
+          ],
+          "error": null,
+          "packet_sha256": "44605666f50ede31efcc0ba4295afd4b11da8369730d92c95462626f039cbf51"
+        },
+        {
+          "packet": 1,
+          "frames": 1,
+          "padding": 1386,
+          "toc": 255,
+          "mode": "Celt",
+          "bandwidth": "Fullband",
+          "extensions": [
+            {
+              "frame": 0,
+              "id": 124,
+              "length": 1385,
+              "prefix_hex": "fbba3270a4ebad750aca287452cb8d96"
+            }
+          ],
+          "error": null,
+          "packet_sha256": "3322f649e1ce5cdd4897d391bcf60a257befbb3fd9d700f885f63745c347a17a"
+        }
+      ],
+      "last": [
+        {
+          "packet": 7,
+          "frames": 1,
+          "padding": 1284,
+          "toc": 255,
+          "mode": "Celt",
+          "bandwidth": "Fullband",
+          "extensions": [
+            {
+              "frame": 0,
+              "id": 124,
+              "length": 1283,
+              "prefix_hex": "fb30ddefc9f20085d03a00e22c408cec"
+            }
+          ],
+          "error": null,
+          "packet_sha256": "19efe953efac6046c2e36f80716ca9bc1f5d5235fc579b6cbc481ad1fa47ec2b"
+        }
+      ],
+      "framing_errors": [],
+      "extended_vs_ignore_extensions": {
+        "identical": false,
+        "max_absolute_difference": 0.02700725942850113,
+        "left_sha256": "fa7f6bb1419f7c3702bba6c52a0432d31c745a7c52e2c16e1a988f8118298fad",
+        "right_sha256": "27fd5586f954690d36d08bed59d10824fdbfcdf934de0d83d05a7c13464b60c4"
+      },
+      "sample_rate": 96000,
+      "configuration": {
+        "channels": 2,
+        "duration_ms": 20,
+        "bitrate": 1024000,
+        "application": "restricted_lowdelay",
+        "vbr": false,
+        "qext": true
+      },
+      "version_note": "raw prefix recorded; QEXT entropy payload has no assumed DRED-style model version"
+    }
+  ],
+  "base_and_bwe": {
+    "base_packets": {
+      "packets": 32,
+      "record_sha256": "2667c92bb8dd65c95832d06480155501f38fa948987222c4011edeb9ddbb4d03",
+      "modes": [
+        "Silk"
+      ],
+      "bandwidths": [
+        "Wideband"
+      ],
+      "extension_ids": [],
+      "packets_with_extensions": 0,
+      "first": [],
+      "last": [],
+      "framing_errors": []
+    },
+    "base_padding_variants": [
+      {
+        "padding_hex": "01010101010101010101010141ff",
+        "identical": true,
+        "max_absolute_difference": 0.0,
+        "left_sha256": "67f041194d4848c2c4529de09bb577cb61d8b5db6a7ca7716b8ac1c38d6d39af",
+        "right_sha256": "67f041194d4848c2c4529de09bb577cb61d8b5db6a7ca7716b8ac1c38d6d39af"
+      },
+      {
+        "padding_hex": "01010101010101010101010103ff",
+        "identical": true,
+        "max_absolute_difference": 0.0,
+        "left_sha256": "67f041194d4848c2c4529de09bb577cb61d8b5db6a7ca7716b8ac1c38d6d39af",
+        "right_sha256": "67f041194d4848c2c4529de09bb577cb61d8b5db6a7ca7716b8ac1c38d6d39af"
+      },
+      {
+        "padding_hex": "0101010101010101010101ff012a",
+        "identical": true,
+        "max_absolute_difference": 0.0,
+        "left_sha256": "67f041194d4848c2c4529de09bb577cb61d8b5db6a7ca7716b8ac1c38d6d39af",
+        "right_sha256": "67f041194d4848c2c4529de09bb577cb61d8b5db6a7ca7716b8ac1c38d6d39af"
+      },
+      {
+        "padding_hex": "010101010101010101010101072a",
+        "identical": true,
+        "max_absolute_difference": 0.0,
+        "left_sha256": "67f041194d4848c2c4529de09bb577cb61d8b5db6a7ca7716b8ac1c38d6d39af",
+        "right_sha256": "67f041194d4848c2c4529de09bb577cb61d8b5db6a7ca7716b8ac1c38d6d39af"
+      }
+    ],
+    "owned_padding_framing": {
+      "packets": 4,
+      "record_sha256": "568b1f62862e3f1bb63b8a050f6a28e8b4aba3637f16cfb40022d1378276cb2e",
+      "modes": [
+        "Silk"
+      ],
+      "bandwidths": [
+        "Wideband"
+      ],
+      "extension_ids": [
+        3,
+        127
+      ],
+      "packets_with_extensions": 2,
+      "first": [
+        {
+          "packet": 2,
+          "frames": 1,
+          "padding": 14,
+          "toc": 75,
+          "mode": "Silk",
+          "bandwidth": "Wideband",
+          "extensions": [
+            {
+              "frame": 0,
+              "id": 127,
+              "length": 1,
+              "prefix_hex": "2a"
+            }
+          ],
+          "error": null,
+          "packet_sha256": "949e3dcc0ebcfe341f76229ebbd8f5ca01fd0faa116d52fff8f4adb23b67897b"
+        },
+        {
+          "packet": 3,
+          "frames": 1,
+          "padding": 14,
+          "toc": 75,
+          "mode": "Silk",
+          "bandwidth": "Wideband",
+          "extensions": [
+            {
+              "frame": 0,
+              "id": 3,
+              "length": 1,
+              "prefix_hex": "2a"
+            }
+          ],
+          "error": null,
+          "packet_sha256": "ade9ada9fb98f4ef5a3ab9eeeef98ee3b2b4fd2b4767bbf2457980cd9ad9f39d"
+        }
+      ],
+      "last": [
+        {
+          "packet": 3,
+          "frames": 1,
+          "padding": 14,
+          "toc": 75,
+          "mode": "Silk",
+          "bandwidth": "Wideband",
+          "extensions": [
+            {
+              "frame": 0,
+              "id": 3,
+              "length": 1,
+              "prefix_hex": "2a"
+            }
+          ],
+          "error": null,
+          "packet_sha256": "ade9ada9fb98f4ef5a3ab9eeeef98ee3b2b4fd2b4767bbf2457980cd9ad9f39d"
+        }
+      ],
+      "framing_errors": [
+        {
+          "packet": 0,
+          "error": "truncated Opus extension length"
+        },
+        {
+          "packet": 1,
+          "error": "Opus extension frame index exceeds packet"
+        }
+      ]
+    },
+    "osce_bwe_toggle": {
+      "identical": false,
+      "max_absolute_difference": 0.00439453125,
+      "left_sha256": "5a0dbd6cd8c7386136676b4b3cad433b996a4623d827bb3577d9bb89eacc2f2f",
+      "right_sha256": "774d3cf6981e9b463948aa3a062e2bff702b2d12433f2bc63645372ed8e01a59"
+    },
+    "configuration": {
+      "sample_rate": 48000,
+      "channels": 1,
+      "duration_ms": 20,
+      "bitrate": 16000,
+      "bandwidth": "wideband",
+      "signal": "voice",
+      "decoder_complexity": 10
+    },
+    "osce_note": "same WB packets, decoder complexity10, BWE0 vs1; execution only, no perceptual acceptance"
+  }
+}
