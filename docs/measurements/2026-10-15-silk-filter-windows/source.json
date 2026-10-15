@@ -497,6 +497,15 @@
         "/tmp/snacka-opus-goal-profile-after": "b575be41374a258de113818e165e5a0b2c8c66931b92c6ad110cc63e972cdf4b",
         "/tmp/snacka-opus-goal-profile.rs": "295193c286d498370a9ee60e6edb202c65972a94bcd70706b175365db8c0dfa0"
       }
+    },
+    "codegen_clarification": {
+      "scope": "Read-only correction: original16instruction after loop is scalar remainder; full function also has65instruction four-tap bulk loop. Accepted source/binary/input/timing unchanged.",
+      "files": {
+        "codegen-context.json": "c8b09eca01bc34eb12d893fac4c135cd306d60b9cdd23707ebd33c4c93365cd1",
+        "assembly-before.txt": "50a2605e2de678dd59180d7f51d7ed9a44641edc787c0673674e5f0f33ac7cae",
+        "assembly-after.txt": "8dec48ab7e98e9c34d63cfc09c92100d2475b4382bfdc22dc2ac62e405e50cca"
+      },
+      "original_audit_retained": "b968a314b2fd98b5e89611555051b35f721c2c4a6c647609b3a753fd8e8efb89"
     }
   }
 }

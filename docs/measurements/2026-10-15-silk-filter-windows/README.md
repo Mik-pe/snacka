@@ -19,14 +19,24 @@ Earlier process-specific public-decoder sampling attributed 890 of 4,500 leaf
 samples (19.8%) to the batched resampler and another 125 (2.8%) to its
 `array::map` drain helper. That symbol-enabled profile used an earlier source
 with the same resampler preparation and concurrent host work. It supplies
-attribution, not throughput evidence. The frozen production disassembly in
-[codegen.json](codegen.json) shows the helper removed and the FIR tap loop
-reduced from 24 to 16 instructions: four bounds guards disappear, leaving only
-the loop branch. Four scalar f64 multiply/add pairs and their order remain;
-neither loop has stack accesses. The containing function **grows from 404 to
-507 instructions**, while the old separate 57-instruction helper disappears.
-This is a smaller repeated loop, not a smaller whole function or a
-vectorization claim.
+attribution, not throughput evidence. The accepted compiler output removes the
+helper and changes the main FIR loop from one scalar tap per iteration to
+**four taps per bulk iteration**. Its eight vector2d multiplies calculate 16
+products, followed by 16 scalar additions preserving each output's original
+tap order. The bulk loop has 65 instructions, one loop branch and no bounds
+guards or stack accesses. The usual 46-tap plan uses 11 bulk iterations for
+44 taps, then two scalar remainder iterations.
+
+The preserved original [codegen.json](codegen.json) extracted only that after
+**scalar remainder**: 16 instructions per tap with no bounds guards, versus
+the before loop's 24 scalar instructions and four bounds guards per tap. The
+initial report mistakenly described this as the complete after FIR loop.
+[codegen-context.json](codegen-context.json) corrects the interpretation and
+records both bulk and remainder instructions. Full containing-function
+assembly is preserved in [assembly-before.txt](assembly-before.txt) and
+[assembly-after.txt](assembly-after.txt). The containing function **grows from
+404 to 507 instructions**, while the separate 57-instruction helper disappears.
+This clarification changes no source, binary, input or timing results.
 
 ## Recorded CPU results
 
@@ -136,7 +146,8 @@ python3 docs/measurements/2026-10-15-silk-filter-windows/recorded-run.py --quiet
 
 Production function assembly can be inspected with `xcrun otool -tvV` on each
 `benchmark-before`/`benchmark-after` binary; the recorded loop excerpts and
-counts are in [codegen.json](codegen.json).
+counts are in [codegen-context.json](codegen-context.json), alongside the
+unchanged original partial [codegen.json](codegen.json) audit.
 
 The committed runners adapt the executed local runners for relocatable paths,
 input generation and explicit quiet-window confirmation. Their hashes are
