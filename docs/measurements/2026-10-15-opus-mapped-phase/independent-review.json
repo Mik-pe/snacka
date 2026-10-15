@@ -1,0 +1,11 @@
+{
+  "reviewer": "/root/pcm_api/pcm_review",
+  "source_commit": "567d1b6de5c41593ce1a6437d633a1f01947f60f",
+  "source_review": "PASS only4productionmethods/docstrings;29existingmethods+2fieldblocks unchanged.",
+  "native_first_audit": "PASS1081rows/600codecsteps/600PCMfiles356400bytes/5560zeroCTLstate-reset-rangeobservations;720mapped-projectedsnapshots(firstchild),160ordinarysnapshots.",
+  "final_contract_audit": "PASS450ownedcompositions bitexactacrossall10steps;all450nativedeltas retained; first/resetlegacywaveformtol separatefromlargePLC/continuationdifferences. No nativewaveform/qualityacceptance.",
+  "final_gates": "PASS390tests/18suites/0fail/0ignored;20nativetests;5allocation+2stacktests;Clippy/fmt/diffexit0.",
+  "default_proof": "2130B0ordinarydecoder completeJSONexact; notmappedcorpusproof.",
+  "codegen_scope": "17normalizedfunctiontexts equal andlayouts4280/336/672unchanged; rawlinkedrelocations/CPUcostnotestablished.",
+  "execution": "Independentread/saved-dataarithmetic only; no own codec/native/build/timing/hashmass/edits."
+}

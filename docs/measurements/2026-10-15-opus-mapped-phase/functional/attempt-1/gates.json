@@ -1,0 +1,43 @@
+{
+  "source_commit": "2799fbe7d9a475c794a8953b5c3b697af19476f8",
+  "runner_sha256": "06fddca68b1fb96ee8e4dea709e242863a4d89b083f1c0a43183c6522200e4e7",
+  "environment": {
+    "RUSTC": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+    "RUSTDOC": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustdoc",
+    "RUSTC_WRAPPER": "",
+    "RUSTC_WORKSPACE_WRAPPER": "",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_INCREMENTAL": "false",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "false",
+    "RUSTFLAGS": "",
+    "CARGO_ENCODED_RUSTFLAGS": "-L/opt/homebrew/lib"
+  },
+  "lto_scope": "Cargo profile LTO=false: cross-crate LTO disabled; rustc may perform local ThinLTO across the16 units. No -C lto=off or target-cpu override supplied to Cargo.",
+  "checks": [
+    {
+      "name": "targeted-native-contracts",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--release",
+        "--features",
+        "opus,reference-tests",
+        "--target-dir",
+        "/tmp/snacka-opus-mapped-phase-check-target",
+        "--test",
+        "opus_calls_reference",
+        "--",
+        "--nocapture"
+      ],
+      "exitcode": 101,
+      "log_sha256": "7caeffdf86ae9e0e859dc15e6990b2159f427ca78a2a96b90c1d911bbb98cefb"
+    }
+  ]
+}

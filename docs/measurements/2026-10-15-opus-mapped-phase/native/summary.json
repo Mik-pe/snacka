@@ -1,0 +1,17 @@
+{
+  "source_commit": "ec43d0c352a36a9a70ebe1fbd76d57efbf70a3e7",
+  "native": "libopus1.6.1",
+  "event_rows": 1081,
+  "control_instances": 30,
+  "control_rows": 240,
+  "pcm_trajectories": 60,
+  "pcm_codec_steps": 600,
+  "phase_comparisons": 200,
+  "mapped_projection_snapshots": 720,
+  "all_aggregate_equal_first_child": true,
+  "all_pcm_count_finite_suffix_pass": true,
+  "pcm_changes": 160,
+  "policy_range_changes": 0,
+  "fixture_bytes": 30,
+  "scope": "Publicnative-only first gate; no encode/timers/newcorpus. Native-only heterogeneouschild mutations discriminate aggregation. Independentreview recomputed5560CTL/state/reset/rangeobservations, all0; all raw retained."
+}

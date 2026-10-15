@@ -1,0 +1,31 @@
+{
+  "source_commit": "567d1b6de5c41593ce1a6437d633a1f01947f60f",
+  "manifest_sha256": "00f34c438102eb12daabea71dcd3356463a48092b9c8def312515df881b7df53",
+  "baseline_manifest_sha256": "167e0d6e6d3c54a6d99918d3f1137087bb82fd24026f1e982c536ce32c56641d",
+  "baseline_rows_sha256": "fd37eb733ec3249ccd592193d86c977b53b7f4c0bd046c9d284e44f931de1d31",
+  "cases_sha256": "4b9b8474d55058b1735855dea85f0fa31d341206ae57865d626f772b921e9471",
+  "inputs_sha256": "fc3f3109b47f4a53e8f261899020425ac3064360b77fad573c78232016b637ec",
+  "script_sha256": "f8ec120a3c34a67a73285c976ea99dd54f5d22b43c91089e5df6643b0e47f122",
+  "binary": {
+    "path": "/tmp/snacka-opus-mapped-phase-evidence-20261015/production/benchmark-opus-decode",
+    "sha256": "444632d87186448bdda5b59b0c528c5862afaa526a7604048d3f87a2908dc55d"
+  },
+  "library": {
+    "path": "/tmp/snacka-opus-mapped-phase-evidence-20261015/production/target/release/libsnacka.rlib",
+    "sha256": "6613fe35ff005cd519c55964d94798458962cd5e36645b2e799922d350e18165"
+  },
+  "native": {
+    "requested_path": "/opt/homebrew/lib/libopus.dylib",
+    "real_path": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+    "sha256": "98dcd3cc62c6cf913b789051536ab246c56cc163c74bd8b4968ac467ec74b68b",
+    "version": "libopus 1.6.1",
+    "linked_install_names": [
+      "/opt/homebrew/opt/opus/lib/libopus.0.dylib"
+    ]
+  },
+  "workers": 4,
+  "batches": 0,
+  "timing_warmup_calibration": false,
+  "input_generation": false,
+  "comparison": "Complete parsed result JSON equal to retained baseline for every case; retain all raw output/failures."
+}

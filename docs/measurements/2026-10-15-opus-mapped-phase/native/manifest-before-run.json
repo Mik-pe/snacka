@@ -1,0 +1,30 @@
+{
+  "source_commit": "ec43d0c352a36a9a70ebe1fbd76d57efbf70a3e7",
+  "oracle_sha256": "269bc592cf250527250972b5b99325e641f64d0923e636f30d19af404657c012",
+  "python": {
+    "path": "/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "sha256": "7ebde552773a4045532637b114d645a313e045ac07b26f5e520bf039f1e34063",
+    "version": "Python 3.14.8"
+  },
+  "native": {
+    "path": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+    "sha256": "98dcd3cc62c6cf913b789051536ab246c56cc163c74bd8b4968ac467ec74b68b"
+  },
+  "fixture": {
+    "original_path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/stereo-phase.opus",
+    "sha256": "732d0c956a54fded13ba78967ffd12a3b84f6babf0b8125c2ecf0f6337686ddb",
+    "bytes": 30
+  },
+  "headers": {
+    "/opt/homebrew/include/opus/opus.h": "036f6a6e83a20e943505743e113e90d6278cbe8240f7d5bb90b3f86261e783e3",
+    "/opt/homebrew/include/opus/opus_defines.h": "bbd4d4e3ba99f6982b1c8d8f5541814ad77d8e8babf3cc788cf23d517b2ca9d6",
+    "/opt/homebrew/include/opus/opus_multistream.h": "fd99c4594b4b57e406e9cab45a777895dd1b4c8de067088aa54ed7ae100b13f0",
+    "/opt/homebrew/include/opus/opus_projection.h": "11b3427e9ca342308a93adc9a081e2479685e5b7811a3a53540609f1bbc488ad"
+  },
+  "scope": "Pin before the only native run.30controlinstances+60PCMtrajectories/600codecsteps. Existing CELTcode0 fixture only; no encoder/speech/corpus/algorithm body/timers. Nativeonly childmutations diagnose aggregation, no proposed mutableownedchild API.",
+  "command": [
+    "/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "/tmp/snacka-opus-mapped-phase-oracle-20261015/oracle.py"
+  ],
+  "unknowns": "All fresh/default/native aggregate selection and PCM effect are observations, not asserted assumptions. Each raw CTL/return value retained."
+}

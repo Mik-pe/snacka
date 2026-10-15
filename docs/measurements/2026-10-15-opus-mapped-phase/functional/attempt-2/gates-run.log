@@ -1,0 +1,6 @@
+targeted-native-contracts 0
+targeted-allocation-and-stack 0
+release-tests 0
+clippy 0
+fmt 0
+diff-check 0
