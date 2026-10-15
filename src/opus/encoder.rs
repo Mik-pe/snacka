@@ -6,6 +6,7 @@ use std::fmt;
 use super::celt::{CeltConfig, CeltEncoder, CeltFrameDuration, CeltLayer};
 use super::dtx;
 use super::encoder_transition::{self, Position, Transition};
+use super::input_resample::InputResampler;
 use super::packet::{Bandwidth, Mode};
 use super::range;
 use super::repacketize::Repacketizer;
@@ -81,6 +82,7 @@ pub enum RateControl {
 pub struct EncoderConfig {
     bitrate: u32,
     channels: usize,
+    sample_rate: u32,
     duration: FrameDuration,
     bandwidth: Bandwidth,
     application: Application,
@@ -95,6 +97,7 @@ impl Default for EncoderConfig {
         Self {
             bitrate: 32_000,
             channels: 1,
+            sample_rate: 48_000,
             duration: FrameDuration::Ms20,
             bandwidth: Bandwidth::Wideband,
             application: Application::Voice,
@@ -108,6 +111,7 @@ impl Default for EncoderConfig {
 
 impl EncoderConfig {
     /// Configure normalized 48 kHz PCM with one or two channels.
+    /// Use [`Self::with_sample_rate`] for another standard input rate.
     pub fn new(
         bitrate: u32,
         channels: usize,
@@ -131,6 +135,30 @@ impl EncoderConfig {
     pub fn with_mode(self, mode: Mode) -> Result<Self, Error> {
         let result = Self {
             mode: Some(mode),
+            ..self
+        };
+        result.validate()?;
+        Ok(result)
+    }
+
+    /// Select normalized input PCM at 8, 12, 16, 24 or 48 kHz.
+    ///
+    /// Lower rates use the owned causal interpolation filter before coding.
+    /// Requested wire mode and bandwidth remain explicit; interpolation cannot
+    /// restore frequencies above the input signal's Nyquist frequency.
+    ///
+    /// ```
+    /// use snacka::opus::{Encoder, EncoderConfig};
+    ///
+    /// let config = EncoderConfig::default().with_sample_rate(16_000).unwrap();
+    /// assert_eq!(config.input_samples(), 320); // Default packet duration is 20 ms.
+    /// let mut encoder = Encoder::new(config).unwrap();
+    /// let mut packet = vec![0; config.max_packet_bytes()];
+    /// encoder.encode(&[0.0; 320], &mut packet).unwrap();
+    /// ```
+    pub fn with_sample_rate(self, sample_rate: u32) -> Result<Self, Error> {
+        let result = Self {
+            sample_rate,
             ..self
         };
         result.validate()?;
@@ -172,6 +200,14 @@ impl EncoderConfig {
     /// Number of interleaved channels.
     pub const fn channels(self) -> usize {
         self.channels
+    }
+    /// Input PCM sample rate in hertz.
+    pub const fn sample_rate(self) -> u32 {
+        self.sample_rate
+    }
+    /// Required input samples per channel for one configured packet.
+    pub const fn input_samples(self) -> usize {
+        self.duration.samples() * self.sample_rate as usize / 48_000
     }
     /// Packet duration.
     pub const fn duration(self) -> FrameDuration {
@@ -247,6 +283,7 @@ impl EncoderConfig {
         let overhead = if frames == 1 { 1 } else { 2 + 2 * (frames - 1) };
         let minimum_bytes = u64::from(self.bitrate) * samples as u64 / (48_000 * 8);
         if !(1..=2).contains(&self.channels)
+            || !matches!(self.sample_rate, 8_000 | 12_000 | 16_000 | 24_000 | 48_000)
             || !(6000..=510_000).contains(&self.bitrate)
             || (mode != Mode::Celt && samples < 480)
             || invalid_band
@@ -304,7 +341,7 @@ impl From<super::celt::Error> for Error {
     }
 }
 
-/// Stateful owned 48 kHz encoder for SILK, Hybrid and CELT packets.
+/// Stateful owned encoder for SILK, Hybrid and CELT packets at all Opus input rates.
 ///
 /// Construction prepares every transform plan and rate-conversion state.
 /// Processing uses fixed workspaces and caller-owned output. SILK carries
@@ -316,6 +353,8 @@ pub struct Encoder {
     celt: Box<CeltEncoder>,
     silk: Box<SilkEncoder>,
     downsamplers: [Downsampler; 2],
+    input_resampler: InputResampler,
+    input_pcm: Box<[f32; MAX_SAMPLES * 2]>,
     input_bandwidth: Option<silk::Bandwidth>,
     previous_mode: Option<Mode>,
     previous_bandwidth: Option<Bandwidth>,
@@ -349,6 +388,8 @@ impl Encoder {
             celt: Box::new(CeltEncoder::new(celt_config)),
             silk: Box::new(silk),
             downsamplers: std::array::from_fn(|_| Downsampler::new(silk::Bandwidth::Wide)),
+            input_resampler: InputResampler::new(config.sample_rate)?,
+            input_pcm: Box::new([0.0; MAX_SAMPLES * 2]),
             input_bandwidth: None,
             previous_mode: None,
             previous_bandwidth: None,
@@ -370,6 +411,10 @@ impl Encoder {
     pub const fn config(&self) -> EncoderConfig {
         self.config
     }
+    /// Configured input PCM sample rate in hertz.
+    pub const fn sample_rate(&self) -> u32 {
+        self.input_resampler.sample_rate()
+    }
     /// Arithmetic interval of the last coded frame in the previous packet.
     pub const fn final_range(&self) -> u32 {
         self.final_range
@@ -384,11 +429,16 @@ impl Encoder {
     pub const fn has_transition_redundancy(&self) -> bool {
         self.transition_redundancy
     }
-    /// Nominal input-to-decoded delay, in samples at the 48 kHz PCM boundary.
-    /// CELT's transform delay is exactly 120 samples. SILK's own rate filters
-    /// have the same low-frequency group delay; their phase varies with frequency.
+    /// Nominal input-to-decoded delay in samples at the configured input rate.
+    ///
+    /// At 48 kHz the unchanged codec delay is 120 samples. Lower input rates
+    /// add the causal interpolation filter's 96 samples at 48 kHz (2 ms), then
+    /// express the total in input-rate units. SILK filters have the same
+    /// low-frequency group delay; their phase varies with frequency. A decoder's
+    /// own output-rate filtering is separate from this encoder delay.
     pub const fn algorithmic_delay_samples(&self) -> usize {
-        120
+        (120 + self.input_resampler.delay_samples_48khz()) * self.config.sample_rate as usize
+            / 48_000
     }
     /// Whether the previous packet represents a suppressed quiet interval.
     /// A transport can omit this empty packet while advancing its timestamp.
@@ -401,6 +451,7 @@ impl Encoder {
     pub fn reset(&mut self) {
         self.celt.reset();
         self.silk.reset();
+        self.input_resampler.reset();
         self.input_bandwidth = None;
         self.previous_mode = None;
         self.previous_bandwidth = None;
@@ -417,7 +468,8 @@ impl Encoder {
     /// Apply an already validated configuration without allocating.
     ///
     /// Bitrate and duration changes preserve prediction and transform history.
-    /// A changed channel layout restarts input filtering; a changed SILK rate
+    /// A changed channel layout or PCM rate restarts interpolation; a changed
+    /// SILK rate
     /// restarts its rate-specific predictor on the next packet. Mode changes
     /// initialize the newly active codec layer when that packet is encoded.
     /// The fractional byte clock restarts when its rate or duration changes.
@@ -425,7 +477,9 @@ impl Encoder {
         config.validate()?;
         if config.channels != self.config.channels {
             self.input_bandwidth = None;
+            self.input_resampler.reset();
         }
+        self.input_resampler.set_sample_rate(config.sample_rate)?;
         if config.bitrate != self.config.bitrate || config.duration != self.config.duration {
             self.rate_remainder = 0;
         }
@@ -456,7 +510,7 @@ impl Encoder {
     pub fn encode(&mut self, input: &[f32], output: &mut [u8]) -> Result<usize, Error> {
         let samples = self.config.duration.samples();
         let channels = self.config.channels;
-        if input.len() != samples * channels
+        if input.len() != self.config.input_samples() * channels
             || input
                 .iter()
                 .any(|sample| !sample.is_finite() || !(-1.0..=1.0).contains(sample))
@@ -528,14 +582,27 @@ impl Encoder {
         let mut transition_redundancy = false;
         let mut redundant = [0; 257];
         for (index, size) in sizes.iter_mut().enumerate().take(count) {
-            let begin = index * frame_samples * channels;
-            let pcm = &input[begin..begin + frame_samples * channels];
+            let input_frame_samples = frame_samples * self.config.sample_rate as usize / 48_000;
+            let begin = index * input_frame_samples * channels;
+            let direct_pcm = &input[begin..begin + input_frame_samples * channels];
+            if self.config.sample_rate != 48_000 {
+                self.input_resampler.process(
+                    direct_pcm,
+                    channels,
+                    &mut self.input_pcm[..frame_samples * channels],
+                );
+            }
             let toc = toc(mode, self.config.bandwidth, frame_samples, channels)?;
             self.frames[index][0] = toc;
             let internal = if mode != Mode::Celt {
-                self.prepare_native(pcm, frame_samples, channels)?
+                self.prepare_native(direct_pcm, frame_samples, channels)?
             } else {
                 0
+            };
+            let pcm = if self.config.sample_rate == 48_000 {
+                direct_pcm
+            } else {
+                &self.input_pcm[..frame_samples * channels]
             };
             if suppress {
                 *size = 1;
@@ -678,10 +745,15 @@ impl Encoder {
 
     fn prepare_native(
         &mut self,
-        pcm: &[f32],
+        direct_pcm: &[f32],
         samples: usize,
         channels: usize,
     ) -> Result<usize, Error> {
+        let pcm = if self.config.sample_rate == 48_000 {
+            direct_pcm
+        } else {
+            &self.input_pcm[..samples * channels]
+        };
         let bandwidth = silk_bandwidth(self.config.bandwidth);
         if self.input_bandwidth != Some(bandwidth) {
             for downsampler in &mut self.downsamplers {

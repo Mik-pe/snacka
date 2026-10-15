@@ -2,6 +2,8 @@
 
 ## 0.2.0
 
+- Accept all five standard Opus input sample rates in ordinary and mapped
+  encoders, with owned causal interpolation and an exact 48 kHz bypass.
 - Add a stateful mapped multistream encoder with allocation-free processing and
   aggregate packet budget preservation, plus ordinary 80/100/120 ms packets.
 - Make `has_fec` report previous-packet recovery from the first frame instead of
