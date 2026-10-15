@@ -2,6 +2,8 @@
 
 ## 0.2.0
 
+- Expose allocation-free optional padding-extension framing independently of
+  base audio validity, including frame association and repeated templates.
 - Add allocation-free signed 16-bit and full-width 24-bit-in-32 PCM conversion
   with explicit scaling, rounding, saturation and extended-range limitations.
 - Accept all five standard Opus input sample rates in ordinary and mapped

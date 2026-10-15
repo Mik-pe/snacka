@@ -131,6 +131,18 @@ rate support and does not establish reference perceptual-quality parity.
 Self-delimited parsing and `Repacketizer` support CBR/VBR, padding, arbitrary
 valid frame groupings and the full 120 ms packet limit. Parallel encoders and
 self-delimited packet composition remain available independently.
+
+`Packet::padding()` exposes the borrowed padding bytes, and `extensions()`
+iterates optional extension framing with frame association and repeated
+templates. Unknown extension IDs remain opaque. Malformed extension framing
+yields one error after any valid prefix, without invalidating base audio.
+Iteration allocates nothing; work is bounded by frame count (at most 48) times
+padding size. A single iterator call can scan a complete repeat group, so
+applications should bound padding bytes as well as consumed items.
+`Repacketizer` preserves base frames and strips padding extensions. This is
+framing support for the [extension draft](https://www.ietf.org/archive/id/draft-ietf-mlcodec-opus-extension-06.html),
+without DRED or QEXT audio decoding.
+
 `MultistreamEncoder` gathers mapped interleaved PCM at any standard input rate
 into owned mono/stereo encoders and writes one transport packet. Supply one
 `EncoderConfig` per stream with equal packet durations/input rates and stereo
