@@ -63,6 +63,10 @@ not clipped; a non-finite gain product returns `DecodeError::Corrupt`. A content
 error can advance history and write an output prefix; reset before continuing.
 Mapped and projection decoder controls are unchanged; Ogg header gain remains
 caller-owned and is not applied automatically.
+The [gain contract and macOS cost record](measurements/2026-10-15-opus-decoder-gain/README.md)
+retains native functional checks and a frozen default-zero decoder cost run,
+including direct/normalized percentiles and tail regressions. Nonzero-gain CPU
+cost is unmeasured.
 
 ```rust
 use snacka::opus::{Decoder, Encoder, EncoderConfig};

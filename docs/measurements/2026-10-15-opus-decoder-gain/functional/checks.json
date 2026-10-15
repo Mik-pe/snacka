@@ -1,0 +1,30 @@
+{
+  "source_commit": "a939e81a71679919bd7e2e5ee4d28b831611b2ac",
+  "base_commit": "d2e420edd388bfd7e8925401da012ed238fe0bf8",
+  "worktree": "/tmp/snacka-opus-decoder-gain-20261015",
+  "production_decoder_sha256": "5bfc76d3b0744093e11be4cc4503d2ccf161ca71c2617abbe8d808ac7411f05f",
+  "release_tests": {
+    "command": "cargo test --locked --release --features opus,reference-tests --target-dir /tmp/snacka-opus-decoder-gain-check-target",
+    "passed_including_doctests": 377,
+    "unit_and_integration": 371,
+    "doctests": 6,
+    "failed": 0,
+    "ignored": 0,
+    "native_call_tests": 15,
+    "allocation_tests": 5,
+    "log_sha256": "bb4feded395cf063529614683986dd8f8040b6475435777b49b11d11b09653f1"
+  },
+  "clippy": {
+    "command": "cargo clippy --locked --release --all-targets --features opus,reference-tests --target-dir /tmp/snacka-opus-decoder-gain-check-target -- -D warnings",
+    "exit_status": 0,
+    "log_sha256": "b6b7aff04cd30823e19b5e285099054864fc60f576966f7317525994e77a2100"
+  },
+  "format_and_diff_check": true,
+  "gain_zero_frozen_proof": {
+    "rows": 80,
+    "bit_exact_pcm_ranges_counts_fec_status_suffix": true,
+    "source_and_results_sha256": "3822df09afedf318370042b1c9745c27cf8bffd3a3c2cf8b7a04478a23b198f2"
+  },
+  "scope": "macOS aarch64 function checks only; no timing, quality corpus, push, merge, PR or production foreign codec dependency",
+  "controls_contract": "ordinary Decoder only; Q8 signed i16 output gain, cached float factor, reset retained, one application after final resampling; no gain loop for zero; non-finite products return Corrupt and content-error history/output-prefix semantics apply"
+}

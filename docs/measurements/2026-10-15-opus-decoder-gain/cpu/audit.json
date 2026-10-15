@@ -1,0 +1,17 @@
+{
+  "processes": 84,
+  "quartets": 21,
+  "percentile_rows": 63,
+  "raw_batches": 168000,
+  "minimum_raw_batch_ns": 584417,
+  "all_process_stdout_stderr_hashes_match": true,
+  "all_raw_result_hashes_match": true,
+  "all_raw_percentiles_and_minimums_verified": true,
+  "source_sha256": "8c6a4bc905f0e9d5a626bdbc02a54c6e9f85b567f984ab6db121d51878419a83",
+  "plan_sha256": "5e4f688280bbae6a464c68b33594361a7247b3f8792b91e35d44d65afa8eefd9",
+  "runner_sha256": "1a412ec639081559ded6f6529fa69dd6f4913c8ebd6eabcfb43ebc6fbcc05a1b",
+  "acceptance_manifest_sha256": "f0ba96568211bb9918da7b75ab046f7e738d8036d4f73c598bc59c327541a7ef",
+  "summary_sha256": "3c349fd8c416602474631b62eda6fe5e5a668cf64deac2e570275ffc7a81d62e",
+  "no_reruns_or_discards": true,
+  "admission": "pending root review"
+}

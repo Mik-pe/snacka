@@ -1,0 +1,4229 @@
+{
+  "source_manifest_sha256": "8c6a4bc905f0e9d5a626bdbc02a54c6e9f85b567f984ab6db121d51878419a83",
+  "plan_sha256": "5e4f688280bbae6a464c68b33594361a7247b3f8792b91e35d44d65afa8eefd9",
+  "runner_sha256": "1a412ec639081559ded6f6529fa69dd6f4913c8ebd6eabcfb43ebc6fbcc05a1b",
+  "started_utc": "2026-10-15T09:41:45.839969+00:00",
+  "runtime_environment": {
+    "SNACKA_BENCH_QOS": "user-initiated",
+    "MallocNanoZone": "0",
+    "RUST_LOG": "warn",
+    "DYLD_LIBRARY_PATH": null,
+    "DYLD_INSERT_LIBRARIES": null,
+    "MallocGuardEdges": null,
+    "MallocScribble": null,
+    "MallocStackLogging": null,
+    "RUST_BACKTRACE": null,
+    "RUSTFLAGS": null,
+    "CARGO_ENCODED_RUSTFLAGS": null
+  },
+  "quiet_window": "Root explicitly authorized this frozen plan after coordinating all codec workers CPU-idle.",
+  "processes": [
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 0,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43000,
+      "started_utc": "2026-10-15T09:41:45.840325+00:00",
+      "finished_utc": "2026-10-15T09:41:48.692974+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-00-0-before.json",
+      "stdout_sha256": "8a7ee8368e41bc9f16e496b55e5ae3bd5fe21bea788b09679826521ceea4aa66",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-00-0-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 1,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43101,
+      "started_utc": "2026-10-15T09:41:48.693680+00:00",
+      "finished_utc": "2026-10-15T09:41:51.623634+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-00-1-after.json",
+      "stdout_sha256": "1fc1a62f7b2446eee0859904fa4513960335844f862023a5cefc92bd357c03ec",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-00-1-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 2,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43228,
+      "started_utc": "2026-10-15T09:41:51.624236+00:00",
+      "finished_utc": "2026-10-15T09:41:53.131717+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-00-2-after.json",
+      "stdout_sha256": "9f64622a6138c9df6113665d47953e45e56ae8b51b135ee63290766ce4ae5699",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-00-2-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 3,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43237,
+      "started_utc": "2026-10-15T09:41:53.132323+00:00",
+      "finished_utc": "2026-10-15T09:41:56.115978+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-00-3-before.json",
+      "stdout_sha256": "6800462ce5ed475593b3e92ce0bbfec669ec270d3d155e0d013a628719afed48",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-00-3-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43300,
+      "started_utc": "2026-10-15T09:41:56.117024+00:00",
+      "finished_utc": "2026-10-15T09:41:57.807345+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-01-0-after.json",
+      "stdout_sha256": "a2ee6cac6011af69957ae1d4a96008feb056f588d71c5343489a3450f3ec9a89",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-01-0-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43370,
+      "started_utc": "2026-10-15T09:41:57.808098+00:00",
+      "finished_utc": "2026-10-15T09:41:59.506754+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-01-1-before.json",
+      "stdout_sha256": "4b7d2f62a05986b5b473b9891eaab25d1cf8c98fdfa6c0eb5e967263e94d4a39",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-01-1-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43382,
+      "started_utc": "2026-10-15T09:41:59.507452+00:00",
+      "finished_utc": "2026-10-15T09:42:01.213277+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-01-2-before.json",
+      "stdout_sha256": "f9b1d6dbdb1c9f768bddc390f8be4afbe943e1fa253c42701a57157e615aa1a2",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-01-2-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43418,
+      "started_utc": "2026-10-15T09:42:01.213974+00:00",
+      "finished_utc": "2026-10-15T09:42:02.910726+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-01-3-after.json",
+      "stdout_sha256": "6dac155af0813ba1432749df1c59c1557a87b1a080ade50bc869624774f93653",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-01-3-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 43434,
+      "started_utc": "2026-10-15T09:42:02.911582+00:00",
+      "finished_utc": "2026-10-15T09:42:04.669715+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-02-0-before.json",
+      "stdout_sha256": "84e420e81a3e1a86bc770e3ddddb2fb5b4f3f3728927b9515e513a1e00159692",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-02-0-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 43443,
+      "started_utc": "2026-10-15T09:42:04.670456+00:00",
+      "finished_utc": "2026-10-15T09:42:06.322018+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-02-1-after.json",
+      "stdout_sha256": "708d33e8fcb05639b275458d74bb57949285b2dc2d184ac94254006f042c3649",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-02-1-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 43471,
+      "started_utc": "2026-10-15T09:42:06.322737+00:00",
+      "finished_utc": "2026-10-15T09:42:07.990857+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-02-2-after.json",
+      "stdout_sha256": "40f8185918fd83998b8c14bd83880630fee081a9f424f0006ad57747fb8fd5f2",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-02-2-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 43477,
+      "started_utc": "2026-10-15T09:42:07.991547+00:00",
+      "finished_utc": "2026-10-15T09:42:09.643209+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-02-3-before.json",
+      "stdout_sha256": "3ddc135fa9634827379f38498d527d52ca0b1ebb3a9010813e156fb3be67d1da",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-02-3-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 0,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 43495,
+      "started_utc": "2026-10-15T09:42:09.644165+00:00",
+      "finished_utc": "2026-10-15T09:42:12.473520+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-03-0-after.json",
+      "stdout_sha256": "3c8bb48477614365bae98db0032d1cac68cc0cb8374fc00a36931ecc0f5c4dd4",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-03-0-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 1,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 43528,
+      "started_utc": "2026-10-15T09:42:12.474187+00:00",
+      "finished_utc": "2026-10-15T09:42:15.304882+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-03-1-before.json",
+      "stdout_sha256": "9b98b2837425caff4980982021c8bb5f0b15fc6e423180584526a60613f3ac42",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-03-1-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 2,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 43543,
+      "started_utc": "2026-10-15T09:42:15.305527+00:00",
+      "finished_utc": "2026-10-15T09:42:18.135576+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-03-2-before.json",
+      "stdout_sha256": "a9f4555d82d74a6effff85ae19574e2e461fdd4e220d92aba52488138abef099",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-03-2-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 3,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 43579,
+      "started_utc": "2026-10-15T09:42:18.136258+00:00",
+      "finished_utc": "2026-10-15T09:42:20.959802+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-03-3-after.json",
+      "stdout_sha256": "a76bcf4aec7dbd717853d087a6f6b05e9892d5e6b04ac28e2b0de099427892c4",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-03-3-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 43612,
+      "started_utc": "2026-10-15T09:42:20.960700+00:00",
+      "finished_utc": "2026-10-15T09:42:22.393385+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-04-0-before.json",
+      "stdout_sha256": "6c48069d8fae30996cfeb5105807acd92f40a9c68422aaa70ef90fb57105d628",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-04-0-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 43621,
+      "started_utc": "2026-10-15T09:42:22.394183+00:00",
+      "finished_utc": "2026-10-15T09:42:23.817206+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-04-1-after.json",
+      "stdout_sha256": "e7270591b8a496c0f4cdb3a377b78a111a1d3a9a9eb7f6b8bd8b88d57d190b0e",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-04-1-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 43623,
+      "started_utc": "2026-10-15T09:42:23.818001+00:00",
+      "finished_utc": "2026-10-15T09:42:25.250149+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-04-2-after.json",
+      "stdout_sha256": "5f3b95d41ab20d7af6bb35714d665f2ab6971e7df01e4a08b8a892b1b90c2846",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-04-2-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 43643,
+      "started_utc": "2026-10-15T09:42:25.250922+00:00",
+      "finished_utc": "2026-10-15T09:42:26.669104+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-04-3-before.json",
+      "stdout_sha256": "ec4e6c63441df17787feff26efcacd5d2fe470ba86113dcc810eed144702587b",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-04-3-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 43659,
+      "started_utc": "2026-10-15T09:42:26.670125+00:00",
+      "finished_utc": "2026-10-15T09:42:28.104882+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-05-0-after.json",
+      "stdout_sha256": "de37a8f019176efdadf43ee89b1106bd4f743632a1af748fafe4066ee2c4056f",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-05-0-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 43671,
+      "started_utc": "2026-10-15T09:42:28.105583+00:00",
+      "finished_utc": "2026-10-15T09:42:29.537436+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-05-1-before.json",
+      "stdout_sha256": "aaa075b41c616f86b34121c5bdae24107021904241ff9c2c0c73146ad2886959",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-05-1-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 43682,
+      "started_utc": "2026-10-15T09:42:29.538216+00:00",
+      "finished_utc": "2026-10-15T09:42:30.963993+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-05-2-before.json",
+      "stdout_sha256": "a8263b1b743dae4fd216311453fe89c44388ec6b2e46b7c1aa676552841f92ce",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-05-2-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 43704,
+      "started_utc": "2026-10-15T09:42:30.964837+00:00",
+      "finished_utc": "2026-10-15T09:42:32.393446+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-05-3-after.json",
+      "stdout_sha256": "561c8af4a9eefa2155e09c2b6aa0edb10eaf2742608689a030bcbb4bc867ca90",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-05-3-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 43715,
+      "started_utc": "2026-10-15T09:42:32.394376+00:00",
+      "finished_utc": "2026-10-15T09:42:34.216965+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-06-0-before.json",
+      "stdout_sha256": "c6758979cec6408a513bf54be505b5e833e5d7f12d181fbcf2c7113c88e79f92",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-06-0-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 43726,
+      "started_utc": "2026-10-15T09:42:34.217689+00:00",
+      "finished_utc": "2026-10-15T09:42:36.047586+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-06-1-after.json",
+      "stdout_sha256": "c1f9958d33e94314e2e7c027ee00ee90e7e8058f4348794fbd88b9b15b55d9ad",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-06-1-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 43753,
+      "started_utc": "2026-10-15T09:42:36.048325+00:00",
+      "finished_utc": "2026-10-15T09:42:37.879017+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-06-2-after.json",
+      "stdout_sha256": "2dd53e06b5591e0cdbc8f24851cde2f59484d3a9dce288d978f62fd43c717f55",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-06-2-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 43769,
+      "started_utc": "2026-10-15T09:42:37.879723+00:00",
+      "finished_utc": "2026-10-15T09:42:39.715557+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-06-3-before.json",
+      "stdout_sha256": "70a0b3ad0343a6322ce8b80d81f085685ddc46922ef370caa068b878f14da38b",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/0-06-3-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 0,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43786,
+      "started_utc": "2026-10-15T09:42:39.716581+00:00",
+      "finished_utc": "2026-10-15T09:42:42.480071+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-00-0-after.json",
+      "stdout_sha256": "a3524ee378efb47b6b56d113e588263e7d9ec3250c6fb7e8a637d613bca5c23b",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-00-0-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 1,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43816,
+      "started_utc": "2026-10-15T09:42:42.480904+00:00",
+      "finished_utc": "2026-10-15T09:42:45.267646+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-00-1-before.json",
+      "stdout_sha256": "a51980bff71ef2119996971ae46acb9ac0124d4e937df30772ab0116e3d0f393",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-00-1-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 2,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43854,
+      "started_utc": "2026-10-15T09:42:45.268453+00:00",
+      "finished_utc": "2026-10-15T09:42:48.070255+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-00-2-before.json",
+      "stdout_sha256": "93fc731d3ef3ce09a14d9d6d1b51f0b19aecf75bd735b3724dc6399e2167ed35",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-00-2-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 3,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43891,
+      "started_utc": "2026-10-15T09:42:48.071020+00:00",
+      "finished_utc": "2026-10-15T09:42:50.965681+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-00-3-after.json",
+      "stdout_sha256": "56a180b10babf99f05792403dcbcf2d10a1c5532ba4a92ed9aafc7331f26deca",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-00-3-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43923,
+      "started_utc": "2026-10-15T09:42:50.966885+00:00",
+      "finished_utc": "2026-10-15T09:42:52.538023+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-01-0-before.json",
+      "stdout_sha256": "a26892deb7f2a85874b6eaf683c2d6d00da65d5c4ed47ebc56c107445950197b",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-01-0-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43927,
+      "started_utc": "2026-10-15T09:42:52.538923+00:00",
+      "finished_utc": "2026-10-15T09:42:54.133594+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-01-1-after.json",
+      "stdout_sha256": "24a8764c6b07722f967c98bab2aa505ea7dff6382d6e3a77bbb3f76a63a16e2b",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-01-1-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43948,
+      "started_utc": "2026-10-15T09:42:54.134454+00:00",
+      "finished_utc": "2026-10-15T09:42:55.734525+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-01-2-after.json",
+      "stdout_sha256": "d3b4c4dbf8a7d8d0536df1f1ae5a45bc7d5117a8957f5ff80828d93a5bb4b15c",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-01-2-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 43975,
+      "started_utc": "2026-10-15T09:42:55.735402+00:00",
+      "finished_utc": "2026-10-15T09:42:57.315490+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-01-3-before.json",
+      "stdout_sha256": "c4066b053d64eb32f2c164f3bb0d2de969fef3b09a941794f4308fe1c883261c",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-01-3-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 43993,
+      "started_utc": "2026-10-15T09:42:57.316644+00:00",
+      "finished_utc": "2026-10-15T09:42:58.978541+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-02-0-after.json",
+      "stdout_sha256": "b10bd177d523f109bc776906f155eb88ba97644973b180bc49e99b4224950f90",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-02-0-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 44003,
+      "started_utc": "2026-10-15T09:42:58.979407+00:00",
+      "finished_utc": "2026-10-15T09:43:00.628601+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-02-1-before.json",
+      "stdout_sha256": "bd826ad981f97f10ebd42871a4e1c604a5f0f914c3cb9d5e145d010a3be11fd9",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-02-1-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 44022,
+      "started_utc": "2026-10-15T09:43:00.629487+00:00",
+      "finished_utc": "2026-10-15T09:43:02.267907+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-02-2-before.json",
+      "stdout_sha256": "999e671be70c49ebc98b4308ccee3b5f153cf815164a6c38d5dc9f899cdf2932",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-02-2-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 44037,
+      "started_utc": "2026-10-15T09:43:02.268762+00:00",
+      "finished_utc": "2026-10-15T09:43:03.978941+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-02-3-after.json",
+      "stdout_sha256": "44f603d2d345bcc7e6207933f10c064c526448f3308036b0eef91076bd5d8560",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-02-3-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 0,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 44086,
+      "started_utc": "2026-10-15T09:43:03.980127+00:00",
+      "finished_utc": "2026-10-15T09:43:05.649087+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-03-0-before.json",
+      "stdout_sha256": "b492ff0e34182d5ad30ad88f976c5de977e90b3011755e3aa4522d0db016fa66",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-03-0-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 1,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 44125,
+      "started_utc": "2026-10-15T09:43:05.650038+00:00",
+      "finished_utc": "2026-10-15T09:43:07.864339+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-03-1-after.json",
+      "stdout_sha256": "f2a723d30a1ae5e894aff2e8fdfb472d982dc9353a91553ae9a62219cb560f8d",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-03-1-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 2,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 44288,
+      "started_utc": "2026-10-15T09:43:07.865217+00:00",
+      "finished_utc": "2026-10-15T09:43:09.343357+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-03-2-after.json",
+      "stdout_sha256": "22faa02d77e6e49bf74acd861e2f58a5426331d61b2d95bd610a8c5e7d935caf",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-03-2-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 3,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 44298,
+      "started_utc": "2026-10-15T09:43:09.344175+00:00",
+      "finished_utc": "2026-10-15T09:43:12.185582+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-03-3-before.json",
+      "stdout_sha256": "6522b30fa293391124fdaccbeceff1e0df22443c4fd5d5dd7942d4f1fe3f9b94",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-03-3-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 44326,
+      "started_utc": "2026-10-15T09:43:12.186756+00:00",
+      "finished_utc": "2026-10-15T09:43:13.618491+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-04-0-after.json",
+      "stdout_sha256": "9b5330dc658217d456500762f2545d63b8a1f11204ac5e933de8b00f16902c1c",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-04-0-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 44406,
+      "started_utc": "2026-10-15T09:43:13.619346+00:00",
+      "finished_utc": "2026-10-15T09:43:15.045826+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-04-1-before.json",
+      "stdout_sha256": "a3ed6dd2fb12df6702a5f00153f105bcfe637420e66391739388295eb5ea6fca",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-04-1-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 44409,
+      "started_utc": "2026-10-15T09:43:15.046678+00:00",
+      "finished_utc": "2026-10-15T09:43:16.481437+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-04-2-before.json",
+      "stdout_sha256": "7e101cb0ca4ee4053858bc3a7475d167918d0cd4afd94f60f8036491172aac08",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-04-2-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 44434,
+      "started_utc": "2026-10-15T09:43:16.482285+00:00",
+      "finished_utc": "2026-10-15T09:43:17.913015+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-04-3-after.json",
+      "stdout_sha256": "aad9d0a335d83fd1f8c84b97287e51ff0ad97f6f6ae7e47e2753c2e8e4ad8e3a",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-04-3-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 44452,
+      "started_utc": "2026-10-15T09:43:17.914442+00:00",
+      "finished_utc": "2026-10-15T09:43:19.339880+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-05-0-before.json",
+      "stdout_sha256": "3ef6a625c7ff71ed8af30fce0fcaea50041873af70897f753efc307d1b7c3895",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-05-0-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 44454,
+      "started_utc": "2026-10-15T09:43:19.340726+00:00",
+      "finished_utc": "2026-10-15T09:43:20.772614+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-05-1-after.json",
+      "stdout_sha256": "a414cd25e9fc04aace0dd70fe721b5ef23f3b474ada103f872d14171f1217e3e",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-05-1-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 44480,
+      "started_utc": "2026-10-15T09:43:20.773568+00:00",
+      "finished_utc": "2026-10-15T09:43:22.195571+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-05-2-after.json",
+      "stdout_sha256": "8fabdd8da78ae975382414074b8368a8355089999acf127765358acb1b118f55",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-05-2-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 44483,
+      "started_utc": "2026-10-15T09:43:22.196531+00:00",
+      "finished_utc": "2026-10-15T09:43:23.626462+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-05-3-before.json",
+      "stdout_sha256": "40486e15efd1c81bbb1f8e4482275e71f9b89cc8e459019c300476b0744967c2",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-05-3-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 44493,
+      "started_utc": "2026-10-15T09:43:23.627749+00:00",
+      "finished_utc": "2026-10-15T09:43:25.443799+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-06-0-after.json",
+      "stdout_sha256": "905ef799d571a20abb75465d560fa6c029b3a7bdb07f86b4798c8523e7c13ca4",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-06-0-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 44496,
+      "started_utc": "2026-10-15T09:43:25.444948+00:00",
+      "finished_utc": "2026-10-15T09:43:27.286692+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-06-1-before.json",
+      "stdout_sha256": "43dd6fa3896419d412144d5d50b4cf5c15dae74776c88ae064cc15630af846fe",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-06-1-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 44521,
+      "started_utc": "2026-10-15T09:43:27.287670+00:00",
+      "finished_utc": "2026-10-15T09:43:29.131339+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-06-2-before.json",
+      "stdout_sha256": "4ff7f7644639fe9efcd6d0cf8ab252c54fdc5156a9265e079f6cf50fa096ffdf",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-06-2-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 44530,
+      "started_utc": "2026-10-15T09:43:29.132324+00:00",
+      "finished_utc": "2026-10-15T09:43:30.969516+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-06-3-after.json",
+      "stdout_sha256": "91e1fb446500bfa0954006119630d158bba0add82aa39ce3003791cee6799916",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/1-06-3-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 0,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 44554,
+      "started_utc": "2026-10-15T09:43:30.970907+00:00",
+      "finished_utc": "2026-10-15T09:43:33.733912+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-00-0-before.json",
+      "stdout_sha256": "ef43ecd3d0a9573b38caad91674070bad21faf14fc265d081123576d1c4e783a",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-00-0-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 1,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 44564,
+      "started_utc": "2026-10-15T09:43:33.734939+00:00",
+      "finished_utc": "2026-10-15T09:43:36.513308+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-00-1-after.json",
+      "stdout_sha256": "8f743f1302db5a81bb66a57fcb7bc69128ff4244dfeda1e7a48fbcea4c7a60c9",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-00-1-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 2,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 44594,
+      "started_utc": "2026-10-15T09:43:36.514259+00:00",
+      "finished_utc": "2026-10-15T09:43:39.308116+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-00-2-after.json",
+      "stdout_sha256": "33e87b5da8cc675e0b1c4ae67227cd70b0a83df62988ab70fae8082a838e485d",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-00-2-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "slot": 3,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "8000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 44615,
+      "started_utc": "2026-10-15T09:43:39.312108+00:00",
+      "finished_utc": "2026-10-15T09:43:42.070481+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-00-3-before.json",
+      "stdout_sha256": "61517e42eb15a2e09a90e5bbff23068e3c8688f28c21b1b4ec720e8765960127",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-00-3-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 44632,
+      "started_utc": "2026-10-15T09:43:42.071955+00:00",
+      "finished_utc": "2026-10-15T09:43:43.650146+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-01-0-after.json",
+      "stdout_sha256": "9842adc0e2a77cc3ab18b99056bf886608036be5e78b4821bb4e20a35b271596",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-01-0-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 44642,
+      "started_utc": "2026-10-15T09:43:43.651109+00:00",
+      "finished_utc": "2026-10-15T09:43:45.223436+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-01-1-before.json",
+      "stdout_sha256": "91128e9e447f98eedece15c80835772c6f1f649cba82135b8d877caf982a2f20",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-01-1-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 44645,
+      "started_utc": "2026-10-15T09:43:45.224372+00:00",
+      "finished_utc": "2026-10-15T09:43:46.821303+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-01-2-before.json",
+      "stdout_sha256": "620385c440b2ae3a80f14e1025d14ca86e71db4c5d3a379cdd41ac347dc2ac49",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-01-2-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit"
+      ],
+      "pid": 44670,
+      "started_utc": "2026-10-15T09:43:46.822308+00:00",
+      "finished_utc": "2026-10-15T09:43:48.402597+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-01-3-after.json",
+      "stdout_sha256": "9afb23a0f76f6f2f9cb5fcb77d4139b2e60460543da5acf1f7d48cc70d48ccce",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-01-3-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 44676,
+      "started_utc": "2026-10-15T09:43:48.403981+00:00",
+      "finished_utc": "2026-10-15T09:43:50.049263+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-02-0-before.json",
+      "stdout_sha256": "4ad4a68af014020ed9096ae66e3b69dd75457c20be5b86c16ca90ee9676fdf97",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-02-0-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 44687,
+      "started_utc": "2026-10-15T09:43:50.050313+00:00",
+      "finished_utc": "2026-10-15T09:43:51.681672+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-02-1-after.json",
+      "stdout_sha256": "d30d8df64cead392326895e32b987698487a0965e79c5d95c79abcbb2947f0a4",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-02-1-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 44704,
+      "started_utc": "2026-10-15T09:43:51.682687+00:00",
+      "finished_utc": "2026-10-15T09:43:53.315815+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-02-2-after.json",
+      "stdout_sha256": "09e40fabb40f29e7e406fc27d5106b08fbc30c5481f1ba7d2a424a5b2b5e14ad",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-02-2-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit"
+      ],
+      "pid": 44713,
+      "started_utc": "2026-10-15T09:43:53.316865+00:00",
+      "finished_utc": "2026-10-15T09:43:54.968294+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-02-3-before.json",
+      "stdout_sha256": "1d2223bbd4705c960641cbbcc6f7086dd0badd22596ab9846c3e7877677113e1",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-02-3-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 0,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 44725,
+      "started_utc": "2026-10-15T09:43:54.969723+00:00",
+      "finished_utc": "2026-10-15T09:43:56.447190+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-03-0-after.json",
+      "stdout_sha256": "4dcc8e0f9271204a0328815da349b62a6801b25bd703ac828d5857f7db7485bb",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-03-0-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 1,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 44751,
+      "started_utc": "2026-10-15T09:43:56.448181+00:00",
+      "finished_utc": "2026-10-15T09:43:57.915632+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-03-1-before.json",
+      "stdout_sha256": "7485501b7ab9c4ac8448c71e5a01134f6ecbac92428085bda47705fbbb25f7da",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-03-1-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 2,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 44754,
+      "started_utc": "2026-10-15T09:43:57.916635+00:00",
+      "finished_utc": "2026-10-15T09:44:00.750242+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-03-2-before.json",
+      "stdout_sha256": "8a0f4eb439e82e794cf54b73c7e8c2a2f2b709bca92bcbef58e0e39526686ee6",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-03-2-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "slot": 3,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "fec-return",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit"
+      ],
+      "pid": 44785,
+      "started_utc": "2026-10-15T09:44:00.751274+00:00",
+      "finished_utc": "2026-10-15T09:44:03.573744+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-03-3-after.json",
+      "stdout_sha256": "f7981a9efeb501a4c5ed0371551409d32c440f7f83509de22d2898ddd33cca24",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-03-3-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 44796,
+      "started_utc": "2026-10-15T09:44:03.575273+00:00",
+      "finished_utc": "2026-10-15T09:44:05.000212+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-04-0-before.json",
+      "stdout_sha256": "851e77d43375d55c635afaad922b2d4fe9f4d1a86960796ef0b6de367d3c1c5d",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-04-0-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 44800,
+      "started_utc": "2026-10-15T09:44:05.001208+00:00",
+      "finished_utc": "2026-10-15T09:44:06.420180+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-04-1-after.json",
+      "stdout_sha256": "f71344a1918c0bd007a824c9a35b3b55732d4e6d92f5699d1af7a3a8159d6e8f",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-04-1-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 44833,
+      "started_utc": "2026-10-15T09:44:06.421270+00:00",
+      "finished_utc": "2026-10-15T09:44:07.846258+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-04-2-after.json",
+      "stdout_sha256": "d74eca248949ebfa7ab7bac18a7f819c6abe190ef5b4153e86d9e8f3666e209f",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-04-2-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "2",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit"
+      ],
+      "pid": 44837,
+      "started_utc": "2026-10-15T09:44:07.847326+00:00",
+      "finished_utc": "2026-10-15T09:44:09.288469+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-04-3-before.json",
+      "stdout_sha256": "d0b3fc703a8fe0ca943cffb864c6e40b8202603e54ad566217c67e2ff35f7ed5",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-04-3-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 0,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 44852,
+      "started_utc": "2026-10-15T09:44:09.289933+00:00",
+      "finished_utc": "2026-10-15T09:44:10.709240+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-05-0-after.json",
+      "stdout_sha256": "1fbe1d6ff438b8979651ab0a356a1c40ee3cc2ffc803ac0d84e6470f52a8f4a8",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-05-0-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 1,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 44857,
+      "started_utc": "2026-10-15T09:44:10.710263+00:00",
+      "finished_utc": "2026-10-15T09:44:12.138586+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-05-1-before.json",
+      "stdout_sha256": "41969daefff61adefb6219eb49a346fa09eda40af6d0b95b2f6cc7d680e21d54",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-05-1-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 2,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 44878,
+      "started_utc": "2026-10-15T09:44:12.139684+00:00",
+      "finished_utc": "2026-10-15T09:44:13.566454+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-05-2-before.json",
+      "stdout_sha256": "7a5e6eeb750e37d96d62ada1a1e5de8c739403685ea37a797923745a13a49e5e",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-05-2-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "slot": 3,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit"
+      ],
+      "pid": 44884,
+      "started_utc": "2026-10-15T09:44:13.567572+00:00",
+      "finished_utc": "2026-10-15T09:44:14.992522+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-05-3-after.json",
+      "stdout_sha256": "213921779536b6e6b588ad3bcc025468dca63c94672d8538200aea2d554f5eb1",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-05-3-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 0,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 44886,
+      "started_utc": "2026-10-15T09:44:14.994167+00:00",
+      "finished_utc": "2026-10-15T09:44:16.846850+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-06-0-before.json",
+      "stdout_sha256": "149343c26b3ef787d7175f403a61bbfdb397ce44c4ff0e3b8d7d15b67f86ee91",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-06-0-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 1,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 44910,
+      "started_utc": "2026-10-15T09:44:16.847934+00:00",
+      "finished_utc": "2026-10-15T09:44:18.721974+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-06-1-after.json",
+      "stdout_sha256": "44b2030faa4997659c6e7842de11576020d5b032e203e0d94592dd44075e0594",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-06-1-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 2,
+      "role": "after",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 44917,
+      "started_utc": "2026-10-15T09:44:18.723046+00:00",
+      "finished_utc": "2026-10-15T09:44:20.611391+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-06-2-after.json",
+      "stdout_sha256": "55a11f5d3b78dc36166756ce9602325cde9959e59caf713e35dfa33b1847f133",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-06-2-after.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "slot": 3,
+      "role": "before",
+      "command": [
+        "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-before",
+        "matrix",
+        "48000",
+        "1",
+        "decode",
+        "1000",
+        "200000",
+        "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit"
+      ],
+      "pid": 44925,
+      "started_utc": "2026-10-15T09:44:20.612507+00:00",
+      "finished_utc": "2026-10-15T09:44:22.481121+00:00",
+      "return_code": 0,
+      "stdout": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-06-3-before.json",
+      "stdout_sha256": "532ab4590422f74d058e849431521a5104ad09db23cc2f57b7c29aa0099b2e4a",
+      "stderr": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/acceptance/2-06-3-before.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "quartet_results": [
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "role_order": [
+        "before",
+        "after",
+        "after",
+        "before"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": 0.5843030050792786,
+          "native_normalized_change_percent": 0.5738670003734958,
+          "before": [
+            {
+              "snacka": 7556.859375,
+              "libopus": 6151.90625,
+              "ratio": 1.228376875053972
+            },
+            {
+              "snacka": 7911.677083333333,
+              "libopus": 6505.427083333333,
+              "ratio": 1.2161656693690044
+            }
+          ],
+          "after": [
+            {
+              "snacka": 7646.484375,
+              "libopus": 6212.239583333333,
+              "ratio": 1.230874030601551
+            },
+            {
+              "snacka": 7910.583333333333,
+              "libopus": 6443.583333333333,
+              "ratio": 1.2276683522367213
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 0.18489720423300327,
+          "native_normalized_change_percent": -0.04242914011687304,
+          "before": [
+            {
+              "snacka": 8654.947916666666,
+              "libopus": 7028.864583333333,
+              "ratio": 1.2313436706675303
+            },
+            {
+              "snacka": 9358.942708333334,
+              "libopus": 7619.791666666667,
+              "ratio": 1.2282412850307587
+            }
+          ],
+          "after": [
+            {
+              "snacka": 9652.557291666666,
+              "libopus": 7834.203125,
+              "ratio": 1.2321045469020395
+            },
+            {
+              "snacka": 8422.739583333334,
+              "libopus": 6867.625,
+              "ratio": 1.2264413947082629
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": 6.1775026613555495,
+          "native_normalized_change_percent": -4.036285837022957,
+          "before": [
+            {
+              "snacka": 12767.578125,
+              "libopus": 9330.510416666666,
+              "ratio": 1.3683686695417923
+            },
+            {
+              "snacka": 14718.53125,
+              "libopus": 11746.963541666666,
+              "ratio": 1.2529647510859412
+            }
+          ],
+          "after": [
+            {
+              "snacka": 14941.625,
+              "libopus": 11955.078125,
+              "ratio": 1.249814082666231
+            },
+            {
+              "snacka": 14178.822916666666,
+              "libopus": 11223.53125,
+              "ratio": 1.2633121074676623
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "role_order": [
+        "after",
+        "before",
+        "before",
+        "after"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": 0.20419158628706136,
+          "native_normalized_change_percent": 0.3260749305568966,
+          "before": [
+            {
+              "snacka": 8478.302083333334,
+              "libopus": 7512.15625,
+              "ratio": 1.1286109874689219
+            },
+            {
+              "snacka": 8505.635416666666,
+              "libopus": 7453.5625,
+              "ratio": 1.1411503447736122
+            }
+          ],
+          "after": [
+            {
+              "snacka": 8532.114583333334,
+              "libopus": 7496.09375,
+              "ratio": 1.13820809449366
+            },
+            {
+              "snacka": 8486.541666666666,
+              "libopus": 7451.395833333333,
+              "ratio": 1.1389197214168487
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 0.3877086443067279,
+          "native_normalized_change_percent": 1.941530302672767,
+          "before": [
+            {
+              "snacka": 9274.302083333334,
+              "libopus": 8423.177083333334,
+              "ratio": 1.1010456021023343
+            },
+            {
+              "snacka": 10151.46875,
+              "libopus": 8917.53125,
+              "ratio": 1.1383720970980618
+            }
+          ],
+          "after": [
+            {
+              "snacka": 9554.6875,
+              "libopus": 8364.583333333334,
+              "ratio": 1.1422789539227896
+            },
+            {
+              "snacka": 9930.125,
+              "libopus": 8708.333333333334,
+              "ratio": 1.1403014354066985
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": -12.43625359461391,
+          "native_normalized_change_percent": 17.204237698197012,
+          "before": [
+            {
+              "snacka": 14922.739583333334,
+              "libopus": 14918.40625,
+              "ratio": 1.0002904689187784
+            },
+            {
+              "snacka": 14972.21875,
+              "libopus": 14690.96875,
+              "ratio": 1.019144414829689
+            }
+          ],
+          "after": [
+            {
+              "snacka": 13392.791666666666,
+              "libopus": 10411.885416666666,
+              "ratio": 1.2862984109706355
+            },
+            {
+              "snacka": 12791.229166666666,
+              "libopus": 11749.125,
+              "ratio": 1.0886963213572642
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "role_order": [
+        "before",
+        "after",
+        "after",
+        "before"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -2.5224338436932614,
+          "native_normalized_change_percent": 0.1360583375016322,
+          "before": [
+            {
+              "snacka": 18321.1875,
+              "libopus": 14970.479166666666,
+              "ratio": 1.2238210478121525
+            },
+            {
+              "snacka": 17256.9375,
+              "libopus": 14042.541666666666,
+              "ratio": 1.2289041335703117
+            }
+          ],
+          "after": [
+            {
+              "snacka": 17229.166666666668,
+              "libopus": 14118.9375,
+              "ratio": 1.2202877636271614
+            },
+            {
+              "snacka": 17436.625,
+              "libopus": 14109.375,
+              "ratio": 1.2358183831672205
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": -5.701592766294827,
+          "native_normalized_change_percent": -0.3490704591442406,
+          "before": [
+            {
+              "snacka": 21038.1875,
+              "libopus": 17118.0625,
+              "ratio": 1.229005180930961
+            },
+            {
+              "snacka": 19164.9375,
+              "libopus": 15667.541666666666,
+              "ratio": 1.2232255645296406
+            }
+          ],
+          "after": [
+            {
+              "snacka": 18573.791666666668,
+              "libopus": 15276.895833333334,
+              "ratio": 1.2158092762627661
+            },
+            {
+              "snacka": 19302.958333333332,
+              "libopus": 15720.5,
+              "ratio": 1.2278845032494725
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": -12.990458571636477,
+          "native_normalized_change_percent": -2.0417714825655353,
+          "before": [
+            {
+              "snacka": 27285.604166666668,
+              "libopus": 22408,
+              "ratio": 1.2176724458526718
+            },
+            {
+              "snacka": 21369.791666666668,
+              "libopus": 17136.291666666668,
+              "ratio": 1.2470487829192916
+            }
+          ],
+          "after": [
+            {
+              "snacka": 20492.1875,
+              "libopus": 17297.729166666668,
+              "ratio": 1.1846750115321014
+            },
+            {
+              "snacka": 21541.666666666668,
+              "libopus": 17513.895833333332,
+              "ratio": 1.2299757216591112
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "role_order": [
+        "after",
+        "before",
+        "before",
+        "after"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -0.13082768400802802,
+          "native_normalized_change_percent": -0.10294534869403904,
+          "before": [
+            {
+              "snacka": 15401.041666666666,
+              "libopus": 12478.302083333334,
+              "ratio": 1.2342257435197932
+            },
+            {
+              "snacka": 15436.635416666666,
+              "libopus": 12474.395833333334,
+              "ratio": 1.237465575320114
+            }
+          ],
+          "after": [
+            {
+              "snacka": 15400.177083333334,
+              "libopus": 12458.333333333334,
+              "ratio": 1.2361346153846153
+            },
+            {
+              "snacka": 15397.135416666666,
+              "libopus": 12487.416666666666,
+              "ratio": 1.2330120654792491
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": -1.169879532873619,
+          "native_normalized_change_percent": -0.3477059652704617,
+          "before": [
+            {
+              "snacka": 16115.447916666666,
+              "libopus": 13025.177083333334,
+              "ratio": 1.2372536521816322
+            },
+            {
+              "snacka": 16089.416666666666,
+              "libopus": 12840.28125,
+              "ratio": 1.2530423869544653
+            }
+          ],
+          "after": [
+            {
+              "snacka": 16000.4375,
+              "libopus": 12857.208333333334,
+              "ratio": 1.2444721346326477
+            },
+            {
+              "snacka": 15828.125,
+              "libopus": 12794.270833333334,
+              "ratio": 1.2371259922654183
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": -1.794021877667229,
+          "native_normalized_change_percent": 0.3689224661318269,
+          "before": [
+            {
+              "snacka": 16980.895833333332,
+              "libopus": 13620.666666666666,
+              "ratio": 1.2467007855709462
+            },
+            {
+              "snacka": 16934.03125,
+              "libopus": 13705.302083333334,
+              "ratio": 1.2355824882249797
+            }
+          ],
+          "after": [
+            {
+              "snacka": 16736.114583333332,
+              "libopus": 13572.052083333334,
+              "ratio": 1.2331307366470774
+            },
+            {
+              "snacka": 16570.75,
+              "libopus": 13167.96875,
+              "ratio": 1.258413527143281
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "role_order": [
+        "before",
+        "after",
+        "after",
+        "before"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -0.08908392558006906,
+          "native_normalized_change_percent": -0.31050495023308144,
+          "before": [
+            {
+              "snacka": 3412.328125,
+              "libopus": 3361.546875,
+              "ratio": 1.0151065125337573
+            },
+            {
+              "snacka": 3410.375,
+              "libopus": 3325.953125,
+              "ratio": 1.0253827615204287
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3407.7708333333335,
+              "libopus": 3353.515625,
+              "ratio": 1.0161786060959037
+            },
+            {
+              "snacka": 3408.8541666666665,
+              "libopus": 3348.7447916666665,
+              "ratio": 1.0179498226169943
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 0.6901455066610884,
+          "native_normalized_change_percent": -0.20793378204561064,
+          "before": [
+            {
+              "snacka": 3602.2135416666665,
+              "libopus": 3526.6927083333335,
+              "ratio": 1.021414066826657
+            },
+            {
+              "snacka": 3472.4427083333335,
+              "libopus": 3383.03125,
+              "ratio": 1.0264293917868283
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3509.546875,
+              "libopus": 3421.875,
+              "ratio": 1.02562100456621
+            },
+            {
+              "snacka": 3613.4947916666665,
+              "libopus": 3549.6979166666665,
+              "ratio": 1.0179724800525867
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": -2.2275475628276697,
+          "native_normalized_change_percent": -2.1107370999217223,
+          "before": [
+            {
+              "snacka": 3986.5416666666665,
+              "libopus": 3751.3020833333335,
+              "ratio": 1.0627087816730303
+            },
+            {
+              "snacka": 3540.578125,
+              "libopus": 3466.796875,
+              "ratio": 1.0212822535211268
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3579.859375,
+              "libopus": 3493.4895833333335,
+              "ratio": 1.0247230711889677
+            },
+            {
+              "snacka": 3769.0989583333335,
+              "libopus": 3713.7604166666665,
+              "ratio": 1.0149009455263505
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "role_order": [
+        "after",
+        "before",
+        "before",
+        "after"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -0.35093143117093106,
+          "native_normalized_change_percent": -0.46495265550676734,
+          "before": [
+            {
+              "snacka": 3191.84375,
+              "libopus": 3597.8697916666665,
+              "ratio": 0.8871482112534761
+            },
+            {
+              "snacka": 3177.734375,
+              "libopus": 3599.609375,
+              "ratio": 0.882799782962561
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3166.8854166666665,
+              "libopus": 3602.6458333333335,
+              "ratio": 0.8790443366275943
+            },
+            {
+              "snacka": 3180.3385416666665,
+              "libopus": 3603.078125,
+              "ratio": 0.8826726569151666
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 0.42143755686596673,
+          "native_normalized_change_percent": -0.9339980506387735,
+          "before": [
+            {
+              "snacka": 3362.1979166666665,
+              "libopus": 3731.7708333333335,
+              "ratio": 0.9009658060013956
+            },
+            {
+              "snacka": 3242.1875,
+              "libopus": 3663.1927083333335,
+              "ratio": 0.8850715095125637
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3351.5625,
+              "libopus": 3807.0729166666665,
+              "ratio": 0.8803515386656963
+            },
+            {
+              "snacka": 3279.9479166666665,
+              "libopus": 3689.6666666666665,
+              "ratio": 0.88895507724275
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": 1.4933798748325566,
+          "native_normalized_change_percent": -0.2571567578384948,
+          "before": [
+            {
+              "snacka": 3495.6614583333335,
+              "libopus": 3832.25,
+              "ratio": 0.9121694718072498
+            },
+            {
+              "snacka": 3296.2239583333335,
+              "libopus": 3713.5416666666665,
+              "ratio": 0.8876227208976157
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3476.5625,
+              "libopus": 3904.515625,
+              "ratio": 0.8903953355289749
+            },
+            {
+              "snacka": 3414.0625,
+              "libopus": 3773.8697916666665,
+              "ratio": 0.9046582655127156
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 0,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "role_order": [
+        "before",
+        "after",
+        "after",
+        "before"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -0.24885971433386,
+          "native_normalized_change_percent": -0.2435387373959097,
+          "before": [
+            {
+              "snacka": 2343.0989583333335,
+              "libopus": 2057.0755208333335,
+              "ratio": 1.1390437223151293
+            },
+            {
+              "snacka": 2357.0963541666665,
+              "libopus": 2056.8567708333335,
+              "ratio": 1.1459700974763019
+            }
+          ],
+          "after": [
+            {
+              "snacka": 2346.1380208333335,
+              "libopus": 2058.0494791666665,
+              "ratio": 1.1399813486424621
+            },
+            {
+              "snacka": 2342.3411458333335,
+              "libopus": 2055.6640625,
+              "ratio": 1.1394571654790182
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 0.4187576810458893,
+          "native_normalized_change_percent": -0.06044149172056423,
+          "before": [
+            {
+              "snacka": 2389.7578125,
+              "libopus": 2095.8125,
+              "ratio": 1.1402536307517968
+            },
+            {
+              "snacka": 2491.3203125,
+              "libopus": 2171.5494791666665,
+              "ratio": 1.1472546844551041
+            }
+          ],
+          "after": [
+            {
+              "snacka": 2480.46875,
+              "libopus": 2168.5104166666665,
+              "ratio": 1.1438583513068206
+            },
+            {
+              "snacka": 2420.3567708333335,
+              "libopus": 2118.9244791666665,
+              "ratio": 1.142257213331744
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": 3.355763660950206,
+          "native_normalized_change_percent": 3.4253335647347782,
+          "before": [
+            {
+              "snacka": 2490.34375,
+              "libopus": 2154.296875,
+              "ratio": 1.1559891205802357
+            },
+            {
+              "snacka": 2628.4713541666665,
+              "libopus": 2518.5546875,
+              "ratio": 1.043642755590022
+            }
+          ],
+          "after": [
+            {
+              "snacka": 2534.7239583333335,
+              "libopus": 2265.1927083333335,
+              "ratio": 1.118988220740969
+            },
+            {
+              "snacka": 2758.6796875,
+              "libopus": 2392.0338541666665,
+              "ratio": 1.1532778613039592
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "role_order": [
+        "after",
+        "before",
+        "before",
+        "after"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": 0.10623760767320967,
+          "native_normalized_change_percent": 0.21962800390340487,
+          "before": [
+            {
+              "snacka": 7519.3125,
+              "libopus": 6123.479166666667,
+              "ratio": 1.2279477557352676
+            },
+            {
+              "snacka": 7504.776041666667,
+              "libopus": 6139.973958333333,
+              "ratio": 1.2222814123634822
+            }
+          ],
+          "after": [
+            {
+              "snacka": 7491.536458333333,
+              "libopus": 6126.953125,
+              "ratio": 1.2227180958452875
+            },
+            {
+              "snacka": 7548.614583333333,
+              "libopus": 6122.614583333333,
+              "ratio": 1.2329070335215586
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 0.5223367681024715,
+          "native_normalized_change_percent": -0.26237868479312976,
+          "before": [
+            {
+              "snacka": 8035.807291666667,
+              "libopus": 6472.005208333333,
+              "ratio": 1.2416255909868223
+            },
+            {
+              "snacka": 8174.697916666667,
+              "libopus": 6579.427083333333,
+              "ratio": 1.2424634870374036
+            }
+          ],
+          "after": [
+            {
+              "snacka": 7642.578125,
+              "libopus": 6251.739583333333,
+              "ratio": 1.222472245225079
+            },
+            {
+              "snacka": 8685.333333333334,
+              "libopus": 6918.838541666667,
+              "ratio": 1.2553166663781026
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": 19.591480554556483,
+          "native_normalized_change_percent": -1.6365229449816887,
+          "before": [
+            {
+              "snacka": 8651.041666666666,
+              "libopus": 6842.447916666667,
+              "ratio": 1.2643196955280684
+            },
+            {
+              "snacka": 9283.635416666666,
+              "libopus": 7679.036458333333,
+              "ratio": 1.2089583721916066
+            }
+          ],
+          "after": [
+            {
+              "snacka": 7891.708333333333,
+              "libopus": 6524.739583333333,
+              "ratio": 1.2095054879265617
+            },
+            {
+              "snacka": 14555.125,
+              "libopus": 11903.859375,
+              "ratio": 1.2227231977024258
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "role_order": [
+        "before",
+        "after",
+        "after",
+        "before"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": 0.5899522718990857,
+          "native_normalized_change_percent": 0.016959364397828303,
+          "before": [
+            {
+              "snacka": 8000,
+              "libopus": 7046.4375,
+              "ratio": 1.1353254747523127
+            },
+            {
+              "snacka": 8047.739583333333,
+              "libopus": 7044.708333333333,
+              "ratio": 1.1423808059240683
+            }
+          ],
+          "after": [
+            {
+              "snacka": 8057.729166666667,
+              "libopus": 7089.40625,
+              "ratio": 1.136587308234264
+            },
+            {
+              "snacka": 8084.635416666667,
+              "libopus": 7082.46875,
+              "ratio": 1.1414996242188384
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 5.38109632549173,
+          "native_normalized_change_percent": 0.11483930002591514,
+          "before": [
+            {
+              "snacka": 8147.572916666667,
+              "libopus": 7161.020833333333,
+              "ratio": 1.1377669617634822
+            },
+            {
+              "snacka": 8294.708333333334,
+              "libopus": 7213.541666666667,
+              "ratio": 1.149880144404332
+            }
+          ],
+          "after": [
+            {
+              "snacka": 8652.770833333334,
+              "libopus": 7582.895833333333,
+              "ratio": 1.141090557422269
+            },
+            {
+              "snacka": 8673.604166666666,
+              "libopus": 7547.739583333333,
+              "ratio": 1.14916579605097
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": 9.735329615287359,
+          "native_normalized_change_percent": 0.1238593847431968,
+          "before": [
+            {
+              "snacka": 8482.635416666666,
+              "libopus": 7342.447916666667,
+              "ratio": 1.1552871076431992
+            },
+            {
+              "snacka": 8840.708333333334,
+              "libopus": 7688.802083333333,
+              "ratio": 1.1498160880609654
+            }
+          ],
+          "after": [
+            {
+              "snacka": 9398,
+              "libopus": 8160.59375,
+              "ratio": 1.151631889530097
+            },
+            {
+              "snacka": 9608.9375,
+              "libopus": 8309.895833333334,
+              "ratio": 1.156324663115011
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "role_order": [
+        "after",
+        "before",
+        "before",
+        "after"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": 1.861058032589069,
+          "native_normalized_change_percent": 1.4466663939890267,
+          "before": [
+            {
+              "snacka": 17297.729166666668,
+              "libopus": 13983.5,
+              "ratio": 1.237009987962003
+            },
+            {
+              "snacka": 17191.833333333332,
+              "libopus": 14050.354166666666,
+              "ratio": 1.2235871871557211
+            }
+          ],
+          "after": [
+            {
+              "snacka": 17459.1875,
+              "libopus": 14025.1875,
+              "ratio": 1.24484521151678
+            },
+            {
+              "snacka": 17672.729166666668,
+              "libopus": 14123.270833333334,
+              "ratio": 1.2513198518402695
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 8.618472267534782,
+          "native_normalized_change_percent": 0.8106024742681184,
+          "before": [
+            {
+              "snacka": 19024.3125,
+              "libopus": 15473.083333333334,
+              "ratio": 1.2295101170311886
+            },
+            {
+              "snacka": 18325.520833333332,
+              "libopus": 15059.895833333334,
+              "ratio": 1.2168424693065882
+            }
+          ],
+          "after": [
+            {
+              "snacka": 19355.916666666668,
+              "libopus": 15734.375,
+              "ratio": 1.230167494207216
+            },
+            {
+              "snacka": 21250,
+              "libopus": 17192.708333333332,
+              "ratio": 1.2359890942138745
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": 24.888861976795674,
+          "native_normalized_change_percent": 1.4619467302261935,
+          "before": [
+            {
+              "snacka": 21325.520833333332,
+              "libopus": 17111.979166666668,
+              "ratio": 1.246233450007609
+            },
+            {
+              "snacka": 20125.875,
+              "libopus": 16669.270833333332,
+              "ratio": 1.2073638493985315
+            }
+          ],
+          "after": [
+            {
+              "snacka": 21680.5625,
+              "libopus": 17721.354166666668,
+              "ratio": 1.2234145481263776
+            },
+            {
+              "snacka": 30876.729166666668,
+              "libopus": 24387.145833333332,
+              "ratio": 1.2661067177637126
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "role_order": [
+        "before",
+        "after",
+        "after",
+        "before"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": 1.0106198108995157,
+          "native_normalized_change_percent": -0.1392167408792111,
+          "before": [
+            {
+              "snacka": 16213.541666666666,
+              "libopus": 12974.833333333334,
+              "ratio": 1.2496146385952291
+            },
+            {
+              "snacka": 15435.333333333334,
+              "libopus": 12466.145833333334,
+              "ratio": 1.2381800710256945
+            }
+          ],
+          "after": [
+            {
+              "snacka": 16569.458333333332,
+              "libopus": 13300.354166666666,
+              "ratio": 1.245790760584383
+            },
+            {
+              "snacka": 15410.604166666666,
+              "libopus": 12442.708333333334,
+              "ratio": 1.238524905818334
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 24.23166851984908,
+          "native_normalized_change_percent": 0.19413130072551965,
+          "before": [
+            {
+              "snacka": 27748.270833333332,
+              "libopus": 22224.833333333332,
+              "ratio": 1.2485254857554238
+            },
+            {
+              "snacka": 16266.5,
+              "libopus": 13034.291666666666,
+              "ratio": 1.247977290672361
+            }
+          ],
+          "after": [
+            {
+              "snacka": 42350.708333333336,
+              "libopus": 33567.708333333336,
+              "ratio": 1.2616502715283164
+            },
+            {
+              "snacka": 16448.791666666668,
+              "libopus": 13267.354166666666,
+              "ratio": 1.2397944202012146
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": 99.59995660643348,
+          "native_normalized_change_percent": 26.505815453860905,
+          "before": [
+            {
+              "snacka": 40808.145833333336,
+              "libopus": 33602.4375,
+              "ratio": 1.2144400486819842
+            },
+            {
+              "snacka": 17492.1875,
+              "libopus": 13965.28125,
+              "ratio": 1.2525481719174112
+            }
+          ],
+          "after": [
+            {
+              "snacka": 162049.47916666666,
+              "libopus": 80866.33333333333,
+              "ratio": 2.0039177304935305
+            },
+            {
+              "snacka": 17549.479166666668,
+              "libopus": 14446.166666666666,
+              "ratio": 1.2148190984921028
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "role_order": [
+        "after",
+        "before",
+        "before",
+        "after"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -0.418454820476033,
+          "native_normalized_change_percent": -0.653684622805828,
+          "before": [
+            {
+              "snacka": 3419.2708333333335,
+              "libopus": 3346.3541666666665,
+              "ratio": 1.0217898832684824
+            },
+            {
+              "snacka": 3426,
+              "libopus": 3338.7552083333335,
+              "ratio": 1.0261309339028237
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3410.8072916666665,
+              "libopus": 3358.5052083333335,
+              "ratio": 1.015573024333432
+            },
+            {
+              "snacka": 3405.8177083333335,
+              "libopus": 3342.4479166666665,
+              "ratio": 1.01895909622127
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 1.2529796865522913,
+          "native_normalized_change_percent": 0.059480926325261585,
+          "before": [
+            {
+              "snacka": 3505.4270833333335,
+              "libopus": 3424.4791666666665,
+              "ratio": 1.0236380228136883
+            },
+            {
+              "snacka": 3627.390625,
+              "libopus": 3552.734375,
+              "ratio": 1.021013743815283
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3615.234375,
+              "libopus": 3531.25,
+              "ratio": 1.023783185840708
+            },
+            {
+              "snacka": 3605.90625,
+              "libopus": 3527.9947916666665,
+              "ratio": 1.022083779295073
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": 11.098575477697882,
+          "native_normalized_change_percent": 4.334290255228335,
+          "before": [
+            {
+              "snacka": 3945.7447916666665,
+              "libopus": 3842.015625,
+              "ratio": 1.0269986321741382
+            },
+            {
+              "snacka": 3745.0104166666665,
+              "libopus": 3823.3541666666665,
+              "ratio": 0.9795091569902082
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3962.890625,
+              "libopus": 3975.0416666666665,
+              "ratio": 0.9969431662141907
+            },
+            {
+              "snacka": 4602.427083333333,
+              "libopus": 4190.104166666667,
+              "ratio": 1.0984039776258545
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "role_order": [
+        "before",
+        "after",
+        "after",
+        "before"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -0.5969192276624513,
+          "native_normalized_change_percent": -0.7347973414607245,
+          "before": [
+            {
+              "snacka": 3176.2135416666665,
+              "libopus": 3591.796875,
+              "ratio": 0.8842965379735364
+            },
+            {
+              "snacka": 3185.3333333333335,
+              "libopus": 3592.015625,
+              "ratio": 0.8867815916957024
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3163.1927083333335,
+              "libopus": 3598.7395833333335,
+              "ratio": 0.8789723832707632
+            },
+            {
+              "snacka": 3160.375,
+              "libopus": 3595.0520833333335,
+              "ratio": 0.8790901847156827
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 1.160734062524793,
+          "native_normalized_change_percent": -0.8842503915680755,
+          "before": [
+            {
+              "snacka": 3240.671875,
+              "libopus": 3656.46875,
+              "ratio": 0.8862845812643688
+            },
+            {
+              "snacka": 3276.9114583333335,
+              "libopus": 3678.8177083333335,
+              "ratio": 0.8907512462252224
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3355.9010416666665,
+              "libopus": 3818.140625,
+              "ratio": 0.8789359458615191
+            },
+            {
+              "snacka": 3238.28125,
+              "libopus": 3669.921875,
+              "ratio": 0.8823842469398616
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": -0.957663643064055,
+          "native_normalized_change_percent": -1.4419417131253498,
+          "before": [
+            {
+              "snacka": 3392.578125,
+              "libopus": 3798.828125,
+              "ratio": 0.8930591259640103
+            },
+            {
+              "snacka": 3558.3802083333335,
+              "libopus": 3862.1979166666665,
+              "ratio": 0.9213355413449272
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3544.0520833333335,
+              "libopus": 3919.0520833333335,
+              "ratio": 0.9043135962405875
+            },
+            {
+              "snacka": 3341.3645833333335,
+              "libopus": 3780.5989583333335,
+              "ratio": 0.8838188393318409
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 1,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "role_order": [
+        "after",
+        "before",
+        "before",
+        "after"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -0.5364350809746066,
+          "native_normalized_change_percent": -0.2897653860450933,
+          "before": [
+            {
+              "snacka": 2353.296875,
+              "libopus": 2055.4453125,
+              "ratio": 1.1449085318342664
+            },
+            {
+              "snacka": 2362.4140625,
+              "libopus": 2064.5625,
+              "ratio": 1.144268610177701
+            }
+          ],
+          "after": [
+            {
+              "snacka": 2337.6744791666665,
+              "libopus": 2051.8671875,
+              "ratio": 1.1392913212939941
+            },
+            {
+              "snacka": 2352.7552083333335,
+              "libopus": 2057.9427083333335,
+              "ratio": 1.143255931667194
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": -2.790928076198984,
+          "native_normalized_change_percent": -0.08863756056274319,
+          "before": [
+            {
+              "snacka": 2495.5520833333335,
+              "libopus": 2200.5208333333335,
+              "ratio": 1.134073372781065
+            },
+            {
+              "snacka": 2506.6197916666665,
+              "libopus": 2186.5234375,
+              "ratio": 1.1463951168676492
+            }
+          ],
+          "after": [
+            {
+              "snacka": 2371.8541666666665,
+              "libopus": 2084.8541666666665,
+              "ratio": 1.1376595085587522
+            },
+            {
+              "snacka": 2492.1875,
+              "libopus": 2184.6796875,
+              "ratio": 1.140756475312814
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": -6.619337690346505,
+          "native_normalized_change_percent": 0.06574292249741376,
+          "before": [
+            {
+              "snacka": 2764.9739583333335,
+              "libopus": 2505.0989583333335,
+              "ratio": 1.1037384168539583
+            },
+            {
+              "snacka": 2764.9739583333335,
+              "libopus": 2366.3203125,
+              "ratio": 1.1684698574945498
+            }
+          ],
+          "after": [
+            {
+              "snacka": 2413.4114583333335,
+              "libopus": 2108.9401041666665,
+              "ratio": 1.1443717408403955
+            },
+            {
+              "snacka": 2762.2604166666665,
+              "libopus": 2447.8072916666665,
+              "ratio": 1.1284631866530206
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch-8000-decode",
+      "role_order": [
+        "before",
+        "after",
+        "after",
+        "before"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": 0.4962698184028502,
+          "native_normalized_change_percent": 0.01870752957118249,
+          "before": [
+            {
+              "snacka": 7504.776041666667,
+              "libopus": 6110.239583333333,
+              "ratio": 1.2282294236280287
+            },
+            {
+              "snacka": 7492.625,
+              "libopus": 6105.901041666667,
+              "ratio": 1.2271120918715075
+            }
+          ],
+          "after": [
+            {
+              "snacka": 7495.010416666667,
+              "libopus": 6155.161458333333,
+              "ratio": 1.217678929692306
+            },
+            {
+              "snacka": 7577.036458333333,
+              "libopus": 6119.359375,
+              "ratio": 1.238207464867731
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 4.14571015226235,
+          "native_normalized_change_percent": 0.4314159354809499,
+          "before": [
+            {
+              "snacka": 7669.052083333333,
+              "libopus": 6221.354166666667,
+              "ratio": 1.232698200083717
+            },
+            {
+              "snacka": 7638.453125,
+              "libopus": 6220.484375,
+              "ratio": 1.227951500963299
+            }
+          ],
+          "after": [
+            {
+              "snacka": 7931.421875,
+              "libopus": 6512.588541666667,
+              "ratio": 1.2178601218633465
+            },
+            {
+              "snacka": 8010.854166666667,
+              "libopus": 6389.973958333333,
+              "ratio": 1.2536599083036168
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": 6.040206995453068,
+          "native_normalized_change_percent": 1.3496068760279423,
+          "before": [
+            {
+              "snacka": 7966.583333333333,
+              "libopus": 6474.395833333333,
+              "ratio": 1.2304751730373813
+            },
+            {
+              "snacka": 7947.265625,
+              "libopus": 6523.651041666667,
+              "ratio": 1.2182235950759297
+            }
+          ],
+          "after": [
+            {
+              "snacka": 8286.244791666666,
+              "libopus": 6753.90625,
+              "ratio": 1.2268818199344516
+            },
+            {
+              "snacka": 8591.583333333334,
+              "libopus": 6845.921875,
+              "ratio": 1.2549928979920375
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-1ch-48000-decode",
+      "role_order": [
+        "after",
+        "before",
+        "before",
+        "after"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -0.2908697160477036,
+          "native_normalized_change_percent": -0.25292218760530893,
+          "before": [
+            {
+              "snacka": 8020.395833333333,
+              "libopus": 7019.09375,
+              "ratio": 1.1426540403927976
+            },
+            {
+              "snacka": 8071.1875,
+              "libopus": 7105.895833333333,
+              "ratio": 1.1358437682323657
+            }
+          ],
+          "after": [
+            {
+              "snacka": 8021.697916666667,
+              "libopus": 7065.541666666667,
+              "ratio": 1.1353266734680638
+            },
+            {
+              "snacka": 8023,
+              "libopus": 7053.8125,
+              "ratio": 1.1373991015496938
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": -1.1592194512621057,
+          "native_normalized_change_percent": 0.27754252266687374,
+          "before": [
+            {
+              "snacka": 8180.989583333333,
+              "libopus": 7163.625,
+              "ratio": 1.1420181239712204
+            },
+            {
+              "snacka": 8521.260416666666,
+              "libopus": 7513.885416666667,
+              "ratio": 1.134068453820912
+            }
+          ],
+          "after": [
+            {
+              "snacka": 8250.864583333334,
+              "libopus": 7229.59375,
+              "ratio": 1.1412625478898222
+            },
+            {
+              "snacka": 8254.34375,
+              "libopus": 7233.5,
+              "ratio": 1.1411272205709546
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": -0.7082943010368825,
+          "native_normalized_change_percent": 0.48512976663024343,
+          "before": [
+            {
+              "snacka": 8396.270833333334,
+              "libopus": 7430.114583333333,
+              "ratio": 1.1300324832361546
+            },
+            {
+              "snacka": 9788.197916666666,
+              "libopus": 8301.21875,
+              "ratio": 1.1791278138124799
+            }
+          ],
+          "after": [
+            {
+              "snacka": 8583.770833333334,
+              "libopus": 7593.75,
+              "ratio": 1.1303731138545954
+            },
+            {
+              "snacka": 9439.239583333334,
+              "libopus": 7930.552083333333,
+              "ratio": 1.190237386268558
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "SILK-WB-20ms-2ch-48000-decode",
+      "role_order": [
+        "before",
+        "after",
+        "after",
+        "before"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -1.2161103218305547,
+          "native_normalized_change_percent": -1.0263343990261853,
+          "before": [
+            {
+              "snacka": 17358.520833333332,
+              "libopus": 14039.916666666666,
+              "ratio": 1.2363692210898687
+            },
+            {
+              "snacka": 17347.229166666668,
+              "libopus": 13997.395833333334,
+              "ratio": 1.2393183255813953
+            }
+          ],
+          "after": [
+            {
+              "snacka": 17092,
+              "libopus": 13989.583333333334,
+              "ratio": 1.2217661950856291
+            },
+            {
+              "snacka": 17191.833333333332,
+              "libopus": 13993.9375,
+              "ratio": 1.2285200883120517
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": -3.2768863497182887,
+          "native_normalized_change_percent": -1.5284515510121999,
+          "before": [
+            {
+              "snacka": 18424.479166666668,
+              "libopus": 15046,
+              "ratio": 1.22454334485356
+            },
+            {
+              "snacka": 19210.9375,
+              "libopus": 15366.3125,
+              "ratio": 1.2501982827695324
+            }
+          ],
+          "after": [
+            {
+              "snacka": 18315.104166666668,
+              "libopus": 15050.354166666666,
+              "ratio": 1.2169218055499802
+            },
+            {
+              "snacka": 18079.854166666668,
+              "libopus": 14821.1875,
+              "ratio": 1.2198654235139166
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": -5.324031202036794,
+          "native_normalized_change_percent": -2.4468789561861715,
+          "before": [
+            {
+              "snacka": 20075.520833333332,
+              "libopus": 16583.333333333332,
+              "ratio": 1.2105841708542713
+            },
+            {
+              "snacka": 21763.895833333332,
+              "libopus": 17466.145833333332,
+              "ratio": 1.246061726554346
+            }
+          ],
+          "after": [
+            {
+              "snacka": 19989.583333333332,
+              "libopus": 16776.895833333332,
+              "ratio": 1.1914947515866936
+            },
+            {
+              "snacka": 19592.020833333332,
+              "libopus": 16261.270833333334,
+              "ratio": 1.2048271647485527
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+      "role_order": [
+        "after",
+        "before",
+        "before",
+        "after"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": 0.04082187741805132,
+          "native_normalized_change_percent": 0.06052026148557488,
+          "before": [
+            {
+              "snacka": 15401.916666666666,
+              "libopus": 12500.854166666666,
+              "ratio": 1.2320691419419674
+            },
+            {
+              "snacka": 15421.010416666666,
+              "libopus": 12493.489583333334,
+              "ratio": 1.2343237102657634
+            }
+          ],
+          "after": [
+            {
+              "snacka": 15427.958333333334,
+              "libopus": 12538.1875,
+              "ratio": 1.2304775577278082
+            },
+            {
+              "snacka": 15407.552083333334,
+              "libopus": 12451.385416666666,
+              "ratio": 1.2374166863961757
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": 0.7881518643148011,
+          "native_normalized_change_percent": 0.03982508179001254,
+          "before": [
+            {
+              "snacka": 15818.5625,
+              "libopus": 12853.291666666666,
+              "ratio": 1.2307012795036292
+            },
+            {
+              "snacka": 16079.854166666666,
+              "libopus": 12943.145833333334,
+              "ratio": 1.2423451279715294
+            }
+          ],
+          "after": [
+            {
+              "snacka": 16393.229166666668,
+              "libopus": 13315.104166666666,
+              "ratio": 1.231175435165265
+            },
+            {
+              "snacka": 15761.71875,
+              "libopus": 12681.854166666666,
+              "ratio": 1.242856016388245
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": 2.2188167276726567,
+          "native_normalized_change_percent": 1.1733221211881029,
+          "before": [
+            {
+              "snacka": 16850.708333333332,
+              "libopus": 13674.479166666666,
+              "ratio": 1.2322742334793373
+            },
+            {
+              "snacka": 16777.34375,
+              "libopus": 13615.885416666666,
+              "ratio": 1.2321889643301138
+            }
+          ],
+          "after": [
+            {
+              "snacka": 18021.708333333332,
+              "libopus": 14379.333333333334,
+              "ratio": 1.2533062497102323
+            },
+            {
+              "snacka": 16391.0625,
+              "libopus": 13217.447916666666,
+              "ratio": 1.2401079696581618
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+      "role_order": [
+        "before",
+        "after",
+        "after",
+        "before"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -0.6241412297171678,
+          "native_normalized_change_percent": -0.38505743903172185,
+          "before": [
+            {
+              "snacka": 3422.3072916666665,
+              "libopus": 3347.21875,
+              "ratio": 1.0224331145571728
+            },
+            {
+              "snacka": 3427.0833333333335,
+              "libopus": 3339.40625,
+              "ratio": 1.0262552911414518
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3401.0416666666665,
+              "libopus": 3337.0208333333335,
+              "ratio": 1.0191850265643632
+            },
+            {
+              "snacka": 3405.5989583333335,
+              "libopus": 3333.5520833333335,
+              "ratio": 1.0216126441702262
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": -1.8203252500267886,
+          "native_normalized_change_percent": -0.9207834662724346,
+          "before": [
+            {
+              "snacka": 3506.7239583333335,
+              "libopus": 3405.8177083333335,
+              "ratio": 1.0296276132903717
+            },
+            {
+              "snacka": 3713.5416666666665,
+              "libopus": 3587.2395833333335,
+              "ratio": 1.0352087114337567
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3494.7916666666665,
+              "libopus": 3414.2760416666665,
+              "ratio": 1.0235820490251564
+            },
+            {
+              "snacka": 3591.796875,
+              "libopus": 3513.671875,
+              "ratio": 1.0222345747637576
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": -7.330018051368182,
+          "native_normalized_change_percent": -6.6686437583720615,
+          "before": [
+            {
+              "snacka": 3640.1927083333335,
+              "libopus": 3459.6354166666665,
+              "ratio": 1.0521896876176138
+            },
+            {
+              "snacka": 4335.505208333333,
+              "libopus": 3885.203125,
+              "ratio": 1.115901812297995
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3615.234375,
+              "libopus": 3570.53125,
+              "ratio": 1.0125200206551896
+            },
+            {
+              "snacka": 3748.9166666666665,
+              "libopus": 3711.3697916666665,
+              "ratio": 1.0101167162281446
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-FB-5ms-1ch-48000-decode",
+      "role_order": [
+        "after",
+        "before",
+        "before",
+        "after"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": -0.6171536673636457,
+          "native_normalized_change_percent": -0.40674584259504654,
+          "before": [
+            {
+              "snacka": 3187.5,
+              "libopus": 3597.0052083333335,
+              "ratio": 0.8861538461538462
+            },
+            {
+              "snacka": 3181.640625,
+              "libopus": 3594.4010416666665,
+              "ratio": 0.8851657308458613
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3155.3802083333335,
+              "libopus": 3586.3697916666665,
+              "ratio": 0.8798256709793881
+            },
+            {
+              "snacka": 3174.4791666666665,
+              "libopus": 3589.84375,
+              "ratio": 0.8842945230322815
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": -1.2477377569443115,
+          "native_normalized_change_percent": -0.7483715476823805,
+          "before": [
+            {
+              "snacka": 3266.2760416666665,
+              "libopus": 3667.5364583333335,
+              "ratio": 0.8905912943946536
+            },
+            {
+              "snacka": 3264.109375,
+              "libopus": 3667.1041666666665,
+              "ratio": 0.8901054419643111
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3206.8125,
+              "libopus": 3646.265625,
+              "ratio": 0.8794785761116897
+            },
+            {
+              "snacka": 3242.1875,
+              "libopus": 3651.4739583333335,
+              "ratio": 0.887911987596333
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": -0.5524427678236132,
+          "native_normalized_change_percent": -3.7032648539490287,
+          "before": [
+            {
+              "snacka": 3370.4427083333335,
+              "libopus": 3770.3958333333335,
+              "ratio": 0.8939227755706464
+            },
+            {
+              "snacka": 3401.4739583333335,
+              "libopus": 3760.203125,
+              "ratio": 0.9045984605774012
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3309.0260416666665,
+              "libopus": 3746.9635416666665,
+              "ratio": 0.8831220279754302
+            },
+            {
+              "snacka": 3426.4322916666665,
+              "libopus": 4035.375,
+              "ratio": 0.8490988549184814
+            }
+          ]
+        }
+      }
+    },
+    {
+      "quartet": 2,
+      "case_id": "CELT-WB-5ms-1ch-48000-decode",
+      "role_order": [
+        "before",
+        "after",
+        "after",
+        "before"
+      ],
+      "percentiles": {
+        "p50": {
+          "direct_owned_change_percent": 0.30435671722897073,
+          "native_normalized_change_percent": -2.066264444703747,
+          "before": [
+            {
+              "snacka": 2363.4973958333335,
+              "libopus": 2066.9505208333335,
+              "ratio": 1.1434707178575523
+            },
+            {
+              "snacka": 2366.7552083333335,
+              "libopus": 2068.140625,
+              "ratio": 1.14438794911895
+            }
+          ],
+          "after": [
+            {
+              "snacka": 2380.9661458333335,
+              "libopus": 2082.25,
+              "ratio": 1.1434583483411374
+            },
+            {
+              "snacka": 2363.7135416666665,
+              "libopus": 2153.5364583333335,
+              "ratio": 1.097596250353706
+            }
+          ]
+        },
+        "p95": {
+          "direct_owned_change_percent": -0.12301253864971384,
+          "native_normalized_change_percent": -1.8387259671199696,
+          "before": [
+            {
+              "snacka": 2511.3932291666665,
+              "libopus": 2208.765625,
+              "ratio": 1.137012094330591
+            },
+            {
+              "snacka": 2582.2473958333335,
+              "libopus": 2236.7630208333335,
+              "ratio": 1.1544572991336766
+            }
+          ],
+          "after": [
+            {
+              "snacka": 2568.7942708333335,
+              "libopus": 2231.4453125,
+              "ratio": 1.1511795769511306
+            },
+            {
+              "snacka": 2518.3385416666665,
+              "libopus": 2292.1015625,
+              "ratio": 1.0987028597981974
+            }
+          ]
+        },
+        "p99": {
+          "direct_owned_change_percent": -0.3382063147091774,
+          "native_normalized_change_percent": -6.979173729124632,
+          "before": [
+            {
+              "snacka": 2885.5260416666665,
+              "libopus": 2633.6796875,
+              "ratio": 1.095625278716308
+            },
+            {
+              "snacka": 3197.15625,
+              "libopus": 2659.7213541666665,
+              "ratio": 1.202064360987063
+            }
+          ],
+          "after": [
+            {
+              "snacka": 3044.8125,
+              "libopus": 2901.6927083333335,
+              "ratio": 1.0493228629122728
+            },
+            {
+              "snacka": 3009.4401041666665,
+              "libopus": 2771.0520833333335,
+              "ratio": 1.0860279827532413
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "finished_utc": "2026-10-15T09:44:22.531029+00:00",
+  "final_integrity_check": "All source, library, binary, bridge, tool, reference, input, plan and runner hashes unchanged.",
+  "raw_results": {
+    "0-00-0-before.json": "8a7ee8368e41bc9f16e496b55e5ae3bd5fe21bea788b09679826521ceea4aa66",
+    "0-00-0-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-00-1-after.json": "1fc1a62f7b2446eee0859904fa4513960335844f862023a5cefc92bd357c03ec",
+    "0-00-1-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-00-2-after.json": "9f64622a6138c9df6113665d47953e45e56ae8b51b135ee63290766ce4ae5699",
+    "0-00-2-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-00-3-before.json": "6800462ce5ed475593b3e92ce0bbfec669ec270d3d155e0d013a628719afed48",
+    "0-00-3-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-01-0-after.json": "a2ee6cac6011af69957ae1d4a96008feb056f588d71c5343489a3450f3ec9a89",
+    "0-01-0-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-01-1-before.json": "4b7d2f62a05986b5b473b9891eaab25d1cf8c98fdfa6c0eb5e967263e94d4a39",
+    "0-01-1-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-01-2-before.json": "f9b1d6dbdb1c9f768bddc390f8be4afbe943e1fa253c42701a57157e615aa1a2",
+    "0-01-2-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-01-3-after.json": "6dac155af0813ba1432749df1c59c1557a87b1a080ade50bc869624774f93653",
+    "0-01-3-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-02-0-before.json": "84e420e81a3e1a86bc770e3ddddb2fb5b4f3f3728927b9515e513a1e00159692",
+    "0-02-0-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-02-1-after.json": "708d33e8fcb05639b275458d74bb57949285b2dc2d184ac94254006f042c3649",
+    "0-02-1-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-02-2-after.json": "40f8185918fd83998b8c14bd83880630fee081a9f424f0006ad57747fb8fd5f2",
+    "0-02-2-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-02-3-before.json": "3ddc135fa9634827379f38498d527d52ca0b1ebb3a9010813e156fb3be67d1da",
+    "0-02-3-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-03-0-after.json": "3c8bb48477614365bae98db0032d1cac68cc0cb8374fc00a36931ecc0f5c4dd4",
+    "0-03-0-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-03-1-before.json": "9b98b2837425caff4980982021c8bb5f0b15fc6e423180584526a60613f3ac42",
+    "0-03-1-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-03-2-before.json": "a9f4555d82d74a6effff85ae19574e2e461fdd4e220d92aba52488138abef099",
+    "0-03-2-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-03-3-after.json": "a76bcf4aec7dbd717853d087a6f6b05e9892d5e6b04ac28e2b0de099427892c4",
+    "0-03-3-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-04-0-before.json": "6c48069d8fae30996cfeb5105807acd92f40a9c68422aaa70ef90fb57105d628",
+    "0-04-0-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-04-1-after.json": "e7270591b8a496c0f4cdb3a377b78a111a1d3a9a9eb7f6b8bd8b88d57d190b0e",
+    "0-04-1-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-04-2-after.json": "5f3b95d41ab20d7af6bb35714d665f2ab6971e7df01e4a08b8a892b1b90c2846",
+    "0-04-2-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-04-3-before.json": "ec4e6c63441df17787feff26efcacd5d2fe470ba86113dcc810eed144702587b",
+    "0-04-3-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-05-0-after.json": "de37a8f019176efdadf43ee89b1106bd4f743632a1af748fafe4066ee2c4056f",
+    "0-05-0-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-05-1-before.json": "aaa075b41c616f86b34121c5bdae24107021904241ff9c2c0c73146ad2886959",
+    "0-05-1-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-05-2-before.json": "a8263b1b743dae4fd216311453fe89c44388ec6b2e46b7c1aa676552841f92ce",
+    "0-05-2-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-05-3-after.json": "561c8af4a9eefa2155e09c2b6aa0edb10eaf2742608689a030bcbb4bc867ca90",
+    "0-05-3-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-06-0-before.json": "c6758979cec6408a513bf54be505b5e833e5d7f12d181fbcf2c7113c88e79f92",
+    "0-06-0-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-06-1-after.json": "c1f9958d33e94314e2e7c027ee00ee90e7e8058f4348794fbd88b9b15b55d9ad",
+    "0-06-1-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-06-2-after.json": "2dd53e06b5591e0cdbc8f24851cde2f59484d3a9dce288d978f62fd43c717f55",
+    "0-06-2-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0-06-3-before.json": "70a0b3ad0343a6322ce8b80d81f085685ddc46922ef370caa068b878f14da38b",
+    "0-06-3-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-00-0-after.json": "a3524ee378efb47b6b56d113e588263e7d9ec3250c6fb7e8a637d613bca5c23b",
+    "1-00-0-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-00-1-before.json": "a51980bff71ef2119996971ae46acb9ac0124d4e937df30772ab0116e3d0f393",
+    "1-00-1-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-00-2-before.json": "93fc731d3ef3ce09a14d9d6d1b51f0b19aecf75bd735b3724dc6399e2167ed35",
+    "1-00-2-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-00-3-after.json": "56a180b10babf99f05792403dcbcf2d10a1c5532ba4a92ed9aafc7331f26deca",
+    "1-00-3-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-01-0-before.json": "a26892deb7f2a85874b6eaf683c2d6d00da65d5c4ed47ebc56c107445950197b",
+    "1-01-0-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-01-1-after.json": "24a8764c6b07722f967c98bab2aa505ea7dff6382d6e3a77bbb3f76a63a16e2b",
+    "1-01-1-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-01-2-after.json": "d3b4c4dbf8a7d8d0536df1f1ae5a45bc7d5117a8957f5ff80828d93a5bb4b15c",
+    "1-01-2-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-01-3-before.json": "c4066b053d64eb32f2c164f3bb0d2de969fef3b09a941794f4308fe1c883261c",
+    "1-01-3-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-02-0-after.json": "b10bd177d523f109bc776906f155eb88ba97644973b180bc49e99b4224950f90",
+    "1-02-0-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-02-1-before.json": "bd826ad981f97f10ebd42871a4e1c604a5f0f914c3cb9d5e145d010a3be11fd9",
+    "1-02-1-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-02-2-before.json": "999e671be70c49ebc98b4308ccee3b5f153cf815164a6c38d5dc9f899cdf2932",
+    "1-02-2-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-02-3-after.json": "44f603d2d345bcc7e6207933f10c064c526448f3308036b0eef91076bd5d8560",
+    "1-02-3-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-03-0-before.json": "b492ff0e34182d5ad30ad88f976c5de977e90b3011755e3aa4522d0db016fa66",
+    "1-03-0-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-03-1-after.json": "f2a723d30a1ae5e894aff2e8fdfb472d982dc9353a91553ae9a62219cb560f8d",
+    "1-03-1-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-03-2-after.json": "22faa02d77e6e49bf74acd861e2f58a5426331d61b2d95bd610a8c5e7d935caf",
+    "1-03-2-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-03-3-before.json": "6522b30fa293391124fdaccbeceff1e0df22443c4fd5d5dd7942d4f1fe3f9b94",
+    "1-03-3-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-04-0-after.json": "9b5330dc658217d456500762f2545d63b8a1f11204ac5e933de8b00f16902c1c",
+    "1-04-0-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-04-1-before.json": "a3ed6dd2fb12df6702a5f00153f105bcfe637420e66391739388295eb5ea6fca",
+    "1-04-1-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-04-2-before.json": "7e101cb0ca4ee4053858bc3a7475d167918d0cd4afd94f60f8036491172aac08",
+    "1-04-2-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-04-3-after.json": "aad9d0a335d83fd1f8c84b97287e51ff0ad97f6f6ae7e47e2753c2e8e4ad8e3a",
+    "1-04-3-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-05-0-before.json": "3ef6a625c7ff71ed8af30fce0fcaea50041873af70897f753efc307d1b7c3895",
+    "1-05-0-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-05-1-after.json": "a414cd25e9fc04aace0dd70fe721b5ef23f3b474ada103f872d14171f1217e3e",
+    "1-05-1-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-05-2-after.json": "8fabdd8da78ae975382414074b8368a8355089999acf127765358acb1b118f55",
+    "1-05-2-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-05-3-before.json": "40486e15efd1c81bbb1f8e4482275e71f9b89cc8e459019c300476b0744967c2",
+    "1-05-3-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-06-0-after.json": "905ef799d571a20abb75465d560fa6c029b3a7bdb07f86b4798c8523e7c13ca4",
+    "1-06-0-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-06-1-before.json": "43dd6fa3896419d412144d5d50b4cf5c15dae74776c88ae064cc15630af846fe",
+    "1-06-1-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-06-2-before.json": "4ff7f7644639fe9efcd6d0cf8ab252c54fdc5156a9265e079f6cf50fa096ffdf",
+    "1-06-2-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1-06-3-after.json": "91e1fb446500bfa0954006119630d158bba0add82aa39ce3003791cee6799916",
+    "1-06-3-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-00-0-before.json": "ef43ecd3d0a9573b38caad91674070bad21faf14fc265d081123576d1c4e783a",
+    "2-00-0-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-00-1-after.json": "8f743f1302db5a81bb66a57fcb7bc69128ff4244dfeda1e7a48fbcea4c7a60c9",
+    "2-00-1-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-00-2-after.json": "33e87b5da8cc675e0b1c4ae67227cd70b0a83df62988ab70fae8082a838e485d",
+    "2-00-2-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-00-3-before.json": "61517e42eb15a2e09a90e5bbff23068e3c8688f28c21b1b4ec720e8765960127",
+    "2-00-3-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-01-0-after.json": "9842adc0e2a77cc3ab18b99056bf886608036be5e78b4821bb4e20a35b271596",
+    "2-01-0-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-01-1-before.json": "91128e9e447f98eedece15c80835772c6f1f649cba82135b8d877caf982a2f20",
+    "2-01-1-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-01-2-before.json": "620385c440b2ae3a80f14e1025d14ca86e71db4c5d3a379cdd41ac347dc2ac49",
+    "2-01-2-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-01-3-after.json": "9afb23a0f76f6f2f9cb5fcb77d4139b2e60460543da5acf1f7d48cc70d48ccce",
+    "2-01-3-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-02-0-before.json": "4ad4a68af014020ed9096ae66e3b69dd75457c20be5b86c16ca90ee9676fdf97",
+    "2-02-0-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-02-1-after.json": "d30d8df64cead392326895e32b987698487a0965e79c5d95c79abcbb2947f0a4",
+    "2-02-1-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-02-2-after.json": "09e40fabb40f29e7e406fc27d5106b08fbc30c5481f1ba7d2a424a5b2b5e14ad",
+    "2-02-2-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-02-3-before.json": "1d2223bbd4705c960641cbbcc6f7086dd0badd22596ab9846c3e7877677113e1",
+    "2-02-3-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-03-0-after.json": "4dcc8e0f9271204a0328815da349b62a6801b25bd703ac828d5857f7db7485bb",
+    "2-03-0-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-03-1-before.json": "7485501b7ab9c4ac8448c71e5a01134f6ecbac92428085bda47705fbbb25f7da",
+    "2-03-1-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-03-2-before.json": "8a0f4eb439e82e794cf54b73c7e8c2a2f2b709bca92bcbef58e0e39526686ee6",
+    "2-03-2-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-03-3-after.json": "f7981a9efeb501a4c5ed0371551409d32c440f7f83509de22d2898ddd33cca24",
+    "2-03-3-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-04-0-before.json": "851e77d43375d55c635afaad922b2d4fe9f4d1a86960796ef0b6de367d3c1c5d",
+    "2-04-0-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-04-1-after.json": "f71344a1918c0bd007a824c9a35b3b55732d4e6d92f5699d1af7a3a8159d6e8f",
+    "2-04-1-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-04-2-after.json": "d74eca248949ebfa7ab7bac18a7f819c6abe190ef5b4153e86d9e8f3666e209f",
+    "2-04-2-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-04-3-before.json": "d0b3fc703a8fe0ca943cffb864c6e40b8202603e54ad566217c67e2ff35f7ed5",
+    "2-04-3-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-05-0-after.json": "1fbe1d6ff438b8979651ab0a356a1c40ee3cc2ffc803ac0d84e6470f52a8f4a8",
+    "2-05-0-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-05-1-before.json": "41969daefff61adefb6219eb49a346fa09eda40af6d0b95b2f6cc7d680e21d54",
+    "2-05-1-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-05-2-before.json": "7a5e6eeb750e37d96d62ada1a1e5de8c739403685ea37a797923745a13a49e5e",
+    "2-05-2-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-05-3-after.json": "213921779536b6e6b588ad3bcc025468dca63c94672d8538200aea2d554f5eb1",
+    "2-05-3-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-06-0-before.json": "149343c26b3ef787d7175f403a61bbfdb397ce44c4ff0e3b8d7d15b67f86ee91",
+    "2-06-0-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-06-1-after.json": "44b2030faa4997659c6e7842de11576020d5b032e203e0d94592dd44075e0594",
+    "2-06-1-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-06-2-after.json": "55a11f5d3b78dc36166756ce9602325cde9959e59caf713e35dfa33b1847f133",
+    "2-06-2-after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2-06-3-before.json": "532ab4590422f74d058e849431521a5104ad09db23cc2f57b7c29aa0099b2e4a",
+    "2-06-3-before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "summary.json": "3c349fd8c416602474631b62eda6fe5e5a668cf64deac2e570275ffc7a81d62e"
+  }
+}

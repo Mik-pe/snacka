@@ -1,0 +1,9 @@
+{
+  "source_commit": "6c4f916f9f2357dae8b388810a5bb50855ca2e9d",
+  "release_suites": 18,
+  "release_passed": 383,
+  "release_failed": 0,
+  "release_ignored": 0,
+  "platform": "macOS ARM64",
+  "features": "opus,reference-tests"
+}

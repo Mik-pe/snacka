@@ -1,0 +1,7 @@
+   Compiling snacka v0.2.0 (/private/tmp/snacka-opus-decoder-gain-proof-final-20261015/before)
+    Finished `release` profile [optimized] target(s) in 4.01s
+before 80
+   Compiling snacka v0.2.0 (/private/tmp/snacka-opus-decoder-gain-proof-final-20261015/after)
+    Finished `release` profile [optimized] target(s) in 5.72s
+after 80
+all rows bit exact

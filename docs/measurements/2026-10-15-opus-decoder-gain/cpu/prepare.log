@@ -1,0 +1,10 @@
+built before f261baa4209e5c1f5c072ecc6b1548bbfbef2998ba366323f6a7b16f721c95a7
+built after d74afbc70e36ca272f8c6c39ab6343e1fc5839525e60cecf5ec0db40f3e956a6
+verified SILK-WB-20ms-1ch 8000 1 decode actual FEC 0
+verified SILK-WB-20ms-1ch 48000 1 decode actual FEC 0
+verified SILK-WB-20ms-2ch 48000 2 decode actual FEC 0
+verified Hybrid-FB-10ms-2ch 48000 2 fec-return actual FEC 1
+verified CELT-FB-2.5ms-2ch 48000 2 decode actual FEC 0
+verified CELT-FB-5ms-1ch 48000 1 decode actual FEC 0
+verified CELT-WB-5ms-1ch 48000 1 decode actual FEC 0
+PREPARED_NOT_STARTED 7 cases 84 planned processes

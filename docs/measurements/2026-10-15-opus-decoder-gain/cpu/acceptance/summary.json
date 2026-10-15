@@ -1,0 +1,331 @@
+[
+  {
+    "case_id": "SILK-WB-20ms-1ch-8000-decode",
+    "percentiles": {
+      "p50": {
+        "native_normalized_changes_percent": [
+          0.5738670003734958,
+          0.21962800390340487,
+          0.01870752957118249
+        ],
+        "median_native_normalized_change_percent": 0.21962800390340487,
+        "direct_owned_changes_percent": [
+          0.5843030050792786,
+          0.10623760767320967,
+          0.4962698184028502
+        ],
+        "median_direct_owned_change_percent": 0.4962698184028502
+      },
+      "p95": {
+        "native_normalized_changes_percent": [
+          -0.04242914011687304,
+          -0.26237868479312976,
+          0.4314159354809499
+        ],
+        "median_native_normalized_change_percent": -0.04242914011687304,
+        "direct_owned_changes_percent": [
+          0.18489720423300327,
+          0.5223367681024715,
+          4.14571015226235
+        ],
+        "median_direct_owned_change_percent": 0.5223367681024715
+      },
+      "p99": {
+        "native_normalized_changes_percent": [
+          -4.036285837022957,
+          -1.6365229449816887,
+          1.3496068760279423
+        ],
+        "median_native_normalized_change_percent": -1.6365229449816887,
+        "direct_owned_changes_percent": [
+          6.1775026613555495,
+          19.591480554556483,
+          6.040206995453068
+        ],
+        "median_direct_owned_change_percent": 6.1775026613555495
+      }
+    }
+  },
+  {
+    "case_id": "SILK-WB-20ms-1ch-48000-decode",
+    "percentiles": {
+      "p50": {
+        "native_normalized_changes_percent": [
+          0.3260749305568966,
+          0.016959364397828303,
+          -0.25292218760530893
+        ],
+        "median_native_normalized_change_percent": 0.016959364397828303,
+        "direct_owned_changes_percent": [
+          0.20419158628706136,
+          0.5899522718990857,
+          -0.2908697160477036
+        ],
+        "median_direct_owned_change_percent": 0.20419158628706136
+      },
+      "p95": {
+        "native_normalized_changes_percent": [
+          1.941530302672767,
+          0.11483930002591514,
+          0.27754252266687374
+        ],
+        "median_native_normalized_change_percent": 0.27754252266687374,
+        "direct_owned_changes_percent": [
+          0.3877086443067279,
+          5.38109632549173,
+          -1.1592194512621057
+        ],
+        "median_direct_owned_change_percent": 0.3877086443067279
+      },
+      "p99": {
+        "native_normalized_changes_percent": [
+          17.204237698197012,
+          0.1238593847431968,
+          0.48512976663024343
+        ],
+        "median_native_normalized_change_percent": 0.48512976663024343,
+        "direct_owned_changes_percent": [
+          -12.43625359461391,
+          9.735329615287359,
+          -0.7082943010368825
+        ],
+        "median_direct_owned_change_percent": -0.7082943010368825
+      }
+    }
+  },
+  {
+    "case_id": "SILK-WB-20ms-2ch-48000-decode",
+    "percentiles": {
+      "p50": {
+        "native_normalized_changes_percent": [
+          0.1360583375016322,
+          1.4466663939890267,
+          -1.0263343990261853
+        ],
+        "median_native_normalized_change_percent": 0.1360583375016322,
+        "direct_owned_changes_percent": [
+          -2.5224338436932614,
+          1.861058032589069,
+          -1.2161103218305547
+        ],
+        "median_direct_owned_change_percent": -1.2161103218305547
+      },
+      "p95": {
+        "native_normalized_changes_percent": [
+          -0.3490704591442406,
+          0.8106024742681184,
+          -1.5284515510121999
+        ],
+        "median_native_normalized_change_percent": -0.3490704591442406,
+        "direct_owned_changes_percent": [
+          -5.701592766294827,
+          8.618472267534782,
+          -3.2768863497182887
+        ],
+        "median_direct_owned_change_percent": -3.2768863497182887
+      },
+      "p99": {
+        "native_normalized_changes_percent": [
+          -2.0417714825655353,
+          1.4619467302261935,
+          -2.4468789561861715
+        ],
+        "median_native_normalized_change_percent": -2.0417714825655353,
+        "direct_owned_changes_percent": [
+          -12.990458571636477,
+          24.888861976795674,
+          -5.324031202036794
+        ],
+        "median_direct_owned_change_percent": -5.324031202036794
+      }
+    }
+  },
+  {
+    "case_id": "Hybrid-FB-10ms-2ch-48000-fec-return",
+    "percentiles": {
+      "p50": {
+        "native_normalized_changes_percent": [
+          -0.10294534869403904,
+          -0.1392167408792111,
+          0.06052026148557488
+        ],
+        "median_native_normalized_change_percent": -0.10294534869403904,
+        "direct_owned_changes_percent": [
+          -0.13082768400802802,
+          1.0106198108995157,
+          0.04082187741805132
+        ],
+        "median_direct_owned_change_percent": 0.04082187741805132
+      },
+      "p95": {
+        "native_normalized_changes_percent": [
+          -0.3477059652704617,
+          0.19413130072551965,
+          0.03982508179001254
+        ],
+        "median_native_normalized_change_percent": 0.03982508179001254,
+        "direct_owned_changes_percent": [
+          -1.169879532873619,
+          24.23166851984908,
+          0.7881518643148011
+        ],
+        "median_direct_owned_change_percent": 0.7881518643148011
+      },
+      "p99": {
+        "native_normalized_changes_percent": [
+          0.3689224661318269,
+          26.505815453860905,
+          1.1733221211881029
+        ],
+        "median_native_normalized_change_percent": 1.1733221211881029,
+        "direct_owned_changes_percent": [
+          -1.794021877667229,
+          99.59995660643348,
+          2.2188167276726567
+        ],
+        "median_direct_owned_change_percent": 2.2188167276726567
+      }
+    }
+  },
+  {
+    "case_id": "CELT-FB-2.5ms-2ch-48000-decode",
+    "percentiles": {
+      "p50": {
+        "native_normalized_changes_percent": [
+          -0.31050495023308144,
+          -0.653684622805828,
+          -0.38505743903172185
+        ],
+        "median_native_normalized_change_percent": -0.38505743903172185,
+        "direct_owned_changes_percent": [
+          -0.08908392558006906,
+          -0.418454820476033,
+          -0.6241412297171678
+        ],
+        "median_direct_owned_change_percent": -0.418454820476033
+      },
+      "p95": {
+        "native_normalized_changes_percent": [
+          -0.20793378204561064,
+          0.059480926325261585,
+          -0.9207834662724346
+        ],
+        "median_native_normalized_change_percent": -0.20793378204561064,
+        "direct_owned_changes_percent": [
+          0.6901455066610884,
+          1.2529796865522913,
+          -1.8203252500267886
+        ],
+        "median_direct_owned_change_percent": 0.6901455066610884
+      },
+      "p99": {
+        "native_normalized_changes_percent": [
+          -2.1107370999217223,
+          4.334290255228335,
+          -6.6686437583720615
+        ],
+        "median_native_normalized_change_percent": -2.1107370999217223,
+        "direct_owned_changes_percent": [
+          -2.2275475628276697,
+          11.098575477697882,
+          -7.330018051368182
+        ],
+        "median_direct_owned_change_percent": -2.2275475628276697
+      }
+    }
+  },
+  {
+    "case_id": "CELT-FB-5ms-1ch-48000-decode",
+    "percentiles": {
+      "p50": {
+        "native_normalized_changes_percent": [
+          -0.46495265550676734,
+          -0.7347973414607245,
+          -0.40674584259504654
+        ],
+        "median_native_normalized_change_percent": -0.46495265550676734,
+        "direct_owned_changes_percent": [
+          -0.35093143117093106,
+          -0.5969192276624513,
+          -0.6171536673636457
+        ],
+        "median_direct_owned_change_percent": -0.5969192276624513
+      },
+      "p95": {
+        "native_normalized_changes_percent": [
+          -0.9339980506387735,
+          -0.8842503915680755,
+          -0.7483715476823805
+        ],
+        "median_native_normalized_change_percent": -0.8842503915680755,
+        "direct_owned_changes_percent": [
+          0.42143755686596673,
+          1.160734062524793,
+          -1.2477377569443115
+        ],
+        "median_direct_owned_change_percent": 0.42143755686596673
+      },
+      "p99": {
+        "native_normalized_changes_percent": [
+          -0.2571567578384948,
+          -1.4419417131253498,
+          -3.7032648539490287
+        ],
+        "median_native_normalized_change_percent": -1.4419417131253498,
+        "direct_owned_changes_percent": [
+          1.4933798748325566,
+          -0.957663643064055,
+          -0.5524427678236132
+        ],
+        "median_direct_owned_change_percent": -0.5524427678236132
+      }
+    }
+  },
+  {
+    "case_id": "CELT-WB-5ms-1ch-48000-decode",
+    "percentiles": {
+      "p50": {
+        "native_normalized_changes_percent": [
+          -0.2435387373959097,
+          -0.2897653860450933,
+          -2.066264444703747
+        ],
+        "median_native_normalized_change_percent": -0.2897653860450933,
+        "direct_owned_changes_percent": [
+          -0.24885971433386,
+          -0.5364350809746066,
+          0.30435671722897073
+        ],
+        "median_direct_owned_change_percent": -0.24885971433386
+      },
+      "p95": {
+        "native_normalized_changes_percent": [
+          -0.06044149172056423,
+          -0.08863756056274319,
+          -1.8387259671199696
+        ],
+        "median_native_normalized_change_percent": -0.08863756056274319,
+        "direct_owned_changes_percent": [
+          0.4187576810458893,
+          -2.790928076198984,
+          -0.12301253864971384
+        ],
+        "median_direct_owned_change_percent": -0.12301253864971384
+      },
+      "p99": {
+        "native_normalized_changes_percent": [
+          3.4253335647347782,
+          0.06574292249741376,
+          -6.979173729124632
+        ],
+        "median_native_normalized_change_percent": 0.06574292249741376,
+        "direct_owned_changes_percent": [
+          3.355763660950206,
+          -6.619337690346505,
+          -0.3382063147091774
+        ],
+        "median_direct_owned_change_percent": -0.3382063147091774
+      }
+    }
+  }
+]

@@ -1,0 +1,116 @@
+{
+  "status": "PREPARED_NOT_STARTED",
+  "timing_authorized": false,
+  "requires": "Explicit root quiet-window authorization; no auto-start.",
+  "source_manifest_sha256": "8c6a4bc905f0e9d5a626bdbc02a54c6e9f85b567f984ab6db121d51878419a83",
+  "cases": [
+    {
+      "name": "SILK-WB-20ms-1ch",
+      "rate": 8000,
+      "channels": 1,
+      "schedule": "decode",
+      "input_path": "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit",
+      "input_sha256": "339760f4dd299066fde45eaf843234273009409c49d7ec60e2c0e85f6040c8d8",
+      "expected_actual_fec_events_per_24_packet_traversal": 0,
+      "exact_untimed_before_after_json": true,
+      "owned_pcm_hash": "a3bf229a17db58ea",
+      "packet_range_hash": "51e8d32e2027b62f",
+      "recovery_intervals": []
+    },
+    {
+      "name": "SILK-WB-20ms-1ch",
+      "rate": 48000,
+      "channels": 1,
+      "schedule": "decode",
+      "input_path": "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-1ch.bit",
+      "input_sha256": "339760f4dd299066fde45eaf843234273009409c49d7ec60e2c0e85f6040c8d8",
+      "expected_actual_fec_events_per_24_packet_traversal": 0,
+      "exact_untimed_before_after_json": true,
+      "owned_pcm_hash": "a6b8fa13ffdec0dc",
+      "packet_range_hash": "51e8d32e2027b62f",
+      "recovery_intervals": []
+    },
+    {
+      "name": "SILK-WB-20ms-2ch",
+      "rate": 48000,
+      "channels": 2,
+      "schedule": "decode",
+      "input_path": "/tmp/snacka-parity-20261015/short-final-matrix/SILK-WB-20ms-2ch.bit",
+      "input_sha256": "9933a4fedeef1e279ecb1f4e8802ba5799e3a38038837dcbaec1b39bd73c4899",
+      "expected_actual_fec_events_per_24_packet_traversal": 0,
+      "exact_untimed_before_after_json": true,
+      "owned_pcm_hash": "5751218ddad5d8de",
+      "packet_range_hash": "09707c8db568c429",
+      "recovery_intervals": []
+    },
+    {
+      "name": "Hybrid-FB-10ms-2ch",
+      "rate": 48000,
+      "channels": 2,
+      "schedule": "fec-return",
+      "input_path": "/tmp/snacka-parity-20261015/short-final-matrix/Hybrid-FB-10ms-2ch.bit",
+      "input_sha256": "9b66830d54ad55d7c7a186f3594fe111918c6a5492b7314737aa19e7ac5d5ff1",
+      "expected_actual_fec_events_per_24_packet_traversal": 1,
+      "exact_untimed_before_after_json": true,
+      "owned_pcm_hash": "bf2da94dc93a64dd",
+      "packet_range_hash": "91b57441113f43e4",
+      "recovery_intervals": [
+        {
+          "packet_index": 9,
+          "owned_entropy_interval": 441686442,
+          "reference_debug_interval": 17047488,
+          "decoded_lbrr": true
+        }
+      ]
+    },
+    {
+      "name": "CELT-FB-2.5ms-2ch",
+      "rate": 48000,
+      "channels": 2,
+      "schedule": "decode",
+      "input_path": "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-2.5ms-2ch.bit",
+      "input_sha256": "322c9dbda930f467318ce8820c1befd5467aee26d7efce79df4a64fd97e75574",
+      "expected_actual_fec_events_per_24_packet_traversal": 0,
+      "exact_untimed_before_after_json": true,
+      "owned_pcm_hash": "5a67cb0774b18fdd",
+      "packet_range_hash": "76d29a7f77a3cf42",
+      "recovery_intervals": []
+    },
+    {
+      "name": "CELT-FB-5ms-1ch",
+      "rate": 48000,
+      "channels": 1,
+      "schedule": "decode",
+      "input_path": "/tmp/snacka-parity-20261015/short-final-matrix/CELT-FB-5ms-1ch.bit",
+      "input_sha256": "ff3c7b10707f8f95744f51646d1e29a80b5b31ff2b9c7f114420952c0b08e705",
+      "expected_actual_fec_events_per_24_packet_traversal": 0,
+      "exact_untimed_before_after_json": true,
+      "owned_pcm_hash": "b59fef6fbbb0bad9",
+      "packet_range_hash": "5902a6674671ccf8",
+      "recovery_intervals": []
+    },
+    {
+      "name": "CELT-WB-5ms-1ch",
+      "rate": 48000,
+      "channels": 1,
+      "schedule": "decode",
+      "input_path": "/tmp/snacka-parity-20261015/short-final-matrix/CELT-WB-5ms-1ch.bit",
+      "input_sha256": "fc2f5f49d3f2fbf108ce77bccac6ce20f197e5cb3e606b5b4766413841584644",
+      "expected_actual_fec_events_per_24_packet_traversal": 0,
+      "exact_untimed_before_after_json": true,
+      "owned_pcm_hash": "5adca4adaec0055c",
+      "packet_range_hash": "b32b55f39c859e1f",
+      "recovery_intervals": []
+    }
+  ],
+  "quartets_per_case": 3,
+  "roles_per_quartet": 4,
+  "role_order": "ABBA: before/after/after/before when (quartet+case_index) even, reversed after/before/before/after otherwise.",
+  "batches_per_process": 1000,
+  "minimum_batch_ns": 200000,
+  "expected_processes": 84,
+  "scope": "7 selected complete decoder workloads. Existing matrix warmup/calibration/batches are entered only after authorization. FEC-return is a mixed 24-packet schedule with one verified actual FEC event, not an isolated FEC callback benchmark.",
+  "analysis": "Retain every native/owned raw batch, stdout/stderr, process order and failure. Recompute p50/p95/p99 per process. Per quartet compare geometric mean of two after and two before owned/native ratios and direct owned times; show all three quartet changes and medians. No adaptive retries, substitutions or selected tails.",
+  "runner": "/private/tmp/snacka-opus-decoder-gain-cost-d5-20261015/run.py",
+  "runner_sha256": "1a412ec639081559ded6f6529fa69dd6f4913c8ebd6eabcfb43ebc6fbcc05a1b"
+}
