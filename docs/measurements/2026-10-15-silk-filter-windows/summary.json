@@ -1,0 +1,362 @@
+[
+  {
+    "case": "SILK-WB-20ms-1ch-8000-decode",
+    "p50": {
+      "median_normalized_change_percent": -6.366211398335908,
+      "changes_percent": [
+        -6.763090332940269,
+        -6.2000554461682285,
+        -6.366211398335908
+      ],
+      "after_native_ratios": [
+        1.2307168832455149,
+        1.235613810741688,
+        1.2303390038565014
+      ],
+      "median_after_native_ratio": 1.2307168832455149
+    },
+    "p95": {
+      "median_normalized_change_percent": -6.623485370306959,
+      "changes_percent": [
+        -6.623485370306959,
+        -6.489593103520375,
+        -7.468335888408085
+      ],
+      "after_native_ratios": [
+        1.2290453365238396,
+        1.2346486812965574,
+        1.223363166575767
+      ],
+      "median_after_native_ratio": 1.2290453365238396
+    },
+    "p99": {
+      "median_normalized_change_percent": -7.3838341372013065,
+      "changes_percent": [
+        -5.438955187914763,
+        -7.3838341372013065,
+        -11.336845927333517
+      ],
+      "after_native_ratios": [
+        1.2338117932148627,
+        1.2286771835321277,
+        1.2050298843556766
+      ],
+      "median_after_native_ratio": 1.2286771835321277
+    }
+  },
+  {
+    "case": "SILK-WB-20ms-1ch-8000-plc-return",
+    "p50": {
+      "median_normalized_change_percent": -7.494601394951539,
+      "changes_percent": [
+        -7.494601394951539,
+        -7.5164056619921755,
+        -7.385498556001235
+      ],
+      "after_native_ratios": [
+        1.1737275956141782,
+        1.1735817451299653,
+        1.1730911329532807
+      ],
+      "median_after_native_ratio": 1.1735817451299653
+    },
+    "p95": {
+      "median_normalized_change_percent": -7.531498337600572,
+      "changes_percent": [
+        -7.685433863769542,
+        -7.274974218055341,
+        -7.531498337600572
+      ],
+      "after_native_ratios": [
+        1.1726950099334652,
+        1.1746430904285368,
+        1.1659500752055565
+      ],
+      "median_after_native_ratio": 1.1726950099334652
+    },
+    "p99": {
+      "median_normalized_change_percent": -7.510236525896907,
+      "changes_percent": [
+        -6.428037674260734,
+        -7.510236525896907,
+        -11.36050267770109
+      ],
+      "after_native_ratios": [
+        1.1761947520702385,
+        1.1854006000981292,
+        1.1700867865519937
+      ],
+      "median_after_native_ratio": 1.1761947520702385
+    }
+  },
+  {
+    "case": "SILK-WB-20ms-1ch-8000-fec-return",
+    "p50": {
+      "median_normalized_change_percent": -7.338428897648319,
+      "changes_percent": [
+        -7.211395146205279,
+        -7.338428897648319,
+        -7.680222695852857
+      ],
+      "after_native_ratios": [
+        1.1790683432780278,
+        1.177763168984408,
+        1.1723972696840432
+      ],
+      "median_after_native_ratio": 1.177763168984408
+    },
+    "p95": {
+      "median_normalized_change_percent": -6.955616233287931,
+      "changes_percent": [
+        -7.253652682763767,
+        -6.906312994609609,
+        -6.955616233287931
+      ],
+      "after_native_ratios": [
+        1.1767159901540127,
+        1.1778575225723198,
+        1.1839468050693793
+      ],
+      "median_after_native_ratio": 1.1778575225723198
+    },
+    "p99": {
+      "median_normalized_change_percent": -8.11738741840311,
+      "changes_percent": [
+        -7.717619690689947,
+        -8.428152555427104,
+        -8.11738741840311
+      ],
+      "after_native_ratios": [
+        1.1637449199026138,
+        1.1783075300488728,
+        1.1997097024336132
+      ],
+      "median_after_native_ratio": 1.1783075300488728
+    }
+  },
+  {
+    "case": "SILK-WB-60ms-1ch-8000-decode",
+    "p50": {
+      "median_normalized_change_percent": -4.713236688945965,
+      "changes_percent": [
+        -4.713236688945965,
+        -5.544270905912008,
+        -4.526310637141185
+      ],
+      "after_native_ratios": [
+        1.3442729877572284,
+        1.3436711578721348,
+        1.3318894126640337
+      ],
+      "median_after_native_ratio": 1.3436711578721348
+    },
+    "p95": {
+      "median_normalized_change_percent": -5.014379921042467,
+      "changes_percent": [
+        -2.343616264808901,
+        -7.51368757894112,
+        -5.014379921042467
+      ],
+      "after_native_ratios": [
+        1.323174316248236,
+        1.2864858653183175,
+        1.2880508847420888
+      ],
+      "median_after_native_ratio": 1.2880508847420888
+    },
+    "p99": {
+      "median_normalized_change_percent": -5.058187095419042,
+      "changes_percent": [
+        18.269886053744976,
+        -6.278325046880706,
+        -5.058187095419042
+      ],
+      "after_native_ratios": [
+        1.2907748478701826,
+        1.2846737308696954,
+        1.2625875830410132
+      ],
+      "median_after_native_ratio": 1.2846737308696954
+    }
+  },
+  {
+    "case": "SILK-WB-10ms-1ch-8000-decode",
+    "p50": {
+      "median_normalized_change_percent": 0.2674666894223243,
+      "changes_percent": [
+        0.29053379329044837,
+        0.2674666894223243,
+        0.08756812698067495
+      ],
+      "after_native_ratios": [
+        1.3063305554117708,
+        1.3090865097305584,
+        1.310505994716521
+      ],
+      "median_after_native_ratio": 1.3090865097305584
+    },
+    "p95": {
+      "median_normalized_change_percent": 0.46429051302327995,
+      "changes_percent": [
+        2.9224693247275058,
+        0.4218973382569713,
+        0.46429051302327995
+      ],
+      "after_native_ratios": [
+        1.3434726799536352,
+        1.3039636507309365,
+        1.3129906875371509
+      ],
+      "median_after_native_ratio": 1.3129906875371509
+    },
+    "p99": {
+      "median_normalized_change_percent": 6.2796679436242675,
+      "changes_percent": [
+        6.2796679436242675,
+        -0.6796434586102573,
+        13.285272718164642
+      ],
+      "after_native_ratios": [
+        1.5218192301170086,
+        1.2688328190234162,
+        1.4817590643274854
+      ],
+      "median_after_native_ratio": 1.4817590643274854
+    }
+  },
+  {
+    "case": "SILK-WB-20ms-2ch-8000-decode",
+    "p50": {
+      "median_normalized_change_percent": 0.5572864783933928,
+      "changes_percent": [
+        3.28583465488268,
+        0.5572864783933928,
+        0.013606579852409872
+      ],
+      "after_native_ratios": [
+        1.429322237004746,
+        1.3857303749154883,
+        1.3961913616974773
+      ],
+      "median_after_native_ratio": 1.3961913616974773
+    },
+    "p95": {
+      "median_normalized_change_percent": 0.6258523973931451,
+      "changes_percent": [
+        -1.7946318867298028,
+        1.4456603330491369,
+        0.6258523973931451
+      ],
+      "after_native_ratios": [
+        1.3898369669906312,
+        1.4113789386125977,
+        1.421027497694547
+      ],
+      "median_after_native_ratio": 1.4113789386125977
+    },
+    "p99": {
+      "median_normalized_change_percent": 0.8741894742566592,
+      "changes_percent": [
+        6.297311929420735,
+        0.8741894742566592,
+        0.7391129637725369
+      ],
+      "after_native_ratios": [
+        1.5016867544714383,
+        1.4222097817844102,
+        1.3888344752995863
+      ],
+      "median_after_native_ratio": 1.4222097817844102
+    }
+  },
+  {
+    "case": "SILK-WB-20ms-1ch-48000-decode",
+    "p50": {
+      "median_normalized_change_percent": -0.0038619146413121364,
+      "changes_percent": [
+        0.7314522548362179,
+        -0.0038619146413121364,
+        -0.661460707152528
+      ],
+      "after_native_ratios": [
+        1.1384179827403895,
+        1.1380071755550978,
+        1.1314890815997456
+      ],
+      "median_after_native_ratio": 1.1380071755550978
+    },
+    "p95": {
+      "median_normalized_change_percent": -0.40902156817460567,
+      "changes_percent": [
+        1.0604844793421053,
+        -0.40902156817460567,
+        -0.5154538210575987
+      ],
+      "after_native_ratios": [
+        1.141887534121929,
+        1.1370047196493478,
+        1.1336060559496923
+      ],
+      "median_after_native_ratio": 1.1370047196493478
+    },
+    "p99": {
+      "median_normalized_change_percent": -1.4388416540008775,
+      "changes_percent": [
+        1.9445696611871455,
+        -1.7209228127283427,
+        -1.4388416540008775
+      ],
+      "after_native_ratios": [
+        1.156821403752606,
+        1.1549596826870425,
+        1.1331412999206392
+      ],
+      "median_after_native_ratio": 1.1549596826870425
+    }
+  },
+  {
+    "case": "CELT-FB-2.5ms-1ch-48000-decode",
+    "p50": {
+      "median_normalized_change_percent": -0.09407044267322195,
+      "changes_percent": [
+        -0.330443354973331,
+        -0.09407044267322195,
+        1.097461642374542
+      ],
+      "after_native_ratios": [
+        1.0310570601260434,
+        1.0306516420425758,
+        1.0388457707115608
+      ],
+      "median_after_native_ratio": 1.0310570601260434
+    },
+    "p95": {
+      "median_normalized_change_percent": -0.08814645083824457,
+      "changes_percent": [
+        -0.2849337647997552,
+        -0.08814645083824457,
+        0.503129360794885
+      ],
+      "after_native_ratios": [
+        1.0288621955288622,
+        1.0277522790579894,
+        1.0382745098039217
+      ],
+      "median_after_native_ratio": 1.0288621955288622
+    },
+    "p99": {
+      "median_normalized_change_percent": 0.43679533311893337,
+      "changes_percent": [
+        0.43679533311893337,
+        -1.8894395857543156,
+        7.485525815533389
+      ],
+      "after_native_ratios": [
+        1.0375413837901266,
+        0.9976547622397959,
+        1.042807129217059
+      ],
+      "median_after_native_ratio": 1.0375413837901266
+    }
+  }
+]

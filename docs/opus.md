@@ -376,6 +376,18 @@ build/source hashes and reproduction runners. The untimed 2,130-case matrix
 matches the identical source with only synthesis restored. Timed coverage is
 limited to ten cases; native speed and perceptual parity remain open.
 
+### SILK filter windows, 2026-10-15
+
+A [later source-bound eight-case run](measurements/2026-10-15-silk-filter-windows/README.md)
+prepares the same four filter windows explicitly, preserving FIR order and the
+existing mono/long-frame gate. Four active cases improve normalized p50 by
+4.71–7.50%; WB/20 ms mono to 8 kHz reaches median **1.231 times native** p50.
+All 2,130 untimed complete-decoder comparisons remain exact. The report retains
+all repetitions and control/tail regressions, including WB/60 ms p99 +18.27%
+in one repetition and WB/10 ms control median p99 +6.28%. Timed recovery is
+fallback/return with no actual FEC events; actual-FEC CPU, full-matrix speed
+and perceptual parity remain open.
+
 ### Exact SILK encoder pulse scaling, 2026-10-15
 
 A [separate frozen-source run](measurements/2026-10-15-silk-encoder-gain/README.md)

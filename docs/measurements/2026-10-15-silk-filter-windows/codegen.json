@@ -1,0 +1,88 @@
+{
+  "before": {
+    "functions": [
+      {
+        "symbol": "__RNvXs0_NtNtCsjIpoRzUjyHQ_4core5array5drainQINtB5_5DrainjNCINvMNtNtB9_3ops9try_traitINtBY_17NeverShortCircuitRSdE10wrap_mut_1jNCNvMs_NtNtNtCsdDupoQF66P7_6snacka4opus4silk8resampleNtB26_9Resampler20run_filtered_wide_8k0E0EINtNtB10_8function5FnMutTjEE8call_mutB2c_:",
+        "instructions": 57
+      },
+      {
+        "symbol": "__RNvMs_NtNtNtCsdDupoQF66P7_6snacka4opus4silk8resampleNtB4_9Resampler20run_filtered_wide_8k:",
+        "instructions": 404
+      }
+    ],
+    "fir_loops": [
+      {
+        "begin": "0x100023dec",
+        "end": "0000000100023e48",
+        "instruction_count": 24,
+        "branches": 5,
+        "fp_multiplies": 4,
+        "fp_adds": 4,
+        "stack_accesses": 0,
+        "instructions": [
+          "0000000100023dec\tcmp\tx23, x20",
+          "0000000100023df0\tb.hs\t0x100023f98",
+          "0000000100023df4\tcmp\tx23, x27",
+          "0000000100023df8\tb.hs\t0x100023f6c",
+          "0000000100023dfc\tcmp\tx23, x24",
+          "0000000100023e00\tb.hs\t0x100023f80",
+          "0000000100023e04\tcmp\tx23, x1",
+          "0000000100023e08\tb.hs\t0x100023f94",
+          "0000000100023e0c\tldr\td4, [x28, x0, lsl #3]",
+          "0000000100023e10\tldr\td5, [x9], #0x8",
+          "0000000100023e14\tfmul\td4, d4, d5",
+          "0000000100023e18\tfadd\td3, d3, d4",
+          "0000000100023e1c\tldr\td4, [x21, x0, lsl #3]",
+          "0000000100023e20\tfmul\td4, d5, d4",
+          "0000000100023e24\tfadd\td2, d2, d4",
+          "0000000100023e28\tldr\td4, [x26, x0, lsl #3]",
+          "0000000100023e2c\tfmul\td4, d5, d4",
+          "0000000100023e30\tfadd\td1, d1, d4",
+          "0000000100023e34\tldr\td4, [x8, x0, lsl #3]",
+          "0000000100023e38\tfmul\td4, d5, d4",
+          "0000000100023e3c\tfadd\td0, d0, d4",
+          "0000000100023e40\tsub\tx0, x0, #0x1",
+          "0000000100023e44\tcmn\tx0, #0x1",
+          "0000000100023e48\tb.ne\t0x100023dec"
+        ]
+      }
+    ]
+  },
+  "after": {
+    "functions": [
+      {
+        "symbol": "__RNvMs_NtNtNtCsdDupoQF66P7_6snacka4opus4silk8resampleNtB4_9Resampler20run_filtered_wide_8k:",
+        "instructions": 507
+      }
+    ],
+    "fir_loops": [
+      {
+        "begin": "0x100024478",
+        "end": "00000001000244b4",
+        "instruction_count": 16,
+        "branches": 1,
+        "fp_multiplies": 4,
+        "fp_adds": 4,
+        "stack_accesses": 0,
+        "instructions": [
+          "0000000100024478\tldr\td18, [x23, x24, lsl #3]",
+          "000000010002447c\tldr\td19, [x25], #0x8",
+          "0000000100024480\tfmul\td18, d18, d19",
+          "0000000100024484\tfadd\td17, d17, d18",
+          "0000000100024488\tldr\td18, [x22, x24, lsl #3]",
+          "000000010002448c\tfmul\td18, d19, d18",
+          "0000000100024490\tfadd\td16, d16, d18",
+          "0000000100024494\tldr\td18, [x11, x24, lsl #3]",
+          "0000000100024498\tfmul\td18, d19, d18",
+          "000000010002449c\tfadd\td7, d7, d18",
+          "00000001000244a0\tldr\td18, [x10, x24, lsl #3]",
+          "00000001000244a4\tfmul\td18, d19, d18",
+          "00000001000244a8\tfadd\td6, d6, d18",
+          "00000001000244ac\tsub\tx24, x24, #0x1",
+          "00000001000244b0\tcmp\tx21, x24",
+          "00000001000244b4\tb.ne\t0x100024478"
+        ]
+      }
+    ]
+  }
+}
