@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
-//! RFC 8486 family-3 Ambisonics demixing over the owned Opus multistream decoder.
+//! RFC 8486 family-3 Ambisonics mixing over owned Opus multistream codecs.
 //!
-//! The matrix is signed little-endian Q15 in column-major order. Output retains
+//! On-wire demixing matrices use signed little-endian Q15 in column-major order.
+//! Encoder projections are explicit floating-point policies. Output retains
 //! ACN/SN3D Ambisonics channels and optional non-diegetic left/right channels.
 //! Header gain is a separate playback operation; mixing never clips PCM.
 
-use super::Recovery;
-use super::multistream::{ChannelMapping, Error, MultistreamDecoder};
+use super::multistream::{ChannelMapping, Error, MultistreamDecoder, MultistreamEncoder};
+use super::{EncodeError, Encoder, EncoderConfig, Recovery};
 
 /// Whether a count represents full Ambisonic order, optionally followed by stereo.
 pub(crate) fn valid_channels(channels: u8) -> bool {
@@ -57,6 +58,146 @@ impl ProjectionMapping {
     /// Signed Q15 coefficients, column-major with `channels` entries per column.
     pub fn matrix(&self) -> &[i16] {
         &self.matrix
+    }
+}
+
+/// Stateful family-3 encoder with an explicit projection and demixing pair.
+///
+/// The input is normalized interleaved 48 kHz ACN/SN3D Ambisonics, followed by
+/// optional non-diegetic stereo. For `C` input channels and `K = streams +
+/// coupled` coded channels, encoding applies `x = A * s`: `A` has `K` rows and
+/// `C` columns. The associated [`ProjectionMapping`] supplies the on-wire `D`
+/// matrix for decoding `s = D * x`. RFC 8486 standardizes `D`, not the choice
+/// of `A`; callers select their projection, including lossy rectangular pairs.
+/// Header gain remains a separate playback operation.
+///
+/// Construction allocates all codec, matrix and PCM memory. Encoding, status
+/// inspection and reset do not allocate. Matrix sums use f64 before conversion
+/// to the coded channels' f32 PCM. Overloaded mixtures are rejected before any
+/// codec history advances; the encoder never clips the projection.
+pub struct ProjectionEncoder {
+    encoder: MultistreamEncoder,
+    mapping: ProjectionMapping,
+    mixing: Vec<f32>,
+    sources: Vec<Vec<(usize, f64)>>,
+    samples: usize,
+    pcm: Vec<f32>,
+}
+
+impl ProjectionEncoder {
+    /// Prepare an explicit mixing/demixing pair and one policy per coded stream.
+    ///
+    /// `mixing` is finite column-major `K`-by-`C` data, with `K` coefficients
+    /// per input channel. The mapping's signed Q15 demixing matrix is `C`-by-`K`.
+    /// The matrices need not be inverses or square. All configurations must have
+    /// the same packet duration; the initial coupled streams require stereo
+    /// configurations and the remaining streams require mono configurations.
+    pub fn new(
+        mapping: ProjectionMapping,
+        mixing: Vec<f32>,
+        configs: &[EncoderConfig],
+    ) -> Result<Self, Error> {
+        let coded = mapping.coded_layout().decoded_channels();
+        if mixing.len() != coded * mapping.channels()
+            || mixing.iter().any(|coefficient| !coefficient.is_finite())
+        {
+            return Err(Error::Mapping);
+        }
+        let encoder = MultistreamEncoder::new(*mapping.coded_layout(), configs)?;
+        let samples = configs[0].duration().samples();
+        let mut sources = vec![Vec::new(); coded];
+        for (input, coefficients) in mixing.chunks_exact(coded).enumerate() {
+            for (row, &coefficient) in coefficients.iter().enumerate() {
+                if coefficient != 0.0 {
+                    sources[row].push((input, f64::from(coefficient)));
+                }
+            }
+        }
+        Ok(Self {
+            encoder,
+            mapping,
+            mixing,
+            sources,
+            samples,
+            pcm: vec![0.0; samples * coded],
+        })
+    }
+
+    /// Input ACN/SN3D and optional stereo channel count.
+    pub const fn channels(&self) -> usize {
+        self.mapping.channels()
+    }
+
+    /// On-wire demixing metadata for [`super::ogg::OpusIdentification::projected`].
+    pub const fn mapping(&self) -> &ProjectionMapping {
+        &self.mapping
+    }
+
+    /// Original column-major mixing matrix, with `K` entries per input channel.
+    pub fn mixing_matrix(&self) -> &[f32] {
+        &self.mixing
+    }
+
+    /// Inspect a constituent encoder without changing its geometry or history.
+    pub fn stream_encoder(&self, stream: usize) -> Option<&Encoder> {
+        self.encoder.stream_encoder(stream)
+    }
+
+    /// Required output capacity, including every stream's self-delimiter ceiling.
+    pub const fn max_packet_bytes(&self) -> usize {
+        self.encoder.max_packet_bytes()
+    }
+
+    /// XOR of constituent final entropy ranges, matching projected decoding.
+    pub fn final_range(&self) -> u32 {
+        self.encoder.final_range()
+    }
+
+    /// Whether every coded stream suppressed its previous quiet interval.
+    pub fn was_dtx(&self) -> bool {
+        self.encoder.was_dtx()
+    }
+
+    /// Project and encode one configured interval from normalized 48 kHz PCM.
+    ///
+    /// Invalid input geometry, non-finite samples, insufficient output capacity
+    /// or any mixed sample outside `[-1, 1]` leave output and codec history
+    /// untouched. A subsequent codec failure can advance constituent history;
+    /// reset before continuing, as with [`MultistreamEncoder::encode`].
+    pub fn encode(&mut self, input: &[f32], output: &mut [u8]) -> Result<usize, Error> {
+        if input.len() != self.samples * self.channels()
+            || input
+                .iter()
+                .any(|sample| !sample.is_finite() || !(-1.0..=1.0).contains(sample))
+        {
+            return Err(EncodeError::Input.into());
+        }
+        if output.len() < self.max_packet_bytes() {
+            return Err(Error::Output);
+        }
+        let coded = self.sources.len();
+        for (input, output) in input
+            .chunks_exact(self.channels())
+            .zip(self.pcm.chunks_exact_mut(coded))
+        {
+            for (destination, sources) in output.iter_mut().zip(&self.sources) {
+                let mut sum = 0.0;
+                for &(source, coefficient) in sources {
+                    sum += f64::from(input[source]) * coefficient;
+                }
+                if !(-1.0..=1.0).contains(&sum) {
+                    return Err(EncodeError::Input.into());
+                }
+                *destination = sum as f32;
+            }
+        }
+        self.encoder.encode(&self.pcm, output)
+    }
+
+    /// Clear prediction, clocks and scratch PCM, retaining both matrices.
+    pub fn reset(&mut self) {
+        self.encoder.reset();
+        self.pcm.fill(0.0);
     }
 }
 
