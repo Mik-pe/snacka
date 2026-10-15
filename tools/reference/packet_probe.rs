@@ -4,6 +4,9 @@
 #![forbid(unsafe_code)]
 
 #[allow(dead_code)]
+#[path = "../../src/opus/extensions.rs"]
+mod extensions;
+#[allow(dead_code)]
 #[path = "../../src/opus/packet.rs"]
 mod packet;
 
