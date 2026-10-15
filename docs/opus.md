@@ -368,6 +368,18 @@ build/source hashes and reproduction runners. The untimed 2,130-case matrix
 matches the identical source with only synthesis restored. Timed coverage is
 limited to ten cases; native speed and perceptual parity remain open.
 
+### Exact SILK encoder pulse scaling, 2026-10-15
+
+A [separate frozen-source run](measurements/2026-10-15-silk-encoder-gain/README.md)
+isolates exact gain cancellation in scalar encoder history. Eight selected
+SILK/Hybrid cases improved paired p50 by 1.43–2.56%, across every repetition.
+The two CELT controls did not benefit; the report retains their regressions,
+all individual p99 changes and the ten-case timing limit. All 142 encoder
+geometries across six generated signals, plus eight development speech clips,
+retain exact packet, PCM, range, recovery and post-refusal continuation traces.
+Existing valid-input bitrate refusals remain explicit. Full CPU and perceptual
+parity remain open.
+
 ### Earlier ARM64 measurements
 
 A serialized, frozen-source encoder run on Apple M5/macOS 27 against libopus
