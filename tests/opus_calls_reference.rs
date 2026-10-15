@@ -392,6 +392,142 @@ struct GainDecoders {
     gain: i16,
 }
 
+fn compare_implicit_short_to_plc(pair: &mut GainDecoders, short: &[u8], tail: Option<&[u8]>) {
+    let rate = pair.owned[0].sample_rate();
+    let parsed = Packet::parse(short).unwrap();
+    let missing = parsed.frame_samples(rate).unwrap();
+    let count = parsed.samples(rate).unwrap();
+    let prefix = missing * pair.channels;
+    let sentinel = f32::from_bits(0x7fc0_1234);
+    for output in &mut pair.output {
+        output.fill(sentinel);
+    }
+    assert_eq!(
+        pair.owned[0].decode(short, &mut pair.output[0]).unwrap(),
+        count
+    );
+    assert_eq!(
+        pair.native[0].decode(Some(short), count, false, &mut pair.output[2]),
+        count
+    );
+    assert_eq!(
+        pair.owned[1]
+            .conceal(missing, &mut pair.output[1][..prefix])
+            .unwrap(),
+        missing
+    );
+    assert_eq!(
+        pair.native[1].decode(None, missing, false, &mut pair.output[3][..prefix]),
+        missing
+    );
+    if let Some(tail) = tail {
+        assert_eq!(count, missing * 2);
+        assert_eq!(
+            pair.owned[1]
+                .decode(tail, &mut pair.output[1][prefix..])
+                .unwrap(),
+            missing
+        );
+        assert_eq!(
+            pair.native[1].decode(Some(tail), missing, false, &mut pair.output[3][prefix..]),
+            missing
+        );
+    } else {
+        assert_eq!(count, missing);
+    }
+    assert_eq!(pair.owned[0].final_range(), pair.owned[1].final_range());
+    assert_eq!(pair.native[0].final_range(), pair.native[1].final_range());
+    assert_eq!(pair.owned[0].final_range(), pair.native[0].final_range());
+    for (first, second) in [(0, 1), (2, 3)] {
+        for (&a, &b) in pair.output[first][..count * pair.channels]
+            .iter()
+            .zip(&pair.output[second])
+        {
+            assert!(a.is_finite() && b.is_finite());
+            assert_eq!(
+                a.to_bits(),
+                b.to_bits(),
+                "implicit short frame must preserve explicit-PLC history"
+            );
+        }
+    }
+    for output in &pair.output {
+        assert!(
+            output[count * pair.channels..]
+                .iter()
+                .all(|v| v.to_bits() == sentinel.to_bits())
+        );
+    }
+    assert!(pair.owned.iter().all(|d| d.gain_q8() == 0));
+    assert!(pair.native.iter().all(|d| d.gain_q8() == 0));
+}
+
+#[test]
+fn implicit_short_frames_preserve_explicit_plc_and_coded_continuation() {
+    // Reuse the exact diagnostic Hybrid/CELT witnesses, including inter-coded
+    // continuations that expose history changes hidden by intra-coded packets.
+    // The adjacent JSON records the two existing stream hashes and indexes.
+    let data = include_bytes!("fixtures/opus-short-frame-continuation.bin");
+    let mut packets = Vec::new();
+    let mut position = 0;
+    while position < data.len() {
+        let length = u32::from_be_bytes(data[position..position + 4].try_into().unwrap()) as usize;
+        position += 8;
+        packets.push(&data[position..position + length]);
+        position += length;
+    }
+    assert_eq!(packets.len(), 6);
+    let mut cases = 0;
+    for bank in packets.as_chunks::<3>().0 {
+        let continuation = Packet::parse(bank[2]).unwrap();
+        let toc = continuation.toc().byte() & 0xfc;
+        let first_frame = continuation.frames().next().unwrap();
+        let mut single_frame = vec![toc];
+        single_frame.extend_from_slice(first_frame);
+        for rate in RATES {
+            for channels in [1, 2] {
+                // Fresh, primed, and primed-then-reset histories must all use
+                // the same PLC policy for implicit and explicit missing audio.
+                for history in 0..3 {
+                    for body in [None, Some(0), Some(255)] {
+                        for mixed in [false, true] {
+                            let mut pair = GainDecoders::new(rate, channels);
+                            if history != 0 {
+                                for packet in &bank[..2] {
+                                    let samples =
+                                        Packet::parse(packet).unwrap().samples(rate).unwrap();
+                                    pair.check(Some(packet), samples, false);
+                                }
+                            }
+                            if history == 2 {
+                                pair.reset();
+                            }
+                            let mut short = vec![toc | if mixed { 2 } else { 0 }];
+                            if mixed {
+                                short.push(u8::from(body.is_some()));
+                            }
+                            if let Some(byte) = body {
+                                short.push(byte);
+                            }
+                            if mixed {
+                                short.extend_from_slice(first_frame);
+                            }
+                            compare_implicit_short_to_plc(
+                                &mut pair,
+                                &short,
+                                mixed.then_some(single_frame.as_slice()),
+                            );
+                            pair.check(Some(bank[2]), continuation.samples(rate).unwrap(), false);
+                            cases += 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    assert_eq!(cases, 360);
+}
+
 impl GainDecoders {
     fn new(rate: u32, channels: usize) -> Self {
         let pair = Self {
@@ -475,7 +611,11 @@ impl GainDecoders {
             {
                 assert!(a.is_finite() && b.is_finite());
                 if self.gain == 0 {
-                    assert_eq!(a.to_bits(), b.to_bits(), "gain leaked into codec history");
+                    assert_eq!(
+                        a.to_bits(),
+                        b.to_bits(),
+                        "decoder histories differ at gain 0"
+                    );
                 } else {
                     // Public APIs specify the dB formula, not a particular
                     // libm approximation. This independent f64 oracle allows

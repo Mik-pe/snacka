@@ -490,11 +490,6 @@ impl Decoder {
             let begin = index * output_samples * self.channels;
             let destination = &mut output[begin..begin + output_samples * self.channels];
             if bytes.len() <= 1 {
-                if self.previous_mode.is_none() {
-                    self.previous_mode = Some(toc.mode());
-                    self.previous_bandwidth = Some(toc.bandwidth());
-                    self.previous_coded_channels = usize::from(toc.channels());
-                }
                 self.conceal_frame(samples)?;
                 self.final_range = 0;
             } else {
