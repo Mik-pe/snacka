@@ -1,0 +1,236 @@
+{
+  "base_commit": "2754f689fae64c2b26dab004039b0d693f7ea4a0",
+  "source_commit": "43c90f762aa2eed8a203621d01132cd7a73a95ae",
+  "state_contract": "An implicit zero/one-byte compressed frame conceals from existing codec history and does not establish mode/bandwidth/coded-channel history before a genuine coded frame or recovered FEC. Per-frame dispatch, duration, final range, scaling and genuine decoded-frame metadata are unchanged.",
+  "production_change": "Only delete five-line fresh short-frame history seeding block in Decoder::decode_parsed.",
+  "production_decoder_sha256": "0ed85d86da9384d6b0703a777607917cfd3689bbf9aeb5f99e5eee63b99d7703",
+  "production_patch_sha256": "fb8de8b79d5f547b1ca4a34f547a5e46991df9b702e67cf921b4bd3a85110772",
+  "test_source_sha256": "d20a987caf5bea9762d0900c82ac85e8469347e07d29296b2017beb473dd84de",
+  "fixture_sha256": "10c34e86d48eca7ab7d535e9563d910e9228ecb79cf4b203b77db59bb312fe0b",
+  "fixture_provenance_sha256": "1c45d9117bd2fd63b9ecbb176f7c84636a54f12d71ed62ee2d9f1300e3dc6f59",
+  "public_native_regression_cases": 360,
+  "regression_scope": "Two existing Hybrid/CELT inter-coded witnesses, five output rates, one/two output channels, fresh/primed/primed-then-reset, zero-byte or one-byte 00/ff compressed frames, separate short and same-packet code2 short+valid layouts; target and continuing PCM bit identity within each implementation, final ranges/sample counts, finite PCM, default gain0 and untouched output suffix.",
+  "full_release_reference_suite": {
+    "passed": 384,
+    "failed": 0,
+    "ignored": 0,
+    "suites": 18,
+    "log": "release-tests-final.log",
+    "exitcode": 0,
+    "source_qualification": "Same final production source; before rustfmt-only wrapping of the shared gain0 assertion. All 16 public native reference tests rerun on formatted final test source."
+  },
+  "formatted_gates": [
+    {
+      "name": "reference-test-formatted",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--release",
+        "--features",
+        "opus,reference-tests",
+        "--test",
+        "opus_calls_reference",
+        "--target-dir",
+        "/tmp/snacka-opus-short-frame-state-check-target"
+      ],
+      "exitcode": 0
+    },
+    {
+      "name": "clippy-formatted",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "clippy",
+        "--locked",
+        "--release",
+        "--all-targets",
+        "--features",
+        "opus,reference-tests",
+        "--target-dir",
+        "/tmp/snacka-opus-short-frame-state-check-target",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitcode": 0
+    },
+    {
+      "name": "fmt-formatted",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exitcode": 0
+    },
+    {
+      "name": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitcode": 0
+    }
+  ],
+  "baseline_negative_regression": {
+    "compile_command": [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "--test",
+      "--edition=2024",
+      "-O",
+      "-C",
+      "codegen-units=16",
+      "-C",
+      "overflow-checks=yes",
+      "--cfg",
+      "feature=\"opus\"",
+      "--cfg",
+      "feature=\"reference-tests\"",
+      "tests/opus_calls_reference.rs",
+      "--extern",
+      "snacka=/tmp/snacka-opus-decoder-gain-cost-d5-20261015/target-after/release/libsnacka.rlib",
+      "-L",
+      "dependency=/tmp/snacka-opus-decoder-gain-cost-d5-20261015/target-after/release/deps",
+      "-L",
+      "native=/opt/homebrew/lib",
+      "-o",
+      "/tmp/snacka-opus-short-frame-state-evidence-20261015/baseline-regression-final"
+    ],
+    "compile_exitcode": 0,
+    "run_command": [
+      "/tmp/snacka-opus-short-frame-state-evidence-20261015/baseline-regression-final",
+      "implicit_short_frames_preserve",
+      "--nocapture"
+    ],
+    "run_exitcode": 101,
+    "expected_failure": "decoder histories differ at gain 0",
+    "test_source_sha256": "d20a987caf5bea9762d0900c82ac85e8469347e07d29296b2017beb473dd84de",
+    "baseline_rlib_sha256": "2b1d61e157c7fc2ffa2374014f49f54c26bcd9534671bbe0bc3abeaa4d3132c1"
+  },
+  "independent_causal_receipts": {
+    "/tmp/snacka-opus-short-frames-causal-20261015/summary.json": "799b04da95ec90a68028831fbcee724594f78c9f88be03228ef6743f9c885472",
+    "/tmp/snacka-opus-short-frames-causal-20261015/provenance.json": "fe2b5707e253cf286affec5739fa408e54588f2089f97a630c317c1e2ce877d7",
+    "/tmp/snacka-opus-short-frames-causal-20261015/causal.patch": "55601d93fd336f627380a756cca0c48fc5c87f9eba86a59d92b3a71f8ddad9ae",
+    "/tmp/snacka-opus-short-frames-causal-20261015/comparison-report.json": "7198fbb0d971229a073fb9b7d3980f21aba068e72d885f335a06498ee966601f",
+    "/tmp/snacka-opus-short-frames-causal-20261015/targeted-comparison-report.json": "dd4b9707423cc4ca8265e9ef2d54849cef448b0fd70545fbad046e2afe744225"
+  },
+  "independent_causal_counts": {
+    "all_toc_matrix": 35840,
+    "targeted_including_celt_and_mixed": 12000,
+    "repaired_matrix_controls": 1680,
+    "repaired_targeted_controls": 2728,
+    "unchanged_primed_matrix": 17920,
+    "unchanged_regenerated_diagnostic_v1": 960
+  },
+  "coded_unchanged_proof": {
+    "cases": 710,
+    "processes": 1420,
+    "all_exact_json_identity": true,
+    "failures": [],
+    "coded_operations_per_variant": 16915,
+    "implicit_plc_operations_per_variant": 125,
+    "inputs_unchanged": true,
+    "timers_warmup_calibration_batches_run": false,
+    "native_library_unchanged": true
+  },
+  "scope_qualification": "Functional history compatibility fix; no fresh encoding, quality scoring, tuning, performance timing or full-parity claim. Diagnostic V1 acceptance remains INCONCLUSIVE. Original external diagnosis/causal records preserved unchanged.",
+  "evidence_files": {
+    "reference-test-formatted.log": "b47af98c3dbc25f10108e4667a65a29198e8cc10e4311633229e9cdc1a1fafa4",
+    "clippy-formatted.log": "44d18b65c76aa2d8ec99878e0bca66ec904947f1adb23cf205ecbcf03dc470bf",
+    "fmt-formatted.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "release-tests-final.log": "f0ab2d7bbfd5247d2797d1b395d5720cf0861aa7219ab123aec8928291670816",
+    "coded-manifest.json": "4816a9523f46601dd3dc0f57800f3189e80a67ca8129afeac15b49185335f0bd",
+    "coded-results.json": "f3c9d2d3d3ef9ee6d7d76ac4ff7a42b8efe4f4276f29f8ae20e5c0f0b62c5376",
+    "coded-summary.json": "0160d733fa3c2fed9b9e82f47da3edb935b986ca8c33648977d7824214ab02e9",
+    "prove-coded.py": "877464aa6f95469c1a5d8b57fbcfeb0eb0bb855df75cc93a46d457c22d19978b",
+    "baseline-regression-formatted.log": "f38b6db6c2967c197572c153dd026504d64295f05094d587dc449bfdd290b523",
+    "baseline-regression-formatted.json": "8d25a872444add4e546f20f27c4218b25a57d333b2ab6b172b35e241f49dcb4e"
+  },
+  "external_evidence_root": "/tmp/snacka-opus-short-frame-state-evidence-20261015",
+  "external_checks_sha256": "e96bd7328d181624832e630179c83b612c281c733b9eb9e64d52256e743f1f7a",
+  "oracle": {
+    "public_api": "libopus 1.6.1 opus_decode_float / opus_decoder_ctl",
+    "library": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+    "sha256": "98dcd3cc62c6cf913b789051536ab246c56cc163c74bd8b4968ac467ec74b68b"
+  },
+  "coded_proof_binding": {
+    "production_source_identity_verified": true,
+    "only_production_change": [
+      "src/opus/decoder.rs"
+    ],
+    "baseline_source_receipt": "/tmp/snacka-opus-decoder-gain-cost-d5-20261015/source.json",
+    "baseline_source_receipt_sha256": "8c6a4bc905f0e9d5a626bdbc02a54c6e9f85b567f984ab6db121d51878419a83",
+    "baseline_binary": "/tmp/snacka-opus-decoder-gain-cost-d5-20261015/benchmark-after",
+    "baseline_binary_sha256": "d74afbc70e36ca272f8c6c39ab6343e1fc5839525e60cecf5ec0db40f3e956a6",
+    "candidate_binary": "/tmp/snacka-opus-short-frame-state-evidence-20261015/coded-after",
+    "candidate_binary_sha256": "4f498bd2abc9b89db0d1efc59f7f9f7bbe094f928d2c4e44a7f6cb1f18229b4e",
+    "candidate_library_sha256": "c5dad317a029abc9206a17eafd9022ca32c1ee728327de85d433f048c6938f41",
+    "bridge_sha256": "c6adb009e8e889adf358385d1eeb9c69f557289c60d068acb5bae8b2159f7aeb",
+    "build_command": [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+      "build",
+      "--offline",
+      "--locked",
+      "--release",
+      "--features",
+      "opus",
+      "--lib",
+      "--target-dir",
+      "/tmp/snacka-opus-short-frame-state-evidence-20261015/coded-target"
+    ],
+    "compile_command": [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "--edition=2024",
+      "-O",
+      "-C",
+      "codegen-units=16",
+      "-C",
+      "lto=off",
+      "-C",
+      "debuginfo=0",
+      "-C",
+      "overflow-checks=yes",
+      "/tmp/snacka-opus-short-frame-state-evidence-20261015/coded-source/tools/reference/benchmark_opus_decode.rs",
+      "--extern",
+      "snacka=/tmp/snacka-opus-short-frame-state-evidence-20261015/coded-target/release/libsnacka.rlib",
+      "-L",
+      "dependency=/tmp/snacka-opus-short-frame-state-evidence-20261015/coded-target/release/deps",
+      "-L",
+      "native=/opt/homebrew/lib",
+      "-o",
+      "/tmp/snacka-opus-short-frame-state-evidence-20261015/coded-after"
+    ],
+    "run_command": [
+      "<binary>",
+      "matrix",
+      "<rate>",
+      "<1|2 matching input coded channels>",
+      "decode",
+      "0",
+      "200000",
+      "<input.bit>"
+    ],
+    "runner_sha256": "877464aa6f95469c1a5d8b57fbcfeb0eb0bb855df75cc93a46d457c22d19978b"
+  },
+  "root_integrated_checkpoint": {
+    "source_commit": "a6a9c23835ec2f0d10fae7f1422890096cb309ca",
+    "release_suites": 18,
+    "release_passed": 384,
+    "release_failed": 0,
+    "release_ignored": 0,
+    "platform": "macOS ARM64",
+    "features": "opus,reference-tests",
+    "production_and_test_source_identity_with_43c90f7_verified": true,
+    "strict_release_all_target_clippy_and_fmt": "PASS",
+    "external_files_sha256": {
+      "/tmp/snacka-parity-20261015/macos-short-integrated-tests.json": "613ccc8768d62686541bb782dbfbb9b311dc15c25c1b29847c604af3d9ac5acf",
+      "/tmp/snacka-parity-20261015/macos-short-integrated-release.log": "7f74e1ab5f24cb74db9fde5f9d05cb8581925dda790495c6f928e7ec802d34c8",
+      "/tmp/snacka-parity-20261015/macos-short-integrated-clippy.log": "1b9d60eae5f30174286307173f4ed873661e3a854e65baa0d51c48cfd4610059",
+      "/tmp/snacka-parity-20261015/macos-short-integrated-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
