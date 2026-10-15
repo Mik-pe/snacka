@@ -127,5 +127,12 @@
     "previous_readme_sha256": "f1faac94ac1fabd7c267b02e2d8f39fffa8bf64a8172c5d1b615bcf7547c5057",
     "final_readme_sha256": "dd153a38a04964a34ec253957f4c87c6babc60cf4183cbf45f06ae44edf3cfa0",
     "final_word_count": 841
+  },
+  "host_observation_clarification": {
+    "prior_publication_commit": "ec43d0c352a36a9a70ebe1fbd76d57efbf70a3e7",
+    "prior_readme_sha256": "dd153a38a04964a34ec253957f4c87c6babc60cf4183cbf45f06ae44edf3cfa0",
+    "retained_observations": "/tmp/snacka-opus-full-m5-explore-4340e8d-20261015/host-observations.jsonl",
+    "sha256": "fbe9b249df45782e3e87aed3a808e60a6f6c96191da82314fcb0ed12df5d423c",
+    "scope": "Selected process-name snapshots only; not a complete host inventory. Other compiler/background load and continuous isolation cannot be excluded. No timing, result, case or raw data changed or rerun."
   }
 }
