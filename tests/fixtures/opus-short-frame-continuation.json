@@ -1,0 +1,25 @@
+{
+  "layout": "Six consecutive existing Opus .bit records: big-endian u32 packet length, big-endian u32 encoder final range, raw packet. Hybrid records first, then CELT. No audio re-encoding or fresh corpus.",
+  "sources": [
+    {
+      "existing_stream": "Hybrid-SWB-10ms-1ch.bit",
+      "sha256": "c758d3b589e653062f1fd73504209865f9fc44561caf86279fcc6366dccee65f",
+      "packet_indexes": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "existing_stream": "CELT-FB-100ms-2ch.bit",
+      "sha256": "aa08c974c711699e8a0759f935bad722de1012429d2b0d7eec7092983d1fd48f",
+      "packet_indexes": [
+        0,
+        1,
+        7
+      ]
+    }
+  ],
+  "fixture_sha256": "10c34e86d48eca7ab7d535e9563d910e9228ecb79cf4b203b77db59bb312fe0b",
+  "purpose": "Public decoder regression: implicit 0/1-byte frames vs explicit PLC, including subsequent inter-predicted Hybrid/CELT frames and mixed packets."
+}
