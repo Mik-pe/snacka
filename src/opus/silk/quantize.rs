@@ -210,7 +210,10 @@ fn quantize_order<const ORDER: usize>(samples: &[f32], parameters: Parameters<'_
         distortion += (unshaped_target - reconstructed).powi(2);
         seed = seed.wrapping_add_signed(i32::from(chosen));
         history.lpc.copy_within(0..MAX_ORDER - 1, 1);
-        residual[position] = reconstructed / gain + ltp_prediction;
+        // Excitation has at most 23 significant bits and standardized gains
+        // have at most eight. The product above is exact in f64, so cancelling
+        // this gain preserves every bit while avoiding a division per sample.
+        residual[position] = excitation / 32_768.0 + ltp_prediction;
         history.lpc[0] = predicted + gain * residual[position];
         history.shaping_error = history.lpc[0] - f64::from(sample);
         outputs[position] = history.lpc[0].clamp(-1.0, 1.0);
@@ -236,6 +239,43 @@ fn quantize_order<const ORDER: usize>(samples: &[f32], parameters: Parameters<'_
 mod tests {
     use super::*;
     use crate::opus::silk::{Bandwidth, FrameDuration, reconstruct_excitation};
+
+    #[test]
+    fn every_gain_and_wire_pulse_cancels_exactly_in_residual_history() {
+        for index in 0..64 {
+            let integer_gain = gain_q16(index);
+            assert!(integer_gain > 0);
+            // gain_q16 is a power of two times an eight-bit integer. Together
+            // with the bounded Q8 pulse below, multiplication needs at most
+            // 31 bits of the 53-bit f64 significand, far from range limits.
+            assert!(integer_gain >> integer_gain.trailing_zeros() <= 255);
+            let gain = f64::from(integer_gain) / 65_536.0;
+            for pulse in -17_407i32..=17_407 {
+                for offset in [8.0, 25.0, 60.0] {
+                    for modulation in [-1.0, 1.0] {
+                        let excitation = (f64::from(pulse)
+                            - f64::from(pulse.signum()) * (20.0 / 256.0)
+                            + offset / 256.0)
+                            * modulation;
+                        let reconstructed = excitation * gain / 32_768.0;
+                        assert_eq!(
+                            (reconstructed / gain).to_bits(),
+                            (excitation / 32_768.0).to_bits(),
+                            "gain {index}, pulse {pulse}, offset {offset}, modulation {modulation}"
+                        );
+                    }
+                }
+            }
+            // Wire excitation is nonzero because every offset is positive;
+            // keep signed-zero preservation explicit as an arithmetic guard.
+            for excitation in [0.0f64, -0.0] {
+                assert_eq!(
+                    ((excitation * gain / 32_768.0) / gain).to_bits(),
+                    (excitation / 32_768.0).to_bits()
+                );
+            }
+        }
+    }
 
     #[test]
     fn direct_scalar_quantizer_is_nearest_at_every_wire_cell_boundary() {
