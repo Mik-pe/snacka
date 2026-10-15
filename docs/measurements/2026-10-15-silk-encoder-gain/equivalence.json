@@ -1,0 +1,253 @@
+{
+  "base_commit": "5fc1b43d535d7d8277be456a6ea8fb15c473f916",
+  "changed_files": [
+    "src/opus/silk/quantize.rs"
+  ],
+  "source_sha256": "b6821d1dc16fbf41d01937350436a84519c1cc7c5b4d6c50624de149ab78ecf3",
+  "probe": {
+    "path": "/tmp/snacka-opus-goal-encoder-exact-probe.rs",
+    "sha256": "5539a74886bb8fe414885e52ec00d16697c4055ea58c76a38dd8dc35aad62964",
+    "binaries": {
+      "before": "2b052fb1ccf8f25313584c375d6a4ad2e91d5bf6952fe2717cdcf22596b2a3a9",
+      "after": "6e18f5fa57d13023cdf27c9f4a16a667c4bf6dcafb8f2fe69e8b1578fdc7c4aa"
+    }
+  },
+  "runner_sha256": "f5704e8cdd4f2e9c1f7a1e8ad0103c14457a148e53930afb804f25ec2ef245af",
+  "cases": 924,
+  "generated_geometries": 142,
+  "generated_signals": 6,
+  "generated_cases": 852,
+  "development_cases": 72,
+  "development_clips": [
+    {
+      "clip": "cen1-ffmm-b.wav",
+      "wav_sha256": "a5187ec5c022503ca401627b98794aa82ad0af9d0718442cd48169ff91827111",
+      "raw_sha256": "9db92e00792e965e2bbbaaceddbedb205103970dd7cec800ef10e8a9364a8982",
+      "samples_48000": 158400,
+      "conversion": [
+        "/opt/homebrew/bin/ffmpeg",
+        "-v",
+        "error",
+        "-y",
+        "-i",
+        "/tmp/snacka-opus-goal-speech-corpus-20261015/cen1-ffmm-b.wav",
+        "-ar",
+        "48000",
+        "-ac",
+        "1",
+        "-f",
+        "f32le",
+        "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-ffmm-b.f32"
+      ]
+    },
+    {
+      "clip": "cen2-ffmm-b.wav",
+      "wav_sha256": "ed5aa28a7acdef5257710b373085afe5fab414b37ea319f72017a8e9c18950d0",
+      "raw_sha256": "20fd2187caec3d850bd93d5d3f8128a0edcbba485b7ccd65481be6822539bcf5",
+      "samples_48000": 240000,
+      "conversion": [
+        "/opt/homebrew/bin/ffmpeg",
+        "-v",
+        "error",
+        "-y",
+        "-i",
+        "/tmp/snacka-opus-goal-speech-corpus-20261015/cen2-ffmm-b.wav",
+        "-ar",
+        "48000",
+        "-ac",
+        "1",
+        "-f",
+        "f32le",
+        "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-ffmm-b.f32"
+      ]
+    },
+    {
+      "clip": "cen1-fjam-b.wav",
+      "wav_sha256": "a808cf51ce5d8bb0f36a0cad5d18a0a383e04a9b64edf16eb67eea726f4472b6",
+      "raw_sha256": "1a3f20f1e777610cdebd85669089cfcbd95f46e167b5d85e715df108a5d977a0",
+      "samples_48000": 115200,
+      "conversion": [
+        "/opt/homebrew/bin/ffmpeg",
+        "-v",
+        "error",
+        "-y",
+        "-i",
+        "/tmp/snacka-opus-goal-speech-corpus-20261015/cen1-fjam-b.wav",
+        "-ar",
+        "48000",
+        "-ac",
+        "1",
+        "-f",
+        "f32le",
+        "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-fjam-b.f32"
+      ]
+    },
+    {
+      "clip": "cen2-fjam-b.wav",
+      "wav_sha256": "05e4b092f32931b7e7ded4fe47ffe7b10e9df4c119ae396537adceac50445fe1",
+      "raw_sha256": "a79347ef213fa2fa81bf70600e84971fed9a637452d4003cbf470512c86ce4f9",
+      "samples_48000": 72000,
+      "conversion": [
+        "/opt/homebrew/bin/ffmpeg",
+        "-v",
+        "error",
+        "-y",
+        "-i",
+        "/tmp/snacka-opus-goal-speech-corpus-20261015/cen2-fjam-b.wav",
+        "-ar",
+        "48000",
+        "-ac",
+        "1",
+        "-f",
+        "f32le",
+        "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-fjam-b.f32"
+      ]
+    },
+    {
+      "clip": "cen1-mblb-b.wav",
+      "wav_sha256": "404d55dfd12351f9483ba155c94f7cfbc81d36a80332f57f78667cd5f9d38688",
+      "raw_sha256": "b90631d01ec92577d70b22a2c2818a4a1c4518e124bd0eeab36d8116daa152f2",
+      "samples_48000": 129600,
+      "conversion": [
+        "/opt/homebrew/bin/ffmpeg",
+        "-v",
+        "error",
+        "-y",
+        "-i",
+        "/tmp/snacka-opus-goal-speech-corpus-20261015/cen1-mblb-b.wav",
+        "-ar",
+        "48000",
+        "-ac",
+        "1",
+        "-f",
+        "f32le",
+        "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblb-b.f32"
+      ]
+    },
+    {
+      "clip": "cen2-mblb-b.wav",
+      "wav_sha256": "0f10e67d36819a953e2a44c844fe62cf4e310b0ba820b27a900e9983ea3e11b4",
+      "raw_sha256": "e06ab75639b1fb5a19aa82bcf935f1b5b272a083fd3ca330611419ed5821c71e",
+      "samples_48000": 120000,
+      "conversion": [
+        "/opt/homebrew/bin/ffmpeg",
+        "-v",
+        "error",
+        "-y",
+        "-i",
+        "/tmp/snacka-opus-goal-speech-corpus-20261015/cen2-mblb-b.wav",
+        "-ar",
+        "48000",
+        "-ac",
+        "1",
+        "-f",
+        "f32le",
+        "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblb-b.f32"
+      ]
+    },
+    {
+      "clip": "cen1-mblw-b.wav",
+      "wav_sha256": "cc70ad4409741652bf04952c31cbdaf89f5c9589bfebcc5fe404e13c0f80b2fa",
+      "raw_sha256": "6c1e26157a41a055a82048b97fd950760a57739ed353480943fbf17658380d1e",
+      "samples_48000": 81600,
+      "conversion": [
+        "/opt/homebrew/bin/ffmpeg",
+        "-v",
+        "error",
+        "-y",
+        "-i",
+        "/tmp/snacka-opus-goal-speech-corpus-20261015/cen1-mblw-b.wav",
+        "-ar",
+        "48000",
+        "-ac",
+        "1",
+        "-f",
+        "f32le",
+        "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen1-mblw-b.f32"
+      ]
+    },
+    {
+      "clip": "cen2-mblw-b.wav",
+      "wav_sha256": "ec4c42ae36ec0fb0ada01a6fb8358c4521e673cfbce7b74a407655978c54bd15",
+      "raw_sha256": "433c2c34898a5b16ced0b1d06e0fc5a56a7f46066b4cc18743ff60648ca31c1c",
+      "samples_48000": 76800,
+      "conversion": [
+        "/opt/homebrew/bin/ffmpeg",
+        "-v",
+        "error",
+        "-y",
+        "-i",
+        "/tmp/snacka-opus-goal-speech-corpus-20261015/cen2-mblw-b.wav",
+        "-ar",
+        "48000",
+        "-ac",
+        "1",
+        "-f",
+        "f32le",
+        "/tmp/snacka-opus-goal-quantize-5fc1b43/equivalence/cen2-mblw-b.f32"
+      ]
+    }
+  ],
+  "totals_per_variant": {
+    "encoded_packets": 288686,
+    "decoded_intervals": 866058,
+    "actual_fec_recoveries": 3150,
+    "fallbacks": 22499,
+    "traces": 2800,
+    "encoder_refusals": 15328,
+    "traces_with_refusals": 222
+  },
+  "all_exact": true,
+  "raw_rows_sha256": "bb217deca726bfead651b218aea52c067e3f537e098eb930e1d86439060b00f7",
+  "scope": "CBR48k input; normal/FEC encoder modes, continuous/reset halves; ordinary,PLC-return,FEC-return output. Full142 generated geometries plus all8 development clips in9 selected geometries. Evaluation clips excluded.",
+  "integrity": {
+    "checked_utc": "2026-10-15T07:27:44.514808+00:00",
+    "all_recorded_hashes_match": true,
+    "source_sha256": "ee82cc017ada4d718a02ccd0f6802b71c54a119697d77155759837c7f5b308c8",
+    "source_at_proof_sha256": "b6821d1dc16fbf41d01937350436a84519c1cc7c5b4d6c50624de149ab78ecf3",
+    "manifest_extension": "Current source.json adds only tool binary hashes and resolved reference path to source-at-proof.json; all existing fields, source/library/probe/benchmark hashes remain identical.",
+    "scope_notes": [
+      "The proof stores canonical equal JSON after comparing both roles; per-role successful stdout is not archived.",
+      "Development clips are fully traversed then a wrapped prefix; stereo duplicates mono; no zero-drain or perceptual-quality claim.",
+      "Refusals remain an explicitly separate baseline functional gap; source is unmodified except exact residual cancellation."
+    ],
+    "refusal_counts_by_scope_signal": {
+      "generated/clipping": 15286,
+      "generated/noise": 42
+    },
+    "fallback_success_level_counts": {
+      "0": 275596,
+      "1": 10852,
+      "2": 2238,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0
+    }
+  },
+  "exhaustive_arithmetic": {
+    "gain_indices": 64,
+    "wire_pulses": 34815,
+    "offsets": 3,
+    "modulation_signs": 2,
+    "combinations": 13368960,
+    "signed_zeros_per_gain": 2,
+    "significand_bounds": {
+      "excitation_bits": 23,
+      "gain_bits": 8,
+      "product_bits": 31,
+      "f64_bits": 53
+    }
+  },
+  "regressions": {
+    "release_tests_passed": 304,
+    "strict_all_target_clippy": true,
+    "rustfmt": true
+  },
+  "scope_notes": [
+    "The old manifest hash in source_sha256 is preserved in external source-at-proof.json. The acceptance manifest adds only binary tool hashes and resolved reference paths; final integrity checked every original field and recorded source/binary hash unchanged.",
+    "The proof compares JSON from both roles then archives canonical equal JSON; successful per-role stdout was not preserved in this recorded run. Reproduction preserves both raw outputs.",
+    "fallbacks in totals_per_variant means FEC recovery fallback; encoder_refusals and fallback success levels are separate."
+  ]
+}
