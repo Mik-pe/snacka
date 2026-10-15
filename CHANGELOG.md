@@ -2,6 +2,8 @@
 
 ## 0.2.0
 
+- Add allocation-free signed 16-bit and full-width 24-bit-in-32 PCM conversion
+  with explicit scaling, rounding, saturation and extended-range limitations.
 - Accept all five standard Opus input sample rates in ordinary and mapped
   encoders, with owned causal interpolation and an exact 48 kHz bypass.
 - Add owned family-3 Ambisonics encoding with explicit signed/rectangular

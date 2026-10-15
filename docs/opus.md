@@ -73,7 +73,26 @@ and mapped streams on a 1 MiB stack. `CeltEncoder`/`CeltDecoder` retain narrower
 CELT-only APIs.
 
 Output floats remain finite but may exceed ±1 through ringing or gain. Limit
-or clip when converting to integer PCM. The encoder's own group delay is 120
+or clip when converting to integer PCM. `opus::pcm` supplies allocation-free
+conversions with caller-owned buffers: `i16_to_f32` / `f32_to_i16` use a scale
+of 32768, and `i24_to_f32` / `f32_to_i24` use 8388608 for right-justified,
+sign-extended 24-bit values in `i32`. The latter accepts extended values and
+saturates only at the `i32` limits; float precision cannot retain every integer
+outside the nominal 24-bit range. Float-to-integer conversion rounds half ties
+to even, rejects NaN before any write, saturates infinities and preserves the
+destination suffix. Reuse one float buffer with any ordinary, mapped or
+projection encoder, decoder, recovery or concealment operation.
+
+These are sample-format conversions. Native libopus's 16-bit decoder can apply
+stateful soft clipping, and its integer encoder applies an input-precision hint
+that Snacka does not yet expose. Snacka's encoders still reject finite PCM
+outside ±1; the reference float/24-bit encoders support extended dynamic range.
+The [public native PCM observations](measurements/2026-10-15-opus-pcm/native.json)
+record scaling, full-width saturation, half ties and soft-clipping differences
+for the identified build. Sample-format coverage does not close those codec
+API behavior gaps or establish full PCM parity.
+
+The encoder's own group delay is 120
 samples at 48 kHz. `algorithmic_delay_samples()` expresses lookahead in
 configured input-rate samples: 36/54/72/108 samples at 8/12/16/24 kHz, and the
 unchanged 120 samples at 48 kHz. Raw users handle start delay and drain the
