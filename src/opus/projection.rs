@@ -289,6 +289,16 @@ impl ProjectionDecoder {
     pub const fn mapping(&self) -> &ProjectionMapping {
         &self.mapping
     }
+    /// Last successful interval of the first coded stream, in output-rate samples.
+    ///
+    /// This forwards [`MultistreamDecoder::last_packet_samples`] before demixing,
+    /// without a separate projection status. It can change after a later stream
+    /// fails, even when projected output was not written. Fresh and reset states
+    /// report zero. See that getter for full-packet, recovery and error semantics.
+    pub fn last_packet_samples(&self) -> usize {
+        self.decoder.last_packet_samples()
+    }
+
     /// XOR of every constituent stream's final entropy range.
     pub fn final_range(&self) -> u32 {
         self.decoder.final_range()

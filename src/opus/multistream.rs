@@ -558,6 +558,22 @@ impl MultistreamDecoder {
     pub const fn mapping(&self) -> &ChannelMapping {
         &self.mapping
     }
+    /// Last successful interval of the first coded stream, in output-rate samples.
+    ///
+    /// This forwards the first private [`Decoder`]'s status, including when its
+    /// channels are not mapped to output. Fresh and reset states report zero.
+    /// A successful packet reports all its frames; recovery reports the whole
+    /// requested interval, including any concealed prefix and recovered tail.
+    ///
+    /// This is not a record of whole-transport success. Refusals before stream
+    /// processing leave it unchanged. If the first stream succeeds and a later
+    /// stream fails, the count can change even though the operation returns an
+    /// error; reset before continuing after a content error. Gain and phase
+    /// controls do not change the count. See [`Decoder::last_packet_samples`].
+    pub fn last_packet_samples(&self) -> usize {
+        self.decoders[0].last_packet_samples()
+    }
+
     /// XOR of constituent final entropy ranges, matching multistream packet state.
     pub fn final_range(&self) -> u32 {
         self.decoders
@@ -715,6 +731,33 @@ impl MultistreamDecoder {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn first_stream_duration_follows_private_crossed_resets_even_when_unmapped() {
+        // Owned state composition, not a public later-content-error witness.
+        // It mirrors the separate native CTL-only selection probe without
+        // exposing mutable constituent decoders in the public Rust API.
+        for rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
+            let mapping = ChannelMapping::new(2, 1, &[2, 255]).unwrap();
+            let mut decoder = MultistreamDecoder::with_sample_rate(mapping, rate).unwrap();
+            let mut output = vec![0.0; rate as usize / 25 * 2];
+            assert_eq!(decoder.last_packet_samples(), 0);
+            decoder.conceal(rate as usize / 50, &mut output).unwrap();
+            decoder.decoders[0].reset();
+            assert_eq!(
+                decoder.decoders[1].last_packet_samples(),
+                rate as usize / 50
+            );
+            assert_eq!(decoder.last_packet_samples(), 0);
+            decoder.reset();
+            decoder.conceal(rate as usize / 25, &mut output).unwrap();
+            decoder.decoders[1].reset();
+            assert_eq!(decoder.decoders[1].last_packet_samples(), 0);
+            assert_eq!(decoder.last_packet_samples(), rate as usize / 25);
+            decoder.reset();
+            assert_eq!(decoder.last_packet_samples(), 0);
+        }
+    }
 
     #[test]
     fn phase_policy_reaches_unmapped_mono_history_and_survives_reset() {
