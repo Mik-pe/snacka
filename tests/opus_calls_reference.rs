@@ -2465,6 +2465,7 @@ fn composed_phase_contract<D: ComposedGainDecoder>(
     reference: impl Fn(u32) -> NativeDecoder,
     streams: usize,
     coupled: usize,
+    compose: impl Fn(&[Vec<f32>], usize) -> Vec<f32>,
 ) {
     let frame = include_bytes!("../src/opus/testdata/stereo-phase.opus");
     let mut packet = vec![0; 256];
@@ -2474,10 +2475,20 @@ fn composed_phase_contract<D: ComposedGainDecoder>(
         let mut owned = std::array::from_fn::<_, 3, _>(|_| own(rate));
         let mut native = std::array::from_fn::<_, 3, _>(|_| reference(rate));
         let policies = [None, Some(false), Some(true)];
+        let mut direct = std::array::from_fn::<_, 3, _>(|_| {
+            (0..streams)
+                .map(|stream| {
+                    Decoder::with_sample_rate(if stream < coupled { 2 } else { 1 }, rate).unwrap()
+                })
+                .collect::<Vec<_>>()
+        });
         for (index, policy) in policies.into_iter().enumerate() {
             if let Some(enabled) = policy {
                 owned[index].set_phase_inversion(enabled);
                 native[index].set_phase_inversion(enabled);
+                for decoder in &mut direct[index] {
+                    decoder.set_phase_inversion(enabled);
+                }
             }
         }
         let samples = rate as usize / 400;
@@ -2485,11 +2496,19 @@ fn composed_phase_contract<D: ComposedGainDecoder>(
         let sentinel = f32::from_bits(0x7fc0_2345);
         let mut a = std::array::from_fn::<_, 3, _>(|_| vec![sentinel; count + 7]);
         let mut b = a.clone();
+        let mut coded_pcm = std::array::from_fn::<_, 3, _>(|_| {
+            (0..streams)
+                .map(|stream| vec![0.0; samples * if stream < coupled { 2 } else { 1 }])
+                .collect::<Vec<_>>()
+        });
         for step in 0..10 {
             for (index, policy) in policies.into_iter().enumerate() {
                 if step == 9 {
                     owned[index].reset();
                     native[index].reset();
+                    for decoder in &mut direct[index] {
+                        decoder.reset();
+                    }
                 }
                 assert_eq!(
                     owned[index].phase_inversion(),
@@ -2544,6 +2563,37 @@ fn composed_phase_contract<D: ComposedGainDecoder>(
                         .chain(&b[index][count..])
                         .all(|v| v.to_bits() == sentinel.to_bits())
                 );
+                for (decoder, pcm) in direct[index].iter_mut().zip(&mut coded_pcm[index]) {
+                    match step {
+                        6 => assert_eq!(decoder.conceal(samples, pcm).unwrap(), samples),
+                        7 => assert_eq!(
+                            decoder.recover(frame, samples, pcm).unwrap(),
+                            Recovery::Concealed
+                        ),
+                        _ => assert_eq!(decoder.decode(frame, pcm).unwrap(), samples),
+                    }
+                }
+                let expected = compose(&coded_pcm[index], samples);
+                assert_eq!(expected.len(), count);
+                assert!(
+                    a[index][..count]
+                        .iter()
+                        .zip(&expected)
+                        .all(|(a, b)| a.to_bits() == b.to_bits()),
+                    "owned phase composition rate={rate} step={step} policy={policy:?}"
+                );
+                let maximum = |pcm: &[f32]| pcm.iter().copied().map(f32::abs).fold(0.0, f32::max);
+                let delta = a[index][..count]
+                    .iter()
+                    .zip(&b[index][..count])
+                    .map(|(a, b)| (a - b).abs())
+                    .fold(0.0, f32::max);
+                println!(
+                    "phase-waveform rate={rate} channels={} streams={streams} coupled={coupled} step={step} policy={policy:?} owned_max={} native_max={} maximum_delta={delta}",
+                    native[index].channels,
+                    maximum(&a[index][..count]),
+                    maximum(&b[index][..count])
+                );
                 // The repeated inter-coded packet has growing float headroom;
                 // the legacy same_celt helper also assumes |PCM| < 8. Compare
                 // its original fresh/reset witness only. Every step above still
@@ -2595,12 +2645,26 @@ fn mapped_and_projected_phase_controls_cover_mixed_defaults_and_real_downmix() {
         |rate| NativeDecoder::mapped(rate, mono),
         1,
         0,
+        |pcm, _| pcm[0].clone(),
     );
     composed_phase_contract(
         |rate| MultistreamDecoder::with_sample_rate(mixed, rate).unwrap(),
         |rate| NativeDecoder::mapped(rate, mixed),
         3,
         1,
+        |pcm, samples| {
+            (0..samples)
+                .flat_map(|i| {
+                    [
+                        pcm[0][2 * i],
+                        pcm[0][2 * i + 1],
+                        pcm[1][i],
+                        0.0,
+                        pcm[0][2 * i],
+                    ]
+                })
+                .collect()
+        },
     );
     let mapping = ProjectionMapping::new(
         3,
@@ -2616,5 +2680,22 @@ fn mapped_and_projected_phase_controls_cover_mixed_defaults_and_real_downmix() {
         |rate| NativeDecoder::projected(rate, &mapping),
         3,
         1,
+        |pcm, samples| {
+            // Independent f64 matrix oracle. Each row has one Q15 product or
+            // two exact half-scale terms, so one f32 rounding matches this
+            // particular matrix exactly; this is not a general demix-order claim.
+            (0..samples)
+                .flat_map(|i| {
+                    let left = f64::from(pcm[0][2 * i]);
+                    let right = f64::from(pcm[0][2 * i + 1]);
+                    [
+                        ((left + right) * 0.5) as f32,
+                        ((left - right) * 0.5) as f32,
+                        (0.0 + f64::from(pcm[1][i]) * 32767.0 / 32768.0) as f32,
+                        (0.0 + f64::from(pcm[2][i]) * 32767.0 / 32768.0) as f32,
+                    ]
+                })
+                .collect()
+        },
     );
 }

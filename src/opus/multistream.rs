@@ -733,13 +733,33 @@ mod tests {
                 let samples = rate as usize / 400;
                 let mut actual = vec![0.0; samples * 5];
                 let mut expected = vec![0.0; samples];
-                for step in 0..4 {
-                    if step == 3 {
+                for step in 0..10 {
+                    if step == 9 {
                         mapped.reset();
                         last.reset();
                     }
-                    mapped.decode(&packet[..length], &mut actual).unwrap();
-                    last.decode(frame, &mut expected).unwrap();
+                    match step {
+                        6 => {
+                            mapped.conceal(samples, &mut actual).unwrap();
+                            last.conceal(samples, &mut expected).unwrap();
+                        }
+                        7 => {
+                            assert_eq!(
+                                mapped
+                                    .recover(&packet[..length], samples, &mut actual)
+                                    .unwrap(),
+                                Recovery::Concealed
+                            );
+                            assert_eq!(
+                                last.recover(frame, samples, &mut expected).unwrap(),
+                                Recovery::Concealed
+                            );
+                        }
+                        _ => {
+                            mapped.decode(&packet[..length], &mut actual).unwrap();
+                            last.decode(frame, &mut expected).unwrap();
+                        }
+                    }
                     assert!(
                         mapped
                             .decoders
