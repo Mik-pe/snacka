@@ -5,6 +5,8 @@ This tooling-only follow-up starts from main
 configuration and all previous measurements remain unchanged. The source,
 benchmark binary, installed reference and commands are identified in
 [`native-validation.json`](native-validation.json).
+Its tool hashes bind the validation source at `c0e91f9`; the subsequent cleanup
+removes only a redundant guard test, without rerunning native validation.
 
 The earlier [SILK encoder timing result](../2026-10-15-silk-encoder-gain/README.md)
 retains its original exclusion of durations above 60 ms and the selected 60 ms
@@ -55,6 +57,7 @@ RUSTFLAGS="-L /opt/homebrew/lib" cargo bench --locked --bench opus \
 The `cargo bench` command invokes the binary, but `--validate-only` exits through
 the untimed branch. For a full future acceptance matrix, retain unsuccessful
 mode selections and other refusals as failures; do not silently replace cases
-or infer timing results from this validation. The nine-duration guard has a
-separate test that rejects all unsupported sample counts through 6000 and
-`usize::MAX`.
+or infer timing results from this validation. Source inspection confirms that
+the shared validator accepts exactly the nine listed sample counts and rejects
+all other values. The native profiles and retained invalid-CLI checks exercise
+the actual benchmark entry point.

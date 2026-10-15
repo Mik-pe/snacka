@@ -509,5 +509,6 @@
       "stdout": "",
       "stderr": "\nthread 'main' (258939129) panicked at benches/opus/encoder.rs:53:14:\ninvalid encoder duration\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
     }
-  ]
+  ],
+  "validation_source_commit": "c0e91f95dcac48d58311547ca95a3ab5a81c6ebc"
 }
