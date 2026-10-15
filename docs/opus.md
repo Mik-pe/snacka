@@ -157,7 +157,9 @@ not mirror the foreign codec's controls or instrumentation.
 
 Remaining encoder API gaps include automatic Ambisonics projection design,
 automatic surround bitrate allocation, and complexity, expected-loss and
-constrained-VBR controls. The format and API
+constrained-VBR controls. The current float PCM contract is normalized to ±1;
+extended-range float/24-bit PCM, integer API clipping and LSB-depth behavior
+remain separate gaps. The format and API
 extensions above do not close the separate CPU and perceptual-quality targets.
 
 ## Loss recovery and calls
@@ -237,6 +239,24 @@ The broader decoder matrix covers 2,130 mode/bandwidth/duration/channel/rate
 and decode/PLC/FEC-return cases, including aggregated packets through 120 ms.
 Its functional validation passed; final timing
 must bind to the measured source snapshot.
+
+### Standard input rates and projection encoding, 2026-10-15
+
+Ordinary, mapped and explicit-matrix Ambisonics encoding now accept all five
+standard input rates. Matching native-rate SILK uses an integer PCM delay and
+bypasses redundant rate conversion; other lower-rate paths use the owned causal
+input filter described above. The default 48 kHz path retains all 92 legacy
+packet, PCM and final-range fingerprints. Input-rate interoperability covers
+6,900 native decoder checks and 45 mapped native packets. Projection tests use
+actual family-3 Ogg packets, independent rectangular/signed matrix oracles and
+all five input and output rates. These additions do not establish automatic
+Ambisonics matrix design, extended-range PCM or perceptual-quality parity.
+
+The integrated source at `fb5dc6c` passes 355 release/reference tests and
+all-target Clippy. All six library cross-checks pass for iOS, iOS Simulator and
+Android, with and without `opus`. The 24 official-vector runs again decode
+40,150 packets with exact final ranges, no clipped samples and a minimum score
+of 68.0. Recommended quality and complete performance acceptance remain open.
 
 ### Packet coverage and decoder follow-up, 2026-10-15
 
