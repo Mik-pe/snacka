@@ -34,6 +34,7 @@ mod encoder;
 mod encoder_transition;
 mod energy;
 mod flags;
+mod input_delay;
 mod input_resample;
 pub mod multistream;
 pub mod ogg;

@@ -6,6 +6,8 @@
   encoders, with owned causal interpolation and an exact 48 kHz bypass.
 - Add owned family-3 Ambisonics encoding with explicit signed/rectangular
   projection pairs, allocation-free processing and native Ogg interoperability.
+- Encode matching native-rate SILK PCM through a fixed delay, avoiding redundant
+  interpolation/decimation while retaining source history across mode changes.
 - Add a stateful mapped multistream encoder with allocation-free processing and
   aggregate packet budget preservation, plus ordinary 80/100/120 ms packets.
 - Make `has_fec` report previous-packet recovery from the first frame instead of

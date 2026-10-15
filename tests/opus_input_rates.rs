@@ -72,7 +72,11 @@ fn config(
         channels,
         duration,
         if mode == Mode::Silk {
-            Bandwidth::Wideband
+            match rate {
+                8_000 => Bandwidth::Narrowband,
+                12_000 => Bandwidth::Mediumband,
+                _ => Bandwidth::Wideband,
+            }
         } else {
             Bandwidth::Fullband
         },
@@ -432,6 +436,275 @@ fn input_rate_changes_reset_only_interpolation_and_queued_changes_take_effect_af
         fresh.encode(&input, &mut expected).unwrap()
     );
     assert_eq!(packet, expected);
+}
+
+#[test]
+fn matching_native_silk_rates_and_all_bandwidth_transitions_decode() {
+    for (rate, native_band) in [
+        (8_000, Bandwidth::Narrowband),
+        (12_000, Bandwidth::Mediumband),
+        (16_000, Bandwidth::Wideband),
+    ] {
+        for channels in [1, 2] {
+            let mut settings = config(
+                rate,
+                Mode::Silk,
+                channels,
+                FrameDuration::Ms20,
+                RateControl::Constant,
+            );
+            let native_settings = EncoderConfig::new(
+                settings.bitrate(),
+                channels,
+                FrameDuration::Ms20,
+                native_band,
+                Application::Voice,
+            )
+            .unwrap()
+            .with_sample_rate(rate)
+            .unwrap()
+            .with_rate_control(RateControl::Constant);
+            let mut encoder = Encoder::new(native_settings).unwrap();
+            let mut decoders: Vec<_> = RATES
+                .into_iter()
+                .map(|r| Decoder::with_sample_rate(channels, r).unwrap())
+                .collect();
+            #[cfg(feature = "reference-tests")]
+            let mut native: Vec<_> = RATES
+                .into_iter()
+                .map(|r| {
+                    reference::Native::new(r, ChannelMapping::mono_stereo(channels as u8).unwrap())
+                })
+                .collect();
+            let mut output = vec![0.0; 960 * channels];
+            #[cfg(feature = "reference-tests")]
+            let mut native_pcm = output.clone();
+            let mut packet = vec![0; settings.max_packet_bytes()];
+            let modes = [
+                (Mode::Silk, native_band),
+                (Mode::Silk, Bandwidth::Wideband),
+                (Mode::Silk, Bandwidth::Mediumband),
+                (Mode::Silk, Bandwidth::Narrowband),
+                (Mode::Hybrid, Bandwidth::Fullband),
+                (Mode::Silk, native_band),
+                (Mode::Celt, Bandwidth::Fullband),
+                (Mode::Silk, native_band),
+            ];
+            for (frame, (mode, bandwidth)) in modes.into_iter().enumerate() {
+                settings = EncoderConfig::new(
+                    settings.bitrate(),
+                    channels,
+                    FrameDuration::Ms20,
+                    bandwidth,
+                    Application::Voice,
+                )
+                .unwrap()
+                .with_mode(mode)
+                .unwrap()
+                .with_sample_rate(rate)
+                .unwrap()
+                .with_rate_control(RateControl::Constant);
+                encoder.reconfigure(settings).unwrap();
+                let length = encoder
+                    .encode(
+                        &pcm(
+                            settings.input_samples(),
+                            channels,
+                            rate,
+                            frame * settings.input_samples(),
+                        ),
+                        &mut packet,
+                    )
+                    .unwrap();
+                for (index, (&output_rate, decoder)) in RATES.iter().zip(&mut decoders).enumerate()
+                {
+                    let samples = output_rate as usize / 50;
+                    assert_eq!(
+                        decoder.decode(&packet[..length], &mut output).unwrap(),
+                        samples
+                    );
+                    assert_eq!(decoder.final_range(), encoder.final_range());
+                    assert!(
+                        output[..samples * channels]
+                            .iter()
+                            .all(|value| value.is_finite())
+                    );
+                    #[cfg(feature = "reference-tests")]
+                    assert_eq!(
+                        native[index].decode(&packet[..length], samples, &mut native_pcm),
+                        encoder.final_range()
+                    );
+                    #[cfg(not(feature = "reference-tests"))]
+                    let _ = index;
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn native_silk_impulse_and_low_frequency_alignment_use_fixed_declared_delay() {
+    for (rate, bandwidth) in [
+        (8_000, Bandwidth::Narrowband),
+        (12_000, Bandwidth::Mediumband),
+        (16_000, Bandwidth::Wideband),
+    ] {
+        let settings = EncoderConfig::new(
+            128_000,
+            1,
+            FrameDuration::Ms20,
+            bandwidth,
+            Application::Voice,
+        )
+        .unwrap()
+        .with_sample_rate(rate)
+        .unwrap()
+        .with_rate_control(RateControl::Constant);
+        for output_rate in RATES {
+            let mut encoder = Encoder::new(settings).unwrap();
+            let mut decoder = Decoder::with_sample_rate(1, output_rate).unwrap();
+            #[cfg(feature = "reference-tests")]
+            let mut native =
+                reference::Native::new(output_rate, ChannelMapping::mono_stereo(1).unwrap());
+            let input_samples = settings.input_samples();
+            let output_samples = output_rate as usize / 50;
+            let mut input = vec![0.0; input_samples];
+            let mut output = vec![0.0; output_samples];
+            let mut collected = Vec::new();
+            #[cfg(feature = "reference-tests")]
+            let mut reference_collected = Vec::new();
+            let mut packet = vec![0; settings.max_packet_bytes()];
+            for frame in 0..6 {
+                input.fill(0.0);
+                if frame == 0 {
+                    input[0] = 0.25;
+                }
+                let length = encoder.encode(&input, &mut packet).unwrap();
+                decoder.decode(&packet[..length], &mut output).unwrap();
+                collected.extend_from_slice(&output);
+                #[cfg(feature = "reference-tests")]
+                {
+                    assert_eq!(
+                        native.decode(&packet[..length], output_samples, &mut output),
+                        encoder.final_range()
+                    );
+                    reference_collected.extend_from_slice(&output);
+                }
+            }
+            let peak = collected
+                .iter()
+                .enumerate()
+                .max_by(|a, b| a.1.abs().total_cmp(&b.1.abs()))
+                .unwrap()
+                .0;
+            let declared =
+                encoder.algorithmic_delay_samples() * output_rate as usize / rate as usize;
+            if output_rate == rate {
+                assert_eq!(peak, declared, "{rate} Hz native impulse");
+            }
+            #[cfg(feature = "reference-tests")]
+            {
+                let native_peak = reference_collected
+                    .iter()
+                    .enumerate()
+                    .max_by(|a, b| a.1.abs().total_cmp(&b.1.abs()))
+                    .unwrap()
+                    .0;
+                eprintln!(
+                    "native-input-impulse,{rate},{output_rate},{declared},{peak},{native_peak}"
+                );
+                if output_rate == rate {
+                    assert_eq!(native_peak, declared, "{rate} Hz libopus native impulse");
+                }
+            }
+
+            encoder.reset();
+            decoder.reset();
+            #[cfg(feature = "reference-tests")]
+            let mut native =
+                reference::Native::new(output_rate, ChannelMapping::mono_stereo(1).unwrap());
+            let mut phase = [0.0f64; 2];
+            #[cfg(feature = "reference-tests")]
+            let mut native_phase = [0.0f64; 2];
+            for frame in 0..24 {
+                for (index, sample) in input.iter_mut().enumerate() {
+                    let time = (frame * input_samples + index) as f64 / f64::from(rate);
+                    *sample = (0.2 * (std::f64::consts::TAU * 62.5 * time).sin()) as f32;
+                }
+                let length = encoder.encode(&input, &mut packet).unwrap();
+                decoder.decode(&packet[..length], &mut output).unwrap();
+                if frame >= 8 {
+                    accumulate_phase(&output, output_rate, frame * output_samples, &mut phase);
+                }
+                #[cfg(feature = "reference-tests")]
+                {
+                    native.decode(&packet[..length], output_samples, &mut output);
+                    if frame >= 8 {
+                        accumulate_phase(
+                            &output,
+                            output_rate,
+                            frame * output_samples,
+                            &mut native_phase,
+                        );
+                    }
+                }
+            }
+            let expected_phase =
+                -std::f64::consts::TAU * 62.5 * encoder.algorithmic_delay_samples() as f64
+                    / f64::from(rate);
+            let phase_error = (phase[1].atan2(phase[0]) - expected_phase)
+                .sin()
+                .atan2((phase[1].atan2(phase[0]) - expected_phase).cos());
+            #[cfg(feature = "reference-tests")]
+            {
+                let error = native_phase[1].atan2(native_phase[0]) - expected_phase;
+                let native_error = error.sin().atan2(error.cos());
+                let samples = (16 * output_samples) as f64;
+                let gain = phase[0].hypot(phase[1]) / (samples * 0.1);
+                let native_gain = native_phase[0].hypot(native_phase[1]) / (samples * 0.1);
+                eprintln!(
+                    "native-input-phase,{rate},{output_rate},{phase_error:.9},{native_error:.9},{gain:.9},{native_gain:.9}"
+                );
+                assert!(
+                    native_error.abs() < 0.025,
+                    "libopus {rate}/{output_rate} Hz phase offset {native_error}"
+                );
+                assert!((gain - 1.0).abs() < 0.02 && (native_gain - 1.0).abs() < 0.02);
+                if output_rate == 48_000 {
+                    let samples_per_radian = 48_000.0 / (std::f64::consts::TAU * 62.5);
+                    assert!(phase_error.abs() * samples_per_radian < 3.0);
+                    assert!(native_error.abs() * samples_per_radian < 3.0);
+                }
+            }
+            // This is a fixed model-derived phase budget, not an alignment
+            // fitted to the clip. Native output has the exact declared clock;
+            // interpolation contributes its independently known DC moment,
+            // and below-native output additionally uses the existing 1 ms FIR.
+            let moment_48k = match rate {
+                8_000 => 1.824,
+                12_000 => -2.784,
+                _ => -2.112,
+            };
+            let decoder_seconds = if output_rate == rate {
+                0.0
+            } else {
+                moment_48k / 48_000.0 + if output_rate < rate { 0.001 } else { 0.0 }
+            };
+            let expected_error = -std::f64::consts::TAU * 62.5 * decoder_seconds;
+            assert!(
+                (phase_error - expected_error).abs() < 0.001,
+                "{rate}/{output_rate} Hz phase error {phase_error}, expected {expected_error}"
+            );
+        }
+    }
+}
+
+fn accumulate_phase(output: &[f32], rate: u32, start: usize, phase: &mut [f64; 2]) {
+    for (index, &value) in output.iter().enumerate() {
+        let angle = std::f64::consts::TAU * 62.5 * (start + index) as f64 / f64::from(rate);
+        phase[0] += f64::from(value) * angle.sin();
+        phase[1] += f64::from(value) * angle.cos();
+    }
 }
 
 #[test]
