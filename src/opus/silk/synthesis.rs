@@ -152,14 +152,56 @@ impl Synthesis {
         origin: usize,
         samples: usize,
     ) -> Result<usize, Error> {
+        let subframe = match frame.bandwidth {
+            Bandwidth::Narrow => 40,
+            Bandwidth::Medium => 60,
+            Bandwidth::Wide => 80,
+        };
+        // Only voiced intervals spanning a subframe boundary reuse whitening.
+        // Other calls keep their original path without touching cache scratch.
+        if !parameters.voiced || samples <= subframe - origin % subframe {
+            return if frame.bandwidth == Bandwidth::Wide {
+                self.reconstruct_order::<16, false>(
+                    frame,
+                    parameters,
+                    excitation_q23,
+                    output,
+                    origin,
+                    samples,
+                )
+            } else {
+                self.reconstruct_order::<10, false>(
+                    frame,
+                    parameters,
+                    excitation_q23,
+                    output,
+                    origin,
+                    samples,
+                )
+            };
+        }
         if frame.bandwidth == Bandwidth::Wide {
-            self.reconstruct_order::<16>(frame, parameters, excitation_q23, output, origin, samples)
+            self.reconstruct_order::<16, true>(
+                frame,
+                parameters,
+                excitation_q23,
+                output,
+                origin,
+                samples,
+            )
         } else {
-            self.reconstruct_order::<10>(frame, parameters, excitation_q23, output, origin, samples)
+            self.reconstruct_order::<10, true>(
+                frame,
+                parameters,
+                excitation_q23,
+                output,
+                origin,
+                samples,
+            )
         }
     }
 
-    fn reconstruct_order<const ORDER: usize>(
+    fn reconstruct_order<const ORDER: usize, const REUSE_WHITENING: bool>(
         &mut self,
         frame: Frame,
         parameters: &Parameters,
@@ -207,6 +249,10 @@ impl Synthesis {
         let mut lpc = [0.0; LPC_HISTORY + MAX_SAMPLES];
         lpc[..LPC_HISTORY].copy_from_slice(&self.lpc);
         let mut residual = [0.0; OUTPUT_HISTORY + MAX_SAMPLES];
+        let mut whitened = [0.0; OUTPUT_HISTORY + MAX_SAMPLES];
+        let mut whitened_begin = OUTPUT_HISTORY;
+        let mut whitened_end = OUTPUT_HISTORY;
+        let mut whitened_coefficients = usize::MAX;
 
         let mut first = 0;
         while first < samples {
@@ -215,8 +261,8 @@ impl Synthesis {
             let width = (n - absolute % n).min(samples - first);
             let j = OUTPUT_HISTORY + first;
             let gain = parameters.gains_q16[subframe] as f32 / 65_536.0;
-            let coefficients =
-                &coefficient_sets[usize::from(subframe >= 2 || parameters.interpolation == 4)];
+            let coefficient_index = usize::from(subframe >= 2 || parameters.interpolation == 4);
+            let coefficients = &coefficient_sets[coefficient_index];
             let ltp = parameters.ltp_q14[subframe].map(|value| f32::from(value) / 16_384.0);
 
             if parameters.voiced {
@@ -233,12 +279,30 @@ impl Synthesis {
                 } else {
                     f32::from(parameters.ltp_scale_q14) / 16_384.0
                 };
+                if REUSE_WHITENING {
+                    // This clamped prefix is immutable within one LPC set.
+                    // A new set also moves the clamped/unclamped boundary.
+                    if whitened_coefficients != coefficient_index || whitened_end != out_end {
+                        whitened_begin = out_end;
+                        whitened_end = out_end;
+                        whitened_coefficients = coefficient_index;
+                    }
+                    let begin = j - lag - 2;
+                    for i in begin..whitened_begin {
+                        whitened[i] =
+                            clamped[i] - prediction_scaled::<ORDER>(&clamped, i, coefficients);
+                    }
+                    whitened_begin = whitened_begin.min(begin);
+                }
                 // Only history predating the active LPC coefficient set uses
                 // the clamped output and the loss-robust LTP scale.
                 for i in j - lag - 2..out_end {
-                    let whitened =
-                        clamped[i] - prediction_scaled::<ORDER>(&clamped, i, coefficients);
-                    residual[i] = whitened.clamp(-1.0, 1.0) * scale / gain;
+                    let numerator = if REUSE_WHITENING {
+                        whitened[i]
+                    } else {
+                        clamped[i] - prediction_scaled::<ORDER>(&clamped, i, coefficients)
+                    };
+                    residual[i] = numerator.clamp(-1.0, 1.0) * scale / gain;
                 }
                 // Within the current coefficient set, rewhitening uses the
                 // unclamped LPC output, including its prior-frame prefix.
@@ -248,9 +312,12 @@ impl Synthesis {
                 let first_needed = out_end.max(j - lag - 2);
                 for (i, destination) in residual.iter_mut().enumerate().take(j).skip(first_needed) {
                     let position = LPC_HISTORY + i - OUTPUT_HISTORY;
-                    *destination = (lpc[position]
-                        - prediction_scaled::<ORDER>(&lpc, position, coefficients))
-                        / gain;
+                    let numerator = if REUSE_WHITENING {
+                        whitened[i]
+                    } else {
+                        lpc[position] - prediction_scaled::<ORDER>(&lpc, position, coefficients)
+                    };
+                    *destination = numerator / gain;
                 }
             }
 
@@ -266,8 +333,14 @@ impl Synthesis {
                 }
                 residual[position] = value;
                 let lpc_position = LPC_HISTORY + sample;
-                let reconstructed =
-                    gain * value + prediction_scaled::<ORDER>(&lpc, lpc_position, coefficients);
+                let predicted = prediction_scaled::<ORDER>(&lpc, lpc_position, coefficients);
+                let reconstructed = gain * value + predicted;
+                if REUSE_WHITENING && parameters.voiced {
+                    // Rewhitening this sample under the same LPC set repeats
+                    // precisely this subtraction; each later gain is still
+                    // applied independently at its original subframe boundary.
+                    whitened[position] = reconstructed - predicted;
+                }
                 lpc[lpc_position] = reconstructed;
                 clamped[position] = reconstructed.clamp(-1.0, 1.0);
                 output[sample] = clamped[position];
@@ -328,6 +401,104 @@ mod tests {
             pitch_lags: [16; 4],
             ltp_q14: [[0; 5]; 4],
             ltp_scale_q14: 15_565,
+        }
+    }
+
+    #[test]
+    fn overlapping_rewhitening_preserves_every_pcm_and_history_bit() {
+        let mut random = 0x6716_19abu32;
+        for bandwidth in [Bandwidth::Narrow, Bandwidth::Medium, Bandwidth::Wide] {
+            for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+                let frame = Frame {
+                    bandwidth,
+                    duration,
+                };
+                let subframe = frame.samples()
+                    / if duration == FrameDuration::Ms10 {
+                        2
+                    } else {
+                        4
+                    };
+                let mut actual = Synthesis::new();
+                let mut expected = Synthesis::new();
+                for iteration in 0..60 {
+                    let mut parameters = parameters();
+                    parameters.voiced = iteration % 9 != 0;
+                    parameters.interpolation = (iteration % 5) as u8;
+                    for (set, coefficients) in parameters.lpc_q12.iter_mut().enumerate() {
+                        coefficients[0] = 2_000 - set as i16 * 700;
+                        for coefficient in &mut coefficients[1..] {
+                            random = random.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+                            *coefficient = ((random >> 24) as i16 - 128) / 2;
+                        }
+                    }
+                    for index in 0..4 {
+                        parameters.gains_q16[index] =
+                            [81_920, 98_304, 131_072, 196_608][(iteration + index) % 4];
+                        parameters.pitch_lags[index] = if (iteration + index).is_multiple_of(2) {
+                            subframe * 2 / 5 + index
+                        } else {
+                            subframe * 18 / 5 - index
+                        };
+                        parameters.ltp_q14[index] = [200, -400, 5_000, 300, -100];
+                    }
+                    let mut excitation = [0; MAX_SAMPLES];
+                    for value in &mut excitation[..frame.samples()] {
+                        random = random.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+                        *value = (random as i32) >> 7;
+                    }
+                    let origin = match iteration % 6 {
+                        0 | 1 => 0,
+                        2 => subframe - 1,
+                        3 => subframe,
+                        4 => frame.samples() / 2 - 1,
+                        _ => frame.samples() - subframe + 1,
+                    };
+                    let samples = frame.samples() - origin;
+                    let mut actual_output = [123.0; MAX_SAMPLES + 1];
+                    let mut expected_output = actual_output;
+                    actual
+                        .frame_slice(
+                            frame,
+                            &parameters,
+                            &excitation,
+                            origin,
+                            samples,
+                            &mut actual_output,
+                        )
+                        .unwrap();
+                    if bandwidth == Bandwidth::Wide {
+                        expected.reconstruct_order::<16, false>(
+                            frame,
+                            &parameters,
+                            &excitation,
+                            &mut expected_output,
+                            origin,
+                            samples,
+                        )
+                    } else {
+                        expected.reconstruct_order::<10, false>(
+                            frame,
+                            &parameters,
+                            &excitation,
+                            &mut expected_output,
+                            origin,
+                            samples,
+                        )
+                    }
+                    .unwrap();
+                    assert_eq!(
+                        actual_output.map(f32::to_bits),
+                        expected_output.map(f32::to_bits),
+                        "{bandwidth:?} {duration:?} iteration={iteration} origin={origin}"
+                    );
+                    assert_eq!(
+                        actual.output.map(f32::to_bits),
+                        expected.output.map(f32::to_bits)
+                    );
+                    assert_eq!(actual.lpc.map(f32::to_bits), expected.lpc.map(f32::to_bits));
+                }
+            }
         }
     }
 
