@@ -1,0 +1,19 @@
+{
+  "classification": "functional bounded fix",
+  "status": "accepted after local integrated checks",
+  "source_candidate": "8f723ba1f35c053e1cc840f38a4b20446a127dde",
+  "local_integrated_source_commit": "76224786eef73423a51b16f17c126ec07c534d24",
+  "root_reported_local_validation": {
+    "release_tests": 380,
+    "suites": 18,
+    "failures": 0,
+    "ignored": 0,
+    "format": "pass",
+    "strict_release_clippy_all_targets": "pass"
+  },
+  "exact_head_package_and_direct_main_push": "separate pending root work at this handoff",
+  "no_performance_win_claim": true,
+  "quality_parity": "open",
+  "measurement_reruns": 0,
+  "discarded_measurement_processes": 0
+}

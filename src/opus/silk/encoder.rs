@@ -5,8 +5,8 @@ use super::analysis::{Spectrum, broaden, spectrum as analyze_spectrum};
 use super::frame::{encode_gain_symbol, encode_zero_stereo};
 use super::lpc::encode_nlsf_indices;
 use super::pitch::{Pitch, analyze as analyze_pitch};
-use super::quantize::{History, Parameters as Quantization, quantize};
-use super::redundancy::{RedundancyCache, encode_header};
+use super::quantize::{History, Parameters as Quantization, quantize, quantize_sparse};
+use super::redundancy::{RedundancyCache, RedundancyPlan, encode_header};
 use super::{
     Bandwidth, Frame, FrameDuration, FrameType, NlsfIndices, PacketDuration, QuantizationOffset,
     SignalType, encode_pulses, estimate_pulse_bits,
@@ -15,6 +15,26 @@ use crate::entropy::{Encoder as RangeEncoder, Error, Model};
 
 const MAX_SAMPLES: usize = 320;
 const MAX_CODED_FRAMES: usize = 6;
+// A scratch admission cap for this new refusal path. Owned Opus payloads are
+// capped at 1275 bytes; this is not a universal standalone SILK format limit.
+const MAX_PREFLIGHT_BYTES: usize = 8192;
+const SPARSE_MODELS: usize = 8;
+// Nine sparse choices and three explicit zero-pulse choices per model. Requested
+// gains still pass through the ordinary absolute/conditional wire gain rules.
+const SPARSE_POINTS: [(i32, Option<f64>); 12] = [
+    (57, Some(0.5)),
+    (57, Some(1.25)),
+    (57, Some(4.0)),
+    (60, Some(0.5)),
+    (60, Some(1.25)),
+    (60, Some(4.0)),
+    (63, Some(0.5)),
+    (63, Some(1.25)),
+    (63, Some(4.0)),
+    (0, None),
+    (60, None),
+    (63, None),
+];
 const SEED: Model<'static> = Model::from_static(&[0, 64, 128, 192, 256]);
 const INACTIVE: Model<'static> = Model::from_static(&[0, 26, 256]);
 const ACTIVE: Model<'static> = Model::from_static(&[0, 24, 98, 246, 256]);
@@ -208,6 +228,7 @@ impl SilkEncoder {
             (target_bits as f32 * 0.45 - stereo_cost as f32 - 12.0).max(0.0) / coded_frames as f32;
         let mut distortion = 0.0;
         let mut previous_coded = [false; 2];
+        let mut used_sparse = false;
         for interval in 0..intervals {
             for channel in 0..channel_count {
                 if channel == 1 && !side_coded[interval] {
@@ -334,6 +355,34 @@ impl SilkEncoder {
                         }
                     }
                 }
+                if best.is_none() {
+                    // Ordinary model/gain decisions above remain the complete
+                    // fast path. Only its final refusal enables sparse cells;
+                    // reconstruct the original model/history here, rather than
+                    // copying another predictor history on successful frames.
+                    best = choose_sparse_fallback(
+                        &mono[..samples],
+                        StageParameters {
+                            frame,
+                            kind,
+                            spectrum,
+                            pitch,
+                            previous: history[channel],
+                            conditional,
+                            independent_scale: interval == 0,
+                        },
+                        per_frame,
+                    );
+                    if let Some((stage, _, _)) = &best {
+                        // The optional shadow gets the chosen envelope with its
+                        // own pretrial redundancy history, never the primary's
+                        // newly reconstructed sparse history.
+                        parameters.kind = stage.kind;
+                        parameters.spectrum = stage.spectrum;
+                        parameters.pitch = stage.pitch;
+                        used_sparse = true;
+                    }
+                }
                 let Some((stage, committed, error)) = best else {
                     return Err(Error::Output);
                 };
@@ -367,6 +416,22 @@ impl SilkEncoder {
                 stages[interval * 2 + channel] = stage;
                 previous_coded[channel] = true;
             }
+        }
+        if used_sparse
+            && !sparse_layer_fits(
+                LayerPlan {
+                    frame,
+                    duration,
+                    channels,
+                    activity: &activity,
+                    side_coded: &side_coded,
+                    stages: &stages,
+                    redundancy: redundancy.as_ref(),
+                },
+                target_bits,
+            )
+        {
+            return Err(Error::Output);
         }
         let before = encoder.tell_eighths();
         encode_header(encoder, duration, channels, &activity, redundancy.as_ref())?;
@@ -474,6 +539,221 @@ fn choose_stage(
     best
 }
 
+fn sparse_model(
+    samples: &[f32],
+    original: StageParameters,
+    index: usize,
+) -> Option<StageParameters> {
+    let unvoiced = StageParameters {
+        kind: FrameType {
+            signal: if original.kind.signal == SignalType::Inactive {
+                SignalType::Inactive
+            } else {
+                SignalType::Unvoiced
+            },
+            ..original.kind
+        },
+        pitch: Pitch::NONE,
+        ..original
+    };
+    match index {
+        0 => Some(original),
+        1..=4 => Some(StageParameters {
+            spectrum: broaden(
+                original.spectrum,
+                original.frame.bandwidth,
+                [0.95, 0.9, 0.8, 0.6][index - 1],
+            ),
+            ..unvoiced
+        }),
+        5 => Some(StageParameters {
+            spectrum: analyze_spectrum(
+                &[0.0; MAX_SAMPLES][..samples.len()],
+                original.frame.bandwidth,
+            ),
+            ..unvoiced
+        }),
+        6..=7 if original.kind.signal == SignalType::Voiced && original.pitch.lag != 0 => {
+            Some(StageParameters {
+                spectrum: broaden(
+                    original.spectrum,
+                    original.frame.bandwidth,
+                    [0.8, 0.6][index - 6],
+                ),
+                ..original
+            })
+        }
+        _ => None,
+    }
+}
+
+fn finite_history(history: &History) -> bool {
+    history.shaping_error.is_finite()
+        && history
+            .lpc
+            .iter()
+            .chain(&history.output)
+            .all(|value| value.is_finite())
+}
+
+/// At most eight models times twelve causal quantizations: 96 candidates.
+/// Every trial starts from the original pretrial history and native PCM. Model
+/// construction is lazy; scratch is independent of the fixed candidate count.
+/// Ordinary successful frames never enter this separately compiled cold path.
+#[cold]
+#[inline(never)]
+fn choose_sparse_fallback(
+    samples: &[f32],
+    original: StageParameters,
+    budget: f32,
+) -> Option<(CodedFrame, History, f64)> {
+    if !budget.is_finite() || budget <= 0.0 {
+        return None;
+    }
+    let mut best = None;
+    let mut best_ranking_error = f64::INFINITY;
+    for model in 0..SPARSE_MODELS {
+        let Some(parameters) = sparse_model(samples, original, model) else {
+            continue;
+        };
+        for (requested_gain, penalty) in SPARSE_POINTS {
+            let candidate = quantize_sparse(
+                samples,
+                Quantization {
+                    frame: parameters.frame,
+                    kind: parameters.kind,
+                    coefficients: &parameters.spectrum.lpc_q12[..parameters.spectrum.order],
+                    previous: parameters.previous,
+                    requested_gain,
+                    conditional: parameters.conditional,
+                    seed: 0,
+                    pitch: parameters.pitch,
+                    low_rate: budget <= samples.len() as f32 * 1.5,
+                },
+                penalty,
+            );
+            let Some(ranking_error) = candidate.ranking_error else {
+                continue;
+            };
+            if !ranking_error.is_finite()
+                || !candidate.distortion.is_finite()
+                || !finite_history(&candidate.history)
+            {
+                continue;
+            }
+            let stage = CodedFrame {
+                kind: parameters.kind,
+                spectrum: parameters.spectrum,
+                gains: candidate.gain_symbols,
+                gain_index: candidate.gain_index,
+                pulses: candidate.pulses,
+                conditional: parameters.conditional,
+                previous_voiced: parameters.previous.voiced,
+                independent_scale: parameters.independent_scale,
+                pitch: parameters.pitch,
+                coded: true,
+            };
+            if ranking_error < best_ranking_error
+                && estimated_cost(parameters.frame, &stage).unwrap_or(f32::INFINITY) <= budget
+                && sparse_frame_fits(parameters.frame, &stage, budget)
+            {
+                best_ranking_error = ranking_error;
+                // Keep the existing public unclamped distortion statistic;
+                // only fallback ranking uses the clamped reconstruction proxy.
+                best = Some((stage, candidate.history, candidate.distortion));
+            }
+        }
+    }
+    best
+}
+
+#[cold]
+#[inline(never)]
+fn sparse_frame_fits(frame: Frame, stage: &CodedFrame, budget: f32) -> bool {
+    let capacity = (f64::from(budget) / 8.0).ceil() as usize;
+    if capacity == 0 || capacity > MAX_PREFLIGHT_BYTES {
+        return false;
+    }
+    let mut scratch = [0; MAX_PREFLIGHT_BYTES];
+    let mut encoder = RangeEncoder::new(&mut scratch[..capacity]);
+    if encode_frame(&mut encoder, frame, stage).is_err()
+        || encoder.tell_eighths() as f64 > f64::from(budget) * 8.0
+    {
+        return false;
+    }
+    encoder.finish().is_ok()
+}
+
+struct LayerPlan<'a> {
+    frame: Frame,
+    duration: PacketDuration,
+    channels: u8,
+    activity: &'a [[bool; 3]; 2],
+    side_coded: &'a [bool; 3],
+    stages: &'a [CodedFrame; MAX_CODED_FRAMES],
+    redundancy: Option<&'a RedundancyPlan>,
+}
+
+/// Validate the complete chosen fresh layer, including prior LBRR and arithmetic
+/// termination, before any real emission or persistent predictor commit.
+///
+/// The ordinary Opus caller starts a fresh entropy frame. A direct layer caller
+/// may append to a nonempty coder: that interval/capacity cannot be cloned here,
+/// so this scratch check does not promise append-state transactionality. A real
+/// late Output still propagates once, retaining the existing reset requirement.
+#[cold]
+#[inline(never)]
+fn sparse_layer_fits(plan: LayerPlan<'_>, target_bits: u32) -> bool {
+    let capacity = u64::from(target_bits).div_ceil(8);
+    if capacity == 0 || capacity > MAX_PREFLIGHT_BYTES as u64 {
+        return false;
+    }
+    let mut scratch = [0; MAX_PREFLIGHT_BYTES];
+    let mut encoder = RangeEncoder::new(&mut scratch[..capacity as usize]);
+    let before = encoder.tell_eighths();
+    if encode_header(
+        &mut encoder,
+        plan.duration,
+        plan.channels,
+        plan.activity,
+        plan.redundancy,
+    )
+    .is_err()
+    {
+        return false;
+    }
+    if let Some(redundancy) = plan.redundancy
+        && redundancy.encode_frames(&mut encoder).is_err()
+    {
+        return false;
+    }
+    for interval in 0..plan.duration.frames() {
+        if plan.channels == 2
+            && encode_zero_stereo(
+                &mut encoder,
+                if plan.activity[1][interval] {
+                    None
+                } else {
+                    Some(!plan.side_coded[interval])
+                },
+            )
+            .is_err()
+        {
+            return false;
+        }
+        for channel in 0..usize::from(plan.channels) {
+            let stage = &plan.stages[interval * 2 + channel];
+            if stage.coded && encode_frame(&mut encoder, plan.frame, stage).is_err() {
+                return false;
+            }
+        }
+    }
+    if encoder.tell_eighths() - before > u64::from(target_bits) * 8 {
+        return false;
+    }
+    encoder.finish().is_ok()
+}
+
 fn extract(
     pcm: &[f32],
     channels: u8,
@@ -566,6 +846,199 @@ pub(super) fn estimated_cost(frame: Frame, stage: &CodedFrame) -> Result<f32, Er
 mod tests {
     use super::*;
     use crate::opus::silk::SilkDecoder;
+
+    fn sparse_parameters(frame: Frame, signal: SignalType) -> StageParameters {
+        StageParameters {
+            frame,
+            kind: FrameType {
+                signal,
+                offset: QuantizationOffset::Low,
+            },
+            spectrum: analyze_spectrum(&[0.0; MAX_SAMPLES][..frame.samples()], frame.bandwidth),
+            pitch: if signal == SignalType::Voiced {
+                Pitch {
+                    lag: frame.samples() / 4,
+                    ..Pitch::NONE
+                }
+            } else {
+                Pitch::NONE
+            },
+            previous: History::new(),
+            conditional: false,
+            independent_scale: true,
+        }
+    }
+
+    #[test]
+    fn sparse_bank_is_bounded_and_never_relabels_active_audio_as_inactive() {
+        assert_eq!(SPARSE_MODELS * SPARSE_POINTS.len(), 96);
+        assert_eq!(
+            SPARSE_POINTS
+                .iter()
+                .filter(|(_, penalty)| penalty.is_none())
+                .count(),
+            3
+        );
+        for frame in [
+            Frame {
+                bandwidth: Bandwidth::Narrow,
+                duration: FrameDuration::Ms10,
+            },
+            Frame {
+                bandwidth: Bandwidth::Wide,
+                duration: FrameDuration::Ms20,
+            },
+        ] {
+            for signal in [
+                SignalType::Inactive,
+                SignalType::Unvoiced,
+                SignalType::Voiced,
+            ] {
+                let mut original = sparse_parameters(frame, signal);
+                original.previous.gain = Some(40);
+                original.previous.output[305] = 0.125;
+                original.previous.lpc[0] = -0.25;
+                original.previous.shaping_error = -0.0;
+                let mut count = 0;
+                for index in 0..SPARSE_MODELS {
+                    let Some(model) =
+                        sparse_model(&[0.0; MAX_SAMPLES][..frame.samples()], original, index)
+                    else {
+                        continue;
+                    };
+                    count += 1;
+                    assert_eq!(
+                        model.kind.signal == SignalType::Inactive,
+                        signal == SignalType::Inactive
+                    );
+                    assert_eq!(model.previous.gain, original.previous.gain);
+                    assert_eq!(model.previous.output, original.previous.output);
+                    assert_eq!(model.previous.lpc, original.previous.lpc);
+                    assert_eq!(
+                        model.previous.shaping_error.to_bits(),
+                        original.previous.shaping_error.to_bits()
+                    );
+                    if (1..=5).contains(&index) {
+                        assert_eq!(model.pitch.lag, 0);
+                    }
+                    if index >= 6 {
+                        assert_eq!(model.pitch.lag, original.pitch.lag);
+                    }
+                }
+                assert_eq!(count, if signal == SignalType::Voiced { 8 } else { 6 });
+            }
+        }
+    }
+
+    #[test]
+    fn sparse_history_guard_checks_unclamped_predictor_and_shaping_state() {
+        let mut history = History::new();
+        assert!(finite_history(&history));
+        history.lpc[15] = f64::INFINITY;
+        assert!(!finite_history(&history));
+        history.lpc[15] = 0.0;
+        history.output[305] = f64::NAN;
+        assert!(!finite_history(&history));
+        history.output[305] = 0.0;
+        history.shaping_error = f64::NEG_INFINITY;
+        assert!(!finite_history(&history));
+    }
+
+    #[test]
+    fn sparse_cells_fit_active_clipped_nb_and_terminate_with_exact_ranges() {
+        let frame = Frame {
+            bandwidth: Bandwidth::Narrow,
+            duration: FrameDuration::Ms10,
+        };
+        let input: [f32; 80] =
+            std::array::from_fn(|index| if index / 4 % 2 == 0 { 1.0 } else { -1.0 });
+        let mut parameters = sparse_parameters(frame, SignalType::Unvoiced);
+        // Every nearest pulse at the largest gain is nonzero for this literal
+        // full-scale waveform. Its dense shell/sign cost exceeds the budget.
+        assert!(choose_stage(&input, parameters, 100.0).is_none());
+        let mut decoder = SilkDecoder::new();
+        for _ in 0..2 {
+            let (stage, history, distortion) =
+                choose_sparse_fallback(&input, parameters, 100.0).unwrap();
+            assert_eq!(stage.kind.signal, SignalType::Unvoiced);
+            assert!(distortion.is_finite());
+            assert!(finite_history(&history));
+            assert!(sparse_frame_fits(frame, &stage, 100.0));
+            let mut stages = [CodedFrame::EMPTY; MAX_CODED_FRAMES];
+            stages[0] = stage;
+            let activity = [[true, false, false], [false; 3]];
+            let side_coded = [false; 3];
+            let plan = || LayerPlan {
+                frame,
+                duration: PacketDuration::Ms10,
+                channels: 1,
+                activity: &activity,
+                side_coded: &side_coded,
+                stages: &stages,
+                redundancy: None,
+            };
+            assert!(sparse_layer_fits(plan(), 104));
+            assert!(!sparse_layer_fits(plan(), 1));
+            assert!(!sparse_layer_fits(plan(), u32::MAX));
+            let mut packet = [0; 13];
+            let mut entropy = RangeEncoder::new(&mut packet);
+            let before = entropy.tell_eighths();
+            encode_header(&mut entropy, PacketDuration::Ms10, 1, &activity, None).unwrap();
+            encode_frame(&mut entropy, frame, &stage).unwrap();
+            let required_bits = (entropy.tell_eighths() - before).div_ceil(8) as u32;
+            assert!(!sparse_layer_fits(plan(), required_bits - 1));
+            let final_range = entropy.range();
+            let length = entropy.finish().unwrap();
+            assert!(length <= 13);
+            let mut metadata = crate::entropy::Decoder::new(&packet[..length]);
+            let header =
+                super::super::Header::decode(&mut metadata, PacketDuration::Ms10, 1).unwrap();
+            assert_eq!(header.voice_activity(0, 0), Some(true));
+            assert_eq!(
+                FrameType::decode(&mut metadata, true).signal,
+                SignalType::Unvoiced
+            );
+            let mut entropy = crate::entropy::Decoder::new(&packet[..length]);
+            let mut output = [0.0; 80];
+            assert_eq!(
+                decoder
+                    .decode(&mut entropy, frame, PacketDuration::Ms10, 1, &mut output)
+                    .unwrap(),
+                80
+            );
+            assert_eq!(entropy.range(), final_range);
+            assert!(output.iter().all(|sample| sample.is_finite()));
+            parameters.previous = history;
+        }
+    }
+
+    #[test]
+    fn impossible_sparse_budget_leaves_existing_entropy_prefix_and_history_untouched() {
+        let frame = Frame {
+            bandwidth: Bandwidth::Narrow,
+            duration: FrameDuration::Ms10,
+        };
+        let mut owned = SilkEncoder::new();
+        let mut packet = [0xa5; 128];
+        let mut expected = packet;
+        let mut encoder = RangeEncoder::new(&mut packet);
+        encoder.uniform(3, 7).unwrap();
+        let before = (encoder.range(), encoder.tell_eighths());
+        assert_eq!(
+            owned.encode_layer(&mut encoder, frame, PacketDuration::Ms10, 1, &[1.0; 80], 20),
+            Err(Error::Output)
+        );
+        assert_eq!((encoder.range(), encoder.tell_eighths()), before);
+        assert_eq!(owned.bandwidth, None);
+        assert_eq!(owned.history[0].gain, None);
+        assert_eq!(owned.history[0].lpc, [0.0; 16]);
+        assert_eq!(owned.history[0].output, [0.0; 306]);
+        let length = encoder.finish().unwrap();
+        let mut encoder = RangeEncoder::new(&mut expected);
+        encoder.uniform(3, 7).unwrap();
+        assert_eq!(encoder.finish().unwrap(), length);
+        assert_eq!(packet, expected);
+    }
 
     #[test]
     fn low_rate_formant_signal_has_bounded_reconstruction_error() {
