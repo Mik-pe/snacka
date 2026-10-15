@@ -38,21 +38,6 @@ jobs:
       - run: cargo build --locked --release --features internet-call --example call --example call_relay
       - run: python tools/smoke_call.py
 
-  mobile:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: 1.99.0
-          targets: aarch64-apple-ios,aarch64-apple-ios-sim,aarch64-linux-android
-      - run: cargo check --locked --lib --target aarch64-apple-ios
-      - run: cargo check --locked --lib --target aarch64-apple-ios-sim
-      - run: cargo check --locked --lib --target aarch64-linux-android
-      - run: cargo check --locked --lib --features opus --target aarch64-apple-ios
-      - run: cargo check --locked --lib --features opus --target aarch64-apple-ios-sim
-      - run: cargo check --locked --lib --features opus --target aarch64-linux-android
-
   fuzz:
     runs-on: ubuntu-latest
     steps:

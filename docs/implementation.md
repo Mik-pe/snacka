@@ -59,8 +59,9 @@ keep the goal open.
   aggregated packets through 120 ms.
 - Evidence: serialize measurements on frozen sources, alternate codec order
   and retain raw results, source hashes, toolchain, build flags, libopus version
-  and host details. Repeat final measurements to confirm parity. Track ARM64
-  and x86-64 separately; one passing host closes only that host's result.
+  and host details. Repeat final measurements to confirm parity. The current
+  optimization and acceptance priority is macOS ARM64. Mobile cross-checks and
+  new x86-64 measurements are deferred; existing results remain host-specific.
 - Quality: retain interoperability, official-vector and mathematical checks,
   finite output and zero processing allocations. Preserve exact packet/PCM
   traces for changes intended to preserve output. Evaluate deliberate encoder
