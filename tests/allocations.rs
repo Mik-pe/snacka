@@ -85,7 +85,7 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
         Bandwidth, CeltConfig, CeltDecoder, CeltEncoder, CeltFrameDuration, Decoder, Recovery,
         multistream::{ChannelMapping, MultistreamDecoder, MultistreamPacket},
         ogg::{OggDecoder, OpusHead, OpusIdentification},
-        projection::ProjectionMapping,
+        projection::{ProjectionDecoder, ProjectionMapping},
     };
 
     let durations = [
@@ -137,6 +137,10 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
         ],
     )
     .unwrap();
+    let mut projected_gain: Vec<_> = output_rates
+        .into_iter()
+        .map(|rate| ProjectionDecoder::with_sample_rate(projection.clone(), rate).unwrap())
+        .collect();
     let identification = OpusIdentification::projected(
         OpusHead {
             channels: 4,
@@ -210,6 +214,7 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
     let mut actual_mapped_recovery = false;
     let mut actual_partial_recovery = false;
     let mut actual_projected_recovery = false;
+    let mut actual_projected_gain_recovery = false;
     for (index, encoder) in encoders.iter_mut().enumerate() {
         let channels = index % 2 + 1;
         for frame in 0..64 {
@@ -273,9 +278,12 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
         let packed = MultistreamPacket::parse(&transport[..length], 2).unwrap();
         assert_eq!(packed.streams(), 2);
         for (decoder, rate) in mapped.iter_mut().zip(output_rates) {
+            let gain = if *reset { i16::MIN } else { 3072 };
+            decoder.set_gain_q8(gain);
             if *reset {
                 decoder.reset();
             }
+            assert_eq!(decoder.gain_q8(), gain);
             let samples = decoder.decode(packet, &mut mapped_output).unwrap();
             decoder
                 .conceal(rate as usize / 400, &mut mapped_output)
@@ -317,6 +325,19 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
             );
             black_box(&mapped_output);
         }
+        for (decoder, rate) in projected_gain.iter_mut().zip(output_rates) {
+            let gain = if *reset { i16::MAX } else { 3072 };
+            decoder.set_gain_q8(gain);
+            if *reset {
+                decoder.reset();
+            }
+            assert_eq!(decoder.gain_q8(), gain);
+            let samples = decoder.decode(packet, &mut mapped_output).unwrap();
+            decoder.conceal(rate as usize / 400, &mut mapped_output).unwrap();
+            actual_projected_gain_recovery |= decoder.recover(packet, samples, &mut mapped_output).unwrap() == Recovery::Fec;
+            decoder.decode(packet, &mut mapped_output).unwrap();
+            black_box(&mapped_output);
+        }
     }
     let allocations = ALLOCATIONS.with(|counter| counter.replace(None).unwrap());
     assert_eq!(allocations, 0);
@@ -335,6 +356,10 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
     assert!(
         actual_projected_recovery,
         "Ogg projection allocation gate must execute real in-band FEC"
+    );
+    assert!(
+        actual_projected_gain_recovery,
+        "projection gain allocation gate must execute real in-band FEC"
     );
 }
 

@@ -565,6 +565,27 @@ impl MultistreamDecoder {
             .fold(0, |range, decoder| range ^ decoder.final_range())
     }
 
+    /// Set every stream's output gain in signed Q8 decibels (256 units per dB).
+    ///
+    /// The default is zero, and the full `i16` range is supported. Each owned
+    /// [`Decoder`] applies gain once after resampling to decoded, recovered and
+    /// concealed samples, before channel mapping. This includes streams whose
+    /// output is not mapped. Floating output is not clipped; gain does not
+    /// change codec history or entropy intervals. [`Self::reset`] retains it.
+    /// Ogg header gain remains a separate caller-owned playback choice.
+    pub fn set_gain_q8(&mut self, gain: i16) {
+        for decoder in &mut self.decoders {
+            decoder.set_gain_q8(gain);
+        }
+    }
+
+    /// Uniform output gain in signed Q8 decibels (256 units per dB).
+    pub fn gain_q8(&self) -> i16 {
+        // Validated layouts contain at least one stream; constituent decoders
+        // are private, so only the uniform setter can change their gain.
+        self.decoders[0].gain_q8()
+    }
+
     /// Decode one complete multistream transport packet and return samples/channel.
     /// All coded streams are processed, even when their output is not mapped.
     pub fn decode(&mut self, bytes: &[u8], output: &mut [f32]) -> Result<usize, Error> {
@@ -626,7 +647,7 @@ impl MultistreamDecoder {
         Ok(samples)
     }
 
-    /// Clear all stream history and scratch PCM without changing the layout.
+    /// Clear stream history and scratch PCM, retaining the layout and gain.
     pub fn reset(&mut self) {
         for decoder in &mut self.decoders {
             decoder.reset();
