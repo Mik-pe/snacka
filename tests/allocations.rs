@@ -52,6 +52,34 @@ static ALLOCATOR: Tracked = Tracked;
 
 #[cfg(feature = "opus")]
 #[test]
+fn opus_pcm_format_conversion_never_allocates() {
+    use snacka::opus::pcm;
+    let source16 = [i16::MIN, -1, 0, 1, i16::MAX];
+    let source24 = [i32::MIN, -8388608, 0, 8388607, i32::MAX];
+    let mut floating = [0.0; 8];
+    let mut result16 = [0; 8];
+    let mut result24 = [0; 8];
+    ALLOCATIONS.with(|counter| counter.set(Some(0)));
+    for _ in 0..10 {
+        pcm::i16_to_f32(black_box(&source16), black_box(&mut floating)).unwrap();
+        pcm::i24_to_f32(black_box(&source24), black_box(&mut floating)).unwrap();
+        pcm::f32_to_i16(black_box(&floating), black_box(&mut result16)).unwrap();
+        pcm::f32_to_i24(black_box(&floating), black_box(&mut result24)).unwrap();
+        assert_eq!(
+            pcm::f32_to_i16(&[f32::NAN], &mut result16),
+            Err(pcm::Error::Input)
+        );
+        assert_eq!(
+            pcm::f32_to_i24(&floating, &mut result24[..1]),
+            Err(pcm::Error::Output)
+        );
+    }
+    let allocations = ALLOCATIONS.with(|counter| counter.replace(None).unwrap());
+    assert_eq!(allocations, 0);
+}
+
+#[cfg(feature = "opus")]
+#[test]
 fn opus_processing_reset_and_rate_changes_do_not_allocate() {
     use snacka::opus::{
         Bandwidth, CeltConfig, CeltDecoder, CeltEncoder, CeltFrameDuration, Decoder, Recovery,

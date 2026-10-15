@@ -38,6 +38,7 @@ mod input_delay;
 mod input_resample;
 pub mod multistream;
 pub mod ogg;
+pub mod pcm;
 mod plc;
 pub mod projection;
 mod pvq;
