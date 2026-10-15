@@ -4,6 +4,7 @@
 //! --input FILE: normalized little-endian f32 PCM at 48 kHz; --input-channels 1|2.
 //! --frames N: changing input/packet sequence length, default 64.
 //! --encoder-all: public SILK/Hybrid/CELT encoder geometry; --full adds signals.
+//! --validate-only: untimed public encoder validation; requires reference-tests.
 //! --decode-only: time the CELT decoder matrix while still preparing identical packets.
 //!
 //! `reference-tests` links separately installed libopus through its public API.
@@ -16,6 +17,9 @@ use std::time::Instant;
 
 #[path = "opus/encoder.rs"]
 mod encoder_bench;
+#[cfg(feature = "reference-tests")]
+#[path = "opus/frame_samples.rs"]
+mod frame_samples;
 
 const BATCHES: usize = 1_000;
 const WARMUP: usize = 128;
@@ -50,6 +54,7 @@ struct Options {
     encoder_all: bool,
     encoder_case: Option<encoder_bench::Case>,
     decode_only: bool,
+    validate_only: bool,
 }
 impl Options {
     fn read() -> Self {
@@ -63,6 +68,7 @@ impl Options {
             encoder_all: false,
             encoder_case: None,
             decode_only: false,
+            validate_only: false,
         };
         let mut input_path = None;
         let mut arguments = std::env::args().skip(1);
@@ -77,6 +83,7 @@ impl Options {
                     options.encoder_case = Some(encoder_bench::parse_case(&mut arguments));
                 }
                 "--decode-only" => options.decode_only = true,
+                "--validate-only" => options.validate_only = true,
                 "--frames" => {
                     options.frames = arguments.next().expect("--frames N").parse().unwrap();
                 }
@@ -111,6 +118,14 @@ impl Options {
         assert!(
             !(options.encoder_all && options.decode_only),
             "--decode-only selects the CELT decoder matrix"
+        );
+        assert!(
+            !options.validate_only || options.encoder_all,
+            "--validate-only requires --encoder-all or --encoder-case"
+        );
+        assert!(
+            !options.validate_only || cfg!(feature = "reference-tests"),
+            "--validate-only requires the reference-tests feature"
         );
         if let Some(path) = input_path {
             let bytes = std::fs::read(&path).expect("read little-endian f32 PCM");
@@ -480,7 +495,7 @@ mod reference {
             voice_hint: bool,
         ) -> Self {
             assert!(matches!(channels, 1 | 2));
-            assert!(matches!(samples, 120 | 240 | 480 | 960 | 1920 | 2880));
+            assert!(frame_samples::valid(samples));
             let mut error = 0;
             // SAFETY: Public libopus API receives valid 48 kHz/channel/application
             // values and a writable error result. A checked pointer is owned here.
@@ -537,6 +552,16 @@ mod reference {
             assert!(result > 0, "libopus encode: {result}");
             result as usize
         }
+        pub(super) fn final_range(&mut self) -> u32 {
+            let mut value = 0u32;
+            assert_eq!(
+                // SAFETY: OPUS_GET_FINAL_RANGE takes a writable u32 pointer.
+                // The exclusively owned encoder and result remain live.
+                unsafe { opus_encoder_ctl(self.state.as_ptr(), 4031, &mut value as *mut u32) },
+                0
+            );
+            value
+        }
     }
     impl Drop for Encoder {
         fn drop(&mut self) {
@@ -556,7 +581,7 @@ mod reference {
         }
         pub(super) fn configured(samples: usize, channels: usize) -> Self {
             assert!(matches!(channels, 1 | 2));
-            assert!(matches!(samples, 120 | 240 | 480 | 960 | 1920 | 2880));
+            assert!(frame_samples::valid(samples));
             let mut error = 0;
             // SAFETY: Valid fixed rate/channel values and writable error storage.
             let state = unsafe { opus_decoder_create(48_000, channels as i32, &mut error) };
