@@ -2689,8 +2689,8 @@ fn mapped_and_projected_phase_controls_cover_mixed_defaults_and_real_downmix() {
                     let left = f64::from(pcm[0][2 * i]);
                     let right = f64::from(pcm[0][2 * i + 1]);
                     [
-                        ((left + right) * 0.5) as f32,
-                        ((left - right) * 0.5) as f32,
+                        (0.0 + left * 0.5 + right * 0.5) as f32,
+                        (0.0 + left * 0.5 - right * 0.5) as f32,
                         (0.0 + f64::from(pcm[1][i]) * 32767.0 / 32768.0) as f32,
                         (0.0 + f64::from(pcm[2][i]) * 32767.0 / 32768.0) as f32,
                     ]
