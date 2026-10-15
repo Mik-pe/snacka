@@ -1,0 +1,182 @@
+{
+  "source_commit": "d664f519aa0d2e2885443460c83c353d9ff635b4",
+  "base_commit": "4f68e4808e8a251368342b16d4edb72f23ee8e38",
+  "initial_reviewed_candidate": "c88cbe016520b5fc88e9f90123b846c77d1b6dc7",
+  "scope": "Uniform output gain for owned MultistreamDecoder and ProjectionDecoder; no new fields, mutable-child access or processing-body change. Ogg header gain remains caller-owned.",
+  "release_reference_suite": {
+    "passed": 386,
+    "suites": 18,
+    "failed": 0,
+    "ignored": 0,
+    "features": "opus,reference-tests",
+    "platform": "macOS ARM64 / Apple M5",
+    "compiler": "Rust 1.99.0"
+  },
+  "public_native_gain_test_subset": {
+    "passed": 4,
+    "failed": 0,
+    "ignored": 0,
+    "filtered_out": 14,
+    "includes_two_existing_ordinary_and_two_new_composed_gain_tests": true
+  },
+  "allocation_test_subset": {
+    "passed": 1,
+    "failed": 0,
+    "allocations": 0,
+    "asserted_actual_mapped_fec_and_direct_projection_gain_fec": true
+  },
+  "loop_dimensions": {
+    "shared_gain_setups": {
+      "owners": 2,
+      "packet_families": 2,
+      "rates": 5,
+      "gains": 7,
+      "total": 140
+    },
+    "fresh_and_reset_trajectories": 280,
+    "actual_fec_with_nonzero_plc_prefix_and_recovered_tail_trajectories": 140,
+    "fallback_trajectories": 140,
+    "zero_gain_continuation_checks": 140,
+    "independent_matrix_cases": {
+      "output_geometries": 3,
+      "rates": 5,
+      "gains": 5,
+      "packets": 3,
+      "total": 225,
+      "native_square_projection_cases": 75
+    },
+    "count_scope": "Deterministic exhaustive loop dimensions in the pinned tests; no case filters or substitutions."
+  },
+  "native_control_scope": "Public SET_GAIN/GET_GAIN plus GET_DECODER_STATE/ordinary GET_GAIN observed on all three native children, including unmapped output streams, before and after reset. No heterogeneous-child getter contract is exposed.",
+  "pcm_oracles": "Exact zero-gain history identity within each owned/native pair. Nonzero scaling uses independent f64 dB math with 8 ppm of expected plus output scale to account for projection cancellation. Independent Q15 demixing uses eight f32 epsilons times summed absolute contributions. No owned/native waveform bit-identity or exact native demix-order claim.",
+  "validation_environment": {
+    "RUSTC": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+    "RUSTDOC": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustdoc",
+    "RUSTC_WRAPPER": "",
+    "RUSTC_WORKSPACE_WRAPPER": "",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_INCREMENTAL": "false",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "false",
+    "RUSTFLAGS": "",
+    "CARGO_ENCODED_RUSTFLAGS": "-L/opt/homebrew/lib"
+  },
+  "final_gates": [
+    {
+      "name": "release-tests-final",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--release",
+        "--features",
+        "opus,reference-tests",
+        "--target-dir",
+        "/tmp/snacka-opus-mapped-decoder-gain-check-target"
+      ],
+      "exitcode": 0
+    },
+    {
+      "name": "clippy-final",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--release",
+        "--all-targets",
+        "--features",
+        "opus,reference-tests",
+        "--target-dir",
+        "/tmp/snacka-opus-mapped-decoder-gain-check-target",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitcode": 0
+    },
+    {
+      "name": "fmt-final",
+      "command": [
+        "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exitcode": 0
+    },
+    {
+      "name": "diff-check-final",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitcode": 0
+    }
+  ],
+  "public_headers_sha256": {
+    "/opt/homebrew/include/opus/opus_defines.h": "bbd4d4e3ba99f6982b1c8d8f5541814ad77d8e8babf3cc788cf23d517b2ca9d6",
+    "/opt/homebrew/include/opus/opus_multistream.h": "fd99c4594b4b57e406e9cab45a777895dd1b4c8de067088aa54ed7ae100b13f0",
+    "/opt/homebrew/include/opus/opus_projection.h": "11b3427e9ca342308a93adc9a081e2479685e5b7811a3a53540609f1bbc488ad"
+  },
+  "oracle_library": {
+    "path": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+    "sha256": "98dcd3cc62c6cf913b789051536ab246c56cc163c74bd8b4968ac467ec74b68b"
+  },
+  "source_files_sha256": {
+    "Cargo.toml": "60a0cbbc0220f4951c3b0bc90f7f2b4fb455a763a7debf3bfb830e93ebf0306b",
+    "Cargo.lock": "ea4659d4176642f085e36c3fd2d912e9c7e5ea80eb4fd21013a62303e6fc9b0a",
+    "src/opus/decoder.rs": "0ed85d86da9384d6b0703a777607917cfd3689bbf9aeb5f99e5eee63b99d7703",
+    "src/opus/multistream.rs": "e9d1484509192ae1973d44848de7ac2bd6cf30b7ca2cbf6970845c38c36d58f0",
+    "src/opus/projection.rs": "5bcaacefc324e4301dfc7cac539469d7e0c0f10f6fdac4237b23e7c876f05082",
+    "tests/opus_calls_reference.rs": "7a6ba9e2fd21b4f89dcd2b39debe795912760b467e96e58c4e8c03288cbf81a2",
+    "tests/allocations.rs": "a107f137765e3a920f0a3cfb3be262af1cfa878e585d75549a669696eb28f420",
+    "docs/opus.md": "d13864325b4a3e6a842d847f3c298be663a4faba5eef844e5dc6c9e6969b49ef"
+  },
+  "original_plan_sha256": "686196e91dae2b53d9402c3982f7392f7e001f82182a1242f437241349f14be3",
+  "independent_review": "Final formatted source read review GREEN by /root/pcm_api/pcm_review; no extra builds/native/test/timing by reviewer.",
+  "initial_failure_retained": "First strict Clippy run failed solely because SAFETY comment preceded assert_eq rather than the nested unsafe block. Final source binds that documented native call to a local status and passes Clippy. clippy.log and initial gates.json retained unchanged.",
+  "limitations": "No new quality corpus or quality score, no native implementation body, no performance timing or performance-parity claim. Native rectangular projection limitations remain: the matrix oracle uses owned coded PCM for C=3/6, public native square C=K=4 only. Nonzero gain cost is unmeasured.",
+  "external_evidence_root": "/tmp/snacka-opus-mapped-decoder-gain-evidence-20261015",
+  "files_sha256": {
+    "plan.json": "686196e91dae2b53d9402c3982f7392f7e001f82182a1242f437241349f14be3",
+    "gates.py": "c71900d6b1745d27150b2926ed68bc524938df8ddea6814e86a70078f3508b74",
+    "gates.json": "898c3d8cbfa718c5846c3f0d77d696032164e32af8ba8737d33258d558d37281",
+    "final-gates.json": "7aeeacafe2f8a7602b59be80fe2e7064cde89ef60b9cb1585cc7d6d46f05644f",
+    "gates-run.log": "cfdc7f0c129838298f7d95ee78f24446094b646434f127637ba9be30616e7372",
+    "targeted-native-gain.log": "31fbf23fdf4e341b73d511afebb2963e2937c287ee8dfdcd097ca36dcbc5e2a6",
+    "targeted-allocation.log": "4f2912fcc44101ab147ed44e33f82624597386dc21a81df52b487fe154a31472",
+    "release-tests.log": "1de35d562b862b8e4872e6a8c1166b3f7ebde494acccf988a9f1ffaf34468183",
+    "release-tests-final.log": "678eaf27a5c883dcb95e547f52f8c8115514da30a954e373777156ac5350eaa8",
+    "clippy.log": "0f58ba98a9b698e5e71bcde50764f083f34170bed9016fa1431bfde21b3a1395",
+    "clippy-final.log": "42b5cbb5850a3a38910840932705b8671b487f1e98a568bd881fd8b45ccd2633",
+    "fmt-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diff-check-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "processing-source-audit.json": "628b30fec8a24c0b3a2b4e0cdc128b4ce4d5f3f967d1122a95ec3742ab8bff59",
+    "validation-pins.json": "a1e60c03ead48cfb2bcad15ecf7153f801d7e66f4c3953ccb85311839fee8c47"
+  },
+  "root_integrated_checkpoint": {
+    "source_commit": "d1bea6901966a55d30bd72f549bb9b73735de6a0",
+    "release_suites": 18,
+    "release_passed": 386,
+    "release_failed": 0,
+    "release_ignored": 0,
+    "platform": "macOS ARM64",
+    "features": "opus,reference-tests",
+    "api_and_test_files_identical_to_source_commit": true,
+    "strict_release_all_target_clippy_and_fmt": "PASS",
+    "external_files_sha256": {
+      "/tmp/snacka-parity-20261015/macos-mapped-integrated-tests.json": "9685ff0714636bbefdb94d023ff6ed1d7b93d1833e891f6d4e002bb3eb2b8289",
+      "/tmp/snacka-parity-20261015/macos-mapped-integrated-release.log": "f632e68a660991b86b74397fae5a0e0f62eab1e9f9dac750a019b43774562441",
+      "/tmp/snacka-parity-20261015/macos-mapped-integrated-clippy.log": "72887655fbabf4dcfcebab3ee1d835194ad847c7bd7405f5e83b0f0532069b4c",
+      "/tmp/snacka-parity-20261015/macos-mapped-integrated-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "base_commit": "4f68e4808e8a251368342b16d4edb72f23ee8e38",
+  "scope": "Source text/body and field identity only, no performance measurement. Existing method bodies including constructors, mapping/demixing and reset remain byte-identical.",
+  "owners": {
+    "MultistreamDecoder": {
+      "path": "src/opus/multistream.rs",
+      "base_file_sha256": "4422eace77b34c1579d71f7c150997af1ffa6cb8459cf1c3854e51a14365947d",
+      "candidate_file_sha256": "e9d1484509192ae1973d44848de7ac2bd6cf30b7ca2cbf6970845c38c36d58f0",
+      "unchanged_methods": {
+        "new": "3739ef96f0022b42302dbace6ec196daf8b5fe42110fe49a17fe2aed044a9ae0",
+        "with_sample_rate": "9bb4ae03f44aa43edd7946a603f78a858c2890615333719e5bc2023be01808b5",
+        "channels": "fcde13da85842e6ad3af65131010b2607d3b37ae7ef0fe64f37d9a2a992ce191",
+        "sample_rate": "81451e1709a7b0308b197553866cc18f01fb4ed0b3b85c6f1454e11fafd35536",
+        "mapping": "dbe96c582f5273de782cae8789f432e0306babf1b97508e345cd31b1d2d9845f",
+        "final_range": "752c231b89758b0c0a6a70d2e4e5195fe4f7f9fed57eb37578d2cfd758435815",
+        "decode": "6448bde96edfad9348f687df5ec1411d269a71850b8cad05695dc1bffcfa76ae",
+        "recover": "e333521f300016c5a47809111bde5bc0e5e69b1eafc65405e16ae9e4c04f9adf",
+        "conceal": "c48ec6e3977c15444abbc588ece9749792337d60967f39b16283cc2a67fe18de",
+        "reset": "e3369a750767f62a7e544b345c9a44ded83c091ce9e14f1533a4ea85ac85de35",
+        "check_output": "e4fd0ea04a2c7fba8f19f26e83efeaad2f34f0ec64ec58f9d6cf104759d3ed62",
+        "check_interval": "975be6e56c9705163d514e7ff276f89421a3bdbd1220feeea55c968da1356960",
+        "map_stream": "3d0df8c681f58cf87e4ab886cd8274038d73b399c47133018b46d16a401df4d8"
+      },
+      "added_methods": [
+        "set_gain_q8",
+        "gain_q8"
+      ],
+      "struct_fields_unchanged": true,
+      "fields_sha256": "bbab102194e59f7923c3ff20248990e6378981b0576c8c2324af4dcedc4d7373"
+    },
+    "ProjectionDecoder": {
+      "path": "src/opus/projection.rs",
+      "base_file_sha256": "fb4b1ff69d804c4a3814ab9ba1821f3c661bdb93c9c12bd763586b68574fb275",
+      "candidate_file_sha256": "5bcaacefc324e4301dfc7cac539469d7e0c0f10f6fdac4237b23e7c876f05082",
+      "unchanged_methods": {
+        "new": "3739ef96f0022b42302dbace6ec196daf8b5fe42110fe49a17fe2aed044a9ae0",
+        "with_sample_rate": "7cdf9f55cbdc26d419ee34b542aa326d9f8dda6a9aa5afb3a106a7af7395edec",
+        "channels": "b84ad70bb43438aa0371ccdccc3218344f0a0b7b17d063172732afbd65a87bc1",
+        "sample_rate": "14ac1e265723140c8a6da4510eb13230fc7a57e9d2e478bf26f418807f93adca",
+        "mapping": "dbe96c582f5273de782cae8789f432e0306babf1b97508e345cd31b1d2d9845f",
+        "final_range": "e725998bee8f48872e5d86370ddc6dec16b0874f2e63810b720eaba5b54260c8",
+        "check_output": "688c196f6cf2c2c77a65ce07aae1019c45667f2e9774cf68f888e8626374a336",
+        "demix": "c56ec4e8421f3a710abde44ee718a14facbd7e2ec70eefb3d0805959429de9fe",
+        "decode": "79b17579bb07c91ef435bd189954231bbee832c1de4e1909cfa83437a77ae1bd",
+        "recover": "9a3a3cc8fc2cd5db63de9a97f80e7c4da7479dcbadefe1b3cde2267b4b61318b",
+        "conceal": "6802bf582cd698025bf8016bff2fd2383d7a830135e33b7c33ce1b3402bdbba8",
+        "reset": "d87004c88c2b0d852956f9293ef1e0de8796e4b12ed568bf88000f7ad5032bf9"
+      },
+      "added_methods": [
+        "set_gain_q8",
+        "gain_q8"
+      ],
+      "struct_fields_unchanged": true,
+      "fields_sha256": "e6fb850ed663a5a4f289b35379b3aa59a41d4ef23c98836b05468e63a51e8fa1"
+    }
+  },
+  "ordinary_decoder_whole_file_unchanged_sha256": "0ed85d86da9384d6b0703a777607917cfd3689bbf9aeb5f99e5eee63b99d7703"
+}

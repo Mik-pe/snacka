@@ -1,0 +1,72 @@
+{
+  "base_commit": "4f68e4808e8a251368342b16d4edb72f23ee8e38",
+  "source_candidate_commit": "c88cbe016520b5fc88e9f90123b846c77d1b6dc7",
+  "reference_library": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+  "reference_sha256": "98dcd3cc62c6cf913b789051536ab246c56cc163c74bd8b4968ac467ec74b68b",
+  "public_native_test_binary": "/tmp/snacka-opus-mapped-decoder-gain-check-target/release/deps/opus_calls_reference-5bdad610d008e817",
+  "public_native_test_binary_sha256": "666f4e50d3b4e20532446d138c2637fc45704f79a76a2f292efb50392b195e4d",
+  "native_test_linked_libraries": "/tmp/snacka-opus-mapped-decoder-gain-check-target/release/deps/opus_calls_reference-5bdad610d008e817:\n\t/opt/homebrew/opt/opus/lib/libopus.0.dylib (compatibility version 12.0.0, current version 12.1.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)\n",
+  "tools_sha256": {
+    "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc": "dd6f58440b3418aa9157ae3f05d71eecff741ca41bc4eec120e7e8f2d933b9a0",
+    "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/cargo": "fc7aa5077deca8abc0651f329e8ec1d968f520e996a93b428f9935014362b382",
+    "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustfmt": "5f552ee4d89172baa898b816c56dd5448f4060436d979ba8690d6007833996dd",
+    "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustdoc": "6fbad8d9ad24774d81de7314568739cf9ed1d46636bd2d65156694637897aeab"
+  },
+  "cargo_fingerprints": {
+    ".fingerprint/snacka-66f549d62cfbaed1/lib-snacka.json": {
+      "rustc": 17356518491003051113,
+      "features": "[\"default\", \"opus\", \"reference-tests\"]",
+      "declared_features": "[\"call-transport\", \"default\", \"internet-call\", \"live-audio\", \"opus\", \"reference-tests\"]",
+      "target": 2284287163353977781,
+      "profile": 4439685502539878632,
+      "path": 10763286916239946207,
+      "deps": [],
+      "local": [
+        {
+          "CheckDepInfo": {
+            "dep_info": "release/.fingerprint/snacka-66f549d62cfbaed1/dep-lib-snacka",
+            "checksum": false
+          }
+        }
+      ],
+      "rustflags": [
+        "-L/opt/homebrew/lib"
+      ],
+      "config": 9396254390672932401,
+      "compile_kind": 0
+    },
+    ".fingerprint/snacka-6edc7529fcd56bf2/lib-snacka.json": {
+      "rustc": 17356518491003051113,
+      "features": "[\"default\", \"opus\", \"reference-tests\"]",
+      "declared_features": "[\"call-transport\", \"default\", \"internet-call\", \"live-audio\", \"opus\", \"reference-tests\"]",
+      "target": 2284287163353977781,
+      "profile": 11212886912211921076,
+      "path": 10763286916239946207,
+      "deps": [],
+      "local": [
+        {
+          "CheckDepInfo": {
+            "dep_info": "release/.fingerprint/snacka-6edc7529fcd56bf2/dep-lib-snacka",
+            "checksum": false
+          }
+        }
+      ],
+      "rustflags": [
+        "-L/opt/homebrew/lib"
+      ],
+      "config": 9396254390672932401,
+      "compile_kind": 0
+    }
+  },
+  "source_files_sha256": {
+    "Cargo.toml": "60a0cbbc0220f4951c3b0bc90f7f2b4fb455a763a7debf3bfb830e93ebf0306b",
+    "Cargo.lock": "ea4659d4176642f085e36c3fd2d912e9c7e5ea80eb4fd21013a62303e6fc9b0a",
+    "src/opus/decoder.rs": "0ed85d86da9384d6b0703a777607917cfd3689bbf9aeb5f99e5eee63b99d7703",
+    "src/opus/multistream.rs": "e9d1484509192ae1973d44848de7ac2bd6cf30b7ca2cbf6970845c38c36d58f0",
+    "src/opus/projection.rs": "5bcaacefc324e4301dfc7cac539469d7e0c0f10f6fdac4237b23e7c876f05082",
+    "tests/opus_calls_reference.rs": "7a6ba9e2fd21b4f89dcd2b39debe795912760b467e96e58c4e8c03288cbf81a2",
+    "tests/allocations.rs": "a107f137765e3a920f0a3cfb3be262af1cfa878e585d75549a669696eb28f420",
+    "docs/opus.md": "d13864325b4a3e6a842d847f3c298be663a4faba5eef844e5dc6c9e6969b49ef"
+  },
+  "source_final_commit": "d664f519aa0d2e2885443460c83c353d9ff635b4"
+}
