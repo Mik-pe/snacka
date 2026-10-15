@@ -267,7 +267,7 @@ impl EncoderConfig {
         }
     }
 
-    fn validate(self) -> Result<(), Error> {
+    pub(super) fn validate(self) -> Result<(), Error> {
         let samples = self.duration.samples();
         let mode = self.mode();
         let invalid_band = match mode {

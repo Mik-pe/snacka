@@ -1,0 +1,34 @@
+   Compiling snacka v0.2.0 (/private/tmp/snacka-opus-mapped-controls-worktree-20261015)
+error[E0599]: no method named `last_packet_samples` found for mutable reference `&mut OggDecoder` in the current scope
+   --> tests/allocations.rs:317:36
+    |
+317 |                 assert_eq!(decoder.last_packet_samples(), 0);
+    |                                    ^^^^^^^^^^^^^^^^^^^ method not found in `&mut OggDecoder`
+
+error[E0599]: no method named `last_packet_samples` found for mutable reference `&mut OggDecoder` in the current scope
+   --> tests/allocations.rs:320:32
+    |
+320 |             assert_eq!(decoder.last_packet_samples(), samples);
+    |                                ^^^^^^^^^^^^^^^^^^^ method not found in `&mut OggDecoder`
+
+error[E0599]: no method named `last_packet_samples` found for mutable reference `&mut OggDecoder` in the current scope
+   --> tests/allocations.rs:324:32
+    |
+324 |             assert_eq!(decoder.last_packet_samples(), rate as usize / 400);
+    |                                ^^^^^^^^^^^^^^^^^^^ method not found in `&mut OggDecoder`
+
+error[E0599]: no method named `last_packet_samples` found for mutable reference `&mut OggDecoder` in the current scope
+   --> tests/allocations.rs:329:32
+    |
+329 |             assert_eq!(decoder.last_packet_samples(), samples);
+    |                                ^^^^^^^^^^^^^^^^^^^ method not found in `&mut OggDecoder`
+
+error[E0599]: no method named `last_packet_samples` found for mutable reference `&mut OggDecoder` in the current scope
+   --> tests/allocations.rs:333:32
+    |
+333 |             assert_eq!(decoder.last_packet_samples(), rate as usize * 3 / 400);
+    |                                ^^^^^^^^^^^^^^^^^^^ method not found in `&mut OggDecoder`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `snacka` (test "allocations") due to 5 previous errors
+warning: build failed, waiting for other jobs to finish...

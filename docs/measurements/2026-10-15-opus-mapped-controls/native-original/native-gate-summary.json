@@ -1,0 +1,578 @@
+{
+  "duration": {
+    "rows": 2142,
+    "kinds": {
+      "version": 1,
+      "old-bank": 8,
+      "public-packet-parse": 72,
+      "create": 60,
+      "observe": 40,
+      "step": 1280,
+      "reset": 440,
+      "late-content-classification": 240,
+      "summary": 1
+    },
+    "audio_calls": 1280,
+    "selection_rows": 80,
+    "selection_first_child_matches": 80,
+    "selection_mismatches": [],
+    "negative_calls": 120,
+    "negative_by_event": {
+      "early-malformed-final-framing": 40,
+      "early-normal-capacity-one-sample": 40,
+      "early-invalid-plc-duration": 40
+    },
+    "raw_audited_calls": 1280,
+    "raw_diagnostics_exact": 1280,
+    "nonfinite_success": 0,
+    "dirty_success_suffix": 0,
+    "late_classification": {
+      "NOT_COVERED": 240
+    },
+    "negative_event_codes": [
+      {
+        "event": "early-invalid-plc-duration",
+        "code": -1,
+        "rows": 40
+      },
+      {
+        "event": "early-malformed-final-framing",
+        "code": -4,
+        "rows": 40
+      },
+      {
+        "event": "early-normal-capacity-one-sample",
+        "code": -2,
+        "rows": 40
+      }
+    ],
+    "constructor_codes": [
+      {
+        "family": "mapped",
+        "code": 0,
+        "rows": 40
+      },
+      {
+        "family": "projection",
+        "code": -1,
+        "rows": 20
+      }
+    ],
+    "range_query_errors": [],
+    "raw_files": 2161,
+    "raw_total_bytes": 48453344
+  },
+  "encoder": {
+    "rows": 2131,
+    "kinds": {
+      "version": 1,
+      "create": 10,
+      "decoder_create": 5,
+      "aggregate_get": 350,
+      "child": 120,
+      "child_get": 700,
+      "child_set": 400,
+      "encode": 270,
+      "decode": 270,
+      "reset": 5
+    },
+    "audio_calls": 270,
+    "decodes": 270,
+    "encode_negative": [],
+    "decode_negative": [],
+    "nonzero_control_or_constructor_count": 50,
+    "nonzero_control_or_constructor": [
+      {
+        "kind": "create",
+        "family": "mapped",
+        "rate": 8000,
+        "channels": 5,
+        "streams": 3,
+        "coupled": 1,
+        "code": -1,
+        "nonnull": false
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 8000,
+        "stage": "fresh",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 8000,
+        "stage": "base",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 8000,
+        "stage": "downshift-fec",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 8000,
+        "stage": "quiet-dtx",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "child_set",
+        "family": "projected",
+        "rate": 8000,
+        "stage": "upshift-resume",
+        "stream": 0,
+        "request": 4000,
+        "requested": 2049,
+        "code": -1
+      },
+      {
+        "kind": "child_set",
+        "family": "projected",
+        "rate": 8000,
+        "stage": "upshift-resume",
+        "stream": 1,
+        "request": 4000,
+        "requested": 2049,
+        "code": -1
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 8000,
+        "stage": "upshift-resume",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 8000,
+        "stage": "return-cbr",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 8000,
+        "stage": "after-reset",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "create",
+        "family": "mapped",
+        "rate": 12000,
+        "channels": 5,
+        "streams": 3,
+        "coupled": 1,
+        "code": -1,
+        "nonnull": false
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 12000,
+        "stage": "fresh",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 12000,
+        "stage": "base",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 12000,
+        "stage": "downshift-fec",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 12000,
+        "stage": "quiet-dtx",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "child_set",
+        "family": "projected",
+        "rate": 12000,
+        "stage": "upshift-resume",
+        "stream": 0,
+        "request": 4000,
+        "requested": 2049,
+        "code": -1
+      },
+      {
+        "kind": "child_set",
+        "family": "projected",
+        "rate": 12000,
+        "stage": "upshift-resume",
+        "stream": 1,
+        "request": 4000,
+        "requested": 2049,
+        "code": -1
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 12000,
+        "stage": "upshift-resume",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 12000,
+        "stage": "return-cbr",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 12000,
+        "stage": "after-reset",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "create",
+        "family": "mapped",
+        "rate": 16000,
+        "channels": 5,
+        "streams": 3,
+        "coupled": 1,
+        "code": -1,
+        "nonnull": false
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 16000,
+        "stage": "fresh",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 16000,
+        "stage": "base",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 16000,
+        "stage": "downshift-fec",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 16000,
+        "stage": "quiet-dtx",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "child_set",
+        "family": "projected",
+        "rate": 16000,
+        "stage": "upshift-resume",
+        "stream": 0,
+        "request": 4000,
+        "requested": 2049,
+        "code": -1
+      },
+      {
+        "kind": "child_set",
+        "family": "projected",
+        "rate": 16000,
+        "stage": "upshift-resume",
+        "stream": 1,
+        "request": 4000,
+        "requested": 2049,
+        "code": -1
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 16000,
+        "stage": "upshift-resume",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 16000,
+        "stage": "return-cbr",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 16000,
+        "stage": "after-reset",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "create",
+        "family": "mapped",
+        "rate": 24000,
+        "channels": 5,
+        "streams": 3,
+        "coupled": 1,
+        "code": -1,
+        "nonnull": false
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 24000,
+        "stage": "fresh",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 24000,
+        "stage": "base",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 24000,
+        "stage": "downshift-fec",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 24000,
+        "stage": "quiet-dtx",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "child_set",
+        "family": "projected",
+        "rate": 24000,
+        "stage": "upshift-resume",
+        "stream": 0,
+        "request": 4000,
+        "requested": 2049,
+        "code": -1
+      },
+      {
+        "kind": "child_set",
+        "family": "projected",
+        "rate": 24000,
+        "stage": "upshift-resume",
+        "stream": 1,
+        "request": 4000,
+        "requested": 2049,
+        "code": -1
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 24000,
+        "stage": "upshift-resume",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 24000,
+        "stage": "return-cbr",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 24000,
+        "stage": "after-reset",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "create",
+        "family": "mapped",
+        "rate": 48000,
+        "channels": 5,
+        "streams": 3,
+        "coupled": 1,
+        "code": -1,
+        "nonnull": false
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 48000,
+        "stage": "fresh",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 48000,
+        "stage": "base",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 48000,
+        "stage": "downshift-fec",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 48000,
+        "stage": "quiet-dtx",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "child_set",
+        "family": "projected",
+        "rate": 48000,
+        "stage": "upshift-resume",
+        "stream": 0,
+        "request": 4000,
+        "requested": 2049,
+        "code": -1
+      },
+      {
+        "kind": "child_set",
+        "family": "projected",
+        "rate": 48000,
+        "stage": "upshift-resume",
+        "stream": 1,
+        "request": 4000,
+        "requested": 2049,
+        "code": -1
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 48000,
+        "stage": "upshift-resume",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 48000,
+        "stage": "return-cbr",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      },
+      {
+        "kind": "aggregate_get",
+        "family": "projected",
+        "rate": 48000,
+        "stage": "after-reset",
+        "request": 4049,
+        "code": -5,
+        "value": -999
+      }
+    ],
+    "nonfinite_decode": 0,
+    "dirty_decode_suffix": 0,
+    "dirty_encode_suffix_observed": 0,
+    "negative_controls_grouped": [
+      {
+        "kind": "aggregate_get",
+        "request": 4049,
+        "code": -5,
+        "rows": 35
+      },
+      {
+        "kind": "child_set",
+        "request": 4000,
+        "code": -1,
+        "rows": 10
+      },
+      {
+        "kind": "create",
+        "request": -1,
+        "code": -1,
+        "rows": 5
+      }
+    ],
+    "range_query_errors": [],
+    "raw_files": 541,
+    "raw_total_bytes": 2247387
+  }
+}

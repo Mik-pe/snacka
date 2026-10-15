@@ -286,17 +286,21 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
             decoder.set_phase_inversion(!*reset);
             if *reset {
                 decoder.reset();
+                assert_eq!(decoder.last_packet_samples(), 0);
             }
             assert_eq!(decoder.gain_q8(), gain);
             assert_eq!(decoder.phase_inversion(), !*reset);
             let samples = decoder.decode(packet, &mut mapped_output).unwrap();
+            assert_eq!(decoder.last_packet_samples(), samples);
             decoder
                 .conceal(rate as usize / 400, &mut mapped_output)
                 .unwrap();
+            assert_eq!(decoder.last_packet_samples(), rate as usize / 400);
             actual_mapped_recovery |= decoder
                 .recover(packet, samples, &mut mapped_output)
                 .unwrap()
                 == Recovery::Fec;
+            assert_eq!(decoder.last_packet_samples(), samples);
             decoder.decode(packet, &mut mapped_output).unwrap();
             assert!(
                 mapped_output[..samples * 5]
@@ -336,17 +340,21 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
             decoder.set_phase_inversion(!*reset);
             if *reset {
                 decoder.reset();
+                assert_eq!(decoder.last_packet_samples(), 0);
             }
             assert_eq!(decoder.gain_q8(), gain);
             assert_eq!(decoder.phase_inversion(), !*reset);
             let samples = decoder.decode(packet, &mut mapped_output).unwrap();
+            assert_eq!(decoder.last_packet_samples(), samples);
             decoder
                 .conceal(rate as usize / 400, &mut mapped_output)
                 .unwrap();
+            assert_eq!(decoder.last_packet_samples(), rate as usize / 400);
             actual_projected_gain_recovery |= decoder
                 .recover(packet, samples, &mut mapped_output)
                 .unwrap()
                 == Recovery::Fec;
+            assert_eq!(decoder.last_packet_samples(), samples);
             decoder.decode(packet, &mut mapped_output).unwrap();
             black_box(&mapped_output);
         }

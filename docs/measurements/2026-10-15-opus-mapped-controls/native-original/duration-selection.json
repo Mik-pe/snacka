@@ -1,0 +1,1922 @@
+[
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 8000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      160
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 8000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      320,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      320,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 8000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      160
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 8000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      320,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      320,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 12000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      240
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 12000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      480,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      480,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 12000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      240
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 12000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      480,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      480,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 16000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      320
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 16000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      640,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      640,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 16000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      320
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 16000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      640,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      640,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 24000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      480
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 24000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      960,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      960,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 24000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      480
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 24000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      960,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      960,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 48000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      960
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 48000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      1920,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      1920,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 48000,
+    "mode": "silk",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      960
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 48000,
+    "mode": "silk",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      1920,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      1920,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 8000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 13168823
+    },
+    "expected_children": [
+      0,
+      160
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 8000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      320,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      320,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 8000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 13168823
+    },
+    "expected_children": [
+      0,
+      160
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 8000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      320,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      320,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 12000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 13168823
+    },
+    "expected_children": [
+      0,
+      240
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 12000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      480,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      480,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 12000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 13168823
+    },
+    "expected_children": [
+      0,
+      240
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 12000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      480,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      480,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 16000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 13168823
+    },
+    "expected_children": [
+      0,
+      320
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 16000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      640,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      640,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 16000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 13168823
+    },
+    "expected_children": [
+      0,
+      320
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 16000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      640,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      640,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 24000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 13168823
+    },
+    "expected_children": [
+      0,
+      480
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 24000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      960,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      960,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 24000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 13168823
+    },
+    "expected_children": [
+      0,
+      480
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 24000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      960,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      960,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 48000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 13168823
+    },
+    "expected_children": [
+      0,
+      960
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 48000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      1920,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      1920,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 48000,
+    "mode": "hybrid",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 13168823
+    },
+    "expected_children": [
+      0,
+      960
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 48000,
+    "mode": "hybrid",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      1920,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      1920,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 8000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 98530816
+    },
+    "expected_children": [
+      0,
+      160
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 8000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      320,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      320,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 8000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 98530816
+    },
+    "expected_children": [
+      0,
+      160
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 8000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      320,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      320,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 12000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 98530816
+    },
+    "expected_children": [
+      0,
+      240
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 12000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      480,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      480,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 12000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 98530816
+    },
+    "expected_children": [
+      0,
+      240
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 12000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      480,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      480,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 16000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 98530816
+    },
+    "expected_children": [
+      0,
+      320
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 16000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      640,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      640,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 16000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 98530816
+    },
+    "expected_children": [
+      0,
+      320
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 16000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      640,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      640,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 24000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 98530816
+    },
+    "expected_children": [
+      0,
+      480
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 24000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      960,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      960,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 24000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 98530816
+    },
+    "expected_children": [
+      0,
+      480
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 24000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      960,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      960,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 48000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 98530816
+    },
+    "expected_children": [
+      0,
+      960
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 48000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      1920,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      1920,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 48000,
+    "mode": "celt",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 98530816
+    },
+    "expected_children": [
+      0,
+      960
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 48000,
+    "mode": "celt",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      1920,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      1920,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 8000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      160
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 8000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      320,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      320,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 8000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      160
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      160
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 8000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      320,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 320,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      320,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 12000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      240
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 12000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      480,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      480,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 12000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      240
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      240
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 12000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      480,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 480,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      480,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 16000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      320
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 16000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      640,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      640,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 16000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      320
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      320
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 16000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      640,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 640,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      640,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 24000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      480
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 24000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      960,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      960,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 24000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      480
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      480
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 24000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      960,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 960,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      960,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 48000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      960
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "mixed",
+    "rate": 48000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      1920,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      1920,
+      0
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 48000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child0-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      0,
+      960
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 0,
+      "range_code": 0,
+      "range": 74878440
+    },
+    "expected_children": [
+      0,
+      960
+    ],
+    "first_child_match": true
+  },
+  {
+    "family": "mapped",
+    "layout": "first-unmapped",
+    "rate": 48000,
+    "mode": "silk-fec",
+    "event": "scope-reset-child1-only",
+    "reset_code": 0,
+    "child_state_code": 0,
+    "children": [
+      1920,
+      0
+    ],
+    "aggregate": {
+      "duration_code": 0,
+      "samples": 1920,
+      "range_code": 0,
+      "range": 0
+    },
+    "expected_children": [
+      1920,
+      0
+    ],
+    "first_child_match": true
+  }
+]

@@ -1,0 +1,76 @@
+{
+  "stage": "SUPPLEMENT_PRENATIVE",
+  "precompile": {
+    "path": "/tmp/snacka-opus-mapped-controls-supplement-20261015/freeze-precompile.json",
+    "bytes": 12478,
+    "sha256": "b293b91b093b586f874f14928fcdd6e138d6f3d7f61205798c16127fb086526e"
+  },
+  "compile_receipt": {
+    "path": "/tmp/snacka-opus-mapped-controls-supplement-20261015/compile-attempt1.json",
+    "bytes": 432,
+    "sha256": "134f2927ad4adc58cd195b7edf9533775bc74be56d14885cc0587a44c4b81937"
+  },
+  "binary": {
+    "path": "/tmp/snacka-opus-mapped-controls-supplement-20261015/native_reconfigure_oracle",
+    "bytes": 511464,
+    "sha256": "a1ee37a332ba45716ff910cb29c5d7fff380013dcf1cd47c5d64776208e1c995"
+  },
+  "native": {
+    "path": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+    "bytes": 373744,
+    "sha256": "98dcd3cc62c6cf913b789051536ab246c56cc163c74bd8b4968ac467ec74b68b"
+  },
+  "sources": [
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-supplement-20261015/native_duration_oracle.py",
+      "bytes": 17833,
+      "sha256": "9c8b34e1d66fde5859a7fad2740ebda1f66f5bf7bdc30dfc1bf741a3ada4c0a6"
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-supplement-20261015/native_reconfigure_oracle.rs",
+      "bytes": 17043,
+      "sha256": "dbb1d2ebd02ba07e318f2d9b82b8d40043632cc7561797fa8ff20789726265c4"
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-supplement-20261015/duration-geometry.diff",
+      "bytes": 6965,
+      "sha256": "740a74be066517b06e96479fd054d38301b9671859d6e86d952bad5d6c780eca"
+    },
+    {
+      "path": "/tmp/snacka-opus-mapped-controls-supplement-20261015/encoder-geometry.diff",
+      "bytes": 1490,
+      "sha256": "598e723b2a2e0c8d7bcf4ff7e7e8da813a5f006962b2e9a7b88d9c0df07a9b66"
+    }
+  ],
+  "commands": {
+    "compile_encoder": [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "--edition=2024",
+      "-C",
+      "opt-level=2",
+      "-C",
+      "overflow-checks=on",
+      "-L",
+      "native=/opt/homebrew/lib",
+      "/tmp/snacka-opus-mapped-controls-supplement-20261015/native_reconfigure_oracle.rs",
+      "-o",
+      "/tmp/snacka-opus-mapped-controls-supplement-20261015/native_reconfigure_oracle"
+    ],
+    "duration_once": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/tmp/snacka-opus-mapped-controls-supplement-20261015/native_duration_oracle.py",
+      "--run-native-after-freeze",
+      "--native-library",
+      "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+      "--old-fixture-dir",
+      "/tmp/snacka-opus-mapped-controls-20261015/inputs",
+      "--new-output-dir",
+      "/tmp/snacka-opus-mapped-controls-supplement-20261015/duration-square-run"
+    ],
+    "encoder_once": [
+      "/tmp/snacka-opus-mapped-controls-supplement-20261015/native_reconfigure_oracle",
+      "--run-native-after-freeze",
+      "/tmp/snacka-opus-mapped-controls-supplement-20261015/encoder-fullymapped-run"
+    ]
+  }
+}

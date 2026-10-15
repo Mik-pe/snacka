@@ -63,7 +63,7 @@ other streams' initial policies. The controls add no processing pass or state.
 The [mapped phase-control record](measurements/2026-10-15-opus-mapped-phase/README.md)
 retains the native-first contract, exact owned composition proof, all observed
 native waveform differences and the original test-helper failure.
-`last_packet_samples()` reports the last successful decode, concealment or
+The ordinary decoder's `last_packet_samples()` reports the last successful decode, concealment or
 recovery interval in samples per channel at the configured output rate. It
 includes the whole multi-frame packet or the entire requested FEC interval,
 including any concealed prefix. Construction and reset report zero. Errors
@@ -72,6 +72,15 @@ errors transactional for codec history or written PCM. The
 [status contract and M5 cost record](measurements/2026-10-15-opus-last-packet-samples/README.md)
 retains native status checks, the complete unchanged-output proof and all
 selected direct/normalized percentiles, including tail increases.
+
+Multistream and projection decoders expose the same getter by forwarding the
+first coded stream's status, even if that stream has no output destination.
+This records constituent progress: if stream 0 succeeds and a later stream
+fails, the count can change despite the outer error. Projection forwards the
+count before demixing. No separate whole-transport success counter is kept.
+The [mapped control record](measurements/2026-10-15-opus-mapped-controls/README.md)
+retains the native child-CTL selection probe, rejected native geometries and
+the uncovered native later-content-error case.
 
 `set_gain_q8(i16)` controls ordinary, multistream and projection decoder output
 gain in 1/256 dB units,
@@ -193,6 +202,19 @@ encode silence. Allocate `max_packet_bytes()` of output before processing.
 Composition preserves aggregate emitted stream byte budgets plus self-delimiter
 bytes, moving removed padding into the last stream. `was_dtx()` is true only
 when every stream suppresses. Construction allocates; encoding and reset do not.
+
+Both mapped and projection encoders support immediate `reconfigure(&configs)`.
+The entire list is checked before mutation. Mapping, coded channels, input rate
+and duration stay fixed; each packet budget must fit its originally prepared
+stream buffer. Budgets may shrink and regrow within that ceiling, updating the
+active `max_packet_bytes()` requirement. Accepted changes reuse ordinary
+reconfiguration, including FEC-cache and fractional/DTX-clock rules; previous
+packet outcomes remain available. Application preference and explicit mode
+follow `EncoderConfig::mode()` resolution. This owned policy is broader than
+the observed native application-change acceptance after encoding starts.
+There is no queued mapped `prepare_reconfigure` or shared bitrate allocator.
+See the [contract and evidence](measurements/2026-10-15-opus-mapped-controls/README.md).
+
 `ChannelMapping`,
 `MultistreamDecoder` and `ProjectionDecoder` decode mapped channels and signed
 Q15 Ambisonics demixing matrices, including channel aliases and silence.

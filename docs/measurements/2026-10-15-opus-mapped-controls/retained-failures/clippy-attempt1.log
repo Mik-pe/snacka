@@ -1,0 +1,13 @@
+    Checking snacka v0.2.0 (/private/tmp/snacka-opus-mapped-controls-worktree-20261015)
+error: using `chunks_exact` with a constant chunk size
+   --> tests/opus_multistream_encoder.rs:154:14
+    |
+154 |             .chunks_exact(5)
+    |              ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<5>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+    = note: `-D clippy::chunks-exact-to-as-chunks` implied by `-D clippy::all`
+    = help: to override `-D clippy::all` add `#[allow(clippy::chunks_exact_to_as_chunks)]`
+
+error: could not compile `snacka` (test "opus_multistream_encoder") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

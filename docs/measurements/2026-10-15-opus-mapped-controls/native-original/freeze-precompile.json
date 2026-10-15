@@ -1,0 +1,705 @@
+{
+  "stage": "PRECOMPILE_PRENATIVE",
+  "base": "963b903173ff3a55cb60cfa22b189c5d76e78d48",
+  "head": "963b903173ff3a55cb60cfa22b189c5d76e78d48",
+  "authorization": "Root explicit runtime release after stereo864 exit0 at14:18UTC; no timing",
+  "scope": "Two public-only native functional oracles, once each; no production patch applied before native contract gate",
+  "drafts": {
+    "duration-v2": [
+      {
+        "original": {
+          "path": "/tmp/snacka-opus-mapped-last-samples-draft-20261015/native_duration_oracle.py",
+          "resolved": "/private/tmp/snacka-opus-mapped-last-samples-draft-20261015/native_duration_oracle.py",
+          "bytes": 17684,
+          "sha256": "04defc7165ae22fceb9b2bdab6a008ce91fdaf4c03d44e30512514071d0aea01"
+        },
+        "frozen": {
+          "path": "/tmp/snacka-opus-mapped-controls-20261015/drafts/duration-v2/native_duration_oracle.py",
+          "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/drafts/duration-v2/native_duration_oracle.py",
+          "bytes": 17684,
+          "sha256": "04defc7165ae22fceb9b2bdab6a008ce91fdaf4c03d44e30512514071d0aea01"
+        }
+      },
+      {
+        "original": {
+          "path": "/tmp/snacka-opus-mapped-last-samples-draft-20261015/PROTOCOL.md",
+          "resolved": "/private/tmp/snacka-opus-mapped-last-samples-draft-20261015/PROTOCOL.md",
+          "bytes": 16387,
+          "sha256": "1b48fbe956ed3402ca016e58f9ff05feb1a5ed7e1b7457a9908d66f80385c63c"
+        },
+        "frozen": {
+          "path": "/tmp/snacka-opus-mapped-controls-20261015/drafts/duration-v2/PROTOCOL.md",
+          "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/drafts/duration-v2/PROTOCOL.md",
+          "bytes": 16387,
+          "sha256": "1b48fbe956ed3402ca016e58f9ff05feb1a5ed7e1b7457a9908d66f80385c63c"
+        }
+      },
+      {
+        "original": {
+          "path": "/tmp/snacka-opus-mapped-last-samples-draft-20261015/BASE.txt",
+          "resolved": "/private/tmp/snacka-opus-mapped-last-samples-draft-20261015/BASE.txt",
+          "bytes": 92,
+          "sha256": "ccb644bc7e46bdd82238c8b93f7b5248b951707731a2aec26274cde6401fab03"
+        },
+        "frozen": {
+          "path": "/tmp/snacka-opus-mapped-controls-20261015/drafts/duration-v2/BASE.txt",
+          "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/drafts/duration-v2/BASE.txt",
+          "bytes": 92,
+          "sha256": "ccb644bc7e46bdd82238c8b93f7b5248b951707731a2aec26274cde6401fab03"
+        }
+      },
+      {
+        "original": {
+          "path": "/tmp/snacka-opus-mapped-last-samples-draft-20261015/last_packet_samples.patch",
+          "resolved": "/private/tmp/snacka-opus-mapped-last-samples-draft-20261015/last_packet_samples.patch",
+          "bytes": 2084,
+          "sha256": "97faf2b96af0c757a06737d40a59a9095d68ed304e54705948bb6163683dbfc8"
+        },
+        "frozen": {
+          "path": "/tmp/snacka-opus-mapped-controls-20261015/drafts/duration-v2/last_packet_samples.patch",
+          "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/drafts/duration-v2/last_packet_samples.patch",
+          "bytes": 2084,
+          "sha256": "97faf2b96af0c757a06737d40a59a9095d68ed304e54705948bb6163683dbfc8"
+        }
+      }
+    ],
+    "reconfigure": [
+      {
+        "original": {
+          "path": "/tmp/snacka-opus-mapped-encoder-reconfigure-draft-20261015/native_reconfigure_oracle.rs",
+          "resolved": "/private/tmp/snacka-opus-mapped-encoder-reconfigure-draft-20261015/native_reconfigure_oracle.rs",
+          "bytes": 16974,
+          "sha256": "600069ac3b9aec6556154c214eac4a4719653bf703c145a673ebc699eba82b20"
+        },
+        "frozen": {
+          "path": "/tmp/snacka-opus-mapped-controls-20261015/drafts/reconfigure/native_reconfigure_oracle.rs",
+          "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/drafts/reconfigure/native_reconfigure_oracle.rs",
+          "bytes": 16974,
+          "sha256": "600069ac3b9aec6556154c214eac4a4719653bf703c145a673ebc699eba82b20"
+        }
+      },
+      {
+        "original": {
+          "path": "/tmp/snacka-opus-mapped-encoder-reconfigure-draft-20261015/PROTOCOL.md",
+          "resolved": "/private/tmp/snacka-opus-mapped-encoder-reconfigure-draft-20261015/PROTOCOL.md",
+          "bytes": 14574,
+          "sha256": "2e3a723519db0d6d3d8177bc6c58ff1fccf45a5eeadb705b422c117e6b6d621f"
+        },
+        "frozen": {
+          "path": "/tmp/snacka-opus-mapped-controls-20261015/drafts/reconfigure/PROTOCOL.md",
+          "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/drafts/reconfigure/PROTOCOL.md",
+          "bytes": 14574,
+          "sha256": "2e3a723519db0d6d3d8177bc6c58ff1fccf45a5eeadb705b422c117e6b6d621f"
+        }
+      },
+      {
+        "original": {
+          "path": "/tmp/snacka-opus-mapped-encoder-reconfigure-draft-20261015/BASE.txt",
+          "resolved": "/private/tmp/snacka-opus-mapped-encoder-reconfigure-draft-20261015/BASE.txt",
+          "bytes": 111,
+          "sha256": "f0a9e0c20a477531b203977776c3970dcaf873777a0891b9b613a4d4f3a5ba65"
+        },
+        "frozen": {
+          "path": "/tmp/snacka-opus-mapped-controls-20261015/drafts/reconfigure/BASE.txt",
+          "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/drafts/reconfigure/BASE.txt",
+          "bytes": 111,
+          "sha256": "f0a9e0c20a477531b203977776c3970dcaf873777a0891b9b613a4d4f3a5ba65"
+        }
+      },
+      {
+        "original": {
+          "path": "/tmp/snacka-opus-mapped-encoder-reconfigure-draft-20261015/reconfigure.patch",
+          "resolved": "/private/tmp/snacka-opus-mapped-encoder-reconfigure-draft-20261015/reconfigure.patch",
+          "bytes": 5078,
+          "sha256": "040b8a9cd522da78832be0915fe405022d092fcf37c3b2793eabdce2cfb389ce"
+        },
+        "frozen": {
+          "path": "/tmp/snacka-opus-mapped-controls-20261015/drafts/reconfigure/reconfigure.patch",
+          "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/drafts/reconfigure/reconfigure.patch",
+          "bytes": 5078,
+          "sha256": "040b8a9cd522da78832be0915fe405022d092fcf37c3b2793eabdce2cfb389ce"
+        }
+      }
+    ]
+  },
+  "old_inputs": [
+    {
+      "original": {
+        "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-1.packets",
+        "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-1.packets",
+        "bytes": 768,
+        "sha256": "798d3ca7d0f16da195d0edff77b0677d67edb67b3fd2dbd8bcc4dfe9005bab4b"
+      },
+      "frozen": {
+        "path": "/tmp/snacka-opus-mapped-controls-20261015/inputs/silk-1.packets",
+        "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/inputs/silk-1.packets",
+        "bytes": 768,
+        "sha256": "798d3ca7d0f16da195d0edff77b0677d67edb67b3fd2dbd8bcc4dfe9005bab4b"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-2.packets",
+        "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-2.packets",
+        "bytes": 1488,
+        "sha256": "778207e72a859def2b98108b0d16635f3b8e171659cbdd9a77d369be30203327"
+      },
+      "frozen": {
+        "path": "/tmp/snacka-opus-mapped-controls-20261015/inputs/silk-2.packets",
+        "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/inputs/silk-2.packets",
+        "bytes": 1488,
+        "sha256": "778207e72a859def2b98108b0d16635f3b8e171659cbdd9a77d369be30203327"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/hybrid-1.packets",
+        "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/hybrid-1.packets",
+        "bytes": 768,
+        "sha256": "a25d92edcd1bc7e18b29d088242aa864e7606197b1f02f6635f8a7c9b2c19075"
+      },
+      "frozen": {
+        "path": "/tmp/snacka-opus-mapped-controls-20261015/inputs/hybrid-1.packets",
+        "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/inputs/hybrid-1.packets",
+        "bytes": 768,
+        "sha256": "a25d92edcd1bc7e18b29d088242aa864e7606197b1f02f6635f8a7c9b2c19075"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/hybrid-2.packets",
+        "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/hybrid-2.packets",
+        "bytes": 1488,
+        "sha256": "74d37d9da2e2daa6b43421c2617a83867ca6c7a834c557449b395d5908257c3a"
+      },
+      "frozen": {
+        "path": "/tmp/snacka-opus-mapped-controls-20261015/inputs/hybrid-2.packets",
+        "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/inputs/hybrid-2.packets",
+        "bytes": 1488,
+        "sha256": "74d37d9da2e2daa6b43421c2617a83867ca6c7a834c557449b395d5908257c3a"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/celt-1.packets",
+        "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/celt-1.packets",
+        "bytes": 1968,
+        "sha256": "5b6e396a63d3bca18c123a1ee5d51ddcf55d3838a533e768ce2499a230ae8641"
+      },
+      "frozen": {
+        "path": "/tmp/snacka-opus-mapped-controls-20261015/inputs/celt-1.packets",
+        "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/inputs/celt-1.packets",
+        "bytes": 1968,
+        "sha256": "5b6e396a63d3bca18c123a1ee5d51ddcf55d3838a533e768ce2499a230ae8641"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/celt-2.packets",
+        "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/celt-2.packets",
+        "bytes": 3888,
+        "sha256": "0c7cbde910c284e94d52f6ce9360141d62906b4dd235c2fda60960d66d7c107e"
+      },
+      "frozen": {
+        "path": "/tmp/snacka-opus-mapped-controls-20261015/inputs/celt-2.packets",
+        "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/inputs/celt-2.packets",
+        "bytes": 3888,
+        "sha256": "0c7cbde910c284e94d52f6ce9360141d62906b4dd235c2fda60960d66d7c107e"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-fec-1.packets",
+        "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-fec-1.packets",
+        "bytes": 768,
+        "sha256": "f03cd7df2cf73175ab01890566b2caddd53a46d2a240d3f663983b6a90f7c937"
+      },
+      "frozen": {
+        "path": "/tmp/snacka-opus-mapped-controls-20261015/inputs/silk-fec-1.packets",
+        "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/inputs/silk-fec-1.packets",
+        "bytes": 768,
+        "sha256": "f03cd7df2cf73175ab01890566b2caddd53a46d2a240d3f663983b6a90f7c937"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-fec-2.packets",
+        "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/docs/measurements/2026-10-15-opus-decoder-gain/functional/silk-fec-2.packets",
+        "bytes": 1488,
+        "sha256": "05cb79bd429e8346293671baf1cc5ef05c725435a3bd6ef1f39fc7b6a9dd6db0"
+      },
+      "frozen": {
+        "path": "/tmp/snacka-opus-mapped-controls-20261015/inputs/silk-fec-2.packets",
+        "resolved": "/private/tmp/snacka-opus-mapped-controls-20261015/inputs/silk-fec-2.packets",
+        "bytes": 1488,
+        "sha256": "05cb79bd429e8346293671baf1cc5ef05c725435a3bd6ef1f39fc7b6a9dd6db0"
+      }
+    }
+  ],
+  "production": [
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/Cargo.lock",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/Cargo.lock",
+      "bytes": 48818,
+      "sha256": "ea4659d4176642f085e36c3fd2d912e9c7e5ea80eb4fd21013a62303e6fc9b0a"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/Cargo.toml",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/Cargo.toml",
+      "bytes": 1943,
+      "sha256": "60a0cbbc0220f4951c3b0bc90f7f2b4fb455a763a7debf3bfb830e93ebf0306b"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/adaptive.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/adaptive.rs",
+      "bytes": 9436,
+      "sha256": "24ff58d6d449cc00c803413659a810f151399e9280332345d829702e430a90b1"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/codec.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/codec.rs",
+      "bytes": 56328,
+      "sha256": "b5557458bc2642baf4ab20741d31359773d6371c4083346d37b73d953e3d0216"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/concealment.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/concealment.rs",
+      "bytes": 8008,
+      "sha256": "0b024870fc663fc17eda2de8a93a20c2dbf5b0ff82a295a97040c2b00bc73d4c"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/entropy.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/entropy.rs",
+      "bytes": 23899,
+      "sha256": "6947a47169e142db7ed7bb66000d7670d7991ebb62774f988c546161cb60f870"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/harmonic.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/harmonic.rs",
+      "bytes": 34251,
+      "sha256": "0eddd938566232bd91b5eba280c26a8d79a14b8edf3bb69071853a283625addc"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/harmonic_joint.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/harmonic_joint.rs",
+      "bytes": 39200,
+      "sha256": "0d20737869f3e0a96033625b573c0736b865235be393157bd76cad0d6426af98"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/lib.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/lib.rs",
+      "bytes": 501,
+      "sha256": "1a0067c4819386fa7894223e72f26583b249c7c4ff0b7483e16e4b82210ca7d9"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/allocation.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/allocation.rs",
+      "bytes": 46025,
+      "sha256": "afc13c6a8416d9c55a248f6910ffe3cb226518b913b9b8e5621bc9bc169b65bd"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/bands.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/bands.rs",
+      "bytes": 67766,
+      "sha256": "04b8459203e8cb2fff91338ce45bfbe805754f0d0e558f4433436342421d3a19"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/celt.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/celt.rs",
+      "bytes": 51548,
+      "sha256": "40296bafa476bed9bb9e3d95072493519c797d99651d0df9e6de169b13ad11e5"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/decoder.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/decoder.rs",
+      "bytes": 74809,
+      "sha256": "053f0ffc9404cc804977ee43bbec1d93e2d61d9ffe8f303b01b2d1787ab97807"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/dtx.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/dtx.rs",
+      "bytes": 5230,
+      "sha256": "ba949ad11da2a05a383f5ea6e4f2982f2319610d6899df8b3eef8edbbd2698e3"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/encoder.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/encoder.rs",
+      "bytes": 59823,
+      "sha256": "db31e5b586f51dd01648cb7237c45758169755cf73e1673467dff8acfc5d8ea7"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/encoder_transition.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/encoder_transition.rs",
+      "bytes": 9655,
+      "sha256": "7264620efaac530e4f5921217169517097de861557eceb73b48973a19f84c12b"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/energy.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/energy.rs",
+      "bytes": 25033,
+      "sha256": "5a7bd73ce9ac609e9644f62347579ff223522a11bf2e3a2f6e41bc950d1300e7"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/extensions.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/extensions.rs",
+      "bytes": 11831,
+      "sha256": "8e12094d3b6d97450773e34415bb98d3aa3dc00c5114d391fc874b25dcef32f1"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/flags.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/flags.rs",
+      "bytes": 8606,
+      "sha256": "a92b363574a9d02c80eb26fb0da27a5207a5b356e40a38e626055558488e6114"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/input_delay.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/input_delay.rs",
+      "bytes": 12895,
+      "sha256": "838812a1ed6fa7779ff9e380f1d9e7c65f6b227aeecb5afb49391c91010c5423"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/input_resample.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/input_resample.rs",
+      "bytes": 30033,
+      "sha256": "534ba9ffdb1aefd97105aecb8878d4cbbff01f4766e33048d8e63b86f44c328d"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/mod.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/mod.rs",
+      "bytes": 1811,
+      "sha256": "ca3d15e99f2dc599bdf876b91f961da62acb7b7c9d2a5925ba0b0782f5d4c098"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/multistream.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/multistream.rs",
+      "bytes": 38682,
+      "sha256": "d7eba93af81ad457624f4322efe3d88adf968b9de7337b323c08c2f1307ad194"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/ogg.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/ogg.rs",
+      "bytes": 90217,
+      "sha256": "0f60441c53191ae673802834f90f92510897a54845709b538a09e638496de61a"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/packet.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/packet.rs",
+      "bytes": 28661,
+      "sha256": "4d09c1ddb0663900d5fc07d439d422524f9ab5f5e78786a6180e8719fb77ef73"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/pcm.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/pcm.rs",
+      "bytes": 10716,
+      "sha256": "0b8e10deda345c9396df63fe9a1adb053b3fb958c181332d8ecf6fd8f26dedb7"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/plc.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/plc.rs",
+      "bytes": 19593,
+      "sha256": "01878472ebb71e6d7128c63bd216ce703a4e32ee5a42f63e74b9c19ca0e6aa4f"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/projection.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/projection.rs",
+      "bytes": 17143,
+      "sha256": "4317d1600daffca639d14e0dfd1b59db53d3a17ea917cb633098d217f4153be6"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/pvq.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/pvq.rs",
+      "bytes": 27506,
+      "sha256": "8f29af81d9a7d4645801134ef16075c6afd19aca258f8810d515288f4c0ea719"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/range.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/range.rs",
+      "bytes": 21435,
+      "sha256": "39ea920cc34b87fcaf1c66e321997208dbf3c72f8d07d3680a36fa84b22bac52"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/repacketize.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/repacketize.rs",
+      "bytes": 14711,
+      "sha256": "edb3a942965ab67d37a7aaa58ebe299d91d59824a89591362c0ebfc98311d758"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/analysis.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/analysis.rs",
+      "bytes": 16370,
+      "sha256": "6a01ced7bd24935bcae58faf2853993462e55b1ffd74d03fd25d97cf4f237228"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/decoder.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/decoder.rs",
+      "bytes": 38368,
+      "sha256": "18a3ce0c5761d249e88e08c42f97a92bb8e28f774da71e76adf3cab1b19a1096"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/downsample.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/downsample.rs",
+      "bytes": 22993,
+      "sha256": "b6a417b879676aec7c66fc57b5d5d57a7d14a97a7628937f0307167d97d025a2"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/encode_pulses.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/encode_pulses.rs",
+      "bytes": 14627,
+      "sha256": "465bb35c14e5d5353ae8ed55b4edfb09880cbd84da5c0342bd4586abe087e2b5"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/encoder.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/encoder.rs",
+      "bytes": 49241,
+      "sha256": "3187424a35f6549663ad22a63718fcfdb865d240bd5bc5a51cc2e892dc6daa4e"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/excitation.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/excitation.rs",
+      "bytes": 14769,
+      "sha256": "c799d9527087b9b572a98561f8acd842e7ea8b3e1dce8e6be77e96696a534d74"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/frame.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/frame.rs",
+      "bytes": 31354,
+      "sha256": "1082d999010f2fcabcfa611d217d85be0f6b095851d1d8e783ace277a0e3cce7"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/frame_tables.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/frame_tables.rs",
+      "bytes": 6327,
+      "sha256": "e390dfd6d528855e1738a057d70c4e5e5a4037a9f9088235518c6c1168d84c8e"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/lpc.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/lpc.rs",
+      "bytes": 44945,
+      "sha256": "50b5795a1aba85e03a4f50a4e1726329d70593fa24eae30cf2f6160ce4929a8c"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/mod.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/mod.rs",
+      "bytes": 11767,
+      "sha256": "17d626560769390127288e431728c974f816e9e9076a0d4548c3f8a40d4b886f"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/native_delay.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/native_delay.rs",
+      "bytes": 3712,
+      "sha256": "2e640e1b6616b04b8b86044d9c513ba7f2ff8c33f766d86f558cf0f2af5ef6d5"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/pitch.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/pitch.rs",
+      "bytes": 15184,
+      "sha256": "4a84ff4061a96f26fc0ee0213a07090444288e32b5db2d883a52106f0b4aa34d"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/quantize.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/quantize.rs",
+      "bytes": 27519,
+      "sha256": "0e9da11f452d34b54d9b9706017a05e162786f2164f4cedb2229ca8a2483e699"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/redundancy.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/redundancy.rs",
+      "bytes": 27144,
+      "sha256": "ef5fbf9610565982cca6ed26d9cb35f1d5bad905abae274e5848e07a8a464c84"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/resample.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/resample.rs",
+      "bytes": 51466,
+      "sha256": "c48df83f22656d9443e4216958ebeaef8addda308fc3b12edd20db5c6a53a927"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/synthesis.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/synthesis.rs",
+      "bytes": 25998,
+      "sha256": "96a4d2c3a25afff84f15e00da5ed2d2ced7ffc8f3e06f79891443c5ab803d23e"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/tables.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/silk/tables.rs",
+      "bytes": 6306,
+      "sha256": "fb5cb883d311e92f057427b0eda15a2d6b241fbe95b0d6afc9abaab504f647be"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/bands-anticollapse-rfc6716.bin",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/bands-anticollapse-rfc6716.bin",
+      "bytes": 18064,
+      "sha256": "bd7b0124b4fc5894bbcdbdc1507494c835e94dc87496116dbbfe489200a4daaf"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/bands-hybrid-libopus-1.6.1.bin",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/bands-hybrid-libopus-1.6.1.bin",
+      "bytes": 53628,
+      "sha256": "6500c20f67896d1036fb986698d34613bb4b726d9cc4906501ef34d2d2710a7b"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/bands-rfc6716.bin",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/bands-rfc6716.bin",
+      "bytes": 595968,
+      "sha256": "6fd6d99a689a281e40e6adf62e800dad7fe8fbc8b3afb3637840e4f1767fc5f0"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/celt-to-hybrid.opus",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/celt-to-hybrid.opus",
+      "bytes": 80,
+      "sha256": "ebb6decc71aa8eabcac9b18bbb45a7190e595b596e9d9830cb5b2d38c985724a"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/pvq-libopus-1.6.1.bin",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/pvq-libopus-1.6.1.bin",
+      "bytes": 62532,
+      "sha256": "d2d44c6bff33f925b38cb312be2378538d63c9f217b64ccffa95762e7964c1ec"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/range-libopus-1.6.1.bin",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/range-libopus-1.6.1.bin",
+      "bytes": 93270,
+      "sha256": "ad5fb80a26dddad0508038264854bc044d83ee83e0a6d2e5aaf14ec9b704c8d8"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/resampler-response.bin",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/resampler-response.bin",
+      "bytes": 876,
+      "sha256": "b3766c8a4c84b423f338748aab547003c23c68816a7f9b642d003590677d10e2"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/stereo-phase.opus",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/testdata/stereo-phase.opus",
+      "bytes": 30,
+      "sha256": "732d0c956a54fded13ba78967ffd12a3b84f6babf0b8125c2ecf0f6337686ddb"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/transform.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/opus/transform.rs",
+      "bytes": 42793,
+      "sha256": "91227d0e98735ca7521a5ede5efa4f148aab38fde18cce8bd524942a8a0568b3"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/pulse.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/pulse.rs",
+      "bytes": 46570,
+      "sha256": "ed639fb3441c37d8251849bc5b6ffb2958558ce1d74d89726ddb7684eac971d3"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/pulse_classes.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/pulse_classes.rs",
+      "bytes": 102700,
+      "sha256": "b5abb1763796c54d33081fdabb64ca5f5db2ea3bbb9cf96e6d3f506647d112eb"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/transform.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/transform.rs",
+      "bytes": 36978,
+      "sha256": "6eb0c854413afa5fd8b4f5d69254c57c134e9217797081ef8502dbe50d23125a"
+    },
+    {
+      "path": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/transform/precomputed.rs",
+      "resolved": "/Users/mikpe/Documents/Codex/2026-10-15-jobba-p-snacka-f-det-att/snacka/src/transform/precomputed.rs",
+      "bytes": 214197,
+      "sha256": "f0145aaad4597883043f79d5f5e61ebbff3eb3c297b24923ef3b69c4b0012267"
+    }
+  ],
+  "headers": [
+    {
+      "path": "/opt/homebrew/include/opus/opus.h",
+      "resolved": "/opt/homebrew/Cellar/opus/1.6.1/include/opus/opus.h",
+      "bytes": 59505,
+      "sha256": "036f6a6e83a20e943505743e113e90d6278cbe8240f7d5bb90b3f86261e783e3"
+    },
+    {
+      "path": "/opt/homebrew/include/opus/opus_defines.h",
+      "resolved": "/opt/homebrew/Cellar/opus/1.6.1/include/opus/opus_defines.h",
+      "bytes": 38558,
+      "sha256": "bbd4d4e3ba99f6982b1c8d8f5541814ad77d8e8babf3cc788cf23d517b2ca9d6"
+    },
+    {
+      "path": "/opt/homebrew/include/opus/opus_multistream.h",
+      "resolved": "/opt/homebrew/Cellar/opus/1.6.1/include/opus/opus_multistream.h",
+      "bytes": 38267,
+      "sha256": "fd99c4594b4b57e406e9cab45a777895dd1b4c8de067088aa54ed7ae100b13f0"
+    },
+    {
+      "path": "/opt/homebrew/include/opus/opus_projection.h",
+      "resolved": "/opt/homebrew/Cellar/opus/1.6.1/include/opus/opus_projection.h",
+      "bytes": 32998,
+      "sha256": "11b3427e9ca342308a93adc9a081e2479685e5b7811a3a53540609f1bbc488ad"
+    },
+    {
+      "path": "/opt/homebrew/include/opus/opus_types.h",
+      "resolved": "/opt/homebrew/Cellar/opus/1.6.1/include/opus/opus_types.h",
+      "bytes": 5157,
+      "sha256": "19cb301ea1eedbcbdbb5049363de061893bf11c20e505a657b69ce6ffa5b11fa"
+    }
+  ],
+  "native": {
+    "path": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+    "resolved": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+    "bytes": 373744,
+    "sha256": "98dcd3cc62c6cf913b789051536ab246c56cc163c74bd8b4968ac467ec74b68b"
+  },
+  "tools": {
+    "python": {
+      "path": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "resolved": "/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "bytes": 34640,
+      "sha256": "7ebde552773a4045532637b114d645a313e045ac07b26f5e520bf039f1e34063"
+    },
+    "rustc": {
+      "path": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "resolved": "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "bytes": 413480,
+      "sha256": "dd6f58440b3418aa9157ae3f05d71eecff741ca41bc4eec120e7e8f2d933b9a0"
+    }
+  },
+  "tool_versions": {
+    "python": "Python 3.14.8",
+    "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: aarch64-apple-darwin\nrelease: 1.99.0\nLLVM version: 23.1.1\n"
+  },
+  "source_freezer": {
+    "path": "/tmp/snacka-mapped-controls-freeze.py",
+    "resolved": "/private/tmp/snacka-mapped-controls-freeze.py",
+    "bytes": 4183,
+    "sha256": "eb538c40214749bc80a5a08a0e54bb59cac97759a64cbd3b00ba54f1e527ad54"
+  },
+  "commands": {
+    "compile_encoder": [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "--edition=2024",
+      "-C",
+      "opt-level=2",
+      "-C",
+      "overflow-checks=on",
+      "-L",
+      "native=/opt/homebrew/lib",
+      "/tmp/snacka-opus-mapped-controls-20261015/oracles/native_reconfigure_oracle.rs",
+      "-o",
+      "/tmp/snacka-opus-mapped-controls-20261015/oracles/native_reconfigure_oracle"
+    ],
+    "duration_once": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/tmp/snacka-opus-mapped-controls-20261015/oracles/native_duration_oracle.py",
+      "--run-native-after-freeze",
+      "--native-library",
+      "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+      "--old-fixture-dir",
+      "/tmp/snacka-opus-mapped-controls-20261015/inputs",
+      "--new-output-dir",
+      "/tmp/snacka-opus-mapped-controls-20261015/duration-v2-run"
+    ],
+    "encoder_once": [
+      "/tmp/snacka-opus-mapped-controls-20261015/oracles/native_reconfigure_oracle",
+      "--run-native-after-freeze",
+      "/tmp/snacka-opus-mapped-controls-20261015/encoder-run"
+    ]
+  },
+  "planned_audio_calls": {
+    "duration_v2_parent_max": 1920,
+    "encoder_max": 540
+  },
+  "retention": "All raw rows/output/error codes/PCM physical guard buffers, no silent retry/filter/substitute"
+}

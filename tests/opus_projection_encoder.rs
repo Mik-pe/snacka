@@ -115,8 +115,9 @@ fn signed_projection_matches_independent_coded_pcm_and_stream_encoders() {
         for duration in [FrameDuration::Ms20, FrameDuration::Ms120] {
             for input_rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
                 let (mapping, mixing) = square();
-                let settings = configs(mode, duration)
+                let mut settings = configs(mode, duration)
                     .map(|config| config.with_sample_rate(input_rate).unwrap());
+                let initial = settings;
                 let mut projected =
                     ProjectionEncoder::new(mapping.clone(), mixing.clone(), &settings).unwrap();
                 let mut independent: Vec<_> = settings
@@ -132,6 +133,58 @@ fn signed_projection_matches_independent_coded_pcm_and_stream_encoders() {
                 );
                 let mut packet = vec![0xa5; projected.max_packet_bytes() + 17];
                 for index in 0..4 {
+                    if index == 1 || index == 2 {
+                        settings = if index == 2 {
+                            initial
+                        } else {
+                            [2, 1, 1].map(|channels| {
+                                EncoderConfig::new(
+                                    48_003 * channels as u32,
+                                    channels,
+                                    duration,
+                                    if mode == Mode::Silk {
+                                        Bandwidth::Wideband
+                                    } else {
+                                        Bandwidth::Fullband
+                                    },
+                                    Application::Voice,
+                                )
+                                .unwrap()
+                                .with_mode(mode)
+                                .unwrap()
+                                .with_sample_rate(input_rate)
+                                .unwrap()
+                                .with_rate_control(RateControl::Variable)
+                                .with_fec(mode != Mode::Celt)
+                                .unwrap()
+                            })
+                        };
+                        let previous: Vec<_> = independent
+                            .iter()
+                            .map(|owner| (owner.final_range(), owner.has_fec(), owner.was_dtx()))
+                            .collect();
+                        projected.reconfigure(&settings).unwrap();
+                        for (stream, (owner, &setting)) in
+                            independent.iter_mut().zip(&settings).enumerate()
+                        {
+                            owner.reconfigure(setting).unwrap();
+                            let child = projected.stream_encoder(stream).unwrap();
+                            assert_eq!(
+                                (child.final_range(), child.has_fec(), child.was_dtx()),
+                                previous[stream]
+                            );
+                            assert_eq!(child.config(), setting);
+                        }
+                        assert_eq!(
+                            projected.max_packet_bytes(),
+                            settings
+                                .iter()
+                                .map(|config| config.max_packet_bytes())
+                                .sum::<usize>()
+                                + 4
+                        );
+                        assert_eq!(projected.input_samples(), samples);
+                    }
                     let input = signal_at_rate(samples, 4, index * samples, input_rate);
                     let length = projected.encode(&input, &mut packet).unwrap();
                     assert!(packet[length..].iter().all(|&byte| byte == 0xa5));
@@ -403,10 +456,27 @@ fn mixing_processing_reset_and_status_do_not_allocate() {
     }
     let settings =
         configs(Mode::Silk, FrameDuration::Ms20).map(|config| config.with_dtx(true).unwrap());
+    let smaller = [2, 1, 1].map(|channels| {
+        EncoderConfig::new(
+            48_003 * channels as u32,
+            channels,
+            FrameDuration::Ms20,
+            Bandwidth::Wideband,
+            Application::Voice,
+        )
+        .unwrap()
+        .with_fec(true)
+        .unwrap()
+        .with_dtx(true)
+        .unwrap()
+    });
+    let mut invalid = settings;
+    invalid[2] = settings[0];
     let mut encoder = ProjectionEncoder::new(mapping, mixing, &settings).unwrap();
     let input = signal(960, 4, 0);
     let mut output = vec![0; encoder.max_packet_bytes()];
     ALLOCATIONS.with(|counter| counter.set(Some(0)));
+    encoder.reconfigure(&smaller).unwrap();
     for _ in 0..14 {
         encoder.encode(&input, &mut output).unwrap();
         let _ = encoder.final_range();
@@ -414,7 +484,14 @@ fn mixing_processing_reset_and_status_do_not_allocate() {
     }
     let silent = encoder.stream_encoder(1).unwrap().was_dtx();
     let active = encoder.stream_encoder(2).unwrap().was_dtx();
+    encoder.reconfigure(&settings).unwrap();
+    assert_eq!(encoder.stream_encoder(1).unwrap().was_dtx(), silent);
+    assert_eq!(encoder.stream_encoder(2).unwrap().was_dtx(), active);
+    assert_eq!(encoder.reconfigure(&invalid), Err(Error::Mapping));
     encoder.reset();
+    for (stream, &setting) in settings.iter().enumerate() {
+        assert_eq!(encoder.stream_encoder(stream).unwrap().config(), setting);
+    }
     let reset_range = encoder.final_range();
     let reset_dtx = encoder.was_dtx();
     encoder.encode(&input, &mut output).unwrap();

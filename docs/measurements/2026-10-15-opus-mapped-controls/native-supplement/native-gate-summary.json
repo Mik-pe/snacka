@@ -1,0 +1,62 @@
+{
+  "supplement_only": true,
+  "duration": {
+    "rows": 1102,
+    "constructors": {
+      "0": 20
+    },
+    "audio_calls": 640,
+    "selection_rows": 40,
+    "first_child_matches": 40,
+    "selection_mismatches": [],
+    "negative_events": [
+      {
+        "event": "early-invalid-plc-duration",
+        "code": -1,
+        "rows": 20
+      },
+      {
+        "event": "early-malformed-final-framing",
+        "code": -4,
+        "rows": 20
+      },
+      {
+        "event": "early-normal-capacity-one-sample",
+        "code": -2,
+        "rows": 20
+      }
+    ],
+    "raw_audited": 640,
+    "raw_diagnostics_exact": 640,
+    "nonfinite_success": 0,
+    "dirty_success_suffix": 0,
+    "late_classification": {
+      "NOT_COVERED": 120
+    }
+  },
+  "encoder": {
+    "rows": 2736,
+    "constructors": {
+      "0": 5
+    },
+    "audio_calls": 270,
+    "decodes": 270,
+    "negative_grouped": [
+      {
+        "kind": "aggregate_get",
+        "request": 4049,
+        "code": -5,
+        "rows": 35
+      },
+      {
+        "kind": "child_set",
+        "request": 4000,
+        "code": -1,
+        "rows": 15
+      }
+    ],
+    "nonfinite_decode": 0,
+    "dirty_decode_suffix": 0,
+    "dirty_encode_suffix_observed": 0
+  }
+}

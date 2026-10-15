@@ -22,7 +22,7 @@ pub enum Error {
     Packet(PacketError),
     /// Encoded stream packets have different durations.
     Duration,
-    /// The packet composition output is too small.
+    /// Packet output or prepared per-stream packet storage is too small.
     Output,
     /// One constituent decoder rejected its contents or output arguments.
     Decode(DecodeError),
@@ -409,6 +409,65 @@ impl MultistreamEncoder {
         self.encoders.get(stream)
     }
 
+    /// Apply one validated policy per coded stream without allocating.
+    ///
+    /// Mapping, coded channel counts, input sample rate and packet duration stay
+    /// fixed. Bitrate, bandwidth, application preference, explicit wire mode,
+    /// rate policy, FEC and DTX may change within the prepared storage. An
+    /// explicit mode overrides the application preference; see
+    /// [`EncoderConfig::mode`] and [`EncoderConfig::with_mode`]. Each target's
+    /// [`EncoderConfig::max_packet_bytes`] must not exceed that stream's original
+    /// packet-buffer length; a larger target returns [`Error::Output`]. Shrinking
+    /// then restoring a budget within that original ceiling is supported.
+    ///
+    /// The complete list's validity and geometry are checked before capacity,
+    /// and every check precedes mutation. Rejection preserves all configurations,
+    /// prediction history and previous-packet outcomes. Accepted changes reuse
+    /// [`Encoder::reconfigure`], including its fractional-clock, FEC-cache and
+    /// DTX-clock rules, without reconstructing or resetting the codec owners.
+    /// Immediate reconfiguration also clears each child's pending policy.
+    /// Previous-packet ranges, FEC and DTX outcomes remain observable.
+    ///
+    /// This applies immediately, before the next packet; it does not queue end
+    /// transition redundancy. Allocate output for the updated
+    /// [`Self::max_packet_bytes`] before calling [`Self::encode`].
+    pub fn reconfigure(&mut self, configs: &[EncoderConfig]) -> Result<(), Error> {
+        if configs.len() != self.encoders.len() {
+            return Err(Error::Streams);
+        }
+        let current = self.encoders[0].config();
+        for (stream, &config) in configs.iter().enumerate() {
+            config.validate()?;
+            if config.channels() != self.encoders[stream].config().channels() {
+                return Err(Error::Mapping);
+            }
+            if config.duration() != current.duration() {
+                return Err(Error::Duration);
+            }
+            if config.sample_rate() != current.sample_rate() {
+                return Err(EncodeError::Argument.into());
+            }
+        }
+        for (&config, packet) in configs.iter().zip(&self.packets) {
+            if config.max_packet_bytes() > packet.len() {
+                return Err(Error::Output);
+            }
+        }
+        let max_packet_bytes = configs
+            .iter()
+            .map(|config| config.max_packet_bytes())
+            .sum::<usize>()
+            + 2 * (configs.len() - 1);
+        for (encoder, &config) in self.encoders.iter_mut().zip(configs) {
+            // All ordinary validation and the unchanged channel/rate geometry
+            // were checked above. The current ordinary reconfigure has no
+            // remaining failure path under these conditions.
+            encoder.reconfigure(config)?;
+        }
+        self.max_packet_bytes = max_packet_bytes;
+        Ok(())
+    }
+
     /// Output capacity required before encoding, including self-delimiter ceilings.
     /// Actual packets may be shorter under variable rate or DTX policies.
     pub const fn max_packet_bytes(&self) -> usize {
@@ -558,6 +617,22 @@ impl MultistreamDecoder {
     pub const fn mapping(&self) -> &ChannelMapping {
         &self.mapping
     }
+    /// Last successful interval of the first coded stream, in output-rate samples.
+    ///
+    /// This forwards the first private [`Decoder`]'s status, including when its
+    /// channels are not mapped to output. Fresh and reset states report zero.
+    /// A successful packet reports all its frames; recovery reports the whole
+    /// requested interval, including any concealed prefix and recovered tail.
+    ///
+    /// This is not a record of whole-transport success. Refusals before stream
+    /// processing leave it unchanged. If the first stream succeeds and a later
+    /// stream fails, the count can change even though the operation returns an
+    /// error; reset before continuing after a content error. Gain and phase
+    /// controls do not change the count. See [`Decoder::last_packet_samples`].
+    pub fn last_packet_samples(&self) -> usize {
+        self.decoders[0].last_packet_samples()
+    }
+
     /// XOR of constituent final entropy ranges, matching multistream packet state.
     pub fn final_range(&self) -> u32 {
         self.decoders
@@ -715,6 +790,33 @@ impl MultistreamDecoder {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn first_stream_duration_follows_private_crossed_resets_even_when_unmapped() {
+        // Owned state composition, not a public later-content-error witness.
+        // It mirrors the separate native CTL-only selection probe without
+        // exposing mutable constituent decoders in the public Rust API.
+        for rate in [8_000, 12_000, 16_000, 24_000, 48_000] {
+            let mapping = ChannelMapping::new(2, 1, &[2, 255]).unwrap();
+            let mut decoder = MultistreamDecoder::with_sample_rate(mapping, rate).unwrap();
+            let mut output = vec![0.0; rate as usize / 25 * 2];
+            assert_eq!(decoder.last_packet_samples(), 0);
+            decoder.conceal(rate as usize / 50, &mut output).unwrap();
+            decoder.decoders[0].reset();
+            assert_eq!(
+                decoder.decoders[1].last_packet_samples(),
+                rate as usize / 50
+            );
+            assert_eq!(decoder.last_packet_samples(), 0);
+            decoder.reset();
+            decoder.conceal(rate as usize / 25, &mut output).unwrap();
+            decoder.decoders[1].reset();
+            assert_eq!(decoder.decoders[1].last_packet_samples(), 0);
+            assert_eq!(decoder.last_packet_samples(), rate as usize / 25);
+            decoder.reset();
+            assert_eq!(decoder.last_packet_samples(), 0);
+        }
+    }
 
     #[test]
     fn phase_policy_reaches_unmapped_mono_history_and_survives_reset() {

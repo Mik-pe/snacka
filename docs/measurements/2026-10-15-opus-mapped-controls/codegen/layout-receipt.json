@@ -1,0 +1,56 @@
+{
+  "before": {
+    "command": [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "--edition=2024",
+      "-O",
+      "-C",
+      "overflow-checks=yes",
+      "/tmp/snacka-opus-mapped-controls-20261015/codegen/layout.rs",
+      "--extern",
+      "snacka=/tmp/snacka-opus-mapped-phase-evidence-20261015/production/target/release/libsnacka.rlib",
+      "-L",
+      "dependency=/tmp/snacka-opus-mapped-phase-evidence-20261015/production/target/release/deps",
+      "-o",
+      "/tmp/snacka-opus-mapped-controls-20261015/codegen/layout-before"
+    ],
+    "library_sha256": "6613fe35ff005cd519c55964d94798458962cd5e36645b2e799922d350e18165",
+    "layout": {
+      "decoder": 4280,
+      "mapped_decoder": 336,
+      "projection_decoder": 672,
+      "encoder": 44552,
+      "mapped_encoder": 4448,
+      "projection_encoder": 4816,
+      "config": 24
+    }
+  },
+  "after": {
+    "command": [
+      "/Users/mikpe/.rustup/toolchains/1.99.0-aarch64-apple-darwin/bin/rustc",
+      "--edition=2024",
+      "-O",
+      "-C",
+      "overflow-checks=yes",
+      "/tmp/snacka-opus-mapped-controls-20261015/codegen/layout.rs",
+      "--extern",
+      "snacka=/tmp/snacka-opus-mapped-controls-20261015/production-cgu16/target/release/libsnacka.rlib",
+      "-L",
+      "dependency=/tmp/snacka-opus-mapped-controls-20261015/production-cgu16/target/release/deps",
+      "-o",
+      "/tmp/snacka-opus-mapped-controls-20261015/codegen/layout-after"
+    ],
+    "library_sha256": "c9b1e40fe390011c106bd2d12ef9460e4d9b89f86d5b0203291e79cde6547c79",
+    "layout": {
+      "decoder": 4280,
+      "mapped_decoder": 336,
+      "projection_decoder": 672,
+      "encoder": 44552,
+      "mapped_encoder": 4448,
+      "projection_encoder": 4816,
+      "config": 24
+    }
+  },
+  "layouts_equal": true,
+  "scope": "Size-only executable; constructs no codec, no native calls/timers."
+}
