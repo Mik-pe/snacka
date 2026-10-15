@@ -256,7 +256,9 @@ The integrated source at `fb5dc6c` passes 355 release/reference tests and
 all-target Clippy. All six library cross-checks pass for iOS, iOS Simulator and
 Android, with and without `opus`. The 24 official-vector runs again decode
 40,150 packets with exact final ranges, no clipped samples and a minimum score
-of 68.0. Recommended quality and complete performance acceptance remain open.
+of 68.0. An instrumented address-sanitizer fuzz run completes 56,537 inputs in
+61 seconds without a failure. Recommended quality and complete performance
+acceptance remain open.
 
 ### Packet coverage and decoder follow-up, 2026-10-15
 
