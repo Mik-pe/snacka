@@ -333,8 +333,13 @@ fn opus_processing_reset_and_rate_changes_do_not_allocate() {
             }
             assert_eq!(decoder.gain_q8(), gain);
             let samples = decoder.decode(packet, &mut mapped_output).unwrap();
-            decoder.conceal(rate as usize / 400, &mut mapped_output).unwrap();
-            actual_projected_gain_recovery |= decoder.recover(packet, samples, &mut mapped_output).unwrap() == Recovery::Fec;
+            decoder
+                .conceal(rate as usize / 400, &mut mapped_output)
+                .unwrap();
+            actual_projected_gain_recovery |= decoder
+                .recover(packet, samples, &mut mapped_output)
+                .unwrap()
+                == Recovery::Fec;
             decoder.decode(packet, &mut mapped_output).unwrap();
             black_box(&mapped_output);
         }
