@@ -122,7 +122,9 @@ pub(super) fn analyze_with_threshold(
         residual[index] = output[index] - prediction;
     }
     let minimum = 2 * rate_khz(frame.bandwidth);
-    let maximum = 18 * rate_khz(frame.bandwidth);
+    // The absolute lag code carries 32 high symbols of `rate / 2` low values
+    // above `minimum`, so the largest encodable lag is `18 * rate - 1`.
+    let maximum = 18 * rate_khz(frame.bandwidth) - 1;
     let energy = residual[PREFIX..PREFIX + samples.len()]
         .iter()
         .map(|value| value * value)
@@ -411,6 +413,41 @@ mod tests {
                 assert_eq!(decoded.scale, 15565);
                 assert_eq!(decoder.range(), interval);
             }
+        }
+    }
+
+    #[test]
+    fn longest_period_selects_an_encodable_lag() {
+        for bandwidth in [Bandwidth::Narrow, Bandwidth::Medium, Bandwidth::Wide] {
+            let frame = Frame {
+                bandwidth,
+                duration: FrameDuration::Ms20,
+            };
+            let rate = rate_khz(bandwidth);
+            let period = 18 * rate;
+            // Smooth pulses one wire-format-limit period apart; nearby lags
+            // still correlate strongly, so the frame should remain voiced.
+            let samples: [f32; 320] = std::array::from_fn(|i| {
+                let offset = (i % period) as f32 - 6.0;
+                if offset.abs() < 6.0 {
+                    0.5 * (1.0 + (offset * std::f32::consts::PI / 6.0).cos())
+                } else {
+                    0.0
+                }
+            });
+            let pitch = analyze(
+                &samples[..frame.samples()],
+                frame,
+                &[0; 10],
+                &History::new(),
+            );
+            assert_ne!(pitch.lag, 0);
+            assert!((2 * rate..18 * rate).contains(&pitch.lag));
+            let mut bytes = [0; 64];
+            let mut encoder = Encoder::new(&mut bytes);
+            pitch
+                .encode(&mut encoder, frame, false, false, true)
+                .unwrap();
         }
     }
 }
