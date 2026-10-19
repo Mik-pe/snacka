@@ -888,6 +888,7 @@ pub struct FrameInfo {
 /// length. Construction allocates; decoding, concealment and reset do not.
 pub struct Decoder {
     duration: FrameDuration,
+    neural_postfilter: bool,
     plan: MdctPlan,
     workspace: MdctWorkspace,
     overlap: [f32; ALGORITHMIC_DELAY],
@@ -913,6 +914,7 @@ impl Decoder {
         let workspace = MdctWorkspace::new(&plan);
         Self {
             duration,
+            neural_postfilter: true,
             plan,
             workspace,
             overlap: [0.0; ALGORITHMIC_DELAY],
@@ -921,6 +923,15 @@ impl Decoder {
             sequence: 0,
             finished: false,
         }
+    }
+    /// Enable or disable the neural MDCT refinement and denoiser postfilter.
+    pub const fn with_neural_postfilter(mut self, enabled: bool) -> Self {
+        self.neural_postfilter = enabled;
+        self
+    }
+    /// Whether the neural MDCT refinement and denoiser postfilter is enabled.
+    pub const fn neural_postfilter(&self) -> bool {
+        self.neural_postfilter
     }
     /// Decode one packet to the configured number of normalized PCM samples.
     ///
@@ -948,6 +959,7 @@ impl Decoder {
         let mut reader = entropy::Decoder::new(payload);
         let mut coefficients = [0.0; FRAME_SAMPLES];
         let coded_bins = packet.coded_bins();
+        let mut neural_meta = None;
         if packet.is_harmonic() {
             let f0 = reader.raw(9)? as usize + crate::harmonic::MIN_F0;
             if f0 > crate::harmonic::MAX_F0 {
@@ -1004,6 +1016,15 @@ impl Decoder {
                     &mut self.workspace,
                 )
                 .map_err(|_| Error::Packet)?;
+            neural_meta = Some(crate::neural::FrameMetadata {
+                samples,
+                coded_bins,
+                payload_bytes: payload.len(),
+                is_harmonic: true,
+                f0,
+                codes,
+                allocation,
+            });
         } else if packet.gain_bands() == 4 {
             let mut codes = [0u8; 4];
             let gain_bits = crate::pulse::gain_bits(self.duration.samples(), payload.len());
@@ -1034,6 +1055,15 @@ impl Decoder {
                     *value = f32::from(pulse) * scale;
                 }
             }
+            neural_meta = Some(crate::neural::FrameMetadata {
+                samples,
+                coded_bins,
+                payload_bytes: payload.len(),
+                is_harmonic: false,
+                f0: 0,
+                codes,
+                allocation,
+            });
         } else {
             let code = reader.raw(8)? as u8;
             if code > 208 {
@@ -1068,6 +1098,12 @@ impl Decoder {
         if reader.tell() > (payload.len() * 8) as u64 {
             return Err(Error::Packet);
         }
+        if self.neural_postfilter
+            && self.sequence != 0
+            && let Some(meta) = &neural_meta
+        {
+            crate::neural::refine_spectrum(&mut coefficients[..self.duration.samples()], meta);
+        }
         self.synthesize(&coefficients, output)?;
         self.concealment.observe(output);
         self.sequence = self.sequence.wrapping_add(1);
@@ -1083,6 +1119,152 @@ impl Decoder {
                 self.duration.samples()
             },
         })
+    }
+    /// Extract unrefined decoded MDCT coefficients and frame features for neural training.
+    #[doc(hidden)]
+    #[allow(clippy::too_many_arguments)]
+    pub fn decode_unrefined_training_frame(
+        &mut self,
+        bytes: &[u8],
+        coefficients: &mut [f32; FRAME_SAMPLES],
+        global_features: &mut [f32; 64],
+        group_sigma: &mut [f32; 4],
+        edges: &mut [usize; 5],
+        codes_out: &mut [u8; 4],
+        is_harmonic_out: &mut bool,
+    ) -> Result<usize, Error> {
+        let packet = Packet::parse(bytes)?;
+        if packet.frame_duration() != self.duration {
+            return Err(Error::Profile);
+        }
+        let payload = packet.payload();
+        let mut reader = entropy::Decoder::new(payload);
+        coefficients.fill(0.0);
+        let coded_bins = packet.coded_bins();
+        let samples = self.duration.samples();
+        let meta = if packet.is_harmonic() {
+            let f0 = reader.raw(9)? as usize + crate::harmonic::MIN_F0;
+            if f0 > crate::harmonic::MAX_F0 {
+                return Err(Error::Packet);
+            }
+            let gain_bits = crate::pulse::gain_bits(samples, payload.len());
+            let gain_step = 1u8 << (8 - gain_bits);
+            let mut codes = [0u8; 4];
+            for code in &mut codes {
+                *code = reader.raw(gain_bits)? as u8 * gain_step;
+                if *code > 208 {
+                    return Err(Error::Packet);
+                }
+            }
+            let mut positions = [usize::MAX; FRAME_SAMPLES];
+            let (dimensions, h_edges) = crate::harmonic::layout(f0, &mut positions);
+            let allocation = crate::pulse::allocate_dimensions(
+                dimensions,
+                &codes,
+                payload.len() * 8 - 9,
+                4 * gain_bits as usize,
+            );
+            let mut shape = [0i16; FRAME_SAMPLES];
+            let mut decoded_values = [0.0f32; FRAME_SAMPLES];
+            for group in 0..4 {
+                let range = h_edges[group]..h_edges[group + 1];
+                let norm = crate::pulse::decode(
+                    &mut reader,
+                    &mut shape[range.clone()],
+                    allocation[group],
+                )?;
+                let scale = if norm == 0.0 {
+                    0.0
+                } else {
+                    gain(codes[group]) / norm
+                };
+                for index in range {
+                    if positions[index] == usize::MAX {
+                        if shape[index] != 0 {
+                            return Err(Error::Packet);
+                        }
+                    } else {
+                        decoded_values[index] = f32::from(shape[index]) * scale;
+                    }
+                }
+            }
+            let mut waveform = [0.0f32; 2 * FRAME_SAMPLES];
+            crate::harmonic::synthesize(&mut waveform, samples, f0, &positions, &decoded_values);
+            self.plan
+                .forward(
+                    &waveform[..2 * samples],
+                    &mut coefficients[..samples],
+                    &mut self.workspace,
+                )
+                .map_err(|_| Error::Packet)?;
+            crate::neural::FrameMetadata {
+                samples,
+                coded_bins,
+                payload_bytes: payload.len(),
+                is_harmonic: true,
+                f0,
+                codes,
+                allocation,
+            }
+        } else if packet.gain_bands() == 4 {
+            let mut codes = [0u8; 4];
+            let gain_bits = crate::pulse::gain_bits(samples, payload.len());
+            let gain_step = 1u8 << (8 - gain_bits);
+            for code in &mut codes {
+                *code = reader.raw(gain_bits)? as u8 * gain_step;
+                if *code > 208 {
+                    return Err(Error::Packet);
+                }
+            }
+            let allocation = crate::pulse::allocate(samples, coded_bins, &codes, payload.len());
+            let p_edges = crate::pulse::edges(samples, coded_bins);
+            let mut shape = [0i16; FRAME_SAMPLES];
+            for group in 0..4 {
+                let range = p_edges[group]..p_edges[group + 1];
+                let norm = crate::pulse::decode(
+                    &mut reader,
+                    &mut shape[range.clone()],
+                    allocation[group],
+                )?;
+                let scale = if norm == 0.0 {
+                    0.0
+                } else {
+                    gain(codes[group]) / norm
+                };
+                for (value, &pulse) in coefficients[range.clone()].iter_mut().zip(&shape[range]) {
+                    *value = f32::from(pulse) * scale;
+                }
+            }
+            crate::neural::FrameMetadata {
+                samples,
+                coded_bins,
+                payload_bytes: payload.len(),
+                is_harmonic: false,
+                f0: 0,
+                codes,
+                allocation,
+            }
+        } else {
+            self.sequence = self.sequence.wrapping_add(1);
+            self.finished = packet.is_final();
+            return Ok(0);
+        };
+        if reader.tell() > (payload.len() * 8) as u64 {
+            return Err(Error::Packet);
+        }
+        *edges = crate::pulse::edges(samples, coded_bins);
+        *codes_out = meta.codes;
+        *is_harmonic_out = meta.is_harmonic;
+        crate::neural::compute_frame_features(
+            &coefficients[..samples],
+            &meta,
+            edges,
+            group_sigma,
+            global_features,
+        );
+        self.sequence = self.sequence.wrapping_add(1);
+        self.finished = packet.is_final();
+        Ok(coded_bins)
     }
     /// Synthesize exactly one missing frame and advance the sequence.
     ///
