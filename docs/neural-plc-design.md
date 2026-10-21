@@ -298,3 +298,9 @@ unrecovered previous packets or explicitly reset/signal that state. Measure
 actual bit savings and deterministic encoder/decoder CDF parity. Phase 4 can
 revisit postfilter/search coupling and genuine fullband Swedish data. Neither
 is part of this Phase 2 implementation.
+
+## Oracle headroom diagnostic
+
+The complete 5,184-case-per-variant noncausal oracle study, decoded-waveform
+results, per-band correlations and next loss-ablation plan are in
+[neural-plc-oracles.md](neural-plc-oracles.md). It changes no runtime weights.
