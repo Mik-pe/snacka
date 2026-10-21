@@ -2,9 +2,18 @@
 # A bootstrap stages verified feature archives and invokes train_neural_plc.py.
 # The GPU is released even when staging, training, or retrieval fails.
 set -euo pipefail
-session_name=${1:?usage: run_colab_plc_training.sh session bootstrap.py output_dir}
+session_name=${1:?usage: run_colab_plc_training.sh session bootstrap.py output_dir [artifact ...]}
 bootstrap=${2:?bootstrap.py required}
 output_dir=${3:?output directory required}
+shift 3
+if [ "$#" -eq 0 ]; then
+  set -- neural_plc_weights.rs parity.json training-report.json checkpoint.pt
+fi
+for name in "$@"; do
+  case "$name" in
+    */*|..*) echo "Artifact must be a plain file name" >&2; exit 2 ;;
+  esac
+done
 test -f "$bootstrap"
 mkdir -p "$output_dir"
 cleanup() {
@@ -52,11 +61,15 @@ with tempfile.TemporaryDirectory(prefix="snacka-colab-ready-") as temporary:
             if status!=last:
                 print("Training status:",status,flush=True);last=status
             if status["state"]=="complete":break
-            if status["state"]=="failed":raise RuntimeError("Remote trainer failed; inspect train.log")
+            if status["state"]=="failed":
+                subprocess.run(["colab","download","-s",session_name,
+                    "/content/snacka-plc-training/result/train.log",str(pathlib.Path(output_dir)/"train.log")],
+                    capture_output=True,text=True,timeout=30)
+                raise RuntimeError("Remote trainer failed; retrieved train.log where available")
         time.sleep(5)
     else:
         raise TimeoutError("Remote trainer exceeded one hour")
 PY
-for name in neural_plc_weights.rs parity.json training-report.json checkpoint.pt; do
+for name in "$@"; do
   colab download -s "$session_name" "/content/snacka-plc-training/result/$name" "$output_dir/$name"
 done

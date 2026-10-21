@@ -1,0 +1,64 @@
+{
+  "experiment": "phase2-long-training-20261021",
+  "baseline": "a4f33c3f8c60baccd5e42b853292f0a3405ad139",
+  "heldout_policy": "All previously scored tests are regression only. Select on validation. Freeze any replacement before a fresh final selection.",
+  "first_round": [
+    {
+      "name": "resume-constant",
+      "resume": true,
+      "epochs": 300,
+      "lr": 0.002,
+      "schedule": "constant"
+    },
+    {
+      "name": "resume-cosine",
+      "resume": true,
+      "epochs": 300,
+      "lr": 0.0005,
+      "schedule": "cosine"
+    },
+    {
+      "name": "seed-20261022",
+      "seed": 20261022,
+      "epochs": 300,
+      "lr": 0.002,
+      "schedule": "cosine"
+    },
+    {
+      "name": "seed-20261023",
+      "seed": 20261023,
+      "epochs": 300,
+      "lr": 0.002,
+      "schedule": "cosine"
+    }
+  ],
+  "diagnostics": [
+    "training/validation gap",
+    "near-bound gain fractions",
+    "gradient norm",
+    "last-50-epoch validation trend",
+    "exported Rust waveform quality"
+  ],
+  "replacement_policy": "Keep original if longer training does not improve actual waveform quality within unchanged safety and intelligibility gates.",
+  "data_policy": "Stream verified private Drive archives directly into Colab temporary disk; no raw/feature staging on Mac.",
+  "waveform_screen": {
+    "recorded_before_candidate_waveform_results": true,
+    "bitrates": [
+      24000
+    ],
+    "frame_ms": [
+      10,
+      20
+    ],
+    "modes": [
+      "default",
+      "harmonic"
+    ],
+    "clips": 12,
+    "extra_lost_snr_gain_db_min_each_language": 0.025,
+    "additional_stoi_estoi_delta_min_each_language_mode_duration": -0.0002,
+    "additional_lsd_delta_db_max_each_language_mode_duration": 0.01,
+    "prior_phase1_gates_unchanged": true,
+    "passing_screen_requires_full_matrix_and_fresh_final_acceptance": true
+  }
+}

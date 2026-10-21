@@ -108,7 +108,12 @@ MDCT quadratic error plus 0.1 log-envelope loss and 0.01 identity regularization
 It uses an equal-language objective, seeded shuffling, ten float epochs then
 fake-quantized int8 weights through epoch 60, batch size 8,192, seed 20261021.
 Checkpoint selection minimizes the composite validation objective. Checkpoints
-include optimizer and RNG state; the current CLI trains from scratch.
+include optimizer and RNG state. `--resume checkpoint.pt --epochs 300` resumes
+both, with epochs denoting the total target. The optional `--seed` applies to
+fresh starts. `--learning-rate` and `--schedule constant|cosine` control the new
+training segment. Selected and final checkpoints are saved separately; optional
+epoch snapshots retain intermediate candidates. Diagnostics record training
+sample error, validation error and the fraction of gains near their bounds.
 
 The accepted training run used an L4, PyTorch 2.11.0+cu130 and 60 epochs
 (12.566 seconds in the training loop, excluding staging/startup). Epoch 60 was
