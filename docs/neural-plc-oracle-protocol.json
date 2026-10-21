@@ -90,5 +90,12 @@
     "preprocessing": "FFmpeg9.0.2 arm64, NumPy2.5.4; native FLAC streamed in RAM, one temporary compressed PCM chunk at a time; no persistent local raw corpus",
     "cached_english_jobs_per_shard": 72,
     "cache_audit": "All cached English sources are48kHz and absent from prepared manifest. Runtime binary and numeric scoring branch unchanged; every cached input fingerprint and stats archive verified. Protocol source migration retained separately."
+  },
+  "archival_addendum": {
+    "english_inputs": "Frozen on Colab after the scoring jobs; all36 archived English input fingerprints reproduced. This does not change the Swedish-only prepared manifest used in the run.",
+    "manifest_sha256": "d8294d2af459c755afe6da704758390cfc947569396bb1010fba42c58d2c0350",
+    "archive_sha256": "ea0469fb325656fa582e49830a2a750651beb0d7ac3d6fc3852f9e28ed954eb5",
+    "archive_bytes": 20553740,
+    "drive_full_readback_verified": true
   }
 }

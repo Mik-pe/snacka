@@ -44,6 +44,7 @@ def main():
                                 'MDCT oracles are per-frame optima for fixed predictions, not a global waveform optimum through overlap-add or decoder-state feedback.',
                                 'Combined applied-gain functional has the training coefficients but differs from the original post-training strength path. Strength-aware raw-gain comparison is separate.',
                                 'Functional diagnostics use f64 statistics. Current raw gain is inferred from deployed f32 gain, so this is not a bitwise recovery of the PyTorch checkpoint score.',
+                                'Pooled all-language fixed-prediction statistics weight frame occurrences, not the balanced training-language objective.',
                                 'Only previously scored diagnostic material was used; no new acceptance set or training.'],
                 waveforms=[],waveform_conditions=[],waveform_strata=[],native_objectives=[],fixed_prediction=[],fixed_prediction_by_horizon=[],correlations=[])
     key=lambda r:tuple(r[k] for k in ('source','group_id','clip','condition','bitrate','frame_ms','harmonic','pattern'))
@@ -108,6 +109,7 @@ def main():
         with np.load(path,allow_pickle=False) as z:
             group=by_language.setdefault(meta['source']['language'],{})
             for name in z.files:group.setdefault(name,[]).append(z[name])
+    by_language['all']={name:[chunk for group in by_language.values() for chunk in group[name]] for name in next(iter(by_language.values()))}
     for language,chunks in by_language.items():
         data={k:np.concatenate(v) for k,v in chunks.items()};pp,pt,tt=data['pp'],data['pt'],data['tt'];eligible=data['eligible'].astype(bool)
         gains=dict(baseline=np.ones_like(pp),current=data['mlp'],**{name:data['oracles'][:,i,:].astype(np.float64) for i,name in enumerate(VARIANTS[2:])})
@@ -146,8 +148,8 @@ def main():
         total=np.maximum((pp+tt).sum(axis=1,keepdims=True),1e-10);an,bn,cn=pp/total,pt/total,tt/total
         opposing=(an-bn)*np.log((an+.001)/(cn+.001))<0
         for scope,mask in [('all_loss',domains['all_loss']),('runtime_eligible',eligible)]:
-            for condition_index,condition in enumerate(('clean','noise20','noise10')):
-                chosen=mask&(data['condition']==condition_index)
+            for condition_index,condition in [(None,'all'),(0,'clean'),(1,'noise20'),(2,'noise10')]:
+                chosen=mask if condition_index is None else mask&(data['condition']==condition_index)
                 for b in range(16):
                     good=chosen&valid[:,b];supported=chosen&support[:,b]
                     report['correlations'].append(dict(language=language,scope=scope,condition=condition,band=b,hz=[HZ[b],HZ[b+1]],

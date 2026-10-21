@@ -95,7 +95,8 @@ Results distinguish:
 - **Fixed-prediction headroom:** the same baseline MDCT prediction under the
   learned and oracle gains, including the original training-strength path.
 - **Correlation and conflict:** quartiles of `rho=pt/sqrt(pp*tt)` by band,
-  language, condition and eligibility; undefined zero-energy cases are counted
+  language, condition and eligibility, plus pooled all-language/all-condition
+  tables; undefined zero-energy cases are counted
   and excluded. An additional table requires relative band energy above `1e-6`
   in both signals. Gradient opposition and clamp occupancy are recorded.
 
@@ -139,4 +140,9 @@ Use the exact same binary on multiple evaluation hosts. The freezer also
 accepts a byte-stream loader when the original host has no local raw corpus.
 Evaluation audio stays in the CPU environment; code and compact receipts can
 be retained locally.
+Both Swedish and English clean/noise inputs were subsequently frozen and
+verified on Drive. The English archive is an archival addendum; it does not
+change the prepared-input manifest used in this run. Pooled fixed-prediction
+statistics weight frame occurrences, rather than reproducing the original
+balanced training-language objective.
 Canonical data and result archives remain in the owner's private Drive.
