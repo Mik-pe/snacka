@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "baseline": "1abd3a60c2775b712508dadbae6de1b40f962ee6",
+  "seed_salt": "snacka-neural-v2:2026-10-21:",
+  "full": false,
+  "clips": 180,
+  "manifest_sha256": "0dc0cc47a341cf31465a842a8ca246bf819c36d6c965e1504132397516077281",
+  "strata": [
+    {
+      "source": "fleurs-sv",
+      "split": "train",
+      "clips": 96,
+      "groups": 93,
+      "seconds": 1171.34,
+      "native_rate": 16000
+    },
+    {
+      "source": "fleurs-sv",
+      "split": "validation",
+      "clips": 12,
+      "groups": 12,
+      "seconds": 162.78,
+      "native_rate": 16000
+    },
+    {
+      "source": "vctk",
+      "split": "test",
+      "clips": 12,
+      "groups": 3,
+      "seconds": 42.40241666666667,
+      "native_rate": 48000
+    },
+    {
+      "source": "vctk",
+      "split": "train",
+      "clips": 48,
+      "groups": 12,
+      "seconds": 156.37160416666666,
+      "native_rate": 48000
+    },
+    {
+      "source": "vctk",
+      "split": "validation",
+      "clips": 12,
+      "groups": 3,
+      "seconds": 39.24675,
+      "native_rate": 48000
+    }
+  ],
+  "status": "raw_audio_prepared_not_plc_features_or_trained_model",
+  "archive": {
+    "name": "corpus-pilot-180-20261021.tar.gz",
+    "bytes": 50585039,
+    "sha256": "45d8dc0391e6492bef306f74d2ae814c3121817deae443534f7dd53ccba2c97c"
+  },
+  "builder_sha256": "dbc39d2fce2ea3f7371e7c29aeb723057bb81690e849b2fec69f73851cac6cab",
+  "verification": [
+    "all FLAC SHA256 match manifest",
+    "all PCM hashes unique",
+    "source group keys do not cross splits",
+    "native rates verified with ffprobe",
+    "archive contains all 180 clips and exact manifest",
+    "Drive raw download independently matches archive SHA256 and byte count"
+  ],
+  "gpu_training_started": false,
+  "cloud_readback_verified": true
+}

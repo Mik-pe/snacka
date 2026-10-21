@@ -1,0 +1,12 @@
+{
+  "strength": 0.425,
+  "quantized_model_bytes_sha256": "72a34033c033932f4152ae9ff9cc53d7915c383905b8daeb40f719dd51cf4fe6",
+  "validation_csv_sha256": "a43e0cbd29c82fbb71887bf40799d153a73261e126b20e31367259b4bc0a3c78",
+  "validation_status": "PASS",
+  "heldout_clips": 24,
+  "heldout_selection_sha256": "224f05fd0cd660d8c1d4963af5263615d4b12f37ad35b261929b85113c1a0891",
+  "inference_source_sha256": "06ddd0ba5f820071e5484fac7947da6115415f77bce788cd4ebdc2da3bd1a75b",
+  "weights_source_sha256": "8983b7b19d3bdb1c38f3fdda8a90b831a0bdd1ce953da79633209860142a2c5b",
+  "holdout_has_not_been_evaluated": true,
+  "recorded_at": "before fresh heldout evaluation"
+}

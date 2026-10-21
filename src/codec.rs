@@ -889,6 +889,8 @@ pub struct FrameInfo {
 pub struct Decoder {
     duration: FrameDuration,
     neural_postfilter: bool,
+    neural_plc: bool,
+    plc_history: crate::neural_plc::History,
     plan: MdctPlan,
     workspace: MdctWorkspace,
     overlap: [f32; ALGORITHMIC_DELAY],
@@ -915,6 +917,8 @@ impl Decoder {
         Self {
             duration,
             neural_postfilter: true,
+            neural_plc: true,
+            plc_history: crate::neural_plc::History::new(),
             plan,
             workspace,
             overlap: [0.0; ALGORITHMIC_DELAY],
@@ -933,12 +937,41 @@ impl Decoder {
     pub const fn neural_postfilter(&self) -> bool {
         self.neural_postfilter
     }
+    /// Enable or disable loss-only neural envelope prediction.
+    pub const fn with_neural_plc(mut self, enabled: bool) -> Self {
+        self.neural_plc = enabled;
+        self
+    }
+    /// Whether loss-only neural envelope prediction is enabled.
+    pub const fn neural_plc(&self) -> bool {
+        self.neural_plc
+    }
     /// Decode one packet to the configured number of normalized PCM samples.
     ///
     /// Invalid packets, sequence mismatches and incorrect output lengths leave
     /// output and persistent history unchanged. Conceal each known missing frame
     /// before decoding the next packet, or reset for a new stream.
     pub fn decode(&mut self, bytes: &[u8], output: &mut [f32]) -> Result<FrameInfo, Error> {
+        self.decode_with_coefficients(bytes, output, None)
+    }
+
+    /// Decode with the exact refined native MDCT target for offline PLC training.
+    #[doc(hidden)]
+    pub fn decode_plc_training_frame(
+        &mut self,
+        bytes: &[u8],
+        output: &mut [f32],
+        coefficients: &mut [f32; FRAME_SAMPLES],
+    ) -> Result<FrameInfo, Error> {
+        self.decode_with_coefficients(bytes, output, Some(coefficients))
+    }
+
+    fn decode_with_coefficients(
+        &mut self,
+        bytes: &[u8],
+        output: &mut [f32],
+        training: Option<&mut [f32; FRAME_SAMPLES]>,
+    ) -> Result<FrameInfo, Error> {
         if self.finished {
             return Err(Error::Finished);
         }
@@ -1104,7 +1137,18 @@ impl Decoder {
         {
             crate::neural::refine_spectrum(&mut coefficients[..self.duration.samples()], meta);
         }
+        if let Some(training) = training {
+            *training = coefficients;
+        }
         self.synthesize(&coefficients, output)?;
+        if self.concealment.missing() {
+            self.plc_history.reset();
+        }
+        self.plc_history.observe(
+            &coefficients[..self.duration.samples()],
+            packet.bandwidth_hz() as usize,
+            neural_meta.as_ref().map_or(0, |meta| meta.f0),
+        );
         self.concealment.observe(output);
         self.sequence = self.sequence.wrapping_add(1);
         self.finished = packet.is_final();
@@ -1295,6 +1339,12 @@ impl Decoder {
                 &mut self.workspace,
             )
             .map_err(|_| Error::Packet)?;
+        if self.neural_plc {
+            let input = self
+                .plc_history
+                .input(samples, self.concealment.features(samples));
+            crate::neural_plc::refine(&mut coefficients[..samples], &input);
+        }
         self.synthesize(&coefficients, output)?;
         self.concealment.advance(samples);
         let sequence = self.sequence;
@@ -1311,8 +1361,44 @@ impl Decoder {
     pub fn reset(&mut self) {
         self.overlap.fill(0.0);
         self.concealment.reset();
+        self.plc_history.reset();
         self.sequence = 0;
         self.finished = false;
+    }
+
+    /// Snapshot an unmodified concealment prediction for a future missing frame.
+    /// This changes only transform scratch, never sequence, overlap or history.
+    #[doc(hidden)]
+    pub fn plc_training_prediction(
+        &mut self,
+        horizon: usize,
+        input: &mut [f32; 80],
+        coefficients: &mut [f32; FRAME_SAMPLES],
+    ) -> Result<(), Error> {
+        if !(1..=12).contains(&horizon) {
+            return Err(Error::Profile);
+        }
+        let samples = self.duration.samples();
+        let mut state = self.concealment.clone();
+        state.begin();
+        state.advance((horizon - 1) * samples);
+        *input = self.plc_history.input(samples, state.features(samples));
+        let start = (samples - ALGORITHMIC_DELAY) / 2;
+        let mut block = [0.0; 2 * FRAME_SAMPLES];
+        for (ahead, value) in block[start..start + samples + ALGORITHMIC_DELAY]
+            .iter_mut()
+            .enumerate()
+        {
+            *value = state.sample(ahead);
+        }
+        coefficients.fill(0.0);
+        self.plan
+            .forward(
+                &block[..2 * samples],
+                &mut coefficients[..samples],
+                &mut self.workspace,
+            )
+            .map_err(|_| Error::Packet)
     }
     fn synthesize(
         &mut self,

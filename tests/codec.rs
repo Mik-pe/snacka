@@ -548,6 +548,70 @@ fn concealed_periodic_audio_preserves_phase_and_long_losses_reach_exact_silence(
 }
 
 #[test]
+fn plc_training_snapshots_preserve_received_audio_loss_history_and_sequence() {
+    for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+        let samples = duration.samples();
+        let mut encoder = Encoder::new(Config::default().with_frame_duration(duration));
+        let mut tested = Decoder::with_frame_duration(duration).with_neural_plc(false);
+        let mut control = Decoder::with_frame_duration(duration).with_neural_plc(false);
+        let mut packet = [0; MAX_PACKET_BYTES];
+        let mut output = vec![0.0; samples];
+        let mut expected = output.clone();
+        for frame in 0..20 {
+            let input: Vec<_> = (0..samples)
+                .map(|i| {
+                    let phase = (frame * samples + i) as f32 * 0.027;
+                    0.3 * phase.sin() + 0.1 * (phase * 1.51).cos()
+                })
+                .collect();
+            let len = encoder.encode(&input, &mut packet).unwrap();
+            if (9..12).contains(&frame) {
+                tested.conceal(&mut output).unwrap();
+                control.conceal(&mut expected).unwrap();
+            } else {
+                tested.decode(&packet[..len], &mut output).unwrap();
+                control.decode(&packet[..len], &mut expected).unwrap();
+            }
+            assert_eq!(output, expected);
+            for horizon in [1, 2, 6, 12] {
+                let mut features = [0.0; 80];
+                let mut coefficients = [0.0; FRAME_SAMPLES];
+                tested
+                    .plc_training_prediction(horizon, &mut features, &mut coefficients)
+                    .unwrap();
+                assert!(features.iter().chain(&coefficients).all(|x| x.is_finite()));
+            }
+        }
+    }
+}
+
+#[test]
+fn neural_plc_switch_does_not_change_uninterrupted_decode() {
+    for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+        let samples = duration.samples();
+        let mut encoder = Encoder::new(Config::default().with_frame_duration(duration));
+        let mut enabled = Decoder::with_frame_duration(duration);
+        let mut disabled = Decoder::with_frame_duration(duration).with_neural_plc(false);
+        assert!(enabled.neural_plc());
+        assert!(!disabled.neural_plc());
+        let mut packet = [0; MAX_PACKET_BYTES];
+        let mut a = vec![0.0; samples];
+        let mut b = a.clone();
+        for frame in 0..30 {
+            let input: Vec<_> = (0..samples)
+                .map(|i| ((i + frame * samples) as f32 * 0.051).sin() * 0.2)
+                .collect();
+            let len = encoder.encode(&input, &mut packet).unwrap();
+            assert_eq!(
+                enabled.decode(&packet[..len], &mut a),
+                disabled.decode(&packet[..len], &mut b)
+            );
+            assert_eq!(a, b);
+        }
+    }
+}
+
+#[test]
 fn concealment_refusal_preserves_pitch_history_and_recovery() {
     for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
         let samples = duration.samples();

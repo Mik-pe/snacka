@@ -1,0 +1,35 @@
+{
+  "frozen_before_training": "2026-10-21",
+  "baseline": "1abd3a60c2775b712508dadbae6de1b40f962ee6",
+  "scope": "native codec only; loss-only neural band-envelope gains",
+  "validation_selects_strength": [0.25, 0.5, 0.75, 1.0],
+  "hard_gates": [
+    "identical uninterrupted PCM and packet metadata",
+    "received PCM identical beyond the 120-sample recovery overlap",
+    "exact existing bounded fade and long-loss silence",
+    "zero steady-state allocations",
+    "finite bounded output; reset and refusal history remain intact",
+    "src/opus unchanged"
+  ],
+  "quality": {
+    "aggregate_lost_snr_gain_db_min_by_language": 0.25,
+    "mean_onset_snr_delta_db_min": -0.1,
+    "mean_recovery_snr_delta_db_min": -0.1,
+    "mean_stoi_delta_min_by_language_mode_duration": -0.001,
+    "mean_estoi_delta_min_by_language_mode_duration": -0.001,
+    "mean_lsd_delta_db_max_by_language_mode_duration": 0.05,
+    "worst_decile_mean_lost_snr_delta_db_min": -0.5
+  },
+  "measurement": {
+    "bitrates": [12000, 24000, 32000],
+    "frame_ms": [10, 20],
+    "modes": ["default", "harmonic"],
+    "loss_patterns": ["periodic1", "periodic3", "periodic6", "independent5", "burst40", "burst80"],
+    "conditions": ["clean", "noise20", "noise10"],
+    "new_model_constants_bytes_max": 16384,
+    "additional_decoder_state_bytes_max": 8192,
+    "lost_frame_cpu_target_us": 25,
+    "cpu_target_is_not_a_worst_case_guarantee": true
+  },
+  "holdout_policy": "Choose checkpoint and gain strength on validation only; freeze weights and report before VCTK speaker holdout acceptance. Existing English/Swedish diagnostic sets are regression sets."
+}

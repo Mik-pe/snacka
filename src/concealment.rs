@@ -4,12 +4,14 @@ const HISTORY: usize = 1_920;
 const DECIMATION: usize = 6;
 const WINDOW: usize = 160;
 
+#[derive(Clone)]
 pub(crate) struct Concealment {
     history: [f32; HISTORY],
     length: usize,
     period: f32,
     elapsed: usize,
     fade: usize,
+    confidence: f32,
 }
 
 impl Concealment {
@@ -20,6 +22,7 @@ impl Concealment {
             period: 1.0,
             elapsed: 0,
             fade: 1_920,
+            confidence: 0.0,
         }
     }
 
@@ -42,6 +45,7 @@ impl Concealment {
         }
         self.period = self.length.clamp(1, 480) as f32;
         self.fade = 1_920;
+        self.confidence = 0.0;
         if self.length < HISTORY {
             return;
         }
@@ -101,6 +105,7 @@ impl Concealment {
         };
         self.period = best_lag as f32 + offset;
         self.fade = 3_840;
+        self.confidence = score.clamp(0.0, 1.0);
     }
 
     pub(crate) fn sample(&self, ahead: usize) -> f32 {
@@ -127,6 +132,20 @@ impl Concealment {
 
     pub(crate) fn advance(&mut self, samples: usize) {
         self.elapsed = (self.elapsed + samples).min(self.fade);
+    }
+
+    pub(crate) fn missing(&self) -> bool {
+        self.elapsed != 0
+    }
+
+    pub(crate) fn features(&self, samples: usize) -> [f32; 5] {
+        [
+            self.elapsed as f32 / 3840.0,
+            (self.elapsed / samples) as f32 / 6.0,
+            self.period / 960.0,
+            self.confidence,
+            self.fade as f32 / 3840.0,
+        ]
     }
 
     pub(crate) fn reset(&mut self) {
