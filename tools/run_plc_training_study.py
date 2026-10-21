@@ -18,6 +18,8 @@ def main():
     p.add_argument('output',type=Path)
     a=p.parse_args()
     if a.output.exists():p.error('use a new output directory')
+    archive=a.output.with_name(a.output.name+'.tar.gz')
+    if archive.exists():p.error('study archive already exists')
     a.output.mkdir(parents=True)
     protocol=json.loads(a.protocol.read_text());results=[]
     for case in protocol['first_round']:
@@ -42,8 +44,8 @@ def main():
         (a.output/'summary.json').write_text(json.dumps(dict(protocol=protocol,experiments=results),indent=2)+'\n')
         print(name,'selected epoch',entry['selected_epoch'],'validation objective',report['validation']['balanced_objective'],flush=True)
     # Only result files enter this archive. Signed input URLs and raw features do not.
-    archive=a.output.parent/'experiments.tar.gz'
-    with tarfile.open(archive,'w:gz') as tar:tar.add(a.output,arcname='experiments')
+    with archive.open('xb') as stream:
+        with tarfile.open(fileobj=stream,mode='w:gz') as tar:tar.add(a.output,arcname='experiments')
     print('Study archive',archive.stat().st_size,hashlib.sha256(archive.read_bytes()).hexdigest(),flush=True)
 
 

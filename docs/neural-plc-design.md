@@ -188,6 +188,13 @@ The evaluator clips 48 kHz resampling overshoots uniformly to the encoder's
 rejects incomplete runs. It verifies external frozen-main packet/PCM traces,
 baseline PLC equality and the recovery bound before scoring all six loss masks.
 
+Use a fresh Cargo target directory for each exported candidate, build both
+`plc_compare` and its adjacent `cpu_probe`, and retain source and binary hashes.
+Copying generated weights with preserved old mtimes can leave Cargo using a
+previous model's normal library even when a rebuilt test target passes parity.
+The convergence study caught one such stale second-candidate binary by its
+identical hash; those rows were excluded and the candidate rebuilt separately.
+
 Acceptance is frozen in `neural-plc-acceptance.json`: loss-error improvement
 >=0.25 dB per language, onset/recovery >=-0.1 dB, STOI/ESTOI >=-0.001 per
 language/mode/duration, LSD <=+0.05 dB, and worst-decile loss SNR >=-0.5 dB.
@@ -236,6 +243,53 @@ fixed compile-time sizes and introduce no recursion or dynamic allocation.
 Mac release tests with `opus`, format and Clippy pass. Linux full release tests
 and selected-candidate library/codec/allocation tests pass. CI results belong
 to the eventual exact PR head and must be checked separately.
+
+## Longer-training study
+
+Four controlled experiments extended training to 300 total epochs: two resumed
+the accepted 60-epoch checkpoint with restored optimizer/RNG state, and two
+started from different seeds. The resumes reproduced the original validation
+score within 1e-6. Constant and cosine learning-rate schedules were compared.
+The best composite validation objective fell from 1.053771 to 1.050322, only
+0.327%. Relative changes over the last 50 epochs were between -0.051% and
++0.018%. About 21-24% of unscaled gains approached their bounds, compared with
+17% initially; the outputs were not uniformly saturated. A sampled training
+objective of 1.0484 versus validation 1.0510 did not show a large gap.
+
+This establishes a plateau for this model/objective on the existing feature
+set, rather than proving that additional data could never help. The study used
+the same 470,922 training and 67,515 validation records; no test features entered
+training. Verified feature archives streamed directly from private Drive to
+Colab temporary disk, without raw or feature staging on the Mac. All four L4
+training loops together took 223.6 seconds, excluding startup and transfer.
+Checkpoints, intermediate snapshots, source and complete curves are retained.
+See `neural-plc-convergence-protocol.json` for the frozen replacement policy.
+
+The two best extended candidates failed the required additional +0.025 dB in
+each language on 864 native validation cases per candidate at 24 kb/s:
+
+| Candidate | Additional English loss SNR | Additional Swedish loss SNR |
+| --- | ---: | ---: |
+| Resumed constant LR | -0.002884 dB | +0.005840 dB |
+| Fresh seed 20261023 | -0.001552 dB | +0.000906 dB |
+
+The first candidate also received complete STOI/ESTOI/LSD scoring. The second
+was rejected on its complete loss-error screen, so further perceptual scoring
+was unnecessary and is not claimed. Its initial stale-binary rows are excluded;
+the table uses the separately rebuilt binary. Changes in error energy were
+under 0.14%. The accepted 60-epoch model remains installed. No fresh acceptance
+set was consumed for these rejected candidates, and no additional corpus was
+ingested. Full curves, hashes and comparison receipts are in
+`neural-plc-convergence-results.json` and the private evidence archive.
+
+Useful questions for a follow-up Phase 2 review are whether the main limit is
+the band-gain-only output, the independent-frame quadratic objective, or the
+finite received-frame context. A temporal/pitch model or waveform/STFT loss
+would require a new experiment and, for waveform losses, richer training
+records than the present quadratic band statistics. Any comparison should
+retain the pure-Rust, allocation-free runtime, packet compatibility, exact
+long-loss fade and recovery contracts. Native fullband Swedish with reliable
+speaker IDs and blinded listening would address gaps in the current evidence.
 
 ## Later phases
 
