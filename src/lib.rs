@@ -22,4 +22,6 @@ pub mod opus;
 mod harmonic;
 mod harmonic_joint;
 mod neural;
+mod neural_plc;
+mod neural_plc_weights;
 mod neural_weights;

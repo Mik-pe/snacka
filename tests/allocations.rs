@@ -50,6 +50,45 @@ unsafe impl GlobalAlloc for Tracked {
 #[global_allocator]
 static ALLOCATOR: Tracked = Tracked;
 
+#[test]
+fn neural_plc_after_contiguous_received_history_never_allocates() {
+    for duration in [FrameDuration::Ms10, FrameDuration::Ms20] {
+        let samples = duration.samples();
+        let mut encoder = AudioEncoder::new(Config::default().with_frame_duration(duration));
+        let mut decoder = AudioDecoder::with_frame_duration(duration);
+        let mut packet = [0; MAX_PACKET_BYTES];
+        let mut input = [0.0; FRAME_SAMPLES];
+        let mut output = [0.0; FRAME_SAMPLES];
+        let mut random = 6716u32;
+        for _ in 0..8 {
+            for value in &mut input[..samples] {
+                random ^= random << 13;
+                random ^= random >> 17;
+                random ^= random << 5;
+                *value = (random as f32 / u32::MAX as f32 - 0.5) * 0.4;
+            }
+            let len = encoder.encode(&input[..samples], &mut packet).unwrap();
+            decoder
+                .decode(&packet[..len], &mut output[..samples])
+                .unwrap();
+        }
+        let mut features = [0.0; 80];
+        let mut coefficients = [0.0; FRAME_SAMPLES];
+        decoder
+            .plc_training_prediction(1, &mut features, &mut coefficients)
+            .unwrap();
+        assert_eq!(features[78], 1.0);
+        assert!(features[76] < 0.985);
+        ALLOCATIONS.with(|counter| counter.set(Some(0)));
+        for _ in 0..6 {
+            decoder.conceal(black_box(&mut output[..samples])).unwrap();
+        }
+        decoder.reset();
+        let allocations = ALLOCATIONS.with(|counter| counter.replace(None).unwrap());
+        assert_eq!(allocations, 0);
+    }
+}
+
 #[cfg(feature = "opus")]
 #[test]
 fn opus_pcm_format_conversion_never_allocates() {

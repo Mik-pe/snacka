@@ -56,6 +56,13 @@ shows improved SILK/Hybrid reconstruction and remaining gaps to the reference.
   bitrate updates or reset. Each track owns its independent history.
 - Default library builds have no dependencies, build script, C, FFI, CMake or unsafe Rust.
 
+Loss concealment includes a bounded int8 neural envelope predictor (11.1 KiB
+of model constants), trained from received-frame history. It adds no packet
+bits or latency and preserves the existing fade and recovery bound. Use
+`Decoder::with_neural_plc(false)` for an ablation. See the
+[Phase 2 design and results](docs/neural-plc-design.md) for data, measurements
+and reproduction; blind listening acceptance remains open.
+
 The encoder uses a short-overlap MDCT, sparse spectral selection, adaptive
 four- or six-bit quantization, adaptive coded bandwidth
 and arithmetic coding. A second spectral model independently codes four band

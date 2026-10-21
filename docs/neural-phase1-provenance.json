@@ -1,0 +1,19 @@
+{
+  "baseline_commit": "1abd3a60c2775b712508dadbae6de1b40f962ee6",
+  "verified_on": "2026-10-21",
+  "phase1_history": {
+    "session": "snacka-train",
+    "date": "2026-10-19",
+    "gpu": "NVIDIA L4",
+    "torch": "2.11.0+cu130",
+    "weight_download": true,
+    "session_terminated": true,
+    "intermediate_checkpoint_is_not_final_main_proof": true
+  },
+  "files": {
+    "src/neural.rs": "5fc0a7f34ea7056f1ecd9dd3c5aff9c9e4303fbf809336d07644937d576b458f",
+    "src/neural_weights.rs": "db53623586a64f78d04eadf5714f6327dc1363eabe4aec1992911fc1d7af1540",
+    "src/concealment.rs": "0b024870fc663fc17eda2de8a93a20c2dbf5b0ff82a295a97040c2b00bc73d4c",
+    "tools/train_neural_postfilter.py": "091cdf05d666fc746fbe6594e9e2cd162067f0c41f700a522a6fc029d04f0ba1"
+  }
+}

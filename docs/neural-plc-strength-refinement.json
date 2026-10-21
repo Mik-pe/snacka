@@ -1,0 +1,9 @@
+{
+  "stage": "validation only; before any heldout waveform evaluation",
+  "initial_strengths": [0.25, 0.5, 0.75, 1.0],
+  "finding": "0.5 passed the lost-SNR criterion but missed 20ms English STOI; 0.25 passed intelligibility but missed lost-SNR",
+  "supplementary_strengths": [0.425],
+  "numeric_quality_gates_changed": false,
+  "heldout_used_for_refinement": false,
+  "scorer": "process-isolated pystoi global RNG, same clipping policy and fixed selection"
+}
