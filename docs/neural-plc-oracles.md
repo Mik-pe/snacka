@@ -87,7 +87,11 @@ and every cached input fingerprint and statistics hash was checked.
 Results distinguish:
 
 - **Native waveform outcomes:** aggregate lost-sample error energy, onset and
-  recovery, STOI/ESTOI/LSD; confidence intervals resample speaker/sentence groups.
+  recovery are measured against uninterrupted codec output. STOI/ESTOI/LSD
+  instead use the original clean PCM before noise is added, matching the
+  existing quality evaluator. Their deltas cover the whole clip, including
+  received frames. Confidence intervals resample speaker/sentence groups;
+  Swedish sentence groups do not establish speaker-independent generalization.
 - **Fixed-prediction headroom:** the same baseline MDCT prediction under the
   learned and oracle gains, including the original training-strength path.
 - **Correlation and conflict:** quartiles of `rho=pt/sqrt(pp*tt)` by band,

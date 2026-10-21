@@ -22,9 +22,13 @@ def main():
     selected=json.loads(a.selection.read_text())
     expected={hashlib.sha256(json.dumps(dict(source=r['source'],group=r['group_id'],path=r['path'],rate=rate,duration=ms,harmonic=bool(mode)),sort_keys=True).encode()).hexdigest()[:20]
               for r in selected for rate in (12000,24000,32000) for ms in (10,20) for mode in (0,1)}
-    observed=set();parts=[];repeat=0;repeat_quality_max_delta=0.0
+    observed=set();parts=[];repeat=0;repeat_quality_max_delta=0.0;migrations=[]
     for shard in a.shards:
         assert json.loads((shard/'status.json').read_text())['status']=='COMPLETE'
+        audit=shard/'preprocessing-migration.json'
+        if audit.exists():
+            migration=json.loads(audit.read_text());assert migration['new_protocol_sha256']==hashlib.sha256((shard/'protocol.json').read_bytes()).hexdigest()
+            migrations.append(migration)
         for path in sorted((shard/'parts').glob('*.json')):
             assert path.stem in expected and path.stem not in observed;observed.add(path.stem)
             data=json.loads(path.read_text());assert data['status']=='COMPLETE'
@@ -49,7 +53,7 @@ def main():
     for name,data in [('waveforms.csv',rows),('native-objectives.csv',native)]:
         with (a.output/name).open('w') as stream:
             fields=list(dict.fromkeys(k for row in data for k in row));w=csv.DictWriter(stream,fieldnames=fields);w.writeheader();w.writerows(data)
-    protocol=dict(common,task_shard=[0,1],merged_task_shards=[x['task_shard'] for x in protocols])
+    protocol=dict(common,task_shard=[0,1],merged_task_shards=[x['task_shard'] for x in protocols],preprocessing_migrations=migrations)
     (a.output/'protocol.json').write_text(json.dumps(protocol,indent=2)+'\n')
     (a.output/'status.json').write_text(json.dumps(dict(status='COMPLETE',tasks=len(expected),rows=len(rows),cases_per_variant=len(rows)//6,repeated_jobs_native_exact=repeat,repeated_quality_max_abs_delta=repeat_quality_max_delta))+'\n')
     print('Merged',len(expected),'tasks;',len(rows)//6,'cases per variant;',repeat,'repeated native results match exactly; quality delta',repeat_quality_max_delta)

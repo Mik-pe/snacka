@@ -63,8 +63,16 @@ def main():
             entry['worst_decile_mean_lost_snr_delta_db']=float(np.mean(deltas[:max(1,math.ceil(len(deltas)*.1))])) if deltas else None
             entry['cases_with_greater_error_fraction']=float(np.mean([float(r['lost_error_energy'])>float(baseline[key(r)]['lost_error_energy']) for r in selected]))
             for metric in ('stoi','estoi','lsd_db','onset_snr_db','recovery_snr_db'):
-                deltas=[float(r[metric])-float(baseline[key(r)][metric]) for r in selected if r.get(metric) not in ('',None) and baseline[key(r)].get(metric) not in ('',None)]
+                metric_rows=[r for r in selected if r.get(metric) not in ('',None) and baseline[key(r)].get(metric) not in ('',None)]
+                deltas=[float(r[metric])-float(baseline[key(r)][metric]) for r in metric_rows]
                 entry['mean_delta_'+metric]=float(np.mean(deltas)) if deltas else None
+                metric_groups={}
+                for r,delta in zip(metric_rows,deltas):
+                    group=(r['source'],r['group_id']);v=metric_groups.setdefault(group,[0.,0.]);v[0]+=delta;v[1]+=1
+                if metric_groups:
+                    matrix=np.asarray(list(metric_groups.values()));rng=np.random.default_rng(6716)
+                    sample=matrix[rng.integers(0,len(matrix),(2000,len(matrix)))].sum(axis=1)
+                    entry['group_bootstrap_95pct_mean_delta_'+metric]=np.quantile(sample[:,0]/sample[:,1],[.025,.975]).tolist()
             if variant in ('baseline','current'):
                 archived=sum(float(r['archived_lost_error_energy']) for r in selected)
                 entry['aggregate_relative_error_drift_vs_archive']=current/archived-1
