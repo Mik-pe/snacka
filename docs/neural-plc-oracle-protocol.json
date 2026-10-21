@@ -81,6 +81,14 @@
     "Rho alone does not demonstrate audible quality or the cause of a training plateau."
   ],
   "runtime_model_changed": false,
-  "protocol_revision": 2,
-  "revision_reason": "Initial attempts to reuse archived quality metrics stopped on tiny archived baseline/current error differences. Final study freshly scores all six variants in one binary; historical equality is not a cross-build bitwise contract. All native hook and input invariants remain exact."
+  "protocol_revision": 3,
+  "revision_reason": "Initial attempts to reuse archived quality metrics stopped on tiny archived baseline/current error differences. Final study freshly scores all six variants in one binary; historical equality is not a cross-build bitwise contract. All native hook and input invariants remain exact.",
+  "canonical_inputs": {
+    "purpose": "Preserve all36 original Swedish clean/noise PCM fingerprints across resampling hosts",
+    "manifest_sha256": "9bc6903641f9b0e7ffeece2e6bce7d5a31af0644069ce84b729f6b764d38464c",
+    "archive_sha256": "5feac8f63e6454b19c6cf034f024e5a42039f2fafdb0702b1a8e91ce19eefffa",
+    "preprocessing": "FFmpeg9.0.2 arm64, NumPy2.5.4; native FLAC streamed in RAM, one temporary compressed PCM chunk at a time; no persistent local raw corpus",
+    "cached_english_jobs_per_shard": 72,
+    "cache_audit": "All cached English sources are48kHz and absent from prepared manifest. Runtime binary and numeric scoring branch unchanged; every cached input fingerprint and stats archive verified. Protocol source migration retained separately."
+  }
 }

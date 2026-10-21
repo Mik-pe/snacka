@@ -74,6 +74,16 @@ PCM is unchanged beyond the existing 120-sample recovery overlap. Both CPU
 shards execute the same binary bytes. Only complete, disjoint shards with the
 same source/binary/protocol hashes can be merged.
 
+The archived Swedish inputs were produced by the original preprocessing host.
+The Colab resampler did not reproduce their bytes. Native FLAC files were
+therefore streamed through that host's RAM, and clean/noise20/noise10 PCM was
+frozen only after all 36 archived fingerprints matched exactly. Temporary
+compressed chunks were uploaded and deleted; no local raw corpus was retained.
+The canonical PCM archive can subsequently move directly from Drive to Colab.
+Already completed 48 kHz English jobs were retained after a recorded protocol
+migration: their inputs, binary and numerical scoring branch were unchanged,
+and every cached input fingerprint and statistics hash was checked.
+
 Results distinguish:
 
 - **Native waveform outcomes:** aggregate lost-sample error energy, onset and
@@ -106,15 +116,23 @@ unchanged.
 
 ```sh
 python tools/build_plc_oracle.py /tmp/fresh-oracle
+# Optional: on the original preprocessing host, where the corpus is accessible.
+python tools/freeze_plc_oracle_inputs.py selection.json reference.csv canonical \
+  --language sv
+# Transfer canonical/ to the evaluation hosts, or use its verified Drive archive.
 python tools/evaluate_plc_oracles.py selection.json reference.csv shard0 \
-  --binary /tmp/fresh-oracle/target/release/examples/oracle --task-shard 0 2
+  --binary /tmp/fresh-oracle/target/release/examples/oracle --task-shard 0 2 \
+  --prepared-inputs canonical/manifest.json
 python tools/evaluate_plc_oracles.py selection.json reference.csv shard1 \
-  --binary /tmp/fresh-oracle/target/release/examples/oracle --task-shard 1 2
+  --binary /tmp/fresh-oracle/target/release/examples/oracle --task-shard 1 2 \
+  --prepared-inputs canonical/manifest.json
 python tools/merge_plc_oracle_shards.py selection.json merged shard0 shard1
 python tools/summarize_plc_oracles.py merged summary.json
 python tools/plot_plc_oracles.py summary.json overview.png
 ```
 
-Use the exact same binary on multiple evaluation hosts. Raw audio stays in
-the CPU environment; code and compact receipts can be retained locally.
+Use the exact same binary on multiple evaluation hosts. The freezer also
+accepts a byte-stream loader when the original host has no local raw corpus.
+Evaluation audio stays in the CPU environment; code and compact receipts can
+be retained locally.
 Canonical data and result archives remain in the owner's private Drive.
