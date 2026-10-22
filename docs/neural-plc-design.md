@@ -314,3 +314,8 @@ waveform error but regresses intelligibility and fails both acceptance
 protocols on 5,184 fresh cases. The installed 60-epoch weights are retained.
 The report also separates low/high-band envelopes, records the fresh baseline's
 limits and provides checksummed data/model/evidence artifacts for reproduction.
+
+
+## Phase and noise representation oracle
+
+The frozen [representation diagnostic](neural-plc-representation.md) evaluates native phase offsets, deterministic shaped noise and clamped band gains on the known Step2 cohort. It constructs noncausal perceptual headroom in both languages, including a phase-control gain beyond the gain-only envelope oracle. Causal predictability and an independently selected noise contribution remain unproven. Installed weights are unchanged; see the report for all variants, paired uncertainty, source receipts and the next controlled experiment.
