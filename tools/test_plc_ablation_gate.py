@@ -14,7 +14,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 class GateContract(unittest.TestCase):
-    def run_gate(self, estoi_delta, lost_error, lowband_ratio=1.0, omit_last=False):
+    def run_gate(self, estoi_delta, lost_error, lowband_ratio=1.0, omit_last=False, supplement=None):
         protocol=json.loads((ROOT/'docs/neural-plc-loss-ablation-protocol.json').read_text())
         evaluation=protocol['evaluation'];rows=[]
         for language,clip,rate,duration,mode,condition,pattern in itertools.product(
@@ -44,9 +44,21 @@ class GateContract(unittest.TestCase):
                             row['current_mrstft_magnitude_error']*=.95
                             row['current_lost_snr_db']+=.1
                         writer.writerow(row)
-                (root/(name+'.json')).write_text(json.dumps({'status':'COMPLETE'}))
+                (root/(name+'.json')).write_text(json.dumps({'status':'COMPLETE','binary_sha256':name}))
             command=[sys.executable,str(ROOT/'tools/summarize_plc_ablation.py'),str(root/'installed.csv'),str(root/'candidate.csv'),
                      '--protocol',str(ROOT/'docs/neural-plc-loss-ablation-protocol.json'),'--output',str(root/'report.json')]
+            if supplement:
+                for name in ('installed','candidate'):
+                    with (root/(name+'.csv')).open() as stream:extra=list(csv.DictReader(stream))
+                    for row in extra:
+                        row['current_highband_log_envelope_squared_sum']=.3 if name=='installed' else .27
+                        row['current_highband_log_envelope_count']=8
+                    if supplement=='wrong-input' and name=='candidate':extra[0]['input_sha256']='wrong-fixture'
+                    with (root/(name+'-bands.csv')).open('w') as stream:
+                        writer=csv.DictWriter(stream,fieldnames=extra[0]);writer.writeheader();writer.writerows(extra)
+                    binary='wrong-model' if supplement=='wrong-binary' and name=='candidate' else name
+                    (root/(name+'-bands.json')).write_text(json.dumps({'status':'COMPLETE','binary_sha256':binary}))
+                command+=['--installed-bands',str(root/'installed-bands.csv'),'--candidate-bands',str(root/'candidate-bands.csv')]
             result=subprocess.run(command,capture_output=True,text=True)
             report=json.loads((root/'report.json').read_text()) if (root/'report.json').exists() else None
             return result.returncode,report
@@ -76,6 +88,22 @@ class GateContract(unittest.TestCase):
         code,report=self.run_gate(float('nan'),.7)
         self.assertNotEqual(code,0)
         self.assertEqual(report['quality_status'],'FAIL')
+
+    def test_highband_supplement_from_another_model_fails_closed(self):
+        code,report=self.run_gate(.002,.7,supplement='wrong-binary')
+        self.assertNotEqual(code,0)
+        self.assertIsNone(report)
+
+    def test_highband_supplement_from_another_input_fails_closed(self):
+        code,report=self.run_gate(.002,.7,supplement='wrong-input')
+        self.assertNotEqual(code,0)
+        self.assertIsNone(report)
+
+    def test_identical_native_replay_can_add_highband_diagnostics(self):
+        code,report=self.run_gate(.002,.7,supplement='matching')
+        self.assertEqual(code,0)
+        self.assertEqual(report['highband_supplement_audit']['status'],'PASS')
+        self.assertAlmostEqual(report['highband_envelope'][0]['candidate_over_installed_ratio'],.9)
 
 
 if __name__=='__main__':unittest.main()
