@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "purpose": "Noncausal representation diagnostic only; no training or production model selection",
+  "baseline_main": "668597c07136050131da015e0737850e1a4ee577",
+  "data": "Reuse all 24 canonical Step2 acceptance utterances; already seen, not independent acceptance",
+  "matrix": {
+    "bitrates": [
+      24000
+    ],
+    "frame_ms": [
+      10,
+      20
+    ],
+    "harmonic": [
+      0,
+      1
+    ],
+    "conditions": [
+      "clean",
+      "noise20",
+      "noise10"
+    ],
+    "patterns": [
+      "periodic1",
+      "periodic3",
+      "periodic6",
+      "independent5",
+      "burst40",
+      "burst80"
+    ]
+  },
+  "gain_clamp": [
+    0.7875,
+    1.2125
+  ],
+  "phase_grid_samples": [
+    -3.0,
+    -2.5,
+    -2.0,
+    -1.5,
+    -1.0,
+    -0.5,
+    0.0,
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    2.5,
+    3.0
+  ],
+  "noise_grid": [
+    0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "noise_seed": 20261022,
+  "noise": "One deterministic MDCT noise vector per frame, orthogonalized and energy-normalized per supported band against phase candidate; mix only >=1600Hz, never search seed; no energy creation in zero bands",
+  "phase": "Fixed read-offset within the native repeated cycle, not pitch-period correction; fade depends on original time; delta=0 uses exact original sample()",
+  "variants": [
+    "baseline",
+    "current",
+    "gain_env",
+    "gain_mse",
+    "phase_env",
+    "joint_env",
+    "joint_mse"
+  ],
+  "objectives": {
+    "gain_env": "Exact clamped per-band sqrt(T/P)",
+    "gain_mse": "Exact clamped per-band dot(P,T)/P2",
+    "phase_env": "Choose grid phase maximizing unweighted mean active-band rho below4000Hz, then envelope gains",
+    "joint_env": "Choose complete phase/noise grid minimizing mean squared log energy error in four-bin subbands on supported frequencies, after envelope gains",
+    "joint_mse": "Choose complete phase/noise grid minimizing normalized full supported MDCT MSE after MSE gains"
+  },
+  "ties": "Prefer smallest absolute phase, negative before positive; noise increasing, strict improvement only",
+  "eligibility": "Same installed PLC safety guard; otherwise exact classical PLC. Swedish bands13..15 excluded from objectives; all outputs still decoded",
+  "evaluation": {
+    "native": "Same source transform plus actual120-sample OLA; all variants fresh scoring in one binary; baseline/current bit-exact against native public APIs, received PCM unchanged beyond recovery120",
+    "rho": "Per-band quartiles before gains, matched lost-frame keys; low<1600, mid1600..4000; active energy>1e-10",
+    "quality": [
+      "lost waveform MSE",
+      "lowband MDCT MSE",
+      "full/low/high log envelope",
+      "MR-STFT magnitude vs uninterrupted decoded",
+      "STOI/ESTOI vs clean source",
+      "onset/recovery SNR"
+    ],
+    "admission": "Descriptive headroom only if fullband envelope ratio<=1 and mean ESTOI delta>=0 versus classical separately in EN and SV, and error energy lower. All variants reported, no fallback selection or retuning",
+    "uncertainty": "95% group-bootstrap, seed20261022,2000replicates; EN speaker groups, SV sentence groups with speaker identity unknown"
+  },
+  "limits": [
+    "Finite grid, not certified continuous global optimum",
+    "Noncausal oracle cannot prove causal learnability or exact output architecture",
+    "Known cohort: diagnostic, not adoption gate",
+    "Random shaped noise cannot predict stochastic target waveform",
+    "No listening or Opus superiority claim",
+    "No GPU needed; CPU runtime budget and final CU reported"
+  ]
+}
