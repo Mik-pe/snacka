@@ -22,7 +22,7 @@ def choose(results):
         return (-min(m[lang]['estoi_delta'] for lang in ('en','sv')),
             sum(m[lang]['full_envelope_ratio'] for lang in ('en','sv')),
             sum(m[lang]['mrstft_ratio'] for lang in ('en','sv')),
-            17 if name=='distill_phase' else 0 if name=='trajectory' else 16,name)
+            17 if name=='distill_phase' else 0 if name=='trajectory' else 16)
     return min(admitted,key=key) if admitted else None
 
 
