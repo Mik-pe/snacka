@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "name": "nonselecting12kbps-pitch-activation-check",
+  "freeze_stage": "after complete validation and fixed candidate selection; before independent test unblinding and before supplemental12kbps scoring",
+  "reason": "main emits harmonic pitch only at bitrate<=16000; the original24kbps validation cannot activate the registered f0 trajectory",
+  "selection_sha256": "69b96c5c3f4f93f2e9b294376110f40e18b11d3ba6fbd28553723a180e57f93a",
+  "cohort": "same24 already used validation clips; no new test audio, speakers, labels or training",
+  "variants": [
+    "trajectory: identical registered damped three-received-f0 formula and+-8sample bound, gains1; missing/unvoiced/inconsistent pitch exact0",
+    "distill_phase: exactly the previously selected fitted17-head weights; no retraining or retuning"
+  ],
+  "evaluation": {
+    "bitrates": [12000],
+    "durations": [10, 20],
+    "modes": [0, 1],
+    "conditions": ["clean", "noise20", "noise10"],
+    "patterns": ["periodic1", "periodic3", "periodic6", "independent5", "burst40", "burst80"],
+    "cases_per_variant": 1728,
+    "metrics": "fresh paired native waveform/envelope/MR-STFT/STOI/ESTOI versus classical PLC; paired speaker bootstrap; report both variants completely",
+    "activation": "audit the registered trajectory on actual causal input rows and full native replays; flag0 should be exact identity"
+  },
+  "constraints": [
+    "descriptive supplemental comparison only; cannot enter the frozen candidate pool, rerank, tune or replace the selected model",
+    "independent acceptance remains the single previously selected model and all original guards",
+    "trajectory gains1 versus learned16gains+phase is not a gain-matched architecture ablation",
+    "a supplement added after the original validation is not original preregistered evidence"
+  ]
+}
