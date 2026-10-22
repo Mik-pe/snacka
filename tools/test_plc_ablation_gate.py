@@ -72,5 +72,10 @@ class GateContract(unittest.TestCase):
         self.assertNotEqual(code,0)
         self.assertIsNone(report)
 
+    def test_nonfinite_intelligibility_cannot_pass(self):
+        code,report=self.run_gate(float('nan'),.7)
+        self.assertNotEqual(code,0)
+        self.assertEqual(report['quality_status'],'FAIL')
+
 
 if __name__=='__main__':unittest.main()

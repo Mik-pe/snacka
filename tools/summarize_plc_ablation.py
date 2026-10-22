@@ -4,6 +4,7 @@
 import argparse
 import csv
 import hashlib
+import itertools
 import json
 import math
 from pathlib import Path
@@ -25,6 +26,25 @@ def average(rows,key):
     return float(np.mean(values)) if values else None
 
 
+def validate_matrix(rows, protocol):
+    evaluation=protocol['evaluation']
+    clips={language:{r['clip'] for r in rows.values() if r['language']==language} for language in ('en','sv')}
+    if set(r['language'] for r in rows.values())!={'en','sv'}:raise ValueError('language matrix differs')
+    if any(len(values)!=evaluation['acceptance_clips_per_language'] for values in clips.values()):raise ValueError('clip matrix differs')
+    for language in clips:
+        groups={(r['source'],r['group_id']) for r in rows.values() if r['language']==language}
+        if len(groups)!=evaluation['acceptance_clips_per_language']:raise ValueError('group matrix differs')
+    actual=set()
+    for r in rows.values():
+        mode={'False':0,'True':1,'0':0,'1':1}.get(r['harmonic'])
+        if mode is None:raise ValueError('invalid harmonic mode')
+        actual.add((r['language'],r['clip'],int(r['bitrate']),int(r['frame_ms']),mode,r['condition'],r['pattern']))
+    expected=set()
+    for language in clips:
+        expected.update((language,*case) for case in itertools.product(clips[language],evaluation['bitrates'],evaluation['durations_ms'],evaluation['modes'],evaluation['conditions'],evaluation['loss_patterns']))
+    if actual!=expected or len(actual)!=len(rows):raise ValueError('registered case matrix differs')
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('installed',type=Path);p.add_argument('candidate',type=Path)
@@ -32,6 +52,8 @@ def main():
     a=p.parse_args();protocol=json.loads(a.protocol.read_text());gates=protocol['acceptance']
     installed,candidate=read(a.installed),read(a.candidate)
     if installed.keys()!=candidate.keys():raise ValueError('case sets differ')
+    validate_matrix(installed,protocol)
+    validate_matrix(candidate,protocol)
     report={'protocol_sha256':hashlib.sha256(a.protocol.read_bytes()).hexdigest(),
             'installed_csv_sha256':hashlib.sha256(a.installed.read_bytes()).hexdigest(),
             'candidate_csv_sha256':hashlib.sha256(a.candidate.read_bytes()).hexdigest(),
@@ -39,6 +61,7 @@ def main():
     deltas=[]
     for key in sorted(installed):
         before,after=installed[key],candidate[key]
+        if any(before[field]!=after[field] for field in ('source','group_id')):raise ValueError('group metadata differs')
         for field in ['input_sha256','baseline_lost_error_energy','baseline_stoi','baseline_estoi',
                       'baseline_lowband_mdct_error_energy','baseline_log_envelope_squared_sum','baseline_log_envelope_count','baseline_mrstft_magnitude_error']:
             if before[field]!=after[field]:raise ValueError('independent baseline differs: '+field)
@@ -48,7 +71,7 @@ def main():
             delta[metric]=float(c)-float(b) if b not in ('',None) and c not in ('',None) else None
         deltas.append(delta)
     def fail(label,actual,minimum=None,maximum=None):
-        if actual is None or (minimum is not None and actual<minimum) or (maximum is not None and actual>maximum):
+        if actual is None or not math.isfinite(actual) or (minimum is not None and actual<minimum) or (maximum is not None and actual>maximum):
             report['failures'].append({'gate':label,'actual':actual,'minimum':minimum,'maximum':maximum})
     grouped=[]
     for language in ('en','sv'):
@@ -94,7 +117,13 @@ def main():
     if len(candidate)!=expected:raise ValueError(f'expected {expected} registered cases, got {len(candidate)}')
     report['quality_status']='PASS' if not report['failures'] else 'FAIL'
     report['adoption_status']='PENDING_RUNTIME_RESOURCE_GATES' if not report['failures'] else 'RETAIN_INSTALLED_MODEL'
-    a.output.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))
+    def json_safe(value):
+        if isinstance(value,float) and not math.isfinite(value):return None
+        if isinstance(value,dict):return {k:json_safe(v) for k,v in value.items()}
+        if isinstance(value,list):return [json_safe(v) for v in value]
+        return value
+    rendered=json.dumps(json_safe(report),indent=2,allow_nan=False)
+    a.output.write_text(rendered+'\n');print(rendered)
     raise SystemExit(bool(report['failures']))
 
 
