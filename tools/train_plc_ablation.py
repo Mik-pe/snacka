@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Preregistered, fixed-topology applied-gain QAT loss ablations; no test input."""
+"""Preregistered applied-gain QAT ablations; no test input.
+
+Rust arrays and training-report.json form one experimental model artifact.
+Use build_plc_ablation.py to apply its affine gain head; these arrays alone
+are not a drop-in replacement for the installed legacy STRENGTH export.
+"""
 import argparse
 import copy
 import hashlib

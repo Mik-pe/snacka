@@ -13,10 +13,22 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('output', type=Path)
     p.add_argument('--weights', type=Path)
-    p.add_argument('--gain-min', type=float, default=0.7875)
-    p.add_argument('--gain-max', type=float, default=1.2125)
+    p.add_argument('--gain-min', type=float, help='must match the adjacent frozen training report')
+    p.add_argument('--gain-max', type=float, help='must match the adjacent frozen training report')
     p.add_argument('--cargo', default='cargo')
     a = p.parse_args()
+    if a.weights:
+        report=a.weights.parent/'training-report.json'
+        if not report.is_file():
+            p.error('weights require their adjacent training-report.json; arrays alone do not define the applied gain head')
+        spec=json.loads(report.read_text())['spec']
+        for argument,key in (('gain_min','gain_min'),('gain_max','gain_max')):
+            declared=getattr(a,argument)
+            if declared is not None and declared!=spec[key]:
+                p.error(f'{argument} differs from the frozen model report')
+            setattr(a,argument,spec[key])
+        if hashlib.sha256(a.weights.read_bytes()).hexdigest()!=json.loads(report.read_text())['weights_sha256']:
+            p.error('weight bytes differ from their frozen model report')
     repo = Path(__file__).resolve().parents[1]
     root = a.output.resolve()
     if root.exists():
