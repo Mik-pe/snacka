@@ -13,9 +13,11 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('output', type=Path)
     p.add_argument('--weights', type=Path)
+    p.add_argument('--context-sequence', action='store_true', help='SPLS2 includes a full preceding received frame')
     p.add_argument('--gain-min', type=float, help='must match the adjacent frozen training report')
     p.add_argument('--gain-max', type=float, help='must match the adjacent frozen training report')
     p.add_argument('--cargo', default='cargo')
+    p.add_argument('--source-commit', help='explicit provenance when building a hashed source archive without .git')
     a = p.parse_args()
     if a.weights:
         report=a.weights.parent/'training-report.json'
@@ -71,7 +73,8 @@ fn main() {
 }
 ''')
     for name in ('plc_sequence', 'plc_ablation_compare'):
-        shutil.copy2(repo/f'tools/{name}.rs', root/f'examples/{name}.rs')
+        template = 'plc_context_sequence' if name == 'plc_sequence' and a.context_sequence else name
+        shutil.copy2(repo/f'tools/{template}.rs', root/f'examples/{name}.rs')
     if a.weights:
         shutil.copy2(a.weights, root/'src/neural_plc_weights.rs')
         path = root/'src/neural_plc.rs'
@@ -82,11 +85,12 @@ fn main() {
         path.write_text(text.replace(anchor, f'output.map(|x| {center} + {radius} * x.tanh())'))
     (root/'Cargo.toml').write_text('[package]\nname="snacka-plc-ablation"\nversion="0.0.0"\nedition="2024"\n[lib]\nname="snacka"\n[features]\nopus=[]\nreference-tests=[]\n[profile.release]\noverflow-checks=true\n')
     subprocess.run([a.cargo, 'build', '--offline', '--release', '--target-dir', str(root/'target'), '--examples'], cwd=root, check=True)
-    receipt = {'source_commit': subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip(),
+    receipt = {'source_commit': a.source_commit or subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip(),
                'source_sha256': {str(f.relative_to(repo)):hashlib.sha256(f.read_bytes()).hexdigest()
                                  for f in sorted((repo/'src').rglob('*.rs'))},
                'original_conceal_sha256':hashlib.sha256(body.encode()).hexdigest(),
                'capture_hook_sha256':hashlib.sha256(hook.encode()).hexdigest(),
+               'sequence_format':2 if a.context_sequence else 1,
                'gain_bounds':[a.gain_min,a.gain_max] if a.weights else 'installed main',
                'weights_sha256':hashlib.sha256((root/'src/neural_plc_weights.rs').read_bytes()).hexdigest(),
                'binaries':{n:hashlib.sha256((root/f'target/release/examples/{n}').read_bytes()).hexdigest()

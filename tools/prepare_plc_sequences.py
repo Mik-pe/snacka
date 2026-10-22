@@ -9,13 +9,12 @@ from pathlib import Path
 import subprocess
 import tempfile
 import numpy as np
-from extract_plc_corpus import extract as extract_statistics
-from plc_ablation_loss import HZ
 
 
-def parse(path):
+def parse(path, context=False):
     raw=path.read_bytes()
-    if raw[:8]!=b'SPLS\x01\0\0\0':raise ValueError('sequence framing')
+    version=2 if context else 1
+    if raw[:8]!=b'SPLS'+bytes([version,0,0,0]):raise ValueError('sequence framing')
     offset=8
     while offset<len(raw):
         n=int.from_bytes(raw[offset:offset+2],'little');h=raw[offset+2];offset+=4
@@ -26,7 +25,8 @@ def parse(path):
             offset+=count*4
             if not np.isfinite(value).all():raise ValueError('nonfinite sequence')
             return value
-        event={'overlap':take((120,)), 'x':take((h,80)), 'prediction':take((h,n)),
+        prefix={'preceding':take((n,)), 'target_preceding':take((n,))} if context else {}
+        event={**prefix,'overlap':take((120,)), 'x':take((h,80)), 'prediction':take((h,n)),
                'recovery':take((n,)), 'target_coefficients':take((h,n)),
                'target':take(((h+1)*n,)), 'baseline':take(((h+1)*n,))}
         yield n,h,event
@@ -38,6 +38,7 @@ def main():
     p.add_argument('selection',type=Path,help='explicit train/validation manifest rows with corpus_root')
     p.add_argument('output',type=Path)
     p.add_argument('--binary',type=Path,required=True)
+    p.add_argument('--context',action='store_true',help='require SPLS2 with a full preceding received frame')
     p.add_argument('--stride',type=int,default=24)
     a=p.parse_args()
     if a.output.exists():p.error('fresh output required')
@@ -61,7 +62,7 @@ def main():
         with tempfile.TemporaryDirectory(prefix='snacka-sequence-') as temporary:
             root=Path(temporary);(root/'input.f32').write_bytes(pcm.astype('<f4').tobytes())
             subprocess.run([str(a.binary.resolve()),str(root/'input.f32'),str(root/'sequences.bin'),str(bitrate),str(duration),str(harmonic),str(a.stride),str(key%a.stride)],check=True,capture_output=True)
-            for n,h,event in parse(root/'sequences.bin'):
+            for n,h,event in parse(root/'sequences.bin',a.context):
                 coefficients=np.concatenate((event['prediction'],event['recovery'][None,:]))
                 blocks=coefficients@basis[n];values=blocks[:,:n].copy()
                 values[0,:120]+=event['overlap'];values[1:,:120]+=blocks[:-1,n:]
@@ -77,7 +78,7 @@ def main():
         name=f'{split}-{language}-{n}-{h}.npz';path=a.output/name
         np.savez_compressed(path,**{k:np.stack([e[k] for e in events]) for k in events[0]})
         files.append({'name':name,'events':len(events),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
-    report={'schema':1,'selection_sha256':hashlib.sha256(a.selection.read_bytes()).hexdigest(),
+    report={'schema':2 if a.context else 1,'selection_sha256':hashlib.sha256(a.selection.read_bytes()).hexdigest(),
             'binary_sha256':hashlib.sha256(a.binary.read_bytes()).hexdigest(),'stride':a.stride,
             'native_inverse_ola_identity_max_abs':maximum,'files':files,'utterances':receipt}
     (a.output/'sequence-provenance.json').write_text(json.dumps(report,indent=2)+'\n')
