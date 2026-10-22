@@ -29,19 +29,19 @@ def stratum_guards(rows,floor):
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('selection',type=Path);p.add_argument('decision',type=Path)
     p.add_argument('output',type=Path);p.add_argument('--parts',type=Path,nargs='+',required=True)
-    p.add_argument('--protocol',type=Path,required=True);p.add_argument('--capture-receipt',type=Path,required=True);a=p.parse_args()
+    p.add_argument('--protocol',type=Path,required=True);p.add_argument('--capture-receipt',type=Path,required=True)
+    p.add_argument('--baseline-probe',type=Path,required=True);a=p.parse_args()
     csv_path=a.output.with_name(a.output.stem+'-quality.csv')
     if a.output.exists() or csv_path.exists():p.error('immutable output requires a fresh path')
     decision=json.loads(a.decision.read_text());protocol=json.loads(a.protocol.read_text());capture=json.loads(a.capture_receipt.read_text())
     decision_sha=hashlib.sha256(a.decision.read_bytes()).hexdigest()
     if decision['selected']!='distill_phase' or capture['production_receipt']['selection_sha256']!=decision_sha:raise ValueError('candidate differs from frozen validation selection')
     expected_binary=capture['binaries']['plc_ablation_compare'];selection_sha=hashlib.sha256(a.selection.read_bytes()).hexdigest()
-    rows=[];sources=[];fields=None;probe=None
+    rows=[];sources=[];fields=None;probe=hashlib.sha256(a.baseline_probe.read_bytes()).hexdigest()
     for path in a.parts:
         meta=json.loads(path.with_suffix('.json').read_text());digest=hashlib.sha256(path.read_bytes()).hexdigest()
         if meta['status']!='COMPLETE' or meta['selection_sha256']!=selection_sha or meta['quality_sha256']!=digest or meta['binary_sha256']!=expected_binary or not meta['frozen_trace_checked']:raise ValueError('incomplete, changed, or unbound native acceptance partition')
-        if probe is not None and probe!=meta['baseline_probe_sha256']:raise ValueError('baseline executable differs across partitions')
-        probe=meta['baseline_probe_sha256']
+        if probe!=meta['baseline_probe_sha256']:raise ValueError('baseline executable differs from frozen probe')
         with path.open() as f:
             reader=csv.DictReader(f);part=list(reader)
             if fields is not None and fields!=reader.fieldnames:raise ValueError('partition schemas differ')
