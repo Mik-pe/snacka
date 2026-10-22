@@ -26,6 +26,10 @@ def summarize(path, selection, settings):
         key=tuple(row[k] for k in KEYS)
         if key in indexed:raise ValueError('duplicate decoded case')
         indexed[key]=row
+        for metric in ('estoi','stoi'):
+            difference=float(row['current_'+metric])-float(row['baseline_'+metric])
+            if not np.isfinite(difference) or abs(float(row['delta_'+metric])-difference)>1e-12:
+                raise ValueError('stored intelligibility delta differs from paired decoded scores')
         for label in ('baseline','current'):
             for metric in ('lost_error_energy','log_envelope_squared_sum','log_envelope_count','mrstft_magnitude_error','estoi','stoi'):
                 if not np.isfinite(float(row[label+'_'+metric])):raise ValueError('nonfinite decoded metric')

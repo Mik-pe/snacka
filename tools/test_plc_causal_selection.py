@@ -37,7 +37,7 @@ class Coverage(unittest.TestCase):
                 row=dict(source=source['source'],group_id=source['group_id'],clip=Path(source['path']).stem,language=source['language'],native_rate=source['native_rate'],condition=condition,bitrate=rate,frame_ms=ms,harmonic=mode,pattern=pattern,input_sha256='0'*64,delta_estoi=.001,delta_stoi=.001)
                 for label in ['baseline','current']:
                     for name,value in dict(lost_error_energy=1.,lowband_mdct_error_energy=1.,log_envelope_squared_sum=1.,log_envelope_count=16,mrstft_magnitude_error=1.,estoi=.6,stoi=.7).items():row[label+'_'+name]=value
-                row['current_lost_error_energy']=.99;row['current_log_envelope_squared_sum']=.99;row['current_estoi']=.601
+                row['current_lost_error_energy']=.99;row['current_log_envelope_squared_sum']=.99;row['current_estoi']=.601;row['current_stoi']=.701
                 self.rows.append(row)
     def tearDown(self):self.temp.cleanup()
     def save(self,rows=None,status='COMPLETE'):
@@ -55,6 +55,9 @@ class Coverage(unittest.TestCase):
         with self.assertRaises(ValueError):summarize(self.path,self.selection,self.settings)
     def test_wrong_configuration_cannot_replace_missing_case(self):
         rows=copy.deepcopy(self.rows);rows[0]['bitrate']=12000;self.save(rows)
+        with self.assertRaises(ValueError):summarize(self.path,self.selection,self.settings)
+    def test_stale_delta_cannot_override_actual_paired_scores(self):
+        rows=copy.deepcopy(self.rows);rows[0]['delta_estoi']=.1;self.save(rows)
         with self.assertRaises(ValueError):summarize(self.path,self.selection,self.settings)
     def test_nonfinite_metric_fails_before_ranking(self):
         rows=copy.deepcopy(self.rows);rows[0]['current_estoi']=float('nan');self.save(rows)
