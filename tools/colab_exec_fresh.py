@@ -18,7 +18,10 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('session');p.add_argument('source',type=Path)
     p.add_argument('--timeout',type=float,default=30);a=p.parse_args()
     session=state.get_session(a.session)
-    runtime=ColabRuntime(session.url,session.token,kernel_id=session.kernel_id,session_id=None)
+    def started(kernel_id):
+        session.kernel_id=kernel_id
+        state.store.add(session)
+    runtime=ColabRuntime(session.url,session.token,kernel_id=session.kernel_id,session_id=None,on_kernel_started=started)
     status=0
     try:
         outputs=runtime.execute_code(a.source.read_text(),timeout=a.timeout)

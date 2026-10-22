@@ -56,7 +56,13 @@ def main():
         coefficients[..samples].copy_from_slice(&selected);
 ''' + hook[finish:]
     hook = hook.replace('        Ok(FrameInfo {', '        Ok((FrameInfo {').replace('        })\n    }', '        }, record))\n    }')
-    (root / 'src/codec.rs').write_text(source[:end] + hook + source[end:])
+    teacher=hook.replace('pub fn conceal_representation(', 'pub fn conceal_teacher(')
+    teacher=teacher.replace('seed: u32) ->', 'seed: u32, captured_input: &mut [f32;80]) ->')
+    teacher=teacher.replace('        let mut candidates = Vec::new();', '        *captured_input=input;\n        let mut candidates = Vec::new();')
+    teacher=teacher.replace('coefficients[..samples].copy_from_slice(&selected);', 'coefficients[..samples].copy_from_slice(&candidates[0]);')
+    # Labels see the target; the actual decoder always synthesizes classical PLC.
+    (root / 'src/codec.rs').write_text(source[:end] + hook + teacher + source[end:])
+    shutil.copy2(repo/'tools/plc_phase_teacher.rs',root/'examples/phase_teacher.rs')
     path = root / 'src/concealment.rs'
     text = path.read_text()
     start = text.index('    pub(crate) fn sample(&self, ahead: usize) -> f32 {')
@@ -70,9 +76,9 @@ def main():
     lib.write_text(lib.read_text().replace('#![deny(missing_docs)]', '#![allow(missing_docs)]') + '\npub mod representation;\n')
     (root / 'Cargo.toml').write_text('[package]\nname="snacka-representation-diagnostic"\nversion="0.0.0"\nedition="2024"\n[lib]\nname="snacka"\n[features]\nopus=[]\nreference-tests=[]\n[profile.release]\noverflow-checks=true\n')
     subprocess.run(['cargo', 'test', '--offline', '--release', '--target-dir', str(root/'target'), '--lib', 'representation::tests::'], cwd=root, check=True)
-    subprocess.run(['cargo', 'build', '--offline', '--release', '--target-dir', str(root/'target'), '--example', 'representation'], cwd=root, check=True)
+    subprocess.run(['cargo', 'build', '--offline', '--release', '--target-dir', str(root/'target'), '--examples'], cwd=root, check=True)
     binary = root / 'target/release/examples/representation'
-    names = list(sorted((repo/'src').rglob('*.rs'))) + [repo/'tools'/n for n in ('build_plc_phase.py', 'plc_phase.rs', 'plc_representation_compare.rs')]
+    names = list(sorted((repo/'src').rglob('*.rs'))) + [repo/'tools'/n for n in ('build_plc_phase.py', 'plc_phase.rs', 'plc_phase_teacher.rs', 'plc_representation_compare.rs')]
     receipt = dict(source_sha256={str(f.relative_to(repo)):hashlib.sha256(f.read_bytes()).hexdigest() for f in names},
                    original_conceal_sha256=hashlib.sha256(body.encode()).hexdigest(),
                    hook_sha256=hashlib.sha256(hook.encode()).hexdigest(),

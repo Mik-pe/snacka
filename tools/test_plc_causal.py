@@ -31,7 +31,7 @@ class GuardTest(unittest.TestCase):
         self.assertEqual(choose(dict(control=self.result(.99,.98),envelope=self.result(.8,.99))),'control')
 
 
-def native(binary):
+def native(binary,teacher=None):
     with tempfile.TemporaryDirectory(prefix='snacka-context-check-') as tmp:
         root=Path(tmp);subprocess.run([str(binary),'basis',str(root)],check=True)
         samples=np.arange(48000*3,dtype=np.float32)
@@ -40,6 +40,17 @@ def native(binary):
         for n,ms in [(480,10),(960,20)]:
             subprocess.run([str(binary),str(root/'input.f32'),str(root/'events.bin'),'24000',str(ms),'1','24','0'],check=True)
             events=list(parse(root/'events.bin',True));assert events
+            if teacher:
+                subprocess.run([str(teacher),str(root/'input.f32'),str(root/'labels.bin'),str(root/'audit.bin'),'24000',str(ms),'1','24','0'],check=True)
+                raw=(root/'labels.bin').read_bytes();assert raw[:8]==b'SPLT\x01\0\0\0'
+                labels=np.frombuffer(raw[8:],dtype='<f4').reshape(-1,98)
+                expected=np.concatenate([e['x'] for _,_,e in events]);assert np.array_equal(labels[:,:80],expected)
+                audit=(root/'audit.bin').read_bytes();assert audit[:8]==b'SPLA\x01\0\0\0';at=8
+                for width,h,e in events:
+                    assert int.from_bytes(audit[at:at+2],'little')==width and audit[at+2]==h;at+=4
+                    count=(h+1)*n;values=np.frombuffer(audit,dtype='<f4',count=count,offset=at);at+=count*4
+                    assert np.array_equal(values,e['baseline']),'teacher target leaked into causal history/audio'
+                assert at==len(audit)
             basis=np.fromfile(root/f'basis-{n}.f32',dtype='<f4').reshape(n,n+120);worst=0
             for width,h,e in events:
                 assert width==n
@@ -55,7 +66,7 @@ def native(binary):
         print(json.dumps(receipts,indent=2))
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--binary',type=Path);a=p.parse_args()
-    if a.binary:native(a.binary.resolve())
+    p=argparse.ArgumentParser();p.add_argument('--binary',type=Path);p.add_argument('--teacher',type=Path);a=p.parse_args()
+    if a.binary:native(a.binary.resolve(),a.teacher.resolve() if a.teacher else None)
     result=unittest.TextTestRunner().run(unittest.defaultTestLoader.loadTestsFromTestCase(GuardTest))
     sys.exit(0 if result.wasSuccessful() else 1)
