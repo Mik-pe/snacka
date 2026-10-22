@@ -20,6 +20,7 @@ class GateContract(unittest.TestCase):
         for language,clip,rate,duration,mode,condition,pattern in itertools.product(
                 ('en','sv'),range(12),evaluation['bitrates'],evaluation['durations_ms'],evaluation['modes'],evaluation['conditions'],evaluation['loss_patterns']):
             row={'clip':f'{language}{clip}','language':language,'source':language,'group_id':str(clip),
+                 'native_rate':16000 if language=='sv' else 48000,
                  'bitrate':rate,'frame_ms':duration,'harmonic':mode,'condition':condition,'pattern':pattern,
                  'input_sha256':'synthetic-fixture-only'}
             for label in ('baseline','current'):
