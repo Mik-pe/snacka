@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "name": "causal-A-and-B-selection",
+  "freeze": "before any causal training or decoded validation",
+  "stage_a_protocol": "neural-plc-causal-protocol.json",
+  "stage_b_oracle_protocol": "neural-plc-phase-protocol.json",
+  "phase_student": {
+    "architecture": [
+      80,
+      64,
+      64,
+      17
+    ],
+    "heads": "16 gains1+.2125*tanh plus8*tanh fractional read offset",
+    "teacher": "per-frame phase_wide oracle on classical causal state; noncausal labels only; teacher choices never synthesized into input history",
+    "source": "same speaker-disjoint train/validation corpus and augmentation asA; no test inputs",
+    "epochs": 60,
+    "float_warmup_epochs": 10,
+    "batches_per_epoch": 32,
+    "frames_per_language": 64,
+    "seed": 20261022,
+    "optimizer": {
+      "name": "AdamW",
+      "lr": 0.002,
+      "weight_decay": 0.0001,
+      "gradient_clip": 1.0
+    },
+    "loss": "eligible frames only; mean squared log gain ratio (SV13 bands) +0.1 smoothL1(phase/8,target_phase/8) +0.01 mean(gain-1)^2 +0.001 mean(phase/8)^2; equal language weight",
+    "checkpoint": "epoch60 only",
+    "ablations": [
+      "distill_gain: identical weights, phase forced0",
+      "distill_phase: phase enabled"
+    ],
+    "compact_gain_export": "if distill_gain selected, final17th weight/scale/bias row can be dropped; bit-exact paired native parity required before acceptance"
+  },
+  "pool": [
+    "the stageA validation-selected admitted candidate, if any",
+    "distill_gain",
+    "distill_phase",
+    "trajectory"
+  ],
+  "admission": "complete finite native decoded validation; per language waveform ratio<1, fullband envelope ratio<=1, mean ESTOI delta>=0 vsclassical PLC",
+  "ranking": [
+    "maximize minimum EN/SV mean ESTOI delta",
+    "minimize sum EN/SV fullband envelope ratios",
+    "minimize sum EN/SV MR-STFT ratios",
+    "prefer fewer outputs on exact tie"
+  ],
+  "holdout": "freeze12 LibriSpeech test-clean speakers/utterances and12 RixVox speakers before training; no test audio or metrics before final selection",
+  "acceptance": "only the single validation-selected causal candidate; stageA full12/24/32kbps,10/20ms,2mode,3condition,6pattern matrix and all frozen guards; no fallback or retune after test",
+  "production": "retain installed model unless independent acceptance and native no-allocation/parity/CPU checks pass",
+  "limits": [
+    "English independent acceptance is native16kHz LibriSpeech; native48kHz VCTK is covered in validation, not a new independent highband speaker test",
+    "speaker identity proof uses published corpus IDs; baseline FLEURS overlap cannot be audited",
+    "one distillation objective does not prove a causal or architecture ceiling"
+  ]
+}
