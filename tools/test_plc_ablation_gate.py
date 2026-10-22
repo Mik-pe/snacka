@@ -4,6 +4,7 @@
 import csv
 import itertools
 import json
+import math
 from pathlib import Path
 import subprocess
 import sys
@@ -43,7 +44,7 @@ class GateContract(unittest.TestCase):
                             row['current_lowband_mdct_error_energy']*=lowband_ratio
                             row['current_log_envelope_squared_sum']*=.95
                             row['current_mrstft_magnitude_error']*=.95
-                            row['current_lost_snr_db']+=.1
+                            row['current_lost_snr_db']-=10*math.log10(lost_error)
                         writer.writerow(row)
                 (root/(name+'.json')).write_text(json.dumps({'status':'COMPLETE','binary_sha256':name}))
             command=[sys.executable,str(ROOT/'tools/summarize_plc_ablation.py'),str(root/'installed.csv'),str(root/'candidate.csv'),
@@ -79,6 +80,11 @@ class GateContract(unittest.TestCase):
         code,report=self.run_gate(.002,.7,lowband_ratio=1.02)
         self.assertNotEqual(code,0)
         self.assertTrue(any('lowband' in failure['gate'] for failure in report['failures']))
+
+    def test_large_fullband_regression_still_hits_worst_decile_guard(self):
+        code,report=self.run_gate(.002,1.2)
+        self.assertNotEqual(code,0)
+        self.assertTrue(any('worst decile' in failure['gate'] for failure in report['failures']))
 
     def test_incomplete_case_matrix_fails_closed(self):
         code,report=self.run_gate(.002,.7,omit_last=True)
