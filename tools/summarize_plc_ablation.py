@@ -49,6 +49,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('installed',type=Path);p.add_argument('candidate',type=Path)
     p.add_argument('--protocol',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--installed-bands',type=Path,help='optional separately replayed native high-band supplement')
+    p.add_argument('--candidate-bands',type=Path)
     a=p.parse_args();protocol=json.loads(a.protocol.read_text());gates=protocol['acceptance']
     installed,candidate=read(a.installed),read(a.candidate)
     if installed.keys()!=candidate.keys():raise ValueError('case sets differ')
@@ -117,6 +119,42 @@ def main():
     if len(candidate)!=expected:raise ValueError(f'expected {expected} registered cases, got {len(candidate)}')
     report['quality_status']='PASS' if not report['failures'] else 'FAIL'
     report['adoption_status']='PENDING_RUNTIME_RESOURCE_GATES' if not report['failures'] else 'RETAIN_INSTALLED_MODEL'
+    if bool(a.installed_bands)!=bool(a.candidate_bands):p.error('both native band supplements are required')
+    band_inputs=(a.installed_bands,a.candidate_bands)
+    if all(band_inputs):
+        bands=[]
+        for original,original_path,supplement_path in zip((installed,candidate),(a.installed,a.candidate),band_inputs):
+            supplement=read(supplement_path)
+            if original.keys()!=supplement.keys():raise ValueError('band supplement case set differs')
+            old_meta=json.loads(original_path.with_suffix('.json').read_text())
+            new_meta=json.loads(supplement_path.with_suffix('.json').read_text())
+            if old_meta['binary_sha256']!=new_meta['binary_sha256']:raise ValueError('band supplement binary differs')
+            for key,row in original.items():
+                extra=supplement[key]
+                columns=['input_sha256','source','group_id','native_rate']
+                for label in ('baseline','current'):
+                    columns.extend(label+'_'+metric for metric in ('lost_error_energy','lowband_mdct_error_energy','log_envelope_squared_sum','log_envelope_count'))
+                if any(row[c]!=extra[c] for c in columns):raise ValueError('fresh native band replay differs from original case')
+            bands.append(supplement)
+        report['highband_supplement_audit']={'status':'PASS','cases_per_variant':len(installed),
+            'installed_sha256':hashlib.sha256(a.installed_bands.read_bytes()).hexdigest(),
+            'candidate_sha256':hashlib.sha256(a.candidate_bands.read_bytes()).hexdigest(),
+            'note':'descriptive additional frequency breakdown; registered acceptance thresholds unchanged'}
+    elif all('current_highband_log_envelope_squared_sum' in r for r in list(installed.values())+list(candidate.values())):
+        bands=[installed,candidate]
+    else:bands=[]
+    if bands:
+        report['highband_envelope']=[]
+        for language in ('en','sv'):
+            values=[]
+            for variant in bands:
+                selected=[r for r in variant.values() if r['language']==language]
+                numerator=sum(float(r['current_highband_log_envelope_squared_sum']) for r in selected)
+                count=sum(float(r['current_highband_log_envelope_count']) for r in selected)
+                values.append(numerator/count)
+            report['highband_envelope'].append({'language':language,'lower_hz':1600,
+                'upper_hz':6800 if language=='sv' else 24000,'installed_mse':values[0],
+                'candidate_mse':values[1],'candidate_over_installed_ratio':values[1]/values[0]})
     def json_safe(value):
         if isinstance(value,float) and not math.isfinite(value):return None
         if isinstance(value,dict):return {k:json_safe(v) for k,v in value.items()}
