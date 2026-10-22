@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Fixed causal17-head QAT distillation; phase-off/on are the same fitted weights."""
+"""Fixed causal17-head QAT distillation; phase-off/on are the same fitted weights.
+
+These arrays require build_plc_phase_student.py and their adjacent training
+report. The17-row output includes a fractional phase head and is not a legacy
+16-gain decoder artifact.
+"""
 import argparse
 import hashlib
 import json

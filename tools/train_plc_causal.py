@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Fixed-checkpoint causal gain experiment. Selection requires native validation."""
+"""Fixed-checkpoint causal gain experiment. Selection requires native validation.
+
+The adjacent training report defines the applied gain bounds. Build these
+experimental arrays with build_plc_ablation.py: their STRENGTH=1 header is an
+artifact marker, not a drop-in legacy decoder gain scale. A production export
+must preserve the applied head and prove native PCM parity.
+"""
 import argparse
 import hashlib
 import json
