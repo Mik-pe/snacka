@@ -167,6 +167,9 @@ def main():
             print(f"completed {index+1}/{len(tasks)}, rows={len(results)}",flush=True)
     summary={"status":"COMPLETE","rows":len(results),"changed_rows":sum(r["changed_loss_pcm"] for r in results),
              "selection_sha256":hashlib.sha256(args.selection.read_bytes()).hexdigest(),
+             "quality_sha256":hashlib.sha256(args.output.read_bytes()).hexdigest(),
+             "frozen_trace_checked":bool(args.baseline_probe),
+             "baseline_probe_sha256":hashlib.sha256(args.baseline_probe.read_bytes()).hexdigest() if args.baseline_probe else None,
              "binary_sha256":hashlib.sha256(args.binary.read_bytes()).hexdigest(),"strata":[]}
     for key in sorted({(r["language"],r["harmonic"],r["frame_ms"]) for r in results}):
         subset=[r for r in results if (r["language"],r["harmonic"],r["frame_ms"])==key]

@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-22T12:52:16.165157+00:00",
+  "type": "Independent English holdout amendment before test audio or test metrics",
+  "parent_protocol_sha256": {
+    "neural-plc-causal-protocol.json": "ae66c3178faab148aacbc0dcaaddc7eb7348b257cc798adaa2f8b468d0357349",
+    "neural-plc-causal-selection-protocol.json": "093c22a4892d5141b74cc75a61a6772eb36de7c0ecca9afdbd23e9bf6e26f043"
+  },
+  "reason": "Retained Phase1 corpus and evaluation filenames show that test-clean is already part of legacy evaluation exposure; a different corpus name from PLC training does not make it a fresh full-pipeline acceptance cohort.",
+  "legacy_inventory": "neural-plc-legacy-speaker-inventory.json",
+  "legacy_inventory_sha256": "b13e13256c2b982af8dd4c6fbbcb0206380a666b6499a1f02a97e337f048efc1",
+  "inventory_scope": "Conservative union of retained LibriSpeech training, validation and diagnostic speaker IDs; this is an exposure ledger, not an exact Phase1 training manifest.",
+  "changed": "English independent test only: openslr/librispeech_asr other/test,12 speakers and1 clip each; exclude every inventoried legacy speaker; keep original salted speaker/clip hash and25\u201350 word rule.",
+  "selection_tool": "tools/freeze_plc_unseen_english.py",
+  "unchanged": [
+    "training data",
+    "model architecture",
+    "weights",
+    "optimizer and fixed training budget",
+    "validation matrix",
+    "candidate pool",
+    "ranking",
+    "admission and acceptance guards",
+    "Swedish holdout"
+  ],
+  "timing": "Models already trained; decoded validation in progress. No decoded quality scores were inspected to decide this amendment; final combined selection and independent test remain unopened.",
+  "limits": [
+    "This is a documented amendment, not an unchanged original preregistration.",
+    "test-other is a different English recording domain from the originally planned test-clean.",
+    "Disjointness uses published speaker IDs and available historical inventories, not biometric identity matching.",
+    "Legacy FLEURS Swedish speaker identities remain unknown; new PLC train/validation/test separation is verified within RixVox metadata."
+  ]
+}

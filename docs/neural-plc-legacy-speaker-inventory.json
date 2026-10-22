@@ -1,0 +1,128 @@
+{
+  "train-audio": {
+    "files": 618,
+    "english_speakers": [
+      "1673",
+      "1919",
+      "1988",
+      "1993",
+      "2035",
+      "2078",
+      "2086",
+      "2277",
+      "2412",
+      "2428",
+      "2803",
+      "2902",
+      "3000",
+      "3081",
+      "3170",
+      "3536",
+      "3576",
+      "3752",
+      "3853",
+      "5338",
+      "5536",
+      "5694",
+      "5895",
+      "6241",
+      "6295",
+      "6313",
+      "6319",
+      "6345",
+      "7850",
+      "7976",
+      "8297",
+      "8842"
+    ],
+    "filename_inventory_sha256": "f7564a88817b8b0967a6641fde09a222d1b66146eccf796de873f4325db923f8"
+  },
+  "val-audio": {
+    "files": 64,
+    "english_speakers": [
+      "1272",
+      "422",
+      "652",
+      "777"
+    ],
+    "filename_inventory_sha256": "0de391148e43601f8b939ee32b0b0e5a6b332f286de3db7d937ce4dd27240fc0"
+  },
+  "train-f32": {
+    "files": 120,
+    "english_speakers": [
+      "1673",
+      "1919",
+      "1988",
+      "1993",
+      "2035",
+      "2078"
+    ],
+    "filename_inventory_sha256": "d79727d77d07f0f515f70c30eba6e16f6439c723a8cac91d5a360f4bbb95a950"
+  },
+  "val-f32": {
+    "files": 32,
+    "english_speakers": [
+      "1272",
+      "422"
+    ],
+    "filename_inventory_sha256": "f58fdacae195dda6243496da38e78696b0756a9ead72c92f25a0654ef3d43e53"
+  },
+  "eval-known-64": {
+    "files": 64,
+    "english_speakers": [
+      "1089",
+      "1188",
+      "1221",
+      "1284",
+      "1320",
+      "1580",
+      "1995",
+      "2094",
+      "2300",
+      "260",
+      "2830",
+      "2961",
+      "3575",
+      "3729",
+      "4077",
+      "4446",
+      "4507",
+      "5105",
+      "5142",
+      "5639",
+      "672",
+      "6829",
+      "6930",
+      "7021",
+      "7127",
+      "7176",
+      "7729",
+      "8224",
+      "8230",
+      "8455",
+      "8463",
+      "908"
+    ],
+    "filename_inventory_sha256": "accec02d3e6dff34000cd42256b84693d97e9d0c7f303062016d06c8bac61a6f"
+  },
+  "eval-unseen-8": {
+    "files": 8,
+    "english_speakers": [
+      "4970",
+      "4992",
+      "61",
+      "8555"
+    ],
+    "filename_inventory_sha256": "a5d6c8da00c77da369966d693b4b11279e00f2ff1e7f6fc4ed901d32409c521a"
+  },
+  "eval-swedish-16": {
+    "files": 16,
+    "english_speakers": [],
+    "filename_inventory_sha256": "e721ea774767cd7d593ab1724164a2d08185bde94149f9c5abff2413d4fa62f1"
+  },
+  "eval-swedish-16-48k": {
+    "files": 16,
+    "english_speakers": [],
+    "filename_inventory_sha256": "e721ea774767cd7d593ab1724164a2d08185bde94149f9c5abff2413d4fa62f1"
+  }
+}

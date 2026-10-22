@@ -319,3 +319,8 @@ limits and provides checksummed data/model/evidence artifacts for reproduction.
 ## Phase and noise representation oracle
 
 The frozen [representation diagnostic](neural-plc-representation.md) evaluates native phase offsets, deterministic shaped noise and clamped band gains on the known Step2 cohort. It constructs noncausal perceptual headroom in both languages, including a phase-control gain beyond the gain-only envelope oracle. Causal predictability and an independently selected noise contribution remain unproven. Installed weights are unchanged; see the report for all variants, paired uncertainty, source receipts and the next controlled experiment.
+
+
+## Causal gain and phase model
+
+The [2026-10-22 causal study](neural-plc-causal.md) adds full received-frame sequence context, tests direct perceptual loss and matched phase/noise controls, and independently accepts a bounded 17-output gain/phase MLP on 5,184 new cases. The installed default is now the accepted causal model; its source keeps packets and uninterrupted PCM unchanged, adds no Decoder state or runtime dependency, and remains allocation-free. The report includes the low-rate pitch-activation correction, the separately frozen 12 kbps validation supplement, exact runtime/parameter parity, all artifacts and resource costs.

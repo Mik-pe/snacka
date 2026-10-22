@@ -23,5 +23,7 @@ mod harmonic;
 mod harmonic_joint;
 mod neural;
 mod neural_plc;
+// Generated export metadata is also consumed by the footprint example.
+#[allow(dead_code)]
 mod neural_plc_weights;
 mod neural_weights;

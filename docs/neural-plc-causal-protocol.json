@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "name": "causal-envelope-A",
+  "baseline": "0908194819a4b551f1e4e56126e54b0c1d44a512",
+  "seed": 20261022,
+  "epochs": 60,
+  "float_warmup_epochs": 10,
+  "batches_per_epoch": 32,
+  "sequences_per_language": 8,
+  "architecture": [
+    80,
+    64,
+    64,
+    16
+  ],
+  "checkpoint": "epoch60 only; no best-loss epoch search",
+  "models": {
+    "control": {
+      "gain_min": 0.7875,
+      "gain_max": 1.2125,
+      "coherent_weight": 1.0,
+      "envelope_weight": 0.1,
+      "mrstft_weight": 0.1,
+      "envelope_normalization": "baseline+target"
+    },
+    "envelope": {
+      "gain_min": 0.7875,
+      "gain_max": 1.2125,
+      "coherent_weight": 0.01,
+      "envelope_weight": 1.0,
+      "mrstft_weight": 0.1,
+      "envelope_normalization": "applied+target; ignore physically inactive bands exactly as native metric"
+    }
+  },
+  "data": {
+    "builder": "tools/prepare_plc_causal_corpus.py",
+    "sv": "RixVox-v2 canonical riksdagen_id; 32 train,6 validation,12 test speakers; 4/2/1 clips each",
+    "en": "VCTK24 train x8,6 validation x2; LibriSpeech test-clean12 new corpus speakers x1",
+    "target": "uninterrupted native Phase1 decoder; previous received full frame + loss1/2/4/6 + first recovery; native inverse and OLA120",
+    "test_audio": "not staged before candidate admission; no feedback into training",
+    "augmentation": "existing fixed snacka-plc-v1 path hash; bitrate12/24/32,10/20ms,harmonic0/1,clean/noise20/noise10,gain0/-12/-24; one per utterance",
+    "mask": "SV bands13..15 excluded from band energy; MR-STFT cap8kHz",
+    "english_test_clip_rule": "25\u201350 transcript words, hash-ranked; metadata only before admission",
+    "metadata_inventory": "64 fixed RixVox offsets 3420000 + 1100*i, i=0..63; reduced from initial128 after API429 before training or quality measurements; LibriSpeech test-clean full2620-row metadata read through range requests to Parquet columns only",
+    "english_metadata_deferral": "Metadata may be deferred to after validation admission; selection rule remains fixed before training. No test waveform/metrics examined before admission."
+  },
+  "validation": {
+    "bitrates": [
+      24000
+    ],
+    "durations": [
+      10,
+      20
+    ],
+    "modes": [
+      0,
+      1
+    ],
+    "conditions": [
+      "clean",
+      "noise20",
+      "noise10"
+    ],
+    "patterns": [
+      "periodic1",
+      "periodic3",
+      "periodic6",
+      "independent5",
+      "burst40",
+      "burst80"
+    ],
+    "admission_per_language": [
+      "finite complete coverage",
+      "lost waveform error ratio < 1",
+      "full-band log envelope ratio <= 1",
+      "mean ESTOI delta >= 0"
+    ],
+    "ranking_after_admission_only": [
+      "sum EN+SV full-band log envelope ratios",
+      "sum EN+SV MR-STFT ratios",
+      "envelope before control if exact tie"
+    ],
+    "reference": "classical PLC; installed model is separately reported; fixed zero tolerances"
+  },
+  "acceptance": {
+    "only_selected_admitted_model": true,
+    "bitrates": [
+      12000,
+      24000,
+      32000
+    ],
+    "durations": [
+      10,
+      20
+    ],
+    "modes": [
+      0,
+      1
+    ],
+    "all_validation_guards": true,
+    "per_stratum_estoi_floor": -0.001,
+    "no_fallback_after_test_failure": true,
+    "runtime": "zero steady-state allocation, unchanged packets and uninterrupted PCM, inference <=3us, firstloss median<=25us"
+  },
+  "next_step": "StepB requires a separate frozen deterministic trajectory/matched oracle protocol before measurement; no GRU in this study",
+  "optimizer": {
+    "name": "AdamW",
+    "lr": 0.002,
+    "weight_decay": 0.0001,
+    "gradient_clip": 1.0,
+    "epoch_definition": "32 balanced minibatches x8 sequences per language, sampled with replacement by event count"
+  }
+}

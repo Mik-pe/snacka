@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-//! Loss-only, finite-history envelope prediction. No recurrent synthesized history.
+//! Loss-only band gains and fractional phase prediction from received history.
 use crate::{FRAME_SAMPLES, neural_plc_weights as weights};
 
 const BANDS: usize = 16;
@@ -95,13 +95,21 @@ fn layer<const INPUT: usize, const OUTPUT: usize>(
     })
 }
 
-pub(crate) fn gains(input: &[f32; 80]) -> [f32; 16] {
+pub(crate) fn controls(input: &[f32; 80]) -> ([f32; 16], f32) {
     let first = layer(input, &weights::W1, &weights::S1, &weights::B1, true);
     let second = layer(&first, &weights::W2, &weights::S2, &weights::B2, true);
     let output = layer(&second, &weights::W3, &weights::S3, &weights::B3, false);
-    output.map(|x| 1.0 + weights::STRENGTH * 0.5 * x.tanh())
+    (
+        std::array::from_fn(|i| 1.0 + 0.2125 * output[i].tanh()),
+        8.0 * output[16].tanh(),
+    )
+}
+#[cfg(test)]
+pub(crate) fn gains(input: &[f32; 80]) -> [f32; 16] {
+    controls(input).0
 }
 
+#[cfg(test)]
 pub(crate) fn refine(coefficients: &mut [f32], input: &[f32; 80]) {
     if !weights::ENABLED
         || input[78] < 1.0
@@ -125,29 +133,26 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quantized_rust_matches_frozen_l4_pytorch_inference() {
-        const {
-            assert!(weights::ENABLED);
-        }
-        let records = include_bytes!("../tests/testdata/neural-plc-parity.bin");
-        let (records, trailing) = records.as_chunks::<384>();
+    fn quantized_rust_matches_selected_pytorch_controls() {
+        let records = include_bytes!("../tests/testdata/neural-plc-phase-parity.bin");
+        let (records, trailing) = records.as_chunks::<388>();
         assert!(trailing.is_empty());
         assert_eq!(records.len(), 32);
         for record in records {
-            let input: [f32; 80] = std::array::from_fn(|i| {
+            let input = std::array::from_fn(|i| {
                 f32::from_le_bytes(record[i * 4..i * 4 + 4].try_into().unwrap())
             });
-            let actual = gains(&input);
-            for (index, value) in actual.into_iter().enumerate() {
-                let offset = (80 + index) * 4;
+            let (gains, phase) = controls(&input);
+            for (i, value) in gains.into_iter().chain([phase]).enumerate() {
+                let offset = (80 + i) * 4;
                 let expected = f32::from_le_bytes(record[offset..offset + 4].try_into().unwrap());
-                let expected = 1.0 + weights::STRENGTH * (expected - 1.0);
                 assert!(
                     (value - expected).abs() < 5e-5,
-                    "{index}: Rust={value}, GPU={expected}"
+                    "{i}: {value} != {expected}"
                 );
-                assert!((0.5..=1.5).contains(&value));
             }
+            assert!(gains.iter().all(|x| (0.7875..=1.2125).contains(x)));
+            assert!((-8.0..=8.0).contains(&phase));
         }
     }
 

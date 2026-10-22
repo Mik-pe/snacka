@@ -937,7 +937,7 @@ impl Decoder {
     pub const fn neural_postfilter(&self) -> bool {
         self.neural_postfilter
     }
-    /// Enable or disable loss-only neural envelope prediction.
+    /// Enable or disable loss-only neural band gains and fractional phase refinement.
     pub const fn with_neural_plc(mut self, enabled: bool) -> Self {
         self.neural_plc = enabled;
         self
@@ -1323,13 +1323,23 @@ impl Decoder {
         self.concealment.begin();
         let samples = self.duration.samples();
         let start = (samples - ALGORITHMIC_DELAY) / 2;
+        let input = self
+            .plc_history
+            .input(samples, self.concealment.features(samples));
+        let eligible =
+            self.neural_plc && input[78] >= 1.0 && input[76] < 0.985 && input[73] < input[77];
+        let (gains, delta) = if eligible {
+            crate::neural_plc::controls(&input)
+        } else {
+            ([1.0; 16], 0.0)
+        };
         self.block.fill(0.0);
         // Predict the overlap tail too, without waiting for another input frame.
         for (ahead, value) in self.block[start..start + samples + ALGORITHMIC_DELAY]
             .iter_mut()
             .enumerate()
         {
-            *value = self.concealment.sample(ahead);
+            *value = self.concealment.phase_sample(ahead, delta);
         }
         let mut coefficients = [0.0; FRAME_SAMPLES];
         self.plan
@@ -1339,11 +1349,13 @@ impl Decoder {
                 &mut self.workspace,
             )
             .map_err(|_| Error::Packet)?;
-        if self.neural_plc {
-            let input = self
-                .plc_history
-                .input(samples, self.concealment.features(samples));
-            crate::neural_plc::refine(&mut coefficients[..samples], &input);
+        if eligible {
+            let edges = crate::neural_plc::edges(samples);
+            for band in 0..16 {
+                for value in &mut coefficients[edges[band]..edges[band + 1]] {
+                    *value *= gains[band];
+                }
+            }
         }
         self.synthesize(&coefficients, output)?;
         self.concealment.advance(samples);
