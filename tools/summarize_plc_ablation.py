@@ -151,16 +151,23 @@ def main():
     else:bands=[]
     if bands:
         report['highband_envelope']=[]
+        report['lowband_envelope']=[]
         for language in ('en','sv'):
-            values=[]
+            values=[];low_values=[]
             for variant in bands:
                 selected=[r for r in variant.values() if r['language']==language]
                 numerator=sum(float(r['current_highband_log_envelope_squared_sum']) for r in selected)
                 count=sum(float(r['current_highband_log_envelope_count']) for r in selected)
                 values.append(numerator/count)
+                low_numerator=sum(float(r['current_log_envelope_squared_sum']) for r in selected)-numerator
+                low_count=sum(float(r['current_log_envelope_count']) for r in selected)-count
+                low_values.append(low_numerator/low_count)
             report['highband_envelope'].append({'language':language,'lower_hz':1600,
                 'upper_hz':6800 if language=='sv' else 24000,'installed_mse':values[0],
                 'candidate_mse':values[1],'candidate_over_installed_ratio':values[1]/values[0]})
+            report['lowband_envelope'].append({'language':language,'lower_hz':0,'upper_hz':1600,
+                'installed_mse':low_values[0],'candidate_mse':low_values[1],
+                'candidate_over_installed_ratio':low_values[1]/low_values[0]})
     def json_safe(value):
         if isinstance(value,float) and not math.isfinite(value):return None
         if isinstance(value,dict):return {k:json_safe(v) for k,v in value.items()}
