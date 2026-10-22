@@ -33,7 +33,7 @@ def main():
     if root.exists():p.error('fresh output required')
     root.mkdir(parents=True);(root/'sources').mkdir();corpus=Corpus(root)
     # Only metadata is inspected during deterministic speaker assignment.
-    offsets=[3420000+i*1100 for i in range(128)]
+    offsets=[3420000+i*1100 for i in range(64)]
     groups=defaultdict(list)
     if a.metadata_cache:
         batches=json.loads((a.metadata_cache/'rixvox-rows.json').read_text())
@@ -97,18 +97,21 @@ def main():
     lib=[]
     if a.metadata_cache:lib=json.loads((a.metadata_cache/'librispeech-rows.json').read_text())
     else:
-        for offset in range(0,2620,100):lib.extend(rows('openslr/librispeech_asr','clean','test',offset,min(100,2620-offset)))
+        for offset in range(0,2620,100):lib.extend(rows('openslr/librispeech_asr','clean','test',offset,5))
     by_speaker=defaultdict(list)
     for item in lib:by_speaker[str(item['row']['speaker_id'])].append(item['row'])
     holdout=[]
-    for speaker in sorted(by_speaker,key=rank)[:12]:
-        usable=[r for r in by_speaker[speaker] if 25<=len(r['text'].split())<=50]
+    eligible_english={s:[r for r in items if 25<=len(r['text'].split())<=50] for s,items in by_speaker.items()}
+    eligible_english={s:items for s,items in eligible_english.items() if items}
+    if len(eligible_english)<12:raise ValueError('insufficient English metadata speakers')
+    for speaker in sorted(eligible_english,key=rank)[:12]:
+        usable=eligible_english[speaker]
         if not usable:raise ValueError('English holdout speaker lacks a 25–50 word segment')
         r=min(usable,key=lambda r:rank(r['id']))
         holdout.append(dict(source='librispeech-test-clean',speaker_id=speaker,id=r['id'],split='test',language='en'))
     (root/'sources/english-holdout-selection.json').write_text(json.dumps(holdout,indent=2)+'\n')
     for name,url in [('CC-BY-4.0.txt','https://creativecommons.org/licenses/by/4.0/legalcode.txt'),('RixVox-v2-README.md',f'https://huggingface.co/datasets/KBLab/rixvox-v2/raw/{RIX_REV}/README.md'),
-                     ('ODC-BY-1.0.html','https://opendatacommons.org/licenses/by/1-0/')]:
+                     ('ODC-BY-1.0.txt','https://raw.githubusercontent.com/okfn/opendatacommons.org/master/content/licenses/by/odc_by_1.0_public_text.txt')]:
         cached=a.metadata_cache/name if a.metadata_cache else None
         if cached and cached.is_file():(root/'sources'/name).write_bytes(cached.read_bytes())
         else:

@@ -40,7 +40,8 @@
     "test_audio": "not staged before candidate admission; no feedback into training",
     "augmentation": "existing fixed snacka-plc-v1 path hash; bitrate12/24/32,10/20ms,harmonic0/1,clean/noise20/noise10,gain0/-12/-24; one per utterance",
     "mask": "SV bands13..15 excluded from band energy; MR-STFT cap8kHz",
-    "english_test_clip_rule": "25\u201350 transcript words, hash-ranked; metadata only before admission"
+    "english_test_clip_rule": "25\u201350 transcript words, hash-ranked; metadata only before admission",
+    "metadata_inventory": "64 fixed RixVox offsets 3420000 + 1100*i, i=0..63; reduced from initial128 after API429 before training or quality measurements; LibriSpeech26 fixed offsets0..2500 step100 x5 rows"
   },
   "validation": {
     "bitrates": [
