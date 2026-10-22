@@ -55,7 +55,7 @@ def main():
     (root/'src/codec.rs').write_text(source[:end]+hook+source[end:])
     lib = root/'src/lib.rs'
     lib.write_text(lib.read_text().replace('#![deny(missing_docs)]', '#![allow(missing_docs)]')+
-                   '\npub fn diagnostic_gains(x: &[f32;80]) -> [f32;16] { neural_plc::gains(x) }\n')
+                   '\npub fn diagnostic_gains(x: &[f32;80]) -> [f32;16] { neural_plc::gains(x) }\npub fn diagnostic_controls(x:&[f32;80])->[f32;17]{let g=neural_plc::gains(x);std::array::from_fn(|i|if i<16{g[i]}else{0.})}\n')
     (root/'examples/plc_parity.rs').write_text('''use std::{env,fs};
 fn main() {
  let bytes=fs::read(env::args().nth(1).unwrap()).unwrap();
@@ -75,6 +75,8 @@ fn main() {
     for name in ('plc_sequence', 'plc_ablation_compare'):
         template = 'plc_context_sequence' if name == 'plc_sequence' and a.context_sequence else name
         shutil.copy2(repo/f'tools/{template}.rs', root/f'examples/{name}.rs')
+    shutil.copy2(repo/'examples/plc_compare.rs',root/'examples/plc_compare.rs')
+    shutil.copy2(repo/'tools/plc_inference_probe.rs',root/'examples/inference_probe.rs')
     if a.weights:
         shutil.copy2(a.weights, root/'src/neural_plc_weights.rs')
         path = root/'src/neural_plc.rs'

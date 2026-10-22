@@ -53,6 +53,8 @@ pub(crate) fn gains(input: &[f32;80]) -> [f32;16] {controls(input).0}
     path=root/'src/lib.rs';path.write_text(path.read_text().replace('#![deny(missing_docs)]','#![allow(missing_docs)]')+'\npub fn diagnostic_controls(x:&[f32;80])->[f32;17]{let(g,p)=neural_plc::controls(x);std::array::from_fn(|i|if i<16 {g[i]}else{p})}\n')
     shutil.copy2(repo/'tools/plc_ablation_compare.rs',root/'examples/plc_ablation_compare.rs')
     shutil.copy2(repo/'tests/allocations.rs',root/'tests/allocations.rs')
+    shutil.copy2(repo/'examples/plc_compare.rs',root/'examples/plc_compare.rs')
+    shutil.copy2(repo/'tools/plc_inference_probe.rs',root/'examples/inference_probe.rs')
     (root/'examples/parity.rs').write_text('''use std::{env,fs};fn main(){
  let bytes=fs::read(env::args().nth(1).unwrap()).unwrap();assert_eq!(bytes.len(),32*388);
  let mut worst=0.0f32;for row in bytes.chunks_exact(388){let v:Vec<f32>=row.chunks_exact(4).map(|b|f32::from_le_bytes(b.try_into().unwrap())).collect();let x:[f32;80]=v[..80].try_into().unwrap();
