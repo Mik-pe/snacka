@@ -102,12 +102,17 @@ def main():
     for item in lib:by_speaker[str(item['row']['speaker_id'])].append(item['row'])
     holdout=[]
     for speaker in sorted(by_speaker,key=rank)[:12]:
-        r=min(by_speaker[speaker],key=lambda r:rank(r['id']))
+        usable=[r for r in by_speaker[speaker] if 25<=len(r['text'].split())<=50]
+        if not usable:raise ValueError('English holdout speaker lacks a 25–50 word segment')
+        r=min(usable,key=lambda r:rank(r['id']))
         holdout.append(dict(source='librispeech-test-clean',speaker_id=speaker,id=r['id'],split='test',language='en'))
     (root/'sources/english-holdout-selection.json').write_text(json.dumps(holdout,indent=2)+'\n')
-    for name,url in [('RixVox-v2-README.md',f'https://huggingface.co/datasets/KBLab/rixvox-v2/raw/{RIX_REV}/README.md'),
+    for name,url in [('CC-BY-4.0.txt','https://creativecommons.org/licenses/by/4.0/legalcode.txt'),('RixVox-v2-README.md',f'https://huggingface.co/datasets/KBLab/rixvox-v2/raw/{RIX_REV}/README.md'),
                      ('ODC-BY-1.0.html','https://opendatacommons.org/licenses/by/1-0/')]:
-        with request(url) as response:(root/'sources'/name).write_bytes(response.read(256*1024))
+        cached=a.metadata_cache/name if a.metadata_cache else None
+        if cached and cached.is_file():(root/'sources'/name).write_bytes(cached.read_bytes())
+        else:
+            with request(url) as response:(root/'sources'/name).write_bytes(response.read(256*1024))
     corpus.finish(False,True)
     (root/'README.txt').write_text('Contains information from RixVox-v2, made available under the ODC Attribution License. RixVox-v2 contains information sourced from The Swedish Parliament open data.\nVCTK0.92: Yamagishi, Veaux, MacDonald, 2019, CC-BY4.0, DOI10.7488/ds/2645.\nNo test PCM staged. Speaker IDs are metadata identities, not biometric verification. Older FLEURS baseline speaker overlap cannot be audited.\n')
 

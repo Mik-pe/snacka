@@ -23,10 +23,18 @@ def terms(model, data, basis, language, spec, qat=True):
     pp=torch.stack([prediction[:,:,lo:hi].square().sum(-1) for lo,hi in zip(edges[:-1],edges[1:])],-1)
     pt=torch.stack([(prediction[:,:,lo:hi]*target[:,:,lo:hi]).sum(-1) for lo,hi in zip(edges[:-1],edges[1:])],-1)
     tt=torch.stack([target[:,:,lo:hi].square().sum(-1) for lo,hi in zip(edges[:-1],edges[1:])],-1)
+    active=pp*gains.square()+tt>1e-10
     scale=(pp+tt).sum(-1,keepdim=True).clamp_min(1e-10);pp,pt,tt=pp/scale,pt/scale,tt/scale
     coherent=(pp*gains.square()-2*pt*gains+tt).clamp_min(0)[:,:,:7].sum(-1).mean()
     difference=torch.log(pp*gains.square()+.001)-torch.log(tt+.001)
-    envelope=difference[:,:,:13 if language=='sv' else 16].square().mean()
+    if spec.get('envelope_normalization','').startswith('applied'):
+        normalizer=(pp*gains.square()+tt).sum(-1,keepdim=True).clamp_min(1e-10)
+        difference=torch.log(pp*gains.square()/normalizer+.001)-torch.log(tt/normalizer+.001)
+        mask=active.clone()
+        if language=='sv':mask[:,:,13:]=False
+        envelope=(difference.square()*mask).sum()/mask.sum().clamp_min(1)
+    else:
+        envelope=difference[:,:,:13 if language=='sv' else 16].square().mean()
     actual=torch.cat((data['preceding'],sequence_prediction(model,data,basis,qat)),1)
     reference=torch.cat((data['target_preceding'],data['target']),1)
     spectral=mrstft(actual,reference,16000 if language=='sv' else 48000).mean()

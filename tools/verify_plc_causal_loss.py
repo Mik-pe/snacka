@@ -22,7 +22,7 @@ def main():
         gap=float((actual-data['baseline']).abs().max().detach());worst=max(worst,gap)
         if gap>=2e-5:raise ValueError('Torch/native identity/OLA mismatch')
         if not torch.equal(data['preceding'],data['target_preceding']):raise ValueError('previous received context mismatch')
-        loss,_=terms(model,data,basis,language,dict(coherent_weight=.01,envelope_weight=1.,mrstft_weight=.1))
+        loss,_=terms(model,data,basis,language,dict(coherent_weight=.01,envelope_weight=1.,mrstft_weight=.1,envelope_normalization='applied+target'))
         loss.backward()
         if not torch.isfinite(loss) or any(p.grad is not None and not torch.isfinite(p.grad).all() for p in model.parameters()):raise ValueError('nonfinite gradients')
         model.zero_grad();checked+=len(data['x'])
