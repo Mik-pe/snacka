@@ -44,7 +44,7 @@ def snr(reference, actual, selected):
     return float(10*np.log10(power/mse)) if power>0 and mse>0 else None
 
 
-def job(row, corpus, binary, bitrate, duration, harmonic, quality, baseline_probe):
+def job(row, corpus, binary, bitrate, duration, harmonic, quality, baseline_probe, bands_only=False):
     source=corpus/row["path"]
     if hashlib.sha256(source.read_bytes()).hexdigest()!=row["flac_sha256"]:raise ValueError("source hash differs")
     pcm=subprocess.check_output(["ffmpeg","-v","error","-i",str(source),"-ar","48000","-ac","1","-f","f32le","pipe:1"])
@@ -109,7 +109,10 @@ def job(row, corpus, binary, bitrate, duration, harmonic, quality, baseline_prob
                     supported=[r for r in stats if int(r["band"])<last]
                     result[f"{label}_log_envelope_squared_sum"]=sum(float(r["log_energy_squared"]) for r in supported)
                     result[f"{label}_log_envelope_count"]=sum(float(r["count"]) for r in supported)
-                    result[f"{label}_mrstft_magnitude_error"]=magnitude_error(reference,values.astype(np.float64),row["native_rate"])
+                    high=[r for r in supported if int(r["band"])>=7]
+                    result[f"{label}_highband_log_envelope_squared_sum"]=sum(float(r["log_energy_squared"]) for r in high)
+                    result[f"{label}_highband_log_envelope_count"]=sum(float(r["count"]) for r in high)
+                    result[f"{label}_mrstft_magnitude_error"]=None if bands_only else magnitude_error(reference,values.astype(np.float64),row["native_rate"])
                     result[f"{label}_lost_error_energy"]=float(np.sum((reference[lost].astype(np.float64)-values[lost])**2))
                     for name,selected in [("lost",lost),("onset",onset),("recovery",recovery),("whole",np.ones_like(lost))]:
                         result[f"{label}_{name}_snr_db"]=snr(reference,values,selected)
@@ -128,11 +131,11 @@ def job(row, corpus, binary, bitrate, duration, harmonic, quality, baseline_prob
     return rows
 
 
-def execute_task(item,binary,quality,baseline_probe,patterns):
+def execute_task(item,binary,quality,baseline_probe,patterns,bands_only=False):
     global PATTERNS
     PATTERNS=tuple(patterns)
     row,rate,duration,harmonic=item
-    return job(row,Path(row["corpus_root"]),binary,rate,duration,harmonic,quality,baseline_probe)
+    return job(row,Path(row["corpus_root"]),binary,rate,duration,harmonic,quality,baseline_probe,bands_only)
 
 
 def main():
@@ -147,11 +150,13 @@ def main():
     parser.add_argument("--workers",type=int,default=4)
     parser.add_argument("--quality",action="store_true")
     parser.add_argument("--patterns",nargs="+",choices=PATTERNS,default=list(PATTERNS))
+    parser.add_argument("--native-bands-only",action="store_true",help="separate native-band supplement; omit STOI/LSD/MR-STFT")
     args=parser.parse_args()
+    if args.native_bands_only and args.quality:parser.error("native-band supplements omit the quality scorers")
     selection=json.loads(args.selection.read_text())
     tasks=[(r,rate,duration,bool(mode)) for r in selection for rate in args.bitrates for duration in args.durations for mode in args.modes]
     results=[]
-    execute=partial(execute_task,binary=args.binary.resolve(),quality=args.quality,baseline_probe=args.baseline_probe,patterns=args.patterns)
+    execute=partial(execute_task,binary=args.binary.resolve(),quality=args.quality,baseline_probe=args.baseline_probe,patterns=args.patterns,bands_only=args.native_bands_only)
     args.output.with_suffix(".json").write_text(json.dumps({"status":"INCOMPLETE"})+"\n")
     with args.output.open("w") as stream,ProcessPoolExecutor(max_workers=args.workers) as pool:
         writer=None
