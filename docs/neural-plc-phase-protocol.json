@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "name": "phase-B",
+  "baseline": "0908194819a4b551f1e4e56126e54b0c1d44a512",
+  "cohort": "new speaker-disjoint validation only; not independent test",
+  "variants": [
+    "baseline",
+    "current",
+    "gain_env",
+    "phase_narrow",
+    "phase_wide",
+    "phase_noise",
+    "trajectory"
+  ],
+  "phase_grid": [
+    0,
+    -0.5,
+    0.5,
+    -1,
+    1,
+    -1.5,
+    1.5,
+    -2,
+    2,
+    -2.5,
+    2.5,
+    -3,
+    3,
+    -4,
+    4,
+    -5,
+    5,
+    -6,
+    6,
+    -7,
+    7,
+    -8,
+    8
+  ],
+  "phase_selection": "maximize unweighted mean finite band rho below4kHz before noise; narrow restricts to abs<=3; order0,-,+ resolves ties",
+  "noise_selection": "same phase criterion first; then choose alpha0,.25,.5,.75,1 by highband(>=1600Hz) four-bin log energy after bounded envelope gains; no seed search",
+  "gain_bounds": [
+    0.7875,
+    1.2125
+  ],
+  "trajectory": "3 voiced received f0 in50..500Hz; latest f0 period must match PLC period within20%; slope=(f2-f0)/(2N), delta(t)=0.5*slope/f2*t^2/(1+t/(2N)), clipped+-8; t=PLC elapsed+ahead; no target/gain head",
+  "eligibility": "same existing history/confidence/fade/nonzero guard; missing f0 returns exact0",
+  "matrix": {
+    "bitrates": [
+      24000
+    ],
+    "durations": [
+      10,
+      20
+    ],
+    "modes": [
+      0,
+      1
+    ],
+    "conditions": [
+      "clean",
+      "noise20",
+      "noise10"
+    ],
+    "patterns": [
+      "periodic1",
+      "periodic3",
+      "periodic6",
+      "independent5",
+      "burst40",
+      "burst80"
+    ]
+  },
+  "report": [
+    "all variants, not best oracle selection",
+    "rho quartiles and offsets per band/language",
+    "trajectory nonzero and boundary fractions",
+    "guard per language",
+    "matched selector with actual variant recovery feedback; not forced identical decoder histories"
+  ],
+  "causal_phase_mlp": "separate protocol required before training; no GRU"
+}
