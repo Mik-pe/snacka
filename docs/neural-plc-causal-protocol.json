@@ -41,7 +41,8 @@
     "augmentation": "existing fixed snacka-plc-v1 path hash; bitrate12/24/32,10/20ms,harmonic0/1,clean/noise20/noise10,gain0/-12/-24; one per utterance",
     "mask": "SV bands13..15 excluded from band energy; MR-STFT cap8kHz",
     "english_test_clip_rule": "25\u201350 transcript words, hash-ranked; metadata only before admission",
-    "metadata_inventory": "64 fixed RixVox offsets 3420000 + 1100*i, i=0..63; reduced from initial128 after API429 before training or quality measurements; LibriSpeech test-clean full2620-row metadata read through range requests to Parquet columns only"
+    "metadata_inventory": "64 fixed RixVox offsets 3420000 + 1100*i, i=0..63; reduced from initial128 after API429 before training or quality measurements; LibriSpeech test-clean full2620-row metadata read through range requests to Parquet columns only",
+    "english_metadata_deferral": "Metadata may be deferred to after validation admission; selection rule remains fixed before training. No test waveform/metrics examined before admission."
   },
   "validation": {
     "bitrates": [

@@ -28,7 +28,7 @@ def rix_candidates(offset):
 
 def main():
     import soundfile as sf
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('output',type=Path);p.add_argument('--metadata-cache',type=Path);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('output',type=Path);p.add_argument('--metadata-cache',type=Path);p.add_argument('--defer-english-holdout',action='store_true');a=p.parse_args()
     root=a.output
     if root.exists():p.error('fresh output required')
     root.mkdir(parents=True);(root/'sources').mkdir();corpus=Corpus(root)
@@ -94,22 +94,25 @@ def main():
                 print('EN',speaker,split,flush=True)
     (root/'sources/vctk-speaker-splits.json').write_text(json.dumps(en_assignment,indent=2)+'\n')
     # LibriSpeech test-clean introduces a different English corpus; only metadata.
-    lib=[]
-    if a.metadata_cache:lib=json.loads((a.metadata_cache/'librispeech-rows.json').read_text())
+    if a.defer_english_holdout:
+        (root/'sources/english-holdout-plan.json').write_text(json.dumps(dict(dataset='openslr/librispeech_asr',config='clean',split='test',speakers=12,clips_per_speaker=1,rule='speaker hash then 25–50 transcript words, clip hash',salt=SALT,staging='only after native validation admission'),indent=2)+'\n')
     else:
-        for offset in range(0,2620,100):lib.extend(rows('openslr/librispeech_asr','clean','test',offset,5))
-    by_speaker=defaultdict(list)
-    for item in lib:by_speaker[str(item['row']['speaker_id'])].append(item['row'])
-    holdout=[]
-    eligible_english={s:[r for r in items if 25<=len(r['text'].split())<=50] for s,items in by_speaker.items()}
-    eligible_english={s:items for s,items in eligible_english.items() if items}
-    if len(eligible_english)<12:raise ValueError('insufficient English metadata speakers')
-    for speaker in sorted(eligible_english,key=rank)[:12]:
-        usable=eligible_english[speaker]
-        if not usable:raise ValueError('English holdout speaker lacks a 25–50 word segment')
-        r=min(usable,key=lambda r:rank(r['id']))
-        holdout.append(dict(source='librispeech-test-clean',speaker_id=speaker,id=r['id'],split='test',language='en'))
-    (root/'sources/english-holdout-selection.json').write_text(json.dumps(holdout,indent=2)+'\n')
+        lib=[]
+        if a.metadata_cache:lib=json.loads((a.metadata_cache/'librispeech-rows.json').read_text())
+        else:
+            for offset in range(0,2620,100):lib.extend(rows('openslr/librispeech_asr','clean','test',offset,5))
+        by_speaker=defaultdict(list)
+        for item in lib:by_speaker[str(item['row']['speaker_id'])].append(item['row'])
+        holdout=[]
+        eligible_english={s:[r for r in items if 25<=len(r['text'].split())<=50] for s,items in by_speaker.items()}
+        eligible_english={s:items for s,items in eligible_english.items() if items}
+        if len(eligible_english)<12:raise ValueError('insufficient English metadata speakers')
+        for speaker in sorted(eligible_english,key=rank)[:12]:
+            usable=eligible_english[speaker]
+            if not usable:raise ValueError('English holdout speaker lacks a 25–50 word segment')
+            r=min(usable,key=lambda r:rank(r['id']))
+            holdout.append(dict(source='librispeech-test-clean',speaker_id=speaker,id=r['id'],split='test',language='en'))
+        (root/'sources/english-holdout-selection.json').write_text(json.dumps(holdout,indent=2)+'\n')
     for name,url in [('CC-BY-4.0.txt','https://creativecommons.org/licenses/by/4.0/legalcode.txt'),('RixVox-v2-README.md',f'https://huggingface.co/datasets/KBLab/rixvox-v2/raw/{RIX_REV}/README.md'),
                      ('ODC-BY-1.0.txt','https://raw.githubusercontent.com/okfn/opendatacommons.org/master/content/licenses/by/odc_by_1.0_public_text.txt')]:
         cached=a.metadata_cache/name if a.metadata_cache else None
