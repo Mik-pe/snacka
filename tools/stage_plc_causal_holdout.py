@@ -75,6 +75,7 @@ def main():
         corpus.add(stream.getvalue(),'rixvox-v2',f"rixvox-{chosen['row_idx']}.wav",chosen['speaker_id'],'test',16000,'sv',revision=RIX_REV,split_claim='canonical RixVox speaker-disjoint',original_audio_sha256=hashlib.sha256(raw).hexdigest(),crop_start_samples=start,source_row_idx=chosen['row_idx'])
         corpus.rows[-1]['license']='ODC-BY-1.0';print('SV staged',chosen['row_idx'],flush=True)
     corpus.finish(False)
+    (a.output/'README.txt').write_text('Contains information from RixVox-v2, made available under the ODC Attribution License. RixVox-v2 contains information sourced from The Swedish Parliament open data.\nLibriSpeech ASR corpus: Panayotov et al., 2015, OpenSLR12, CC-BY-4.0.\nFrozen independent acceptance audio; native16kHz; Swedish middle12second crops. Speaker separation uses published metadata identities.\n')
     rows=[dict(row,corpus_root=str(a.output.resolve())) for row in corpus.rows]
     (a.output/'selection.json').write_text(json.dumps(rows,indent=2)+'\n')
     (a.output/'staging-receipt.json').write_text(json.dumps(dict(decision_sha256=hashlib.sha256(a.decision.read_bytes()).hexdigest(),english_amendment_sha256=hashlib.sha256(english_bytes).hexdigest(),parquet_bytes_transferred=remote.transferred,test_metrics_seen=False,clips=len(rows)),indent=2)+'\n')
