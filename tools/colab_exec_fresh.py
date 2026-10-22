@@ -4,7 +4,9 @@
 
 Run in the Python environment containing google-colab-cli. This retains the
 existing kernel and auth, closes client channels, and propagates Python errors.
-No credentials are printed or stored in artifacts.
+The timeout closes the client, not the remote operation. Check owned worker
+status before retrying; launch long work as a process with a status file.
+No CLI credentials are printed or stored in artifacts.
 """
 import argparse
 import os
