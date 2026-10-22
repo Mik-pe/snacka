@@ -18,7 +18,7 @@ def summary(actual,gain,phase,language):
     neutral=np.log(gain[:,:bands])**2
     phase_error=np.mean((actual[:,16]-phase)**2);zero_error=np.mean(phase**2)
     return dict(records=len(actual),gain_log_mse=float(error.mean()),identity_gain_log_mse=float(neutral.mean()),
-        phase_mse_samples=float(phase_error),zero_phase_mse_samples=float(zero_error),
+        phase_mse_samples_squared=float(phase_error),zero_phase_mse_samples_squared=float(zero_error),phase_rmse_samples=float(np.sqrt(phase_error)),
         phase_mse_ratio_vs_zero=float(phase_error/zero_error) if zero_error>0 else None,
         predicted_phase_abs_mean=float(np.abs(actual[:,16]).mean()),target_phase_abs_mean=float(np.abs(phase).mean()),
         predicted_phase_quartiles=np.quantile(actual[:,16],[.25,.5,.75]).tolist(),
