@@ -130,6 +130,32 @@ impl Concealment {
         (left + fraction * (right - left)) * (1.0 - elapsed as f32 / self.fade as f32)
     }
 
+    pub(crate) fn phase_sample(&self, ahead: usize, delta: f32) -> f32 {
+        if delta == 0.0 {
+            return self.sample(ahead);
+        }
+        let elapsed = self.elapsed + ahead;
+        if self.length == 0 || elapsed >= self.fade {
+            return 0.0;
+        }
+        let position =
+            self.length as f32 - self.period + (elapsed as f32 + delta).rem_euclid(self.period);
+        // Fractional modulo can round the position up to the history length.
+        let index = (position.floor() as usize).min(self.length - 1);
+        let fraction = position - index as f32;
+        let left = self.history[index];
+        let right = if index + 1 < self.length {
+            self.history[index + 1]
+        } else {
+            let start = self.length as f32 - self.period;
+            let index = start.floor() as usize;
+            self.history[index]
+                + (start - index as f32)
+                    * (self.history[(index + 1).min(self.length - 1)] - self.history[index])
+        };
+        (left + fraction * (right - left)) * (1.0 - elapsed as f32 / self.fade as f32)
+    }
+
     pub(crate) fn advance(&mut self, samples: usize) {
         self.elapsed = (self.elapsed + samples).min(self.fade);
     }
@@ -244,5 +270,51 @@ mod tests {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod phase_control_tests {
+    use super::*;
+
+    #[test]
+    fn zero_offset_preserves_legacy_samples_and_fade() {
+        let mut state = Concealment::new();
+        state.length = HISTORY;
+        state.period = 173.5;
+        state.fade = 1920;
+        for (i, value) in state.history.iter_mut().enumerate() {
+            *value = (i as f32 * 0.013).sin() * 0.3;
+        }
+        for elapsed in [0, 480, 1919, 1920] {
+            state.elapsed = elapsed;
+            for ahead in 0..1080 {
+                assert_eq!(
+                    state.phase_sample(ahead, 0.0).to_bits(),
+                    state.sample(ahead).to_bits()
+                );
+                for delta in [-8.0, -0.5, 0.5, 8.0] {
+                    let value = state.phase_sample(ahead, delta);
+                    assert!(value.is_finite() && value.abs() <= 0.3);
+                    if elapsed + ahead >= state.fade {
+                        assert_eq!(value, 0.0);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn fractional_read_wraps_without_moving_fade() {
+        let mut state = Concealment::new();
+        state.length = 4;
+        state.history[..4].copy_from_slice(&[-1.0, -0.2, 0.5, 0.9]);
+        state.period = 4.0;
+        state.fade = 1920;
+        assert!((state.phase_sample(0, 0.5) + 0.6).abs() < 2e-7);
+        assert!((state.phase_sample(0, -0.5) + 0.05).abs() < 2e-7);
+        state.elapsed = 480;
+        assert!((state.phase_sample(0, 0.5) + 0.45).abs() < 2e-7);
+        assert!((state.phase_sample(0, -0.5) + 0.0375).abs() < 2e-7);
     }
 }

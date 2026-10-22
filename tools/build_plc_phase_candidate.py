@@ -58,7 +58,14 @@ def main():
         }
     }
 
-'''+text[end:];path.write_text(text)
+'''+text[end:]
+    text=text.replace('//! Loss-only, finite-history envelope prediction. No recurrent synthesized history.','//! Loss-only band gains and fractional phase prediction from received history.')
+    text=text.replace('pub(crate) fn gains(', '#[cfg(test)]\npub(crate) fn gains(').replace('pub(crate) fn refine(', '#[cfg(test)]\npub(crate) fn refine(')
+    path.write_text(text)
+    path=root/'src/lib.rs';text=path.read_text()
+    if '#[allow(dead_code)]\nmod neural_plc_weights;' not in text:
+        text=text.replace('mod neural_plc_weights;','// Generated export metadata is also consumed by the footprint example.\n#[allow(dead_code)]\nmod neural_plc_weights;')
+    path.write_text(text)
     shutil.copy2(a.model/'parity.bin',root/'tests/testdata/neural-plc-phase-parity.bin')
     subprocess.run(['cargo','fmt'],cwd=root,check=True)
     # Freeze real production bytes before making an instrumented derivative.
