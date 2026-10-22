@@ -7,7 +7,7 @@ import hashlib
 import json
 from pathlib import Path
 import numpy as np
-from select_plc_causal import summarize,KEYS
+from select_plc_causal import summarize,KEYS,canonical_case
 from summarize_plc_phase import audit,compare,admission
 
 
@@ -38,18 +38,18 @@ def main():
     from select_plc_causal import choose as stage_a_choose
     if stage_a_choose(a_verified)!=a_report['selected'] or a_verified!=a_report['results']:raise ValueError('stageA selection/report differs from complete data')
     for name in a_verified:
-        rows=load(a.a_directory/(name+'.csv'));inputs.append({tuple(r[k] for k in KEYS):r['input_sha256'] for r in rows});frames.append(rows)
+        rows=load(a.a_directory/(name+'.csv'));inputs.append({canonical_case(r):r['input_sha256'] for r in rows});frames.append(rows)
     if a_report['selected'] is not None:results[a_report['selected']]=a_verified[a_report['selected']]
     for name in ('distill_gain','distill_phase'):
         results[name]=summarize(a.b_directory/(name+'.csv'),a.selection,settings)
-        rows=load(a.b_directory/(name+'.csv'));inputs.append({tuple(r[k] for k in KEYS):r['input_sha256'] for r in rows});frames.append(rows)
+        rows=load(a.b_directory/(name+'.csv'));inputs.append({canonical_case(r):r['input_sha256'] for r in rows});frames.append(rows)
     quality=a.oracle/'quality.csv';run=json.loads((a.oracle/'run.json').read_text());rows=load(quality)
     if run['status']!='COMPLETE' or hashlib.sha256(quality.read_bytes()).hexdigest()!=run['quality_sha256']:raise ValueError('oracle incomplete or changed')
     audit(rows)
     if run['identity']['selection_sha256']!=hashlib.sha256(a.selection.read_bytes()).hexdigest():raise ValueError('oracle cohort differs')
     selected=sorted([r for r in rows if r['implementation']=='trajectory'],key=lambda r:tuple(r[k] for k in KEYS))
     reference=sorted([r for r in rows if r['implementation']=='baseline'],key=lambda r:tuple(r[k] for k in KEYS))
-    inputs.append({tuple(r[k] for k in KEYS):r['input_sha256'] for r in selected})
+    inputs.append({canonical_case(r):r['input_sha256'] for r in selected})
     if any(x!=inputs[0] for x in inputs[1:]):raise ValueError('causal comparisons used different PCM')
     metrics={}
     for language in ('en','sv'):
@@ -59,10 +59,10 @@ def main():
         metrics[language]=values
     results['trajectory']=dict(metrics=metrics,admission=admission(metrics['en'],metrics['sv']),run=run)
     # Paired metrics are computed on each VM. Report baseline consistency, too.
-    index={tuple(r[k] for k in KEYS):r for r in frames[0]};largest=0.
+    index={canonical_case(r):r for r in frames[0]};largest=0.
     for group in frames[1:]:
         for row in group:
-            before=index[tuple(row[k] for k in KEYS)]
+            before=index[canonical_case(row)]
             gap=abs(float(row['baseline_estoi'])-float(before['baseline_estoi']));largest=max(largest,gap)
     report=dict(schema=1,selected=choose(results),results=results,stage_a_selected=a_report['selected'],
         protocol_sha256=hashlib.sha256(a.protocol.read_bytes()).hexdigest(),

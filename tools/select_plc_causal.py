@@ -13,6 +13,22 @@ from summarize_plc_representation import admission
 KEYS=('source','group_id','clip','condition','bitrate','frame_ms','harmonic','pattern')
 
 
+def canonical_mode(value):
+    mapping={'0':'0','1':'1','False':'0','True':'1'}
+    if str(value) not in mapping:raise ValueError('invalid harmonic mode')
+    return mapping[str(value)]
+
+
+def canonical_case(row):
+    return tuple(canonical_mode(row[k]) if k=='harmonic' else str(row[k]) for k in KEYS)
+
+
+def whole_count(value):
+    number=float(value)
+    if not np.isfinite(number) or number<0 or not number.is_integer():raise ValueError('invalid native band count')
+    return int(number)
+
+
 def summarize(path, selection, settings):
     run=json.loads(path.with_suffix('.json').read_text())
     if run.get('status')!='COMPLETE' or run['selection_sha256']!=hashlib.sha256(selection.read_bytes()).hexdigest():
@@ -23,7 +39,7 @@ def summarize(path, selection, settings):
                          map(str,settings['modes']),settings['patterns']))
     indexed={}
     for row in rows:
-        key=tuple(row[k] for k in KEYS)
+        key=canonical_case(row)
         if key in indexed:raise ValueError('duplicate decoded case')
         indexed[key]=row
         for metric in ('estoi','stoi'):
@@ -36,7 +52,7 @@ def summarize(path, selection, settings):
     if len(rows)!=len(planned)*len(expected) or run['rows']!=len(rows):raise ValueError('incomplete factorial')
     for source in planned:
         selected=[r for r in rows if (r['source'],r['group_id'],r['clip'])==(source['source'],source['group_id'],Path(source['path']).stem)]
-        actual={(r['condition'],r['bitrate'],r['frame_ms'],r['harmonic'],r['pattern']) for r in selected}
+        actual={(r['condition'],r['bitrate'],r['frame_ms'],canonical_mode(r['harmonic']),r['pattern']) for r in selected}
         if actual!=expected:raise ValueError('factorial coverage differs for source')
         if any(r['language']!=source['language'] or int(r['native_rate'])!=source['native_rate'] for r in selected):raise ValueError('source metadata drift')
     metrics={}
@@ -47,7 +63,7 @@ def summarize(path, selection, settings):
             if b<=0:raise ValueError('zero baseline denominator')
             return a/b
         def env(label):
-            return sum(float(r[label+'_log_envelope_squared_sum']) for r in selected)/sum(int(r[label+'_log_envelope_count']) for r in selected)
+            return sum(float(r[label+'_log_envelope_squared_sum']) for r in selected)/sum(whole_count(r[label+'_log_envelope_count']) for r in selected)
         groups=sorted({r['group_id'] for r in selected})
         deltas=np.array([np.mean([float(r['delta_estoi']) for r in selected if r['group_id']==g]) for g in groups])
         rng=np.random.default_rng(20261022);samples=deltas[rng.integers(0,len(groups),size=(2000,len(groups)))].mean(1)
@@ -75,7 +91,7 @@ def main():
     # Same source PCM must be compared in every model run.
     maps=[]
     for name in results:
-        with (a.directory/(name+'.csv')).open() as f:maps.append({tuple(r[k] for k in KEYS):r['input_sha256'] for r in csv.DictReader(f)})
+        with (a.directory/(name+'.csv')).open() as f:maps.append({canonical_case(r):r['input_sha256'] for r in csv.DictReader(f)})
     if any(x!=maps[0] for x in maps[1:]):raise ValueError('model comparisons used different PCM')
     report=dict(schema=1,selection='native guards before ranking',selected=choose(results),results=results,
         protocol_sha256=hashlib.sha256(a.protocol.read_bytes()).hexdigest())

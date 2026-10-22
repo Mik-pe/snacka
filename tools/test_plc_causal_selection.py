@@ -34,9 +34,9 @@ class Coverage(unittest.TestCase):
         self.selection.write_text(json.dumps(sources));self.rows=[]
         for source in sources:
             for condition,rate,ms,mode,pattern in product(*[self.settings[k] for k in ['conditions','bitrates','durations','modes','patterns']]):
-                row=dict(source=source['source'],group_id=source['group_id'],clip=Path(source['path']).stem,language=source['language'],native_rate=source['native_rate'],condition=condition,bitrate=rate,frame_ms=ms,harmonic=mode,pattern=pattern,input_sha256='0'*64,delta_estoi=.001,delta_stoi=.001)
+                row=dict(source=source['source'],group_id=source['group_id'],clip=Path(source['path']).stem,language=source['language'],native_rate=source['native_rate'],condition=condition,bitrate=rate,frame_ms=ms,harmonic=bool(mode),pattern=pattern,input_sha256='0'*64,delta_estoi=.001,delta_stoi=.001)
                 for label in ['baseline','current']:
-                    for name,value in dict(lost_error_energy=1.,lowband_mdct_error_energy=1.,log_envelope_squared_sum=1.,log_envelope_count=16,mrstft_magnitude_error=1.,estoi=.6,stoi=.7).items():row[label+'_'+name]=value
+                    for name,value in dict(lost_error_energy=1.,lowband_mdct_error_energy=1.,log_envelope_squared_sum=1.,log_envelope_count=16.0,mrstft_magnitude_error=1.,estoi=.6,stoi=.7).items():row[label+'_'+name]=value
                 row['current_lost_error_energy']=.99;row['current_log_envelope_squared_sum']=.99;row['current_estoi']=.601;row['current_stoi']=.701
                 self.rows.append(row)
     def tearDown(self):self.temp.cleanup()
@@ -47,6 +47,15 @@ class Coverage(unittest.TestCase):
         self.path.with_suffix('.json').write_text(json.dumps(dict(status=status,rows=len(rows),selection_sha256=hashlib.sha256(self.selection.read_bytes()).hexdigest())))
     def test_complete_registered_matrix(self):
         self.save();self.assertTrue(summarize(self.path,self.selection,self.settings)['admission']['passed'])
+    def test_integer_mode_and_count_format_remains_supported(self):
+        rows=copy.deepcopy(self.rows)
+        for row in rows:
+            row['harmonic']=int(row['harmonic'])
+            for label in ['baseline','current']:row[label+'_log_envelope_count']=16
+        self.save(rows);self.assertTrue(summarize(self.path,self.selection,self.settings)['admission']['passed'])
+    def test_fractional_native_count_is_rejected(self):
+        rows=copy.deepcopy(self.rows);rows[0]['current_log_envelope_count']=16.1;self.save(rows)
+        with self.assertRaises(ValueError):summarize(self.path,self.selection,self.settings)
     def test_incomplete_status_even_with_all_rows(self):
         self.save(status='INCOMPLETE')
         with self.assertRaises(ValueError):summarize(self.path,self.selection,self.settings)
