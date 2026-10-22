@@ -304,3 +304,13 @@ is part of this Phase 2 implementation.
 The complete 5,184-case-per-variant noncausal oracle study, decoded-waveform
 results, per-band correlations and next loss-ablation plan are in
 [neural-plc-oracles.md](neural-plc-oracles.md). It changes no runtime weights.
+
+## Loss ablation after the oracle study
+
+The 2026-10-22 [Step 2 loss study](neural-plc-loss-ablation.md) trains the
+frequency-split, asymmetric, native inverse/OLA MR-STFT and wider-gain variants
+with the same 80–64–64–16 model. The validation-selected candidate reduces
+waveform error but regresses intelligibility and fails both acceptance
+protocols on 5,184 fresh cases. The installed 60-epoch weights are retained.
+The report also separates low/high-band envelopes, records the fresh baseline's
+limits and provides checksummed data/model/evidence artifacts for reproduction.

@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "frozen_date": "2026-10-22",
+  "baseline_commit": "0456625a7603a368339194d0e42e472ce933e4a4",
+  "purpose": "Prospective perceptual loss study; legacy acceptance is retained and separately reported.",
+  "architecture": [
+    80,
+    64,
+    64,
+    16
+  ],
+  "epochs": 60,
+  "float_warmup_epochs": 10,
+  "seed": 20261022,
+  "optimizer": {
+    "name": "AdamW",
+    "lr": 0.002,
+    "weight_decay": 0.0001,
+    "gradient_clip": 1.0,
+    "batch_size": 8192
+  },
+  "bands_hz": [
+    0,
+    200,
+    400,
+    600,
+    800,
+    1000,
+    1300,
+    1600,
+    2000,
+    2500,
+    3200,
+    4000,
+    5200,
+    6800,
+    9000,
+    13000,
+    24000
+  ],
+  "coherent_band_cutoff_hz": 1600,
+  "cutoff_note": "Preregistered nearest native band boundary to proposed 1500 Hz; not a proven physical threshold.",
+  "experiments": [
+    {
+      "name": "control",
+      "coherent_bands": 16,
+      "overshoot_weight": 1.0,
+      "gain_min": 0.7875,
+      "gain_max": 1.2125,
+      "sequence_weight": 0.0
+    },
+    {
+      "name": "2A",
+      "coherent_bands": 7,
+      "overshoot_weight": 1.0,
+      "gain_min": 0.7875,
+      "gain_max": 1.2125,
+      "sequence_weight": 0.0
+    },
+    {
+      "name": "2B",
+      "coherent_bands": 7,
+      "overshoot_weight": 2.5,
+      "gain_min": 0.7875,
+      "gain_max": 1.2125,
+      "sequence_weight": 0.0
+    },
+    {
+      "name": "2C",
+      "coherent_bands": 7,
+      "overshoot_weight": 2.5,
+      "gain_min": 0.7875,
+      "gain_max": 1.2125,
+      "sequence_weight": 0.1
+    },
+    {
+      "name": "2D",
+      "loss_from": "best_validation_of_2A_2B_2C",
+      "gain_min": 0.5,
+      "gain_max": 1.25
+    }
+  ],
+  "objective": {
+    "applied_physical_gain": true,
+    "normalized_coherent_mdct_sum": 1.0,
+    "gain_identity_mean": 0.01,
+    "log_band_energy_mean": 0.1,
+    "epsilon": 0.001,
+    "asymmetry": "multiply squared log-energy error by overshoot_weight when predicted energy exceeds target",
+    "native_band_mapping": "floor(hz * N / 24000)",
+    "swedish_bandwidth_mask": "exclude bands crossing 8000 Hz from spectral loss for native 16kHz rows; report them separately",
+    "sequence": "actual native inverse basis, 120-sample OLA, clamp PCM; include lost burst and first received frame; FFT sizes128/256/512, hop quarter; mean normalized magnitude L1 plus log-magnitude L1; exact native identity-gain parity required"
+  },
+  "selection": {
+    "data": "validation only; test/oracle clips excluded",
+    "checkpoint": "minimum experiment validation objective among QAT epochs11..60",
+    "best_loss_for_2D": "minimum balanced validation perceptual score: normalized low-band error + 0.1 masked log-band-energy MSE + 0.1 sequence MR-STFT; compute common score for all variants",
+    "tie": "earlier experiment in A,B,C order",
+    "final_candidate": "best validation score including 2D, once; no retry after acceptance results"
+  },
+  "acceptance": {
+    "reference": "installed 60-epoch MLP, plus classical PLC and unchanged legacy gate",
+    "lowband_error_ratio_max": 1.01,
+    "aggregate_language_estoi_delta_min": 0.0,
+    "aggregate_language_stoi_delta_min": -0.0005,
+    "pooled_group_bootstrap_estoi_ci_lower_min": 0.0,
+    "log_envelope_ratio_max": 1.0,
+    "mrstft_magnitude_ratio_max": 1.0,
+    "onset_recovery_mean_snr_delta_min_db": -0.1,
+    "worst_decile_lost_snr_delta_min_db": -0.5,
+    "per_language_mode_duration_estoi_delta_min": -0.001,
+    "uninterrupted_packets_pcm_unchanged": true,
+    "received_pcm_beyond_overlap_unchanged": true,
+    "steady_state_allocations": 0,
+    "finite_bounded_reset_fade_required": true,
+    "src_opus_unchanged": true,
+    "constant_bytes_max": 16384,
+    "extra_decoder_state_bytes_max": 8192,
+    "cpu_target_us": 25,
+    "cpu_note": "compare native overhead, existing first-loss DSP variability documented; not a new worst-case claim"
+  },
+  "evaluation": {
+    "validation_clips_per_language": 6,
+    "acceptance_clips_per_language": 12,
+    "bitrates": [
+      12000,
+      24000,
+      32000
+    ],
+    "durations_ms": [
+      10,
+      20
+    ],
+    "modes": [
+      0,
+      1
+    ],
+    "conditions": [
+      "clean",
+      "noise20",
+      "noise10"
+    ],
+    "loss_patterns": [
+      "periodic1",
+      "periodic3",
+      "periodic6",
+      "independent5",
+      "burst40",
+      "burst80"
+    ],
+    "bootstrap_seed": 20261022,
+    "bootstrap_repeats": 10000,
+    "acceptance_selection": "deterministic SHA256 snacka-step2-acceptance-v1:path, first unused held-out clip per group; exclude every prior oracle clip. EN speaker groups; SV sentence groups with UNKNOWN speaker disjointness; no independent Swedish-speaker claim."
+  },
+  "limitations": [
+    "Future-target oracle does not establish a causal ceiling or remaining learnable headroom.",
+    "Existing Swedish speech is16kHz; full-band Swedish quality is unproven.",
+    "Objective scores are not blind listening evidence.",
+    "CU cost is measured after sessions stop, not predicted from epochs."
+  ]
+}
