@@ -32,7 +32,8 @@ def main():
             elif 'text' in item:print(item['text'],end='')
     except BaseException as error:
         # Third-party exceptions may carry credential-bearing request URLs.
-        print('Colab execution failed: '+type(error).__name__,file=sys.stderr);status=1
+        code=getattr(getattr(error,'response',None),'status_code',None)
+        print('Colab execution failed: '+type(error).__name__+(f' HTTP{code}' if code else ''),file=sys.stderr);status=1
     finally:
         try:runtime.stop()
         except BaseException:pass
