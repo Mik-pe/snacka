@@ -24,7 +24,7 @@ def main():
             x=-row['lowband_error_change_pct'];y=row['estoi_delta_vs_installed'];name=row['variant']
             ax.scatter(x,y,s=38,color='#276B9B',zorder=3)
             offset=offsets[name]
-            if language=='sv':offset={'2A':(12,-18),'2B':(12,17),'2C':(38,2)}.get(name,offset)
+            if language=='sv':offset={'2A':(12,-18),'2B':(12,17),'2C':(38,2),'2D':(-25,-14)}.get(name,offset)
             ax.annotate(name,(x,y),xytext=offset,textcoords='offset points',fontsize=9,
                         arrowprops={'arrowstyle':'-','linewidth':.5,'color':'#888888'})
         for row in fresh:
@@ -39,9 +39,10 @@ def main():
         ax.ticklabel_format(axis='y',style='plain',useOffset=False)
     axes[0].set_ylabel('ESTOI change relative to installed model')
     values=[r['estoi_delta_vs_installed'] for r in rows]+[r['estoi_delta'] for r in fresh]
+    values.extend(value for row in fresh for value in row.get('estoi_group_bootstrap_95pct',[]))
     axes[0].set_ylim(min(-.0025,min(values)-.0003),max(.0004,max(values)+.0002))
     fig.suptitle('Less coherent error did not ensure better intelligibility',fontsize=13)
-    fig.text(.5,.025,'Blue: 432 validation cases per model (6 clips/language, 24 kb/s, 20 ms).  Orange: fresh acceptance.\nHigher ESTOI is better; points below zero regress. Swedish speaker separation is unknown. No listening test.',ha='center',fontsize=8,color='#444444')
+    fig.text(.5,.025,'Blue: 432 validation cases/model (6 clips/language, 24 kb/s, 20 ms). Orange: fresh acceptance, 95% group-bootstrap intervals.\nHigher ESTOI is better; points below zero regress. Swedish speaker separation is unknown. No listening test.',ha='center',fontsize=8,color='#444444')
     fig.tight_layout(rect=(0,.12,1,.94));fig.savefig(a.output,dpi=170);plt.close(fig)
 
 
