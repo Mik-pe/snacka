@@ -29,6 +29,7 @@ class GateContract(unittest.TestCase):
                             label+'_lowband_mdct_error_energy':.2,label+'_log_envelope_squared_sum':.5,
                             label+'_log_envelope_count':16,label+'_mrstft_magnitude_error':.4,
                             label+'_onset_snr_db':10.,label+'_recovery_snr_db':10.,label+'_lost_snr_db':10.})
+            row['delta_estoi']=0.
             rows.append(row)
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary)
@@ -41,6 +42,7 @@ class GateContract(unittest.TestCase):
                         if candidate:
                             row['current_lost_error_energy']=lost_error
                             row['current_estoi']+=estoi_delta;row['current_stoi']+=.001
+                            row['delta_estoi']=estoi_delta
                             row['current_lowband_mdct_error_energy']*=lowband_ratio
                             row['current_log_envelope_squared_sum']*=.95
                             row['current_mrstft_magnitude_error']*=.95

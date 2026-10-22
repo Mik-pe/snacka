@@ -87,6 +87,9 @@ def main():
         magnitude=average(after,'current_mrstft_magnitude_error')/average(before,'current_mrstft_magnitude_error')
         entry={'language':language,'cases':len(rows),'lowband_error_ratio':lo,'log_envelope_ratio':envelope,
                'mrstft_ratio':magnitude,'stoi_delta':average(rows,'stoi'),'estoi_delta':average(rows,'estoi'),
+               'installed_estoi_delta_vs_classical':average(before,'delta_estoi'),
+               'candidate_estoi_delta_vs_classical':average(after,'delta_estoi'),
+               'installed_whole_lost_error_reduction_vs_classical_pct':100*(1-total(before,'lost_error_energy')/sum(float(r['baseline_lost_error_energy']) for r in before)),
                'whole_lost_error_reduction_vs_installed_pct':100*(1-total(after,'lost_error_energy')/total(before,'lost_error_energy')),
                'whole_lost_error_reduction_vs_classical_pct':100*(1-total(after,'lost_error_energy')/sum(float(r['baseline_lost_error_energy']) for r in after))}
         report['by_language'].append(entry)
@@ -101,7 +104,10 @@ def main():
         entry['bootstrap_unit']='speaker' if language=='en' else 'sentence group; speaker unknown'
         entry['groups']=len(groups)
     rng=np.random.default_rng(protocol['evaluation']['bootstrap_seed']);repeats=protocol['evaluation']['bootstrap_repeats']
-    bootstrap=np.mean([g[rng.integers(0,len(g),(repeats,len(g)))].mean(axis=1) for g in grouped],axis=0)
+    sampled_groups=[g[rng.integers(0,len(g),(repeats,len(g)))].mean(axis=1) for g in grouped]
+    bootstrap=np.mean(sampled_groups,axis=0)
+    for entry,samples in zip(report['by_language'],sampled_groups):
+        entry['estoi_group_bootstrap_95pct']=np.quantile(samples,[0.025,0.975]).tolist()
     ci=np.quantile(bootstrap,[0.025,0.975]).tolist();report['balanced_group_bootstrap_estoi_95pct']=ci
     fail('balanced group ESTOI CI lower',ci[0],minimum=gates['pooled_group_bootstrap_estoi_ci_lower_min'])
     for language,mode,duration in sorted({(r['language'],r['harmonic'],r['frame_ms']) for r in deltas}):
