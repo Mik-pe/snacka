@@ -23,7 +23,7 @@ def main():
     for name in ['cpu_probe','roundtrip','plc_compare']:shutil.copy2(repo/'examples'/f'{name}.rs',root/'examples'/f'{name}.rs')
     shutil.copy2(repo/'tools/plc_ablation_compare.rs',root/'examples/plc_ablation_compare.rs')
     (root/'Cargo.toml').write_text('[package]\nname="snacka-causal-acceptance"\nversion="0.0.0"\nedition="2024"\n[lib]\nname="snacka"\n[features]\nopus=[]\nreference-tests=[]\n[profile.release]\noverflow-checks=true\n')
-    subprocess.run(['cargo','build','--offline','--release','--examples'],cwd=root,check=True)
+    subprocess.run(['cargo','build','--offline','--release','--target-dir',str(root/'target'),'--examples'],cwd=root,check=True)
     receipt=dict(production_receipt=json.loads((a.source/'production-receipt.json').read_text()),
         conceal_body_sha256=hashlib.sha256(body.encode()).hexdigest(),binaries={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (root/'target/release/examples').iterdir() if p.is_file() and '.' not in p.name})
     (root/'build-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(receipt,indent=2))

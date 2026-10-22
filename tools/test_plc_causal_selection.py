@@ -12,6 +12,23 @@ import unittest
 from select_plc_causal import summarize
 from select_plc_causal_final import choose
 from summarize_plc_phase import admission
+from summarize_plc_causal_acceptance import stratum_guards
+
+class AcceptanceStrata(unittest.TestCase):
+    def rows(self):
+        return [dict(language=language,harmonic=mode,frame_ms=duration,delta_estoi=.001)
+            for language in ('en','sv') for mode in ('True','False') for duration in ('10','20')]
+    def test_all_eight_strata_and_boolean_modes(self):
+        result=stratum_guards(self.rows(),-.001)
+        self.assertEqual(len(result),8);self.assertTrue(all(x['passed'] for x in result))
+    def test_one_bad_stratum_cannot_be_bought_by_others(self):
+        rows=self.rows();rows[0]['delta_estoi']=-.001001
+        self.assertFalse(all(x['passed'] for x in stratum_guards(rows,-.001)))
+    def test_missing_stratum_is_rejected(self):
+        with self.assertRaises(ValueError):stratum_guards(self.rows()[1:],-.001)
+    def test_nonfinite_stratum_is_rejected(self):
+        rows=self.rows();rows[0]['delta_estoi']=float('nan')
+        with self.assertRaises(ValueError):stratum_guards(rows,-.001)
 
 class Selection(unittest.TestCase):
     def candidate(self,en,sv,env=.99,wave=.99):
