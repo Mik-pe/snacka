@@ -1,0 +1,3897 @@
+{
+  "schema": 1,
+  "kind": "synthetic-feasibility-not-speech-quality",
+  "created_at": "2026-10-22T21:01:34.405435+00:00",
+  "base_commit": "ada82abf997af35f7563c066112f7db24ff8ec83",
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "compile_options": [
+    "--edition=2024",
+    "-C",
+    "opt-level=3"
+  ],
+  "source_sha256": {
+    "tools/probe_plc_energy_pitch.rs": "2e7bc8801c46a875fe137bd5ad34be8bda6e99474a98aefa1a3f0e288d0f3b4e",
+    "tools/measure_plc_energy_pitch.py": "2b72f3ca9e0d1073ea4cad2086173e8202a10f57c2ab6331150e6af3c25dd63a",
+    "src/concealment.rs": "bdcb137329dbdd97d0e29144a8659e906b44754fc310b4667ef14e236d1b52b6",
+    "src/neural_plc.rs": "7f3fc4bc8bf9ee7d43a2b4d652cce8272d5416a9d29117aa6d06cb653e60752f",
+    "src/neural_plc_weights.rs": "9a944bc062acbdfc8f4132c2344c21ba95fe5f885f46ed9674d22e67a02a4d15",
+    "tests/testdata/neural-plc-phase-parity.bin": "3d37125529e9b0e107a338791cbe99663ca82bd3d10a3e51f39c7cac36c875c1"
+  },
+  "binary_sha256": "5c7e2670d2d8181c7a1837c103903213b8fc4cd346a2b9f3222429fa9b0c9ad2",
+  "tests": "\nrunning 12 tests\ntest native::phase_control_tests::fractional_read_wraps_without_moving_fade ... ok\ntest tests::analytic_gains_match_unsaturated_and_clamped_teacher_ratios ... ok\ntest tests::local_pitch_rejects_silence_and_incomplete_history ... ok\ntest tests::normalized_history_cannot_recover_exact_last_band_energy ... ok\ntest neural_plc::tests::quantized_rust_matches_selected_pytorch_controls ... ok\ntest native::tests::silent_and_canceling_windows_retain_the_waveform_fallback ... ok\ntest native::phase_control_tests::zero_offset_preserves_legacy_samples_and_fade ... ok\ntest native::tests::normalized_pitch_correlation_matches_direct_f64_dot_products ... ok\ntest neural_plc::tests::active_spectral_correction_preserves_exact_polarity ... ok\ntest neural_plc::tests::history_is_polarity_invariant_and_reset_discards_prior_audio ... ok\ntest tests::finite_extremes_and_silence_stay_bounded ... ok\ntest tests::local_pitch_recovers_stationarity_and_the_sign_of_slow_drift ... ok\n\ntest result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+  "summary": [
+    {
+      "run": 0,
+      "component": "band_log_energy",
+      "samples": 480,
+      "repetitions": 21,
+      "median_us": 0.35515844700000004,
+      "min_us": 0.177444458,
+      "max_us": 0.417002319
+    },
+    {
+      "run": 0,
+      "component": "energy_gains",
+      "samples": 480,
+      "repetitions": 21,
+      "median_us": 0.31088256799999997,
+      "min_us": 0.185674072,
+      "max_us": 0.507324219
+    },
+    {
+      "run": 0,
+      "component": "band_log_energy",
+      "samples": 960,
+      "repetitions": 21,
+      "median_us": 0.692733765,
+      "min_us": 0.422459961,
+      "max_us": 1.091339111
+    },
+    {
+      "run": 0,
+      "component": "energy_gains",
+      "samples": 960,
+      "repetitions": 21,
+      "median_us": 0.695902588,
+      "min_us": 0.47019958500000003,
+      "max_us": 0.827957153
+    },
+    {
+      "run": 0,
+      "component": "native_pitch_begin",
+      "samples": 1920,
+      "repetitions": 21,
+      "median_us": 26.669021605999998,
+      "min_us": 24.03258252,
+      "max_us": 37.016362549
+    },
+    {
+      "run": 0,
+      "component": "previous_13_lags",
+      "samples": 1920,
+      "repetitions": 21,
+      "median_us": 5.544367432,
+      "min_us": 2.3675537110000002,
+      "max_us": 97.170522095
+    },
+    {
+      "run": 0,
+      "component": "matched_26_lags",
+      "samples": 1920,
+      "repetitions": 21,
+      "median_us": 40.247166992,
+      "min_us": 5.135172485,
+      "max_us": 176.065541626
+    },
+    {
+      "run": 1,
+      "component": "band_log_energy",
+      "samples": 480,
+      "repetitions": 21,
+      "median_us": 0.36380505399999996,
+      "min_us": 0.228881836,
+      "max_us": 5.047999023
+    },
+    {
+      "run": 1,
+      "component": "energy_gains",
+      "samples": 480,
+      "repetitions": 21,
+      "median_us": 0.39952087399999997,
+      "min_us": 0.244572998,
+      "max_us": 1.3356679690000002
+    },
+    {
+      "run": 1,
+      "component": "band_log_energy",
+      "samples": 960,
+      "repetitions": 21,
+      "median_us": 1.247212646,
+      "min_us": 0.6142171630000001,
+      "max_us": 15.173314453000001
+    },
+    {
+      "run": 1,
+      "component": "energy_gains",
+      "samples": 960,
+      "repetitions": 21,
+      "median_us": 1.06747937,
+      "min_us": 0.613769531,
+      "max_us": 4.865615845000001
+    },
+    {
+      "run": 1,
+      "component": "native_pitch_begin",
+      "samples": 1920,
+      "repetitions": 21,
+      "median_us": 51.70252478,
+      "min_us": 24.252980468999997,
+      "max_us": 150.417216064
+    },
+    {
+      "run": 1,
+      "component": "previous_13_lags",
+      "samples": 1920,
+      "repetitions": 21,
+      "median_us": 2.654464722,
+      "min_us": 1.8578491209999999,
+      "max_us": 6.485214233
+    },
+    {
+      "run": 1,
+      "component": "matched_26_lags",
+      "samples": 1920,
+      "repetitions": 21,
+      "median_us": 4.875330566,
+      "min_us": 4.085866211,
+      "max_us": 32.366877197
+    },
+    {
+      "run": 2,
+      "component": "band_log_energy",
+      "samples": 480,
+      "repetitions": 21,
+      "median_us": 0.43694055200000004,
+      "min_us": 0.157831909,
+      "max_us": 0.99671936
+    },
+    {
+      "run": 2,
+      "component": "energy_gains",
+      "samples": 480,
+      "repetitions": 21,
+      "median_us": 0.438054443,
+      "min_us": 0.31922912600000003,
+      "max_us": 0.9595081790000001
+    },
+    {
+      "run": 2,
+      "component": "band_log_energy",
+      "samples": 960,
+      "repetitions": 21,
+      "median_us": 0.753067017,
+      "min_us": 0.495625854,
+      "max_us": 1.678059937
+    },
+    {
+      "run": 2,
+      "component": "energy_gains",
+      "samples": 960,
+      "repetitions": 21,
+      "median_us": 0.839609741,
+      "min_us": 0.46819055200000004,
+      "max_us": 1.484049561
+    },
+    {
+      "run": 2,
+      "component": "native_pitch_begin",
+      "samples": 1920,
+      "repetitions": 21,
+      "median_us": 35.915293335,
+      "min_us": 20.028310181000002,
+      "max_us": 385.71636962900004
+    },
+    {
+      "run": 2,
+      "component": "previous_13_lags",
+      "samples": 1920,
+      "repetitions": 21,
+      "median_us": 2.371520996,
+      "min_us": 2.0518594969999997,
+      "max_us": 6.873677612000001
+    },
+    {
+      "run": 2,
+      "component": "matched_26_lags",
+      "samples": 1920,
+      "repetitions": 21,
+      "median_us": 5.489028931,
+      "min_us": 4.128031494,
+      "max_us": 14.520497681
+    }
+  ],
+  "raw_timings": [
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "293.299316",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "356.806519",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "356.201172",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "294.621826",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "177.444458",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "357.594727",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "357.350586",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "368.428589",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "257.369995",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "364.954590",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "382.868530",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "394.917725",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "346.964478",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "198.074341",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "417.002319",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "202.713013",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "342.951416",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "321.182251",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "345.046997",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "406.931641",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "355.158447",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "310.882568",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "243.169067",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "403.203369",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "268.346069",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "507.324219",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "420.069336",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "228.108643",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "189.600586",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "308.242798",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "185.674072",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "417.521240",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "187.484741",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "220.336914",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "229.237915",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "472.579956",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "386.983276",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "448.038696",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "282.211304",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "319.371582",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "385.813354",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "398.386719",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "902.699829",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "969.070435",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "792.139648",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "738.789917",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "573.013306",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "916.971802",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "827.311157",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "989.410400",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "579.310059",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "574.991821",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "1091.339111",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "692.733765",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "606.826782",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "654.886963",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "770.105957",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "631.261108",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "636.144043",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "497.187256",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "422.459961",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "557.739258",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "754.679321",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "623.214722",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "765.335083",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "514.317871",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "470.199585",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "663.258789",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "720.311523",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "556.035278",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "827.957153",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "553.410767",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "771.001099",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "660.547852",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "706.207275",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "743.687988",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "669.194580",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "728.968262",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "719.589233",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "565.541626",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "797.185303",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "615.890503",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "695.902588",
+      "run": 0
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "751.027466",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "25488.164307",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "24131.785034",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "24032.582520",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "31198.689819",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "24770.029663",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "26150.884033",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "37016.362549",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "26810.913086",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "26253.005981",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "26580.841064",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "24519.505737",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "27211.176514",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "24244.695068",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "33474.395752",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "25336.405396",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "30390.869141",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "27007.741211",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "27407.201172",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "28085.886597",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "26669.021606",
+      "run": 0
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "36052.032471",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "3847.386719",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "4186.762451",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "4708.348633",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "5741.088867",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "3941.355469",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "4583.668945",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "3804.789185",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "4342.051147",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "17714.045288",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "17499.389648",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "97170.522095",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "78172.953247",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "46762.034058",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "48938.853027",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "5544.367432",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "9421.376465",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "26447.606445",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "4686.360718",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "9324.325562",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "4059.366821",
+      "run": 0
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "2367.553711",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "11796.432495",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "5382.670166",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "5135.172485",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "5927.032471",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "7830.963135",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "9189.417480",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "10108.149292",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "7552.139282",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "67872.467041",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "41447.870972",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "37201.705933",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "122252.136230",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "176065.541626",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "50634.892700",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "41712.453125",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "7131.469727",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "78850.448608",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "85011.983154",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "60396.392822",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "58150.858521",
+      "run": 0
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "40247.166992",
+      "run": 0
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "363.805054",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "317.306519",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "431.956055",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "332.519531",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "981.496216",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "342.921021",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "356.028320",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "944.483521",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "399.195312",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "911.849976",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "513.158203",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "520.960571",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "228.881836",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "719.212891",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "300.745605",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "358.337402",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "359.268188",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "352.605225",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "309.336304",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "3194.051147",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "5047.999023",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "454.737305",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "1037.867188",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "377.298950",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "390.004517",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "351.832031",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "244.572998",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "276.056885",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "329.416992",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "462.778687",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "360.209229",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "420.247314",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "370.661377",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "589.935303",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "345.545410",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "608.149170",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "470.275879",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "513.442993",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "399.520874",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "386.083008",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "1335.667969",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "426.249146",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "711.598755",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "694.432495",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "932.139038",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "635.279297",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "1716.069580",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "3027.389526",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "15173.314453",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "4005.177734",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "12071.879028",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "747.614502",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "2944.453003",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "3231.745361",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "2621.693970",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "1247.212646",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "614.217163",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "1011.932373",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "1379.206299",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "851.140259",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "897.267578",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "1166.117310",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "1332.366943",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "923.741699",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "799.255371",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "4865.615845",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "1531.295776",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "849.522827",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "883.265137",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "1788.014771",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "795.262695",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "729.248047",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "2731.847168",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "1794.342041",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "1277.002930",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "741.460205",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "1178.771973",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "1067.479370",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "957.641602",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "1143.330933",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "613.769531",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "843.734741",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "1279.541016",
+      "run": 1
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "1364.303589",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "45524.485352",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "44643.229126",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "83990.351318",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "42486.160278",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "69905.771851",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "104258.560181",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "51702.524780",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "24943.578003",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "115345.062256",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "117466.623901",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "35274.353027",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "150417.216064",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "123989.140869",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "59128.061890",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "59273.325562",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "51952.407837",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "29215.026855",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "25147.644043",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "28094.746948",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "28854.044678",
+      "run": 1
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "24252.980469",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "2599.914551",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "2487.986206",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "6485.214233",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "3749.760986",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "3388.036133",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "2510.391235",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "2086.446167",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "2161.936401",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "1857.849121",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "2537.694336",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "4643.127441",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "3420.695068",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "3809.351562",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "2910.751343",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "2831.822632",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "2654.464722",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "2538.192749",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "2549.662354",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "2541.198730",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "4056.869507",
+      "run": 1
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "2881.352661",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "4554.382324",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "4085.866211",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "4718.119263",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "4875.330566",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "4903.945923",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "5041.300415",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "4512.064575",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "4224.853516",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "4713.628174",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "4397.328735",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "4471.389771",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "4891.927002",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "5240.097046",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "4349.268555",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "4714.548706",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "14682.917358",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "32366.877197",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "6800.196289",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "6064.422607",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "5563.471558",
+      "run": 1
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "5644.933105",
+      "run": 1
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "294.281006",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "313.385010",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "381.418823",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "460.260986",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "867.151855",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "434.193970",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "505.132080",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "408.589722",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "322.408081",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "436.940552",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "552.515747",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "996.719360",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "408.879639",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "492.813110",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "228.708984",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "462.514160",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "465.098022",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "330.673218",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "157.831909",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "556.452515",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "480",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "812.347412",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "417.683960",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "601.588013",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "650.253296",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "959.508179",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "375.493408",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "319.229126",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "401.550293",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "438.054443",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "361.668945",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "369.374512",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "624.226807",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "589.065552",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "329.579712",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "387.725830",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "432.662964",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "538.523438",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "472.137451",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "470.235107",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "355.092407",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "587.031128",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "480",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "550.704956",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "1030.843018",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "579.396606",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "1191.925049",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "832.229614",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "1678.059937",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "753.067017",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "787.506104",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "779.149292",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "738.815308",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "711.507202",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "763.921143",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "658.462524",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "934.275391",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "610.666870",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "591.593506",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "977.711914",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "567.820312",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "624.603271",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "753.590942",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "495.625854",
+      "run": 2
+    },
+    {
+      "component": "band_log_energy",
+      "samples": "960",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "516.342163",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "708.501221",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "468.190552",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "715.586304",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "740.600586",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "1060.826660",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "573.084473",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "896.265747",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "1103.668213",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "881.362915",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "839.609741",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "682.179810",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "1140.914917",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "1360.371948",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "1169.891357",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "640.614868",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "787.816284",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "629.155396",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "1484.049561",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "1027.181030",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "774.297119",
+      "run": 2
+    },
+    {
+      "component": "energy_gains",
+      "samples": "960",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "1164.840698",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "32189.005493",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "39796.585083",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "46057.428955",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "51459.060669",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "23151.962280",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "22603.159668",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "41706.629395",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "23775.873779",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "21404.703735",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "25865.692139",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "25481.755615",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "20028.310181",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "40317.581177",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "41110.229492",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "385716.369629",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "35915.293335",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "203743.098022",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "144252.644897",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "27742.899536",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "25032.999756",
+      "run": 2
+    },
+    {
+      "component": "native_pitch_begin",
+      "samples": "1920",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "40507.176636",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "2815.378906",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "2077.255249",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "2284.469604",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "2510.218262",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "2371.520996",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "2346.471069",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "2064.356567",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "2051.859497",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "2851.170776",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "2242.411255",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "2393.956543",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "2953.740356",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "2336.395264",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "2140.192627",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "3142.888306",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "2072.011353",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "2326.416016",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "6873.677612",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "4616.933228",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "2754.068970",
+      "run": 2
+    },
+    {
+      "component": "previous_13_lags",
+      "samples": "1920",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "2990.697266",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "0",
+      "calls": "8192",
+      "nanoseconds_per_call": "10251.820801",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "1",
+      "calls": "8192",
+      "nanoseconds_per_call": "4128.031494",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "2",
+      "calls": "8192",
+      "nanoseconds_per_call": "4667.953491",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "3",
+      "calls": "8192",
+      "nanoseconds_per_call": "5645.685913",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "4",
+      "calls": "8192",
+      "nanoseconds_per_call": "7625.523804",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "5",
+      "calls": "8192",
+      "nanoseconds_per_call": "4615.585327",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "6",
+      "calls": "8192",
+      "nanoseconds_per_call": "4177.586914",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "7",
+      "calls": "8192",
+      "nanoseconds_per_call": "4648.793457",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "8",
+      "calls": "8192",
+      "nanoseconds_per_call": "4437.591553",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "9",
+      "calls": "8192",
+      "nanoseconds_per_call": "8403.661133",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "10",
+      "calls": "8192",
+      "nanoseconds_per_call": "12175.048828",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "11",
+      "calls": "8192",
+      "nanoseconds_per_call": "14520.497681",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "12",
+      "calls": "8192",
+      "nanoseconds_per_call": "10067.662476",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "13",
+      "calls": "8192",
+      "nanoseconds_per_call": "5848.403931",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "14",
+      "calls": "8192",
+      "nanoseconds_per_call": "5489.028931",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "15",
+      "calls": "8192",
+      "nanoseconds_per_call": "4890.558838",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "16",
+      "calls": "8192",
+      "nanoseconds_per_call": "5047.348022",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "17",
+      "calls": "8192",
+      "nanoseconds_per_call": "5971.989868",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "18",
+      "calls": "8192",
+      "nanoseconds_per_call": "4981.038330",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "19",
+      "calls": "8192",
+      "nanoseconds_per_call": "5299.992920",
+      "run": 2
+    },
+    {
+      "component": "matched_26_lags",
+      "samples": "1920",
+      "repetition": "20",
+      "calls": "8192",
+      "nanoseconds_per_call": "7819.885254",
+      "run": 2
+    }
+  ],
+  "pitch_diagnostics": [
+    {
+      "frequency": "60",
+      "slope": "-100",
+      "period": "822.5",
+      "confidence": "0.99530333",
+      "drift": "5.2020874",
+      "local_confidence": "0.9981646",
+      "edge": "true"
+    },
+    {
+      "frequency": "60",
+      "slope": "0",
+      "period": "798.5",
+      "confidence": "0.99985665",
+      "drift": "-0.0021362305",
+      "local_confidence": "1",
+      "edge": "false"
+    },
+    {
+      "frequency": "60",
+      "slope": "100",
+      "period": "768.5",
+      "confidence": "0.9984225",
+      "drift": "-7.121521",
+      "local_confidence": "0.9995915",
+      "edge": "true"
+    },
+    {
+      "frequency": "80",
+      "slope": "-100",
+      "period": "618.7989",
+      "confidence": "0.9980439",
+      "drift": "9.47699",
+      "local_confidence": "0.9996352",
+      "edge": "false"
+    },
+    {
+      "frequency": "80",
+      "slope": "0",
+      "period": "600.0013",
+      "confidence": "0.99999994",
+      "drift": "-0.0014038086",
+      "local_confidence": "1",
+      "edge": "false"
+    },
+    {
+      "frequency": "80",
+      "slope": "100",
+      "period": "582.56274",
+      "confidence": "0.99869066",
+      "drift": "-8.037842",
+      "local_confidence": "0.99983543",
+      "edge": "false"
+    },
+    {
+      "frequency": "120",
+      "slope": "-100",
+      "period": "408.5",
+      "confidence": "0.99938124",
+      "drift": "3.2998352",
+      "local_confidence": "0.9998559",
+      "edge": "false"
+    },
+    {
+      "frequency": "120",
+      "slope": "0",
+      "period": "399.9979",
+      "confidence": "1",
+      "drift": "0.00030517578",
+      "local_confidence": "1.0000001",
+      "edge": "false"
+    },
+    {
+      "frequency": "120",
+      "slope": "100",
+      "period": "390.5",
+      "confidence": "0.9991442",
+      "drift": "-2.9455261",
+      "local_confidence": "0.9999019",
+      "edge": "false"
+    },
+    {
+      "frequency": "200",
+      "slope": "-100",
+      "period": "243.2731",
+      "confidence": "0.99976635",
+      "drift": "1.1880188",
+      "local_confidence": "0.99990124",
+      "edge": "false"
+    },
+    {
+      "frequency": "200",
+      "slope": "0",
+      "period": "239.99942",
+      "confidence": "1",
+      "drift": "-0.000045776367",
+      "local_confidence": "0.9999998",
+      "edge": "false"
+    },
+    {
+      "frequency": "200",
+      "slope": "100",
+      "period": "236.66475",
+      "confidence": "0.9997223",
+      "drift": "-1.1990356",
+      "local_confidence": "0.99990493",
+      "edge": "false"
+    },
+    {
+      "frequency": "350",
+      "slope": "-100",
+      "period": "138.25652",
+      "confidence": "0.9998475",
+      "drift": "0.39619446",
+      "local_confidence": "0.9997206",
+      "edge": "false"
+    },
+    {
+      "frequency": "350",
+      "slope": "0",
+      "period": "137.14291",
+      "confidence": "0.99997216",
+      "drift": "0.0035858154",
+      "local_confidence": "0.9999726",
+      "edge": "false"
+    },
+    {
+      "frequency": "350",
+      "slope": "100",
+      "period": "136.01842",
+      "confidence": "0.9999282",
+      "drift": "-0.3921814",
+      "local_confidence": "0.9999165",
+      "edge": "false"
+    },
+    {
+      "frequency": "173_noisy",
+      "slope": "35",
+      "period": "276.9211",
+      "confidence": "0.94826007",
+      "drift": "0.8420105",
+      "local_confidence": "0.94949555",
+      "edge": "false"
+    }
+  ],
+  "limits": [
+    "Synthetic spectra and waveform histories; no speech quality conclusion.",
+    "Component wall timings; not an integrated decoder or deadline guarantee.",
+    "One older 10ms pitch window has 13 lag candidates; matched windows have26, plus fractional refinement.",
+    "Native begin includes observing/copying1920 samples in this standalone probe.",
+    "No CUDA/Colab/Drive/audio access; no newly fitted model."
+  ]
+}

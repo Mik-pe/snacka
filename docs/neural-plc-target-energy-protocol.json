@@ -1,0 +1,208 @@
+{
+  "schema": 1,
+  "name": "target-energy-bandwidth-2x2",
+  "status": "method-frozen-data-binding-required",
+  "frozen_on": "2026-10-23",
+  "baseline_main": "ada82abf997af35f7563c066112f7db24ff8ec83",
+  "training_allowed": false,
+  "required_before_training": [
+    "Immutable code commit and this protocol SHA256",
+    "Exact train/validation manifests, raw label export SHA256 and per-record effective bandwidth",
+    "Complete prior exposure inventory and fresh16k LibriSpeech/RixVox acceptance metadata",
+    "Fullband SLR83 reservation SHA256; licensed-source notices and conservative user grouping",
+    "Source transforms, tools/native receipts and strict role/speaker separation audit; no acceptance waveforms or quality opened"
+  ],
+  "source_sha256": {
+    "tools/plc_target_energy.rs": "b0e27f29ef83fc9123531e3ac04ad695d2a55464930932cf3b6b5e0d32419a00",
+    "tools/plc_target_energy_loss.py": "34fd1d4a1e2142fef147f3fece56aec68599881a99050b97da32b7dd4ef95cfc",
+    "tools/plc_target_history_tests.rs": "0bd1ba50d79748d41d13600b7e3e16bc4ba84ddfd675a617ce08b0e04b97c8b7",
+    "tools/build_plc_target_energy.py": "ecc850015cd3601987504504d2e8cac1a177009bc5cf30ee9196bf0f568dd15d",
+    "tools/plc_target_energy_probe.rs": "d632f7793087218b62b2d1833f82fd2f72ff76e0b8d26eef3dace4373f140153",
+    "tools/measure_plc_target_cache.py": "e9161397b9bef5d5352b512dbcd4ecb5dbe096aecfd618aca337851e80e302a8",
+    "tools/test_plc_target_energy_loss.py": "1bd66d9136871bec1cf53de6d9531ac4ef52640cf58579f4b8a8fdfe3899615d",
+    "tools/freeze_plc_fullband_holdout.py": "1da8ba9a409dc3aafb027fa910db6debc0ddd151965b8bf2581ac71cd81ff02d"
+  },
+  "model": {
+    "architecture": [
+      80,
+      64,
+      64,
+      17
+    ],
+    "gain_bounds": [
+      0.7875,
+      1.2125
+    ],
+    "phase_bounds_samples": [
+      -8,
+      8
+    ],
+    "representations": {
+      "gain_ratio": "g=1+.2125*tanh(raw16); z=log(g)",
+      "target_energy": "raw16=d, without tanh; z=.5*(d+L_last-L_pred); g=exp(clamp(z,log(.7875),log(1.2125)))"
+    },
+    "model_kinds": [
+      "gain-ratio-phase-v1",
+      "target-log-power-phase-v1"
+    ],
+    "energy_cache_bytes": 64,
+    "eps_mean_power": 1e-12,
+    "last_power": "actual last received post-Phase1 MDCT before normalized history clipping; original native f32 band reduction",
+    "inference": "Network once, actual student phase read, MDCT once, measure candidate power, derive bounded gains, existing inverse/OLA",
+    "fallback": "explicit gains1 and phase0; d0 is NOT identity; no interpretation of installed gain weights as d",
+    "local_pitch_search": false,
+    "gru": false
+  },
+  "teacher": {
+    "phase": "unchanged PhaseWide grid/correlation below4kHz and tie order in neural-plc-phase-protocol.json",
+    "history": "classical candidate0 only; teacher choices never synthesized into causal inputs",
+    "export": [
+      "x80",
+      "last_log_power16",
+      "target_log_power16",
+      "teacher_phase_candidate_log_power16",
+      "teacher_phase",
+      "source/effective bandwidth and physical band mask",
+      "role,source,speaker group,utterance and native source hashes"
+    ],
+    "target": "uninterrupted decoded Phase1 MDCT; never infer raw powers from previously clamped gains",
+    "training_denominator": "teacher-phase candidate, fixed offline; not falsely identified with student-phase candidate",
+    "phase_proxy": "A future-informed teacher-phase denominator is a deliberate supervised proxy. Native inference measures its own phase. Full phase-off/on reports are mandatory; this is not end-to-end exact phase-conditioned training."
+  },
+  "objective": {
+    "supervision": "smoothL1(z, clamp(.5*(L_target-L_pred_teacher),lo,hi), beta=.05); DO NOT clamp student z before this term",
+    "log_gain_bounds": [
+      -0.23889190828234896,
+      0.19268434382950114
+    ],
+    "identity": ".01*(exp(clamp(z,lo,hi))-1)^2; no L2(d) anchor",
+    "phase": ".1*smoothL1(phase/8,target_phase/8)+.001*mean((phase/8)^2)",
+    "reduction": "supported-band mean PER FRAME, then equal EN/SV frame/language weight",
+    "saturation": "raw teacher d extremes outside the controllable interval have identical target and loss; wrong-side student saturation retains a supervised gradient",
+    "change_from_PR31": "Matched new gain-ratio control uses the same clipped-target Huber and action anchor, replacing previous squared-log-gain loss. This2x2 tests representations/bandwidth under one new objective; it does not isolate loss change versus PR31."
+  },
+  "fits": [
+    "ratio_native",
+    "energy_native",
+    "ratio_balanced",
+    "energy_balanced"
+  ],
+  "training": {
+    "seed": 20261023,
+    "rounds": 60,
+    "updates_per_round": 32,
+    "float_warmup_rounds": 10,
+    "frames_per_language_per_update": 64,
+    "optimizer": {
+      "name": "AdamW",
+      "lr": 0.002,
+      "weight_decay": 0.0001,
+      "gradient_clip": 1
+    },
+    "initialization": "same seeded hidden layers; zero final rows; no output d penalty; AdamW parameter decay is separate",
+    "checkpoint": "final step1920 only; no epoch/seed search or retry based on validation",
+    "corpus": "same344 train/validation VCTK/RixVox raw clips as PR31, manifest45923ded50be1de353323210977eedc8c935752c8b796f54fd22af8274664ac6;320 training clips,24 validation clips",
+    "augmentation": "same fixed bitrate12/24/32,duration10/20,harmonic0/1,noise/gain tuple per utterance across both data factors; only source bandwidth changes",
+    "bandwidth": "native: EN48k/SV16k. balanced: per EN training speaker hash8 utterances and lowpass/downsample first4 to16k, then resample codec input48k before fixed noise/gain; SV unchanged",
+    "bandwidth_hash_salt": "snacka-target-energy-20261023:bandwidth:",
+    "source_transform": "aresample=16000:resampler=soxr:precision=28,aresample=48000:resampler=soxr:precision=28; pin FFmpeg binary/version and every output PCM hash before fitting; no loudness/quality based choices",
+    "mask": "complete bands end<=effective Nyquist;16k supports native bands0..12,48k supports0..15; source/effective bandwidth per record, never infer mask from language"
+  },
+  "validation": {
+    "cells": [
+      "en16k-VCTK",
+      "en48k-VCTK",
+      "sv16k-RixVox"
+    ],
+    "source": "same known development speakers; every EN validation clip evaluated at both bandwidths",
+    "applications": "four fits x phase forced0/phase enabled =8 frozen candidates; identical fitted weights within each pair; retain all17 rows",
+    "matrix": {
+      "bitrates": [
+        12000,
+        24000,
+        32000
+      ],
+      "durations": [
+        10,
+        20
+      ],
+      "modes": [
+        0,
+        1
+      ],
+      "conditions": [
+        "clean",
+        "noise20",
+        "noise10"
+      ],
+      "patterns": [
+        "periodic1",
+        "periodic3",
+        "periodic6",
+        "independent5",
+        "burst40",
+        "burst80"
+      ]
+    },
+    "references": [
+      "classical PLC",
+      "installed PR31"
+    ],
+    "guard_per_cell": {
+      "vs_classical": [
+        "lost waveform ratio<1",
+        "supported-band envelope ratio<=1",
+        "source-supported MR-STFT ratio<=1",
+        "ESTOI delta>=0"
+      ],
+      "vs_PR31": [
+        "lost waveform ratio<=1",
+        "supported-band envelope ratio<=1",
+        "source-supported MR-STFT ratio<=1",
+        "ESTOI delta>=0"
+      ]
+    },
+    "strata": "each cell/bitrate/duration/mode ESTOI delta>=-.001 against each reference; report all noise/pattern slices too; finite complete factor matrix mandatory",
+    "ranking": [
+      "maximize minimum cell ESTOI delta versus PR31",
+      "minimize summed cell envelope ratios versus PR31",
+      "minimize summed cell MR-STFT ratios versus PR31",
+      "fixed candidate order ratio_native_off,ratio_native_on,energy_native_off,energy_native_on,ratio_balanced_off,ratio_balanced_on,energy_balanced_off,energy_balanced_on on exact ties"
+    ],
+    "no_admission": "retain PR31; no candidate enters acceptance"
+  },
+  "acceptance": {
+    "cells": [
+      "en16k-new-LibriSpeech-test-other",
+      "en16k-new-SLR83-downfiltered",
+      "en48k-new-SLR83",
+      "sv16k-new-RixVox"
+    ],
+    "fullband_reservation_file": "neural-plc-target-energy-fullband-holdout.json",
+    "fullband_reservation_sha256": "82ae9129666bdb4ea839cf6d237f77d168501f5dceceda7009262eb689d434ec",
+    "fullband": "24 fixed utterances,12 conservative user groups; source CC-BY-SA4; no SLR83 audio used for fitting/validation; verify48k mono headers after selection, no replacement after unblinding",
+    "en16k_selection": "new12 published IDs absent all documented LibriSpeech exposures; hash speaker then clip25..50words using salt snacka-target-energy-20261023:",
+    "sv16k_selection": "new12 canonical riksdagen_id, canonical speaker_id equality, year>=2015,lang_prob_sv>=.99,not silence,duration>=12000ms; hash speaker then row; one middle12s clip; exclude prior50 RixVox identities",
+    "controls": "exact same PR31 and classical frozen source/probes; packets/uninterrupted PCM checked; source and selected weights/executables sealed before staging test waveforms",
+    "matrix": "all validation rates/durations/modes/conditions/patterns",
+    "guards": "all per-cell/stratum validation rules; additionally speaker/group paired bootstrap2000replicates,seed20261023,95% ESTOI interval versus classical has lower bound>0 in every cell; report paired intervals versus PR31 but do not call point nonregression proven population noninferiority",
+    "selection": "one candidate only; no fallback, gain/head swap, new epoch, retune or cohort substitution after test",
+    "speaker_claim": "published corpus IDs/conservative groups; no cross-corpus biometric nonoverlap claim"
+  },
+  "native_gates": {
+    "parity": "native/PyTorch gains<=5e-6 on finite fixtures; current packet/uninterrupted trace exact; complete candidate decoded replay before independent unblinding",
+    "memory": "zero steady-state allocations, logical weights<65536bytes, Decoder<=16352bytes with cache only, Encoder unchanged",
+    "cpu": "M5 integrated candidate/control interleaved timing on known speech; per duration/mode/bitrate first-loss median<=25us; report all operations and tails, no worst-case guarantee",
+    "compatibility": "native packet format unchanged; src/opus and Phase1 untouched; no external runtime dependencies"
+  },
+  "reporting": [
+    "all4fits/8applications including failures",
+    "source-band masks, teacher saturation fractions and d/loggain distributions by source/bitrate/loss horizon",
+    "phase RMSE vszero and phase-off/on deltas",
+    "source/data/selection/binary checksums and immutable binding",
+    "complete raw metrics and per-cell/group-bootstrap intervals",
+    "account balance before/after and owned sessions stopped"
+  ],
+  "activation": "retain PR31 unless all new independent and native gates pass; cache-only experiments are not a production model adoption",
+  "binding_policy": "Method immutable; training_allowed remainsfalse in this core. A separate immutable data binding must reference the exact core SHA, source commit and all listed manifests before any fit. Missing binding is not permission to launch training."
+}
