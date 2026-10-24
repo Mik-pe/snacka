@@ -14,11 +14,13 @@ fn main() {
         + std::mem::size_of_val(&weights::S3)
         + std::mem::size_of_val(&weights::B3);
     println!(
-        "decoder_bytes={},encoder_bytes={},model_constant_bytes={},enabled={},strength={}",
+        "decoder_bytes={},encoder_bytes={},model_constant_bytes={},enabled={},strength={},model_kind={},format_tag={}",
         std::mem::size_of::<snacka::Decoder>(),
         std::mem::size_of::<snacka::Encoder>(),
         model_bytes,
         weights::ENABLED,
-        weights::STRENGTH
+        weights::STRENGTH,
+        weights::MODEL_KIND,
+        weights::FORMAT_TAG
     );
 }

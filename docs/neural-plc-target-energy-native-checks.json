@@ -1,0 +1,210 @@
+{
+  "all_eight_native_checks_passed": true,
+  "native_tests_per_application": 42,
+  "weights_bytes": 11464,
+  "decoder_bytes": 16352,
+  "encoder_bytes": 12128,
+  "action_parity_tolerance": 5e-06,
+  "converter_parity_max_absolute_error": 1.1920928955078125e-07,
+  "production_inference_unchanged_by_test_correction": true,
+  "applications": {
+    "energy_balanced_off": {
+      "kind": "target-log-power-phase-v1",
+      "conceal_body_sha256": "f43629c3adfc685985e42a560fa8cafbc09815049c43ae8be06771c5b97e6c0e",
+      "binaries": {
+        "plc_footprint": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "cpu_probe-403b6370034c8161": "002eb497cc695b5c51304c918c81fe8247b3fc90405a6e867c9016253d705b0c",
+        "cpu_probe": "002eb497cc695b5c51304c918c81fe8247b3fc90405a6e867c9016253d705b0c",
+        "plc_footprint-6aaf54be746aff55": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "roundtrip": "a0de9ef0ffaee473bfff5f9eb678f3206fd85914bf110cc873bda740b7a95181",
+        "plc_energy_timing-991493a60d34afda": "319f2c999df722a6b3c6e5274276162b07decccd0f813b608c26c2eebbadb415",
+        "roundtrip-4d05961db2cb3594": "a0de9ef0ffaee473bfff5f9eb678f3206fd85914bf110cc873bda740b7a95181",
+        "plc_ablation_compare-ff894d44d113de77": "3ef2a1812530442673de85c8f40e28ec0ecbb490360d74300d493b903dc614f6",
+        "plc_ablation_compare": "3ef2a1812530442673de85c8f40e28ec0ecbb490360d74300d493b903dc614f6",
+        "plc_energy_timing": "319f2c999df722a6b3c6e5274276162b07decccd0f813b608c26c2eebbadb415"
+      }
+    },
+    "energy_native_on": {
+      "kind": "target-log-power-phase-v1",
+      "conceal_body_sha256": "a3d25cb61253a269267257fd18036c89555472e73dc4619b841d1a9fc93a6ecc",
+      "binaries": {
+        "plc_footprint": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "cpu_probe-403b6370034c8161": "614b8940a4a7843c4731cb08a249cf439ea89487f0da098403cec5e2c6db28aa",
+        "cpu_probe": "614b8940a4a7843c4731cb08a249cf439ea89487f0da098403cec5e2c6db28aa",
+        "plc_footprint-6aaf54be746aff55": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "roundtrip": "40061abcd4ca7fd7f7ab3a26add2f089d06df6cc2ea5656fa856047e3368febb",
+        "plc_energy_timing-991493a60d34afda": "3ac15fd6b4e632079a053b6f3afe9a264456ddecf7ca8626c4041be90d561dc3",
+        "roundtrip-4d05961db2cb3594": "40061abcd4ca7fd7f7ab3a26add2f089d06df6cc2ea5656fa856047e3368febb",
+        "plc_ablation_compare-ff894d44d113de77": "f8626fd1ac9eb18b833200c95375cb915e5dcc57f2bdeb7eadcba0e72e32a8c7",
+        "plc_ablation_compare": "f8626fd1ac9eb18b833200c95375cb915e5dcc57f2bdeb7eadcba0e72e32a8c7",
+        "plc_energy_timing": "3ac15fd6b4e632079a053b6f3afe9a264456ddecf7ca8626c4041be90d561dc3"
+      }
+    },
+    "ratio_native_off": {
+      "kind": "gain-ratio-phase-v1",
+      "conceal_body_sha256": "137f45748b2165b795ddd46328929420a9f46986e91ded8a4d1d44cb218fd0c2",
+      "binaries": {
+        "plc_footprint": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "cpu_probe-403b6370034c8161": "84ba2f2299ed436373afce1f46a76f6a3e537989578dbf150a8fa8bc19bdb45f",
+        "cpu_probe": "84ba2f2299ed436373afce1f46a76f6a3e537989578dbf150a8fa8bc19bdb45f",
+        "plc_footprint-6aaf54be746aff55": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "roundtrip": "c6d04791d3413d417a0cd37f880027fc3e7afdcacdb1b264e22c05cdb64e8afe",
+        "plc_energy_timing-991493a60d34afda": "9646fea306f10b4b5019d8c9d46e5a7bf086d470ab97cb0782900ef238e0cd68",
+        "roundtrip-4d05961db2cb3594": "c6d04791d3413d417a0cd37f880027fc3e7afdcacdb1b264e22c05cdb64e8afe",
+        "plc_ablation_compare-ff894d44d113de77": "322a0e0ecd16e7ff68855cbd34a48dbcda0241d6a4a0ad209b570497f6a2e58f",
+        "plc_ablation_compare": "322a0e0ecd16e7ff68855cbd34a48dbcda0241d6a4a0ad209b570497f6a2e58f",
+        "plc_energy_timing": "9646fea306f10b4b5019d8c9d46e5a7bf086d470ab97cb0782900ef238e0cd68"
+      }
+    },
+    "ratio_balanced_off": {
+      "kind": "gain-ratio-phase-v1",
+      "conceal_body_sha256": "137f45748b2165b795ddd46328929420a9f46986e91ded8a4d1d44cb218fd0c2",
+      "binaries": {
+        "plc_footprint": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "cpu_probe-403b6370034c8161": "478eca1b8b90f693e5978e9cd65f041ccd2d27be69fd0bd8bd30eb5622c205d9",
+        "cpu_probe": "478eca1b8b90f693e5978e9cd65f041ccd2d27be69fd0bd8bd30eb5622c205d9",
+        "plc_footprint-6aaf54be746aff55": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "roundtrip": "8fec3d18b4fdf1f1cb628aea2022356a405a680c5b3609fa9afc37993ce11a80",
+        "plc_energy_timing-991493a60d34afda": "08a41bd72a61fed8bb655028fdf9b80e398238567010244cd284c37e94c48569",
+        "roundtrip-4d05961db2cb3594": "8fec3d18b4fdf1f1cb628aea2022356a405a680c5b3609fa9afc37993ce11a80",
+        "plc_ablation_compare-ff894d44d113de77": "ee1994f3eaa83eeb8bbb063448b73169a5cfb86aa5b6dc9b096a4bac7106ae46",
+        "plc_ablation_compare": "ee1994f3eaa83eeb8bbb063448b73169a5cfb86aa5b6dc9b096a4bac7106ae46",
+        "plc_energy_timing": "08a41bd72a61fed8bb655028fdf9b80e398238567010244cd284c37e94c48569"
+      }
+    },
+    "ratio_balanced_on": {
+      "kind": "gain-ratio-phase-v1",
+      "conceal_body_sha256": "8036aa91ea53d86bcc2f23ab9949a7ca56b8b53103b0e309e0bb0763973f491f",
+      "binaries": {
+        "plc_footprint": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "cpu_probe-403b6370034c8161": "6628f7f5b57109b0b6f687178d34db5f66004810a4b5d016b03d349f4ed15a8d",
+        "cpu_probe": "6628f7f5b57109b0b6f687178d34db5f66004810a4b5d016b03d349f4ed15a8d",
+        "plc_footprint-6aaf54be746aff55": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "roundtrip": "850f5c2500c22fd2d0682f95547eb916c26d7a31c387444a240c0e51a081e2e6",
+        "plc_energy_timing-991493a60d34afda": "9e1d82f3f189e4d4e850fea2c3de405412e1f4cc3ce829d47fbbccfe9d1f5c8a",
+        "roundtrip-4d05961db2cb3594": "850f5c2500c22fd2d0682f95547eb916c26d7a31c387444a240c0e51a081e2e6",
+        "plc_ablation_compare-ff894d44d113de77": "6e560ee5b8e9b8486427b97847537b2cfebbbca7635890f1ae1188b4182f1c51",
+        "plc_ablation_compare": "6e560ee5b8e9b8486427b97847537b2cfebbbca7635890f1ae1188b4182f1c51",
+        "plc_energy_timing": "9e1d82f3f189e4d4e850fea2c3de405412e1f4cc3ce829d47fbbccfe9d1f5c8a"
+      }
+    },
+    "energy_balanced_on": {
+      "kind": "target-log-power-phase-v1",
+      "conceal_body_sha256": "a3d25cb61253a269267257fd18036c89555472e73dc4619b841d1a9fc93a6ecc",
+      "binaries": {
+        "plc_footprint": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "cpu_probe-403b6370034c8161": "c77ff183f6326812a1b7e0a76f658803791c84869ab81dafe95514f43898780e",
+        "cpu_probe": "c77ff183f6326812a1b7e0a76f658803791c84869ab81dafe95514f43898780e",
+        "plc_footprint-6aaf54be746aff55": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "roundtrip": "311c806e17a0894bf6ca8adbde33d984a097cc476ae4858e3d7d1b921d7b6d72",
+        "plc_energy_timing-991493a60d34afda": "bf05fde4284f0dd90561f71f2e5c5e3fd87905aa0bcb4e8ae31c65c2b7a8328b",
+        "roundtrip-4d05961db2cb3594": "311c806e17a0894bf6ca8adbde33d984a097cc476ae4858e3d7d1b921d7b6d72",
+        "plc_ablation_compare-ff894d44d113de77": "40744ede8347f82d83dd3b4a3fd4fd1538a362f7e02677dac025110b1de3b43d",
+        "plc_ablation_compare": "40744ede8347f82d83dd3b4a3fd4fd1538a362f7e02677dac025110b1de3b43d",
+        "plc_energy_timing": "bf05fde4284f0dd90561f71f2e5c5e3fd87905aa0bcb4e8ae31c65c2b7a8328b"
+      }
+    },
+    "energy_native_off": {
+      "kind": "target-log-power-phase-v1",
+      "conceal_body_sha256": "f43629c3adfc685985e42a560fa8cafbc09815049c43ae8be06771c5b97e6c0e",
+      "binaries": {
+        "plc_footprint": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "cpu_probe-403b6370034c8161": "f5bf0d790461c2914dc0844ae1f1ffe339eded0ed687c43ae1000c0a8e76570f",
+        "cpu_probe": "f5bf0d790461c2914dc0844ae1f1ffe339eded0ed687c43ae1000c0a8e76570f",
+        "plc_footprint-6aaf54be746aff55": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "roundtrip": "df042dd40bdaf58d7becf62ca64f24a463e85acdacefc740ee1f5e9330b7eb1c",
+        "plc_energy_timing-991493a60d34afda": "b97484117b783788e50ed93b59f11c5228330e84c58d1a2da2d377a7c8c51f84",
+        "roundtrip-4d05961db2cb3594": "df042dd40bdaf58d7becf62ca64f24a463e85acdacefc740ee1f5e9330b7eb1c",
+        "plc_ablation_compare-ff894d44d113de77": "efe58407f02292fed9e18bbd1745ff0f84152e5538fedd40f75193e1e9a6b036",
+        "plc_ablation_compare": "efe58407f02292fed9e18bbd1745ff0f84152e5538fedd40f75193e1e9a6b036",
+        "plc_energy_timing": "b97484117b783788e50ed93b59f11c5228330e84c58d1a2da2d377a7c8c51f84"
+      }
+    },
+    "ratio_native_on": {
+      "kind": "gain-ratio-phase-v1",
+      "conceal_body_sha256": "8036aa91ea53d86bcc2f23ab9949a7ca56b8b53103b0e309e0bb0763973f491f",
+      "binaries": {
+        "plc_footprint": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "cpu_probe-403b6370034c8161": "0d29c51ec1143fdcc0b20c50a19f2db5e074e9209075736ed383c9f87d564893",
+        "cpu_probe": "0d29c51ec1143fdcc0b20c50a19f2db5e074e9209075736ed383c9f87d564893",
+        "plc_footprint-6aaf54be746aff55": "e0559fea3dd436150603864358ad27d74c7e2471d16194d7366ff06175f04a26",
+        "roundtrip": "ffe71edbe1301dad228d314e7fde18f33cba99ac67d971b558d5259707bf514d",
+        "plc_energy_timing-991493a60d34afda": "60bb1f49ea28e738c4c9194a9232ecb223d7ef5940475bd7281fd67e1f44dd1b",
+        "roundtrip-4d05961db2cb3594": "ffe71edbe1301dad228d314e7fde18f33cba99ac67d971b558d5259707bf514d",
+        "plc_ablation_compare-ff894d44d113de77": "67a287d8a66c81062dd2c8ede6533a68e8024e4296b3900a971c2f005b2726ab",
+        "plc_ablation_compare": "67a287d8a66c81062dd2c8ede6533a68e8024e4296b3900a971c2f005b2726ab",
+        "plc_energy_timing": "60bb1f49ea28e738c4c9194a9232ecb223d7ef5940475bd7281fd67e1f44dd1b"
+      }
+    }
+  },
+  "full_native_tests_per_application": 96,
+  "all_eight_full_native_suites_passed": true,
+  "installed_release_tests": 93,
+  "installed_clippy_all_targets_passed": true,
+  "packet_trace": {
+    "status": "PASS",
+    "input_configurations": 108,
+    "paired_candidate_trace_comparisons": 972,
+    "packet_and_uninterrupted_pcm_sha256": "7a237ec07a4c75207509962a2a9ea1c1e9b900e24616e3d01053580bd9dc4c21",
+    "cells": 3,
+    "conditions": 3,
+    "bitrates": 3,
+    "durations": 2,
+    "modes": 2,
+    "implementations": [
+      "pr31",
+      "ratio_native_off",
+      "ratio_native_on",
+      "energy_native_off",
+      "energy_native_on",
+      "ratio_balanced_off",
+      "ratio_balanced_on",
+      "energy_balanced_off",
+      "energy_balanced_on",
+      "format-production"
+    ]
+  },
+  "installed_format_safety": {
+    "status": "PASS",
+    "format_metadata_only_numeric_weights_unchanged": true,
+    "paired_pcm_streams": 504,
+    "paired_pcm_sha256": "442d0942730c3017018c5130ddc6e47868d57d6cb93d781fd09f20206da18187",
+    "metadata_disabled_identity_streams": 84,
+    "cells": [
+      [
+        "en",
+        16000
+      ],
+      [
+        "en",
+        48000
+      ],
+      [
+        "sv",
+        16000
+      ]
+    ],
+    "bitrates": [
+      12000,
+      24000,
+      32000
+    ],
+    "durations": [
+      10,
+      20
+    ],
+    "modes": [
+      0,
+      1
+    ],
+    "patterns": 6
+  },
+  "bound_rebuild": {
+    "status": "PASS",
+    "source_files": 58,
+    "all_native_source_bytes_identical": true,
+    "bound_commit": "d1aab3f1838ab2c008f7a8255b545cbb086639f3"
+  },
+  "installed_gain_loader_rejects_energy_at_compile_time": true,
+  "installed_parameter_source_sha256_without_format_metadata": "9a944bc062acbdfc8f4132c2344c21ba95fe5f885f46ed9674d22e67a02a4d15"
+}
