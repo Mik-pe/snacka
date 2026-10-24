@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "data": {
+    "name": "snacka-plc-energy-2x2-20261024-data.tar.gz",
+    "size": 6947813,
+    "sha256": "d64ae60a77fe8e8e1ad0ed08d08a1c33774eda76380b97fe6568724eb51f31ce",
+    "contents": "raw log-power labels with masks/provenance; all four fixed checkpoints/typed i8 exports; metadata-only reservations; preflight proofs; no acceptance audio, URLs or credentials",
+    "full_sha256_readback_verified": true
+  },
+  "proof": {
+    "name": "snacka-plc-energy-2x2-20261024-proof.tar.gz",
+    "size": 63386453,
+    "sha256": "13a4511494be630505644dac698c32f5d8036fc68504bc780947db9497e77087",
+    "files": 834,
+    "delivery_source_commit": "235404ff29b9e37e9bcc6edad0d84abc96a10123",
+    "contents": "full native raw validation and frozen selection; all eight tagged source/binary applications and controls; native/format/reproduction/test proofs; official FFmpeg/soxr sources and used executable; no speech PCM, acceptance audio, provider URLs or credentials",
+    "full_sha256_readback_verified": true
+  },
+  "storage": "private Google Drive neural-v2 folder; private file ID index stored there separately",
+  "source_waveforms": "prior verified Drive source reused; no acceptance audio opened",
+  "experimental_model_installed": false,
+  "colab_compute_units": 0,
+  "colab_balance_after": 1020.43,
+  "installed_footprint": "decoder_bytes=16288,encoder_bytes=12128,model_constant_bytes=11464,enabled=true,strength=1,model_kind=gain-ratio-phase-v1,format_tag=1"
+}
