@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "stage": "after fixed fits; before any candidate decoded validation",
+  "reason": "Auxiliary raw-output assertion used gain-unit tolerance on unbounded log-power d. A5.48e-6 raw difference was caught; original core requires applied-gain error <=5e-6.",
+  "change": "Add action fixtures at frozen teacher-phase powers and assert actual native conversion vs PyTorch <=5e-6; phase diagnostic retains existing PR31 5e-5 tolerance. Frozen builder and inference statements unchanged.",
+  "weights_changed": false,
+  "training_repeated": false,
+  "core_gain_tolerance_changed": false,
+  "acceptance_opened": false,
+  "checked_builder_sha256": "f4defa5819de8ba7058f4d2a1ea743bb807979e0092dd4655a16b3c72fbac9f7",
+  "action_fixtures": {
+    "energy_native": "96134aabaafb6a9a3e60d949c3d7fbfc328915c84ec02330ef7f90b2d1502f7d",
+    "ratio_balanced": "b27b302b37e579f86f4f44b5331b8098d3f53287005ffff87d06d6ad1c0f9e55",
+    "ratio_native": "333ce77635812600e794db1f8a8402dea953a4f78b48c20f23a1861ebb1f8b51",
+    "energy_balanced": "39473dc54bef7132087b3801d7e3d435fa8619cc46cf4bf66fb8ce45b366b695"
+  }
+}

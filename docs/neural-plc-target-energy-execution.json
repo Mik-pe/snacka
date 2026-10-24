@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "name": "target-energy-bandwidth-2x2-execution",
+  "core_sha256": "9df3d75ea837c8add2ddd331a6514dea1ef9ea74f31dbf56cf3f1c4a6ec57828",
+  "frozen_on": "2026-10-24",
+  "changes": [
+    "Apply the core cell guards additionally to each cell x bitrate, against classical and PR31, before ranking.",
+    "Require first-loss paired median candidate/PR31 <= 1.0 in every bitrate/duration/mode, in addition to <=25us absolute, before opening independent acceptance. Eight alternating AB/BA blocks after one warmup; aggregate matched known validation speech. Report tails and block deltas; no WCET guarantee."
+  ],
+  "no_other_method_change": true,
+  "resources": "CPU only; preparation local, no Colab instance; task-owned temporary corpus, durable Drive artifacts",
+  "training_allowed": false,
+  "binding_required": true,
+  "environment": {
+    "python": "3.13.13",
+    "torch": "2.11.0 CPU",
+    "numpy": "2.4.3",
+    "scipy": "1.16.3",
+    "pystoi": "0.4.1",
+    "ffmpeg": "7.1 task-local minimal build with libsoxr0.1.3"
+  },
+  "preflight_notes": [
+    "Homebrew FFmpeg and imageio FFmpeg lack soxr; neither used for final export. Task-local FFmpeg7.1 built from official source with pinned libsoxr0.1.3.",
+    "NumPy2.1.3 Accelerate reports spurious FP warnings even for all-ones matrix products; replaced before fitting by2.4.3, verified scorer parity.",
+    "RixVox API429: use original metadata-only64-offset cache;101 eligible new identities excluding prior50; fixed hash choice, no audio inspected.",
+    "New native export has204/344 old input PCM hashes and337/344 classical audit hashes identical to PR31 export. Shared current FFmpeg/NumPy pipeline is frozen across all four fits; ratio control is not a byte-identical PR31 retrain."
+  ]
+}
