@@ -1326,8 +1326,11 @@ impl Decoder {
         let input = self
             .plc_history
             .input(samples, self.concealment.features(samples));
-        let eligible =
-            self.neural_plc && input[78] >= 1.0 && input[76] < 0.985 && input[73] < input[77];
+        let eligible = self.neural_plc
+            && crate::neural_plc_weights::ENABLED
+            && input[78] >= 1.0
+            && input[76] < 0.985
+            && input[73] < input[77];
         let (gains, delta) = if eligible {
             crate::neural_plc::controls(&input)
         } else {

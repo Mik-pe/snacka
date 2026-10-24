@@ -12,13 +12,19 @@ Both representations use the method's common clipped-target Huber loss and ident
 
 Preflight: native64-byte cache equality/reset/silence tests; quantized raw-head parity on an existing trained checkpoint; finite converter/autograd checks; zero-allocation inference; guard-first/per-bitrate failure tests;36-case exact scorer parity against the existing evaluator. The task-local FFmpeg7.1/libsoxr0.1.3 binary and numerical environment are sealed before fitting. See execution amendment for environment differences from the older PR31 export.
 
+Rebuild study applications with `replay_plc_energy_build.py OUTPUT --model MODEL --phase off|on`. It restores the bound source commit before invoking the checked builder. This prevents later production format guards or other main changes from entering the historical study. The reproduced native source was checked byte-for-byte against the original application.
+
 Reproduction tools:
 
 - `build_plc_energy_teacher.py`, `prepare_plc_energy_study.py`: native raw labels and matched factor datasets.
 - `freeze_plc_energy_acceptance.py`: metadata-only fresh16k identity reservation, excluding all84 documented LibriSpeech and50 RixVox exposures. The existing SLR83 reservation is unchanged.
 - `train_plc_energy_study.py`: sealed-binding check, same initialized hidden layers, final checkpoint only, typed i8 export and diagnostics.
-- `build_plc_energy_candidate.py`: isolated native applications, raw-head parity and allocation checks.
+- `build_plc_energy_candidate.py`, `build_plc_energy_checked.py`, `replay_plc_energy_build.py`: isolated native applications, applied-gain parity, allocation checks and source-bound rebuilds. The [test-only parity correction](neural-plc-target-energy-parity-correction.json) records why the auxiliary raw-output threshold was replaced with the original gain-unit criterion.
 - `evaluate_plc_energy_study.py`, `select_plc_energy_study.py`: complete paired factorial metrics and locked admission/ranking.
 - `measure_plc_energy_candidate.py`: interleaved actual online timing against PR31, excluding offline capture/metric loops.
+
+Long validation can resume only complete blocks from this same run after checking selection, executable and scorer hashes; every block must include all10 implementations and18 condition/pattern pairs. This changes worker scheduling only, never the scorer or criteria. The first checkpoint retained75 complete tasks and discarded0 torn rows.
+
+The installed gain activation now has a compile-time format1 check, and generated metadata-disabled models follow the explicit identity path. Numeric PR31 arrays are byte-identical to the frozen model. Those safety checks do not install any experimental weights or the64-byte cache.
 
 Results and the activation decision will be appended after the frozen run. Installed production code and weights remain PR31 unless all independent audio and native gates pass.

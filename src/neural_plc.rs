@@ -2,6 +2,9 @@
 //! Loss-only band gains and fractional phase prediction from received history.
 use crate::{FRAME_SAMPLES, neural_plc_weights as weights};
 
+// Equal dimensions do not make target-energy and gain heads interchangeable.
+const _: () = assert!(weights::FORMAT_TAG == 1);
+
 const BANDS: usize = 16;
 const FEATURES: usize = 24;
 const HZ: [usize; 17] = [
