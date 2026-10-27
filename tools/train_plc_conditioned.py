@@ -74,7 +74,7 @@ def main():
   if not model.conditioned:fixtures['condition']=torch.zeros_like(fixtures['condition'])
   with torch.no_grad():
    for strength in protocol['strengths']:
-    expected=model.gains(fixtures['h'],fixtures['condition'],fixtures['base'],strength);np.concatenate([fixtures['h'].cpu().numpy(),fixtures['condition'].cpu().numpy(),fixtures['base'].cpu().numpy(),expected.cpu().numpy()],1).astype('<f4').tofile(out/f'parity-{strength}.bin')
+    expected=model.gains(fixtures['h'],fixtures['condition'],fixtures['base'],strength);np.concatenate([fixtures['h'].cpu().numpy(),fixtures['condition'].cpu().numpy(),fixtures['base'].cpu().numpy(),expected.cpu().numpy()],1).astype('<f4').tofile(out/f'parity-{float(strength)}.bin')
   report=dict(schema=1,fit=fit,model_kind='pr31-conditional-residual-v1',format_tag=3,uses_candidate=model.conditioned,damp_only=model.damp_only,phase='unchanged frozen PR31',teacher='future-informed PhaseWide' if fit.endswith('wide') else 'actual PR31 phase',updates=spec['updates'],selected_step=spec['updates'],history=history,seconds=seconds,weights_sha256=sha(out/'plc_conditioned_weights.rs'),binding_sha256=sha(a.binding),protocol_sha256=sha(a.protocol),torch=torch.__version__,device=torch.cuda.get_device_name(),logical_adapter_bytes=1472,rows={l:len(data[l]['h']) for l in data})
   (out/'training-report.json').write_text(json.dumps(report,indent=2)+'\n');reports.append(report)
  (a.output/'training-summary.json').write_text(json.dumps(reports,indent=2)+'\n')
