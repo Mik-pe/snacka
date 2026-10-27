@@ -1,0 +1,52 @@
+--- concealment.rs
++++ concealment.rs
+@@ -68,12 +68,14 @@
+         }
+         let mut best = 0.0;
+         let mut lag = 0;
+-        for candidate in 14..=160 {
+-            let score = correlation(&downsampled, WINDOW, candidate, 1, current_energy);
+-            // Near-equivalent harmonic peaks should not extend the repeated cycle.
+-            if score > best + 0.01 {
+-                best = score;
+-                lag = candidate;
++        for first in (14..=160).step_by(4) {
++            let lags = std::array::from_fn(|lane| (first + lane).min(160));
++            let scores = correlations4(&downsampled, WINDOW, lags, 1, current_energy);
++            for lane in 0..(161 - first).min(4) {
++                if scores[lane] > best + 0.01 {
++                    best = scores[lane];
++                    lag = lags[lane];
++                }
+             }
+         }
+         if best < 0.55 {
+@@ -82,13 +84,16 @@
+         let current_energy = energy(&self.history, 960, 3);
+         let mut best_lag = lag * DECIMATION;
+         let mut score = -1.0;
+-        for candidate in
+-            best_lag.saturating_sub(DECIMATION).max(80)..=(best_lag + DECIMATION).min(960)
+-        {
+-            let current = correlation(&self.history, 960, candidate, 3, current_energy);
+-            if current > score {
+-                score = current;
+-                best_lag = candidate;
++        let lo = best_lag.saturating_sub(DECIMATION).max(80);
++        let hi = (best_lag + DECIMATION).min(960);
++        for first in (lo..=hi).step_by(4) {
++            let lags = std::array::from_fn(|lane| (first + lane).min(hi));
++            let scores = correlations4(&self.history, 960, lags, 3, current_energy);
++            for lane in 0..(hi + 1 - first).min(4) {
++                if scores[lane] > score {
++                    score = scores[lane];
++                    best_lag = lags[lane];
++                }
+             }
+         }
+         let offset = if best_lag > 80 && best_lag < 960 {
+@@ -318,3 +323,4 @@
+         assert!((state.phase_sample(0, -0.5) + 0.0375).abs() < 2e-7);
+     }
+ }
++

@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "study": "pr31-candidate-conditioned-distillation-20261027",
+  "base_commit": "d0852534f031a55b2c0efef3f6b21d1728cc2c44",
+  "status": "FROZEN_BEFORE_FITTING",
+  "fits": [
+    "history_wide",
+    "history_aligned",
+    "conditioned_wide",
+    "conditioned_aligned",
+    "history_damping",
+    "conditioned_damping"
+  ],
+  "strengths": [
+    0.25,
+    0.5,
+    1
+  ],
+  "architecture": {
+    "frozen": "PR31 80-64-64-17 trunk, original gains and phase; no recurrent state",
+    "adapter": "64 native latent plus 16 actual-phase candidate log-amplitude deltas -> 16 bounded log-gain residuals",
+    "block_row_i8": true,
+    "radius": 0.1,
+    "condition_clamp": [
+      -4,
+      4
+    ],
+    "gain_bounds": [
+      0.7875,
+      1.2125
+    ],
+    "adapter_logical_bytes": 1472,
+    "total_logical_weight_bytes": 12936,
+    "extra_history_bytes": 64,
+    "format_tag": 3,
+    "zero_residual": "exact original gain",
+    "damping": "residual min(0), target min(aligned log-envelope gain, baseline log-gain)"
+  },
+  "training": {
+    "seed": 20261027,
+    "updates": 12000,
+    "frames_per_language": 2048,
+    "float_warmup": 1000,
+    "lr": 0.001,
+    "min_lr": 0.0001,
+    "weight_decay": 0.0001,
+    "gradient_clip": 1,
+    "baseline_anchor": 0.1,
+    "supervision": "squared pre-student-clamp loggain vs teacher clamped loggain; supports corrective gradient at wrong clamp, no extreme raw-log-energy MSE",
+    "balance": "equal supported-band mean per frame, equal EN/SV",
+    "selection": "fixed final checkpoint; no seed or epoch search",
+    "device": "CUDA, deterministic algorithms, TF32 off"
+  },
+  "data": {
+    "natural_utterances": 344,
+    "train_utterances": 320,
+    "validation_utterances": 24,
+    "source_minutes": 36.03,
+    "augmentation": "all three bitrates x both durations x both modes per clip, deterministic noise/gain cycles; EN native48 and soxr16 view per clip, SV16",
+    "losses": "stride12, horizons 1,2,4,6; teacher state advanced with actual PR31 controls",
+    "band_mask": "record-level effective bandwidth, 13 bands for16k/16for48k",
+    "teacher": "SPCC1 227 f32 records; target uninterrupted decoded post-Phase1; actual-phase denominator plus PhaseWide denominator",
+    "source_sha256": "7e571abc7af1411dacc3846b2d844854b17c3c6336f926e54e63755acd42e2de",
+    "acceptance": "no acceptance PCM before single winner passes validation and native gates",
+    "reservation": "neural-plc-target-energy-acceptance-reservation.json and fullband-holdout.json; inventory rechecked before opening"
+  },
+  "validation": {
+    "rows_per_application": 7776,
+    "applications": 18,
+    "reference_rows": 15552,
+    "total_rows": 155520,
+    "cells": [
+      "en16k",
+      "en48k",
+      "sv16k"
+    ],
+    "reference": [
+      "classical",
+      "pr31"
+    ],
+    "core_slices": "each cell and each cell x bitrate(12,24,32k)",
+    "guards": {
+      "classical": {
+        "wave_ratio": "<1",
+        "env_ratio": "<=1",
+        "mr_ratio": "<=1",
+        "estoi_delta": ">=0"
+      },
+      "pr31": {
+        "wave_ratio": "<=1",
+        "env_ratio": "<=1",
+        "mr_ratio": "<=1",
+        "estoi_delta": ">=0"
+      }
+    },
+    "fine_guard": "each cell x bitrate x duration x mode ESTOI >= -.001 vs each reference",
+    "positive_gain": "strictly positive minimum aggregate-cell ESTOI delta vs PR31",
+    "ranking": "guards first; greatest minimum cell ESTOI delta vs PR31; then sum cell envelope ratios; then MR ratios; then fit order and strength order",
+    "no_fallback": true
+  },
+  "native": {
+    "zero_adapter": "bit-exact PCM against installed PR31 over every bitrate/duration/mode and loss patterns",
+    "parity": "all exported strengths on 32 EN/SV fixture records, max applied-gain abs error <5e-5",
+    "heap": "zero steady-state allocations, full core regression suite",
+    "pitch_optimization": "None in training candidates. Four-lag trial rejected in preflight (slower); slice rewrite showed no material speedup. Original PR31 pitch search retained.",
+    "m5": "interleaved first-loss medians <=25us and <=PR31 for each bitrate/duration/mode",
+    "decoder_max_bytes": 16352
+  },
+  "acceptance": {
+    "only_one_winner": true,
+    "independent_speakers": true,
+    "references": [
+      "classical",
+      "pr31"
+    ],
+    "same_guards": true,
+    "no_reselection": true
+  },
+  "outcome": "retain PR31 if no admitted improvement; report failures without changing gates",
+  "excluded": [
+    "new local pitch search",
+    "GRU",
+    "Phase3 entropy prior",
+    "src/opus changes",
+    "Phase1 changes"
+  ]
+}
