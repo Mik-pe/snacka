@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "status": "EXECUTION_ONLY_AMENDMENT_BEFORE_CPU_REPLAY",
+  "reason": "Training and all 18 native parity checks are finished. Move the remaining CPU-only scoring from A100 to an 8-core high-memory CPU to reduce compute-unit usage.",
+  "model_changes": false,
+  "data_changes": false,
+  "objective_changes": false,
+  "selection_changes": false,
+  "scorer_changes": false,
+  "partial_gpu_rows_used_for_selection": false,
+  "replay": "Fresh complete replay of every predeclared application and case on one CPU host; preserve the interrupted GPU prefix only for diagnostic parity.",
+  "immutable_protocol_sha256": "0917f6c0d7c29a850107eaec5a9906b899af30464c5118688a40ac96873b6525",
+  "binding_sha256": "667b9fbf76dd84485e00de62c85183c2c781f0999d725de82e4edfd5b8435404",
+  "migration_archive_sha256": "ce39ca54385cfef3ccc5f993aa67506f42dd88204ebc06ce62ddc9024a87a066",
+  "fitting": "Six fixed final checkpoints reused; no further fitting",
+  "evaluation": {
+    "workers": 8,
+    "applications": 18,
+    "references": [
+      "classical",
+      "pr31"
+    ],
+    "cases_per_implementation": 7776,
+    "total_rows": 155520
+  },
+  "test_audio_seen": false,
+  "recorded_at": "2026-10-27T23:28:31.116362+00:00"
+}

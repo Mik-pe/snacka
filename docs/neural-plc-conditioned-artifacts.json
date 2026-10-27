@@ -1,8 +1,6 @@
 {
   "schema": 1,
-  "folder_id": "1JfTRklSYC6pz__-fDB3ahgCwvFiZeYD9",
   "source": {
-    "id": "1qL6zN0JKri8TTUCte2jkVrVwQ-0XIPYY",
     "file": "study-source-final.tar.gz",
     "size": 1873031,
     "sha256": "b485fb24a4453828232e0e303521743ee8c3e18747e57b97ee5e5de0c011087a",
@@ -17,28 +15,24 @@
         "file": "labels.part000",
         "size": 94371840,
         "sha256": "68ab1d8e49df64f4342e809ce95549108c65895dc8f00a590542854b73399842",
-        "id": "1VqkP9d8cPtZY-dl-cs0rldRjdbp-WU9V",
         "full_readback": true
       },
       {
         "file": "labels.part001",
         "size": 94371840,
         "sha256": "16dcd64942c807ede4a990c7fbef7fd1ad1dba2d866dba34f5919edbafec793f",
-        "id": "1ej4XxoQwyNBxxH9IaIi58HVKDD9Ibaa_",
         "full_readback": true
       },
       {
         "file": "labels.part002",
         "size": 32636982,
         "sha256": "1e86edf84eae57dcd5091ac56f35b35a745fe56a2f429036c1a75d861cbaeb9a",
-        "id": "1s6Vdu7lgJY77yGEnUwHGqycuKeb-wgss",
         "full_readback": true
       }
     ],
     "full_ordered_readback": true
   },
   "local_preflight": {
-    "id": "14-r4qAMGcLTE28zQY7AOxCfZVr-RCVeG",
     "size": 2561939,
     "sha256": "0befce3d1b46e6b97004ac0c0a7fcff0a816e8067a0f3ad5539195b2e149f1b3",
     "full_readback": true
@@ -48,10 +42,10 @@
   "augmented_training_minutes": 557.5979833333332,
   "scope": "new phase-aligned labels and candidate-conditioned residual heads; no production weight replacement until all guards pass",
   "raw_source": {
-    "id": "1iHcDKsdklzps-dJjEcqeuLYIYSqH5GWn",
     "size": 69294080,
     "sha256": "7e571abc7af1411dacc3846b2d844854b17c3c6336f926e54e63755acd42e2de",
     "copied_cpu_to_gpu_without_new_mac_download": true
   },
-  "test_audio_seen": false
+  "test_audio_seen": false,
+  "private_index": "Private Drive file IDs and URLs are stored in the separate Drive index, matching previous studies."
 }
