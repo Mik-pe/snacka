@@ -2,11 +2,11 @@
   "schema": 1,
   "status": "FROZEN-BEFORE-FIRST-FIT",
   "training_allowed": true,
-  "frozen_at": "2026-10-27T23:06:32.025986+00:00",
-  "source_commit": "b26df59bb3e5e5f91e392fb64ee5fc820312723d",
+  "frozen_at": "2026-10-27T23:08:26.357711+00:00",
+  "source_commit": "3f7ea521f603c698cadb671510fa0225ed3caa47",
   "base_commit": "d0852534f031a55b2c0efef3f6b21d1728cc2c44",
   "protocol_sha256": "0917f6c0d7c29a850107eaec5a9906b899af30464c5118688a40ac96873b6525",
-  "source_archive_sha256": "87988bbff2c28c772db47f76dd6d71fe1778d98930d1cd72be15cabf27b65b2c",
+  "source_archive_sha256": "b485fb24a4453828232e0e303521743ee8c3e18747e57b97ee5e5de0c011087a",
   "data_archive_sha256": "8de1e199fff0c7dedde385d6795dcbc4acb27c93250ec8449274ec22d65d76e6",
   "data_sha256": {
     "train-en-000.npz": "df43d3b5ff2501d9eed113ac5ff8b2109c9e91337e1c4a4fbaf354c2d81a81c0",
@@ -132,7 +132,7 @@
     "train_neural_postfilter.py": "091cdf05d666fc746fbe6594e9e2cd162067f0c41f700a522a6fc029d04f0ba1",
     "train_plc_ablation.py": "22068d99b2ffd00779cfc59c03994c95196fe663f1387225a26ed84beafe7549",
     "train_plc_causal.py": "8ac4ceea6d3933b581d191e61175655c89fa9a1acad50aab1716f83c3839b367",
-    "train_plc_conditioned.py": "98404f535862646adde1a93ebc764f1f73575f15aa0173df359283d02803d673",
+    "train_plc_conditioned.py": "59245a4984cb781d177f6eb0b8f0b5335c4e8655bb80b993458de2f38504891d",
     "train_plc_energy_study.py": "16857aa2184e647f3a36e1906e35c29b2d909fc6a10a0ba6331fd838310714d9",
     "train_plc_phase_student.py": "8b9d03fb9524d6ff28f2414998ff0b6737c3e2cb752d7a92653c78afee70230d",
     "verify_plc_candidate_replay.py": "51c7c16cb790ff7a3076bc1726af89eb5f54af5d401dd2c575e4ac92c4ee84dc",
@@ -205,5 +205,7 @@
   "preflight_proof_sha256": "0befce3d1b46e6b97004ac0c0a7fcff0a816e8067a0f3ad5539195b2e149f1b3",
   "acceptance_reservation_sha256": "a3afc658ad4462174ce2b0620eeb8f14cf1d3f3597411c12c780dea268e58636",
   "fullband_reservation_sha256": "82ae9129666bdb4ea839cf6d237f77d168501f5dceceda7009262eb689d434ec",
-  "test_audio_seen": false
+  "test_audio_seen": false,
+  "previous_binding_sha256": "439fe1c058572a1c3f452a4828a150dd90a8c0e42211ad53f5c13c0625ed9d7d",
+  "execution_correction": "Before first fit: canonical float strength filename for native parity fixtures; no tensor, data, objective or selection change."
 }
