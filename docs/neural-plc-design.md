@@ -324,3 +324,16 @@ The frozen [representation diagnostic](neural-plc-representation.md) evaluates n
 ## Causal gain and phase model
 
 The [2026-10-22 causal study](neural-plc-causal.md) adds full received-frame sequence context, tests direct perceptual loss and matched phase/noise controls, and independently accepts a bounded 17-output gain/phase MLP on 5,184 new cases. The installed default is now the accepted causal model; its source keeps packets and uninterrupted PCM unchanged, adds no Decoder state or runtime dependency, and remains allocation-free. The report includes the low-rate pitch-activation correction, the separately frozen 12 kbps validation supplement, exact runtime/parameter parity, all artifacts and resource costs.
+
+## Candidate energy and later-phase readiness
+
+The [target-energy × bandwidth study](neural-plc-target-energy-study.md) and the
+[2026-10-28 candidate-conditioned distillation study](neural-plc-conditioned-study.md)
+both retain the accepted PR31 weights. The latter evaluates six fits and 18
+applications on 155,520 decoded validation rows; none meets all frozen guards.
+It also delivers a separate [bit-exact PLC search optimization](neural-plc-search.md)
+with 11.2–16.3% lower measured first-loss medians on M5.
+
+Before training an entropy prior, the [Phase 3 budget preflight](neural-entropy-budget-preflight.md)
+establishes what can change the certified pulse budget and what needs accepted
+packet measurements and a negotiated format experiment.

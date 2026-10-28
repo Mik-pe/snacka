@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "study-source-final.tar.gz",
+    "size": 1873031,
+    "sha256": "b485fb24a4453828232e0e303521743ee8c3e18747e57b97ee5e5de0c011087a",
+    "full_readback": true
+  },
+  "dataset": {
+    "schema": 1,
+    "whole_sha256": "8de1e199fff0c7dedde385d6795dcbc4acb27c93250ec8449274ec22d65d76e6",
+    "whole_size": 221380662,
+    "parts": [
+      {
+        "file": "labels.part000",
+        "size": 94371840,
+        "sha256": "68ab1d8e49df64f4342e809ce95549108c65895dc8f00a590542854b73399842",
+        "full_readback": true
+      },
+      {
+        "file": "labels.part001",
+        "size": 94371840,
+        "sha256": "16dcd64942c807ede4a990c7fbef7fd1ad1dba2d866dba34f5919edbafec793f",
+        "full_readback": true
+      },
+      {
+        "file": "labels.part002",
+        "size": 32636982,
+        "sha256": "1e86edf84eae57dcd5091ac56f35b35a745fe56a2f429036c1a75d861cbaeb9a",
+        "full_readback": true
+      }
+    ],
+    "full_ordered_readback": true
+  },
+  "local_preflight": {
+    "size": 2561939,
+    "sha256": "0befce3d1b46e6b97004ac0c0a7fcff0a816e8067a0f3ad5539195b2e149f1b3",
+    "full_readback": true
+  },
+  "data_rows": 583867,
+  "source_minutes": 36.03324930555555,
+  "augmented_training_minutes": 557.5979833333332,
+  "scope": "new phase-aligned labels and candidate-conditioned residual heads; no production weight replacement until all guards pass",
+  "raw_source": {
+    "size": 69294080,
+    "sha256": "7e571abc7af1411dacc3846b2d844854b17c3c6336f926e54e63755acd42e2de",
+    "copied_cpu_to_gpu_without_new_mac_download": true
+  },
+  "test_audio_seen": false,
+  "private_index": "Private Drive file IDs and URLs are stored in the separate Drive index, matching previous studies.",
+  "trained_bundle": {
+    "size": 22945817,
+    "sha256": "ce39ca54385cfef3ccc5f993aa67506f42dd88204ebc06ce62ddc9024a87a066",
+    "full_readback": true
+  },
+  "final_result": {
+    "file": "result-proof.tar.gz",
+    "size": 50357650,
+    "sha256": "a5ce4849bf8e8587682f170c947c483db4469ec001490e9948706b5c00acc597",
+    "full_readback": true,
+    "csv_rows": 155520,
+    "selected": null,
+    "test_audio_seen": false
+  },
+  "validation_csv_sha256": "aae64196aba510aace8f43489fe7eda01609f204b718a3b236565f00602ba8ea",
+  "cross_host_scoring": {
+    "schema": 1,
+    "scope": "Post-fit execution parity only; no GPU rows enter selection",
+    "compared_complete_rows": 2880,
+    "compared_cases": 8,
+    "all_csv_fields_bit_exact": false,
+    "mismatch_counts": {
+      "clip": 0,
+      "source": 0,
+      "group_id": 0,
+      "language": 0,
+      "effective_rate": 0,
+      "native_rate": 0,
+      "cell": 0,
+      "condition": 0,
+      "bitrate": 0,
+      "frame_ms": 0,
+      "harmonic": 0,
+      "pattern": 0,
+      "implementation": 0,
+      "lost_samples": 0,
+      "input_sha256": 0,
+      "pcm_sha256": 0,
+      "wave": 0,
+      "env": 0,
+      "env_count": 0,
+      "mr": 1,
+      "stoi": 333,
+      "estoi": 404
+    },
+    "max_numeric_abs_difference": {
+      "wave": 0.0,
+      "env": 0.0,
+      "mr": 5.551115123125783e-17,
+      "stoi": 3.3306690738754696e-16,
+      "estoi": 3.3306690738754696e-16
+    }
+  },
+  "final_verification": {
+    "file": "final-verification.tar.gz",
+    "size": 12264486,
+    "sha256": "83a7b49c18b5d42cba797886ec4c59ff7b1d135a9e3fa5d469804c9945bcb9ee",
+    "source_commit": "a6f432516411b0f439609589fd280ecffd4bd021",
+    "full_readback": true
+  }
+}

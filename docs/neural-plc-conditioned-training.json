@@ -1,0 +1,198 @@
+{
+  "status": {
+    "status": "COMPLETE",
+    "seconds": 2121.061262969,
+    "rows": 583867,
+    "size": 221380662,
+    "sha256": "8de1e199fff0c7dedde385d6795dcbc4acb27c93250ec8449274ec22d65d76e6",
+    "parts": [
+      {
+        "file": "labels.part000",
+        "size": 94371840,
+        "sha256": "68ab1d8e49df64f4342e809ce95549108c65895dc8f00a590542854b73399842"
+      },
+      {
+        "file": "labels.part001",
+        "size": 94371840,
+        "sha256": "16dcd64942c807ede4a990c7fbef7fd1ad1dba2d866dba34f5919edbafec793f"
+      },
+      {
+        "file": "labels.part002",
+        "size": 32636982,
+        "sha256": "1e86edf84eae57dcd5091ac56f35b35a745fe56a2f429036c1a75d861cbaeb9a"
+      }
+    ]
+  },
+  "provenance_sha256": "1dcddaaa91fd54d3559e34333f08a7f10df0e32dc272524834bb21a827aae0bb",
+  "rows": 583867,
+  "source_minutes": 36.03324930555555,
+  "augmented_training_minutes": 557.5979833333332,
+  "binary_sha256": "1650fa0037cd039703c2192e7d2a3d47e3f310360efd5279c6e9b65936fc1c7a",
+  "preparer_sha256": "02319fb3e1895c32591040f785928787027bb1c9d2924ac181c7d67233251c5c",
+  "teacher_source_archive_sha256": "eab62811dc38e412eda84cd623d292efac7292323b3b395316674174606caafb",
+  "source_manifest_sha256": "cd1b72c6d84c52d43abc0c5e2bbf11a35430325761b55aa575b7ab37d8c4209e",
+  "validation_selection_sha256": "6ffe0880c3076dffeea01040508396ebcc15f7d36938c749963eebbdad03f748",
+  "validation_views": 36,
+  "validation_groups": {
+    "en": [
+      "p248",
+      "p262",
+      "p272",
+      "p275",
+      "p340",
+      "p376"
+    ],
+    "sv": [
+      "0246927519019",
+      "0331791853028",
+      "0365748677411",
+      "0482689573825",
+      "0731442709013",
+      "086684470825"
+    ]
+  },
+  "export_seconds": 2108.984983049,
+  "source_profiles": 6576,
+  "fits": [
+    {
+      "schema": 1,
+      "fit": "history_wide",
+      "model_kind": "pr31-conditional-residual-v1",
+      "format_tag": 3,
+      "uses_candidate": false,
+      "damp_only": false,
+      "phase": "unchanged frozen PR31",
+      "teacher": "future-informed PhaseWide",
+      "updates": 12000,
+      "selected_step": 12000,
+      "seconds": 47.78926347499987,
+      "weights_sha256": "135219afc96cdf9d81ba0a6cfbe7dc16fa323e66344a66a67eabe4bd9f38f3a7",
+      "binding_sha256": "667b9fbf76dd84485e00de62c85183c2c781f0999d725de82e4edfd5b8435404",
+      "protocol_sha256": "0917f6c0d7c29a850107eaec5a9906b899af30464c5118688a40ac96873b6525",
+      "torch": "2.11.0+cu130",
+      "device": "NVIDIA A100-SXM4-80GB",
+      "logical_adapter_bytes": 1472,
+      "rows": {
+        "en": 231473,
+        "sv": 308947
+      }
+    },
+    {
+      "schema": 1,
+      "fit": "history_aligned",
+      "model_kind": "pr31-conditional-residual-v1",
+      "format_tag": 3,
+      "uses_candidate": false,
+      "damp_only": false,
+      "phase": "unchanged frozen PR31",
+      "teacher": "actual PR31 phase",
+      "updates": 12000,
+      "selected_step": 12000,
+      "seconds": 47.63077788999999,
+      "weights_sha256": "1933508ec0337a5ae6badac60449fcd2f9338babedd627dfce4f6dcc810ec458",
+      "binding_sha256": "667b9fbf76dd84485e00de62c85183c2c781f0999d725de82e4edfd5b8435404",
+      "protocol_sha256": "0917f6c0d7c29a850107eaec5a9906b899af30464c5118688a40ac96873b6525",
+      "torch": "2.11.0+cu130",
+      "device": "NVIDIA A100-SXM4-80GB",
+      "logical_adapter_bytes": 1472,
+      "rows": {
+        "en": 231473,
+        "sv": 308947
+      }
+    },
+    {
+      "schema": 1,
+      "fit": "conditioned_wide",
+      "model_kind": "pr31-conditional-residual-v1",
+      "format_tag": 3,
+      "uses_candidate": true,
+      "damp_only": false,
+      "phase": "unchanged frozen PR31",
+      "teacher": "future-informed PhaseWide",
+      "updates": 12000,
+      "selected_step": 12000,
+      "seconds": 53.142053683000086,
+      "weights_sha256": "4b15c6fe5ca44f9ed6edf893b169113144e63103b32fcbbffce76a1ce7f8a574",
+      "binding_sha256": "667b9fbf76dd84485e00de62c85183c2c781f0999d725de82e4edfd5b8435404",
+      "protocol_sha256": "0917f6c0d7c29a850107eaec5a9906b899af30464c5118688a40ac96873b6525",
+      "torch": "2.11.0+cu130",
+      "device": "NVIDIA A100-SXM4-80GB",
+      "logical_adapter_bytes": 1472,
+      "rows": {
+        "en": 231473,
+        "sv": 308947
+      }
+    },
+    {
+      "schema": 1,
+      "fit": "conditioned_aligned",
+      "model_kind": "pr31-conditional-residual-v1",
+      "format_tag": 3,
+      "uses_candidate": true,
+      "damp_only": false,
+      "phase": "unchanged frozen PR31",
+      "teacher": "actual PR31 phase",
+      "updates": 12000,
+      "selected_step": 12000,
+      "seconds": 53.12834322799995,
+      "weights_sha256": "b857dd1a251d70830d21590ebafb7a87e16335f873c2a00b6f313b1d2d4411af",
+      "binding_sha256": "667b9fbf76dd84485e00de62c85183c2c781f0999d725de82e4edfd5b8435404",
+      "protocol_sha256": "0917f6c0d7c29a850107eaec5a9906b899af30464c5118688a40ac96873b6525",
+      "torch": "2.11.0+cu130",
+      "device": "NVIDIA A100-SXM4-80GB",
+      "logical_adapter_bytes": 1472,
+      "rows": {
+        "en": 231473,
+        "sv": 308947
+      }
+    },
+    {
+      "schema": 1,
+      "fit": "history_damping",
+      "model_kind": "pr31-conditional-residual-v1",
+      "format_tag": 3,
+      "uses_candidate": false,
+      "damp_only": true,
+      "phase": "unchanged frozen PR31",
+      "teacher": "actual PR31 phase",
+      "updates": 12000,
+      "selected_step": 12000,
+      "seconds": 49.81216282000014,
+      "weights_sha256": "a8e5b91114e7f2ef89a55b5fde5b7c7c9e49140021ea923425f9cee073b000fa",
+      "binding_sha256": "667b9fbf76dd84485e00de62c85183c2c781f0999d725de82e4edfd5b8435404",
+      "protocol_sha256": "0917f6c0d7c29a850107eaec5a9906b899af30464c5118688a40ac96873b6525",
+      "torch": "2.11.0+cu130",
+      "device": "NVIDIA A100-SXM4-80GB",
+      "logical_adapter_bytes": 1472,
+      "rows": {
+        "en": 231473,
+        "sv": 308947
+      }
+    },
+    {
+      "schema": 1,
+      "fit": "conditioned_damping",
+      "model_kind": "pr31-conditional-residual-v1",
+      "format_tag": 3,
+      "uses_candidate": true,
+      "damp_only": true,
+      "phase": "unchanged frozen PR31",
+      "teacher": "actual PR31 phase",
+      "updates": 12000,
+      "selected_step": 12000,
+      "seconds": 55.87604388,
+      "weights_sha256": "b4e656e6ff521c31c443a230ba0a2713e30da8b61129437a13972f51c5a59034",
+      "binding_sha256": "667b9fbf76dd84485e00de62c85183c2c781f0999d725de82e4edfd5b8435404",
+      "protocol_sha256": "0917f6c0d7c29a850107eaec5a9906b899af30464c5118688a40ac96873b6525",
+      "torch": "2.11.0+cu130",
+      "device": "NVIDIA A100-SXM4-80GB",
+      "logical_adapter_bytes": 1472,
+      "rows": {
+        "en": 231473,
+        "sv": 308947
+      }
+    }
+  ],
+  "fit_seconds": 307.37864497600003,
+  "total_updates": 72000
+}
