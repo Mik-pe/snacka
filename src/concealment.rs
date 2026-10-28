@@ -39,6 +39,8 @@ impl Concealment {
         self.elapsed = 0;
     }
 
+    // Fixed lane order preserves scalar ties and exposes independent accumulations.
+    #[allow(clippy::needless_range_loop)]
     pub(crate) fn begin(&mut self) {
         if self.elapsed != 0 {
             return;
@@ -68,12 +70,25 @@ impl Concealment {
         }
         let mut best = 0.0;
         let mut lag = 0;
-        for candidate in 14..=160 {
-            let score = correlation(&downsampled, WINDOW, candidate, 1, current_energy);
-            // Near-equivalent harmonic peaks should not extend the repeated cycle.
-            if score > best + 0.01 {
-                best = score;
-                lag = candidate;
+        for first in (14..=160).step_by(4) {
+            let scores = if first + 3 <= 160 {
+                correlations_consecutive4(&downsampled, WINDOW, first, 1, current_energy)
+            } else {
+                std::array::from_fn(|lane| {
+                    correlation(
+                        &downsampled,
+                        WINDOW,
+                        (first + lane).min(160),
+                        1,
+                        current_energy,
+                    )
+                })
+            };
+            for lane in 0..(161 - first).min(4) {
+                if scores[lane] > best + 0.01 {
+                    best = scores[lane];
+                    lag = first + lane;
+                }
             }
         }
         if best < 0.55 {
@@ -82,13 +97,27 @@ impl Concealment {
         let current_energy = energy(&self.history, 960, 3);
         let mut best_lag = lag * DECIMATION;
         let mut score = -1.0;
-        for candidate in
-            best_lag.saturating_sub(DECIMATION).max(80)..=(best_lag + DECIMATION).min(960)
-        {
-            let current = correlation(&self.history, 960, candidate, 3, current_energy);
-            if current > score {
-                score = current;
-                best_lag = candidate;
+        let first = best_lag.saturating_sub(DECIMATION).max(80);
+        let last = (best_lag + DECIMATION).min(960);
+        for group in (first..=last).step_by(4) {
+            let scores = if group + 3 <= last {
+                correlations_consecutive4(&self.history, 960, group, 3, current_energy)
+            } else {
+                std::array::from_fn(|lane| {
+                    correlation(
+                        &self.history,
+                        960,
+                        (group + lane).min(last),
+                        3,
+                        current_energy,
+                    )
+                })
+            };
+            for lane in 0..(last - group + 1).min(4) {
+                if scores[lane] > score {
+                    score = scores[lane];
+                    best_lag = group + lane;
+                }
             }
         }
         let offset = if best_lag > 80 && best_lag < 960 {
@@ -316,5 +345,75 @@ mod phase_control_tests {
         state.elapsed = 480;
         assert!((state.phase_sample(0, 0.5) + 0.45).abs() < 2e-7);
         assert!((state.phase_sample(0, -0.5) + 0.0375).abs() < 2e-7);
+    }
+}
+
+// SPDX-License-Identifier: MIT
+// Consecutive lag lanes share one contiguous four-sample window.
+#[inline(always)]
+#[allow(clippy::needless_range_loop)]
+fn correlations_consecutive4(
+    samples: &[f32],
+    window: usize,
+    first: usize,
+    step: usize,
+    current_energy: f32,
+) -> [f32; 4] {
+    let start = samples.len() - window;
+    let previous = &samples[start - first - 3..samples.len() - first];
+    let mut product = [0.0f32; 4];
+    let mut previous_energy = [0.0f32; 4];
+    for (&current, values) in samples[start..]
+        .iter()
+        .zip(previous.array_windows::<4>())
+        .step_by(step)
+    {
+        for lane in 0..4 {
+            let past = values[3 - lane];
+            product[lane] += current * past;
+            previous_energy[lane] += past * past;
+        }
+    }
+    std::array::from_fn(|lane| {
+        product[lane] / (current_energy * previous_energy[lane]).sqrt().max(1e-20)
+    })
+}
+#[cfg(test)]
+mod consecutive_tests {
+    use super::*;
+    #[test]
+    fn every_lane_preserves_scalar_sum_bits() {
+        let mut seed = 20261028u32;
+        for case in 0..200 {
+            let samples: Vec<f32> = (0..1920)
+                .map(|i| {
+                    seed ^= seed << 13;
+                    seed ^= seed >> 17;
+                    seed ^= seed << 5;
+                    match case % 4 {
+                        0 => 0.,
+                        1 => (i as f32 * 0.031).sin(),
+                        _ => (seed as f32 / u32::MAX as f32 - 0.5) * 0.5,
+                    }
+                })
+                .collect();
+            for (window, step, lo, hi) in [(160, 1, 14, 156), (960, 3, 80, 957)] {
+                let view = if window == 160 {
+                    &samples[..320]
+                } else {
+                    &samples[..]
+                };
+                let total = energy(view, window, step);
+                for first in (lo..=hi).step_by(if window == 160 { 4 } else { 2 }) {
+                    let four = correlations_consecutive4(view, window, first, step, total);
+                    for (lane, &score) in four.iter().enumerate() {
+                        assert_eq!(
+                            score.to_bits(),
+                            correlation(view, window, first + lane, step, total).to_bits()
+                        );
+                    }
+                }
+            }
+        }
     }
 }

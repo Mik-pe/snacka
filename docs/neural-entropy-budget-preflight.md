@@ -42,3 +42,19 @@ python3 tools/check_neural_entropy_budget.py --output /tmp/snacka-entropy-budget
 ```
 
 No new speech data or Colab compute was needed for this preflight.
+
+## A separate representation opportunity at the existing K=80 cutoff
+
+The fixed-budget result above does not cover changing the representation's supported pulse range. A further [exact shadow calculation](neural-entropy-class-extension.json) extends the existing class representation through K=127 **only for D=20,40,80**. All 141 candidate allocation entries improve relative to the current multiset fallback.
+
+For example, at D=80, K=81, the certified cost falls from 236 to 201 bits. At D=40 it falls from 146 to 136 bits; at D=20, from 87 to 85 bits. These are conditional allocation-cost reductions, not measured packet savings or audio improvements. Their occurrence frequency and quality benefit still need measurement on accepted packet data.
+
+The current 80-entry position/magnitude scratch arrays suffice because J<=D<=80. This proposal adds approximately 14,758 logical bytes of CDF/offset tables; it does not require a neural runtime. The exact rational interval-loss bound remains below one bit, so the existing extra-bit certificate is sufficient for these proposed classes.
+
+No table or profile is changed here. A future experiment must keep all legacy profiles' allocation/CDF rules unchanged and define a separately negotiated native profile. Profiles 6/7 are currently rejected; a possible narrow design would specify a new fullband pulse profile pair and explicit capability negotiation. First measure the K=80 plateau, K>80 occurrences and shadow reallocations in actual decoded packets. Then validate coefficient parity, fixed-byte-budget safety, CPU/stack footprint and audio quality before considering promotion.
+
+Reproduce this independent proposal with:
+
+```sh
+python3 tools/preflight_pulse_class_extension.py --output /tmp/snacka-class-extension.json
+```
