@@ -100,5 +100,12 @@
       "stoi": 3.3306690738754696e-16,
       "estoi": 3.3306690738754696e-16
     }
+  },
+  "final_verification": {
+    "file": "final-verification.tar.gz",
+    "size": 12264486,
+    "sha256": "83a7b49c18b5d42cba797886ec4c59ff7b1d135a9e3fa5d469804c9945bcb9ee",
+    "source_commit": "a6f432516411b0f439609589fd280ecffd4bd021",
+    "full_readback": true
   }
 }
