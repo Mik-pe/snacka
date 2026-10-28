@@ -21,7 +21,8 @@ def main():
    rows.append(dict(dimensions=n,pulses=k,classes=len(counts),baseline_H=baseline,optimal_H=optimum,required_width_sum=sum(witness),infeasible_previous_sum=sum(required(b-1)),uses_classes=bool(t['MASKS'][ri][k//64]&(1<<(k%64)))))
  root=Path(__file__).resolve().parents[1]
  d=dict(schema=1,scope='All 560 supported D,K class priors, full class support and Q=65535. Worst-case certified H only; no average bitrate or quality forecast.',definition='H=1+max ceil(log2(V*Q/w)); feasible B=H-1 iff sum ceil(V*Q/2^B)<=Q.',cases=len(rows),existing_minimax_count=sum(r['baseline_H']==r['optimal_H'] for r in rows),improved_H_count=sum(r['optimal_H']<r['baseline_H'] for r in rows),source_sha256={name:hashlib.sha256((root/name).read_bytes()).hexdigest() for name in ('src/pulse.rs','src/pulse_classes.rs','docs/bitstream.md','tools/generate_pulse_tables.py')},production_changed=False,compute_units=0,results=rows)
- text=json.dumps(d,indent=2)+'\n'
+ header=dict(d);records=header.pop('results')
+ text=json.dumps(header,indent=2)[:-2]+',\n  \"results\": [\n'+',\n'.join('    '+json.dumps(row,separators=(',',':')) for row in records)+'\n  ]\n}\n'
  if a.output:
   if a.output.exists():p.error('fresh output required')
   a.output.write_text(text)
