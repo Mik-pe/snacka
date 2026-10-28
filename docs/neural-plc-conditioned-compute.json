@@ -1,0 +1,12 @@
+{
+  "paid_compute_units_balance": 1015.4548674493676,
+  "consumption_rate_hourly": 0.0,
+  "assignments_count": 0,
+  "schema": 1,
+  "starting_balance_approx": 1020.43,
+  "balance_delta_approx": 4.975132550632338,
+  "account_balance_not_itemized_invoice": true,
+  "training_seconds": 307.37864497600003,
+  "all_task_sessions_stopped": true,
+  "recorded_utc": "2026-10-28T01:13:07.637821+00:00"
+}

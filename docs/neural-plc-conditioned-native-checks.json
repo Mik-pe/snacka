@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "production_source_commit": "1a87b01ba239360c0a1048de45a1546a50359f07",
+  "toolchain": "rustc 1.99.1 aarch64-apple-darwin",
+  "release_feature": "opus",
+  "release_passed": 374,
+  "release_failed": 0,
+  "clippy_all_targets_warnings_denied": true,
+  "format_check": true,
+  "zero_allocations": true,
+  "production_footprint": {
+    "decoder_bytes": 16288,
+    "encoder_bytes": 12128,
+    "model_constant_bytes": 11464,
+    "model_kind": "gain-ratio-phase-v1",
+    "format_tag": 1
+  },
+  "new_weights_installed": false,
+  "experimental_gain_parity": {
+    "applications": 18,
+    "records_each": 32,
+    "max_abs": 1.1920929e-07,
+    "limit": 5e-05
+  },
+  "experimental_decoder_bytes": 16352,
+  "experimental_logical_weight_bytes": 12936,
+  "search_primitive_bit_parity_cases": 200,
+  "search_paired_pcm_streams": 216,
+  "search_config_cases": 36,
+  "quality_guards_passed": false,
+  "independent_acceptance_audio_opened": false,
+  "experimental_model_m5_gate_run": false,
+  "search_m5_report": "neural-plc-search-timing.json",
+  "log_sha256": {
+    "main-release-tests-online.log": "2b3ec5275d161d3858ef27450370a59d8bf0bf6f489b94852a55c85916c82d7e",
+    "main-clippy.log": "aaaa207c62a117c05806e4f89a6304598fc497c6e633c707a51494d26389f8be",
+    "main-footprint.log": "6908e7ddc71bb46ea08eea7bed4fff314b3775f852863211b19a40de76e9358d",
+    "pure-consecutive-pcm-parity.json": "334904bdd55dbc17dc6363413a45a4781f993ad3072138cb5fab418431e1432d",
+    "warm-consecutive-timing.json": "54dbd32fe91d02a7e2abac2dc3508f5ef99038be9912f3c533f2e3aa5c529051",
+    "live-run.log": "85b502f012344e46b1ed3a98a09d3e18a21745460e222e4e166b63643f26ec16"
+  }
+}
